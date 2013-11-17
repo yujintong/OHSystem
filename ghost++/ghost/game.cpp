@@ -1956,9 +1956,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
  
                         //
-                        // !KICK (kick a player)
+                        // !KICK (kick a player) !K
                         //
-                        else if( Command == "kick" && !Payload.empty( ) && Level >= 5 )
+                        else if( ( Command == "kick" || Command == 'k' ) && !Payload.empty( ) && Level >= 5 )
                         {
                                 CGamePlayer *LastMatch = NULL;
                                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -3190,7 +3190,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !UNOB
         //
-        else if( Command == "unob" || Command == "ubobs" || Command == "unobserve" )
+        else if( Command == "unob" || Command == "unobs" || Command == "unobserve" )
         {
                 unsigned char SID = GetSIDFromPID( player->GetPID( ) );
                 if( Level > 2 && SID == 11 )
