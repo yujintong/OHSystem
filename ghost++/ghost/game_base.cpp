@@ -2310,7 +2310,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                         if( Level != 0 && m_GHost->m_RanksLoaded ) 
                                 LevelName = m_GHost->m_Ranks[Level-1];
                         else if( Level != 0)
-                            CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.")
+                            CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                         break;
                 }
         }
@@ -2335,7 +2335,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                         if( Level != 0 && m_GHost->m_RanksLoaded ) 
                                 LevelName = m_GHost->m_Ranks[Level-1];
                         else if( Level != 0)
-                            CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.")
+                            CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
+                        break;
                 }
             }
         }
