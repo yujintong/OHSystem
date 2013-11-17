@@ -80,6 +80,7 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
         // Memory leak *FIX !!!!
         m_LobbyLog.clear();
         m_GameLog.clear();
+        m_ObservingPlayers = 0;
 }
  
 CGame :: ~CGame( )
@@ -2993,6 +2994,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         if( m_GameLoaded && ( Command == "draw" || Command == "undraw" ) && !m_SoftGameOver )
         {
+            unsigned char SID = GetSIDFromPID( player->GetPID( ) );
+            if(SID!=11)
+            {
                 if( Command == "draw" )
                 {
                         bool ChangedVote = true;
@@ -3002,7 +3006,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         else
                                 ChangedVote = false; //continue in case someone left and now we have enough votes
  
-                        uint32_t VotesNeeded = (float)ceil( GetNumHumanPlayers( ) * 0.75 );
+                        uint32_t VotesNeeded = (float)ceil( ( GetNumHumanPlayers( )-m_ObservingPlayers) * 0.75 );
                         uint32_t Votes = 0;
  
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++)
@@ -3030,6 +3034,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         player->SetDrawVote( false );
                         SendAllChat( "[" + player->GetName( ) + "] recalled vote to draw the game." );
                 }
+            }
+            else
+                SendChat(player, "Error. You are not allowed to vote, you are not playing.")
         }
  
         //
@@ -3173,6 +3180,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         if( m_Slots[11].GetSlotStatus( ) != SLOTSTATUS_OCCUPIED )
                         {
+                                m_ObservingPlayers += 1;
                                 unsigned char oldsid = GetSIDFromPID( player->GetPID( ) );
                                 SwapSlots( oldsid, 11 );
                                 OpenSlot( oldsid, true );
@@ -3210,6 +3218,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         if( newslot == -1 )
                                 newslot = m_LatestSlot;
  
+                        m_ObservingPlayers -= 1;
                         SwapSlots( newslot, 11 );
                         CloseSlot( 11, true );
                         m_AutoStartPlayers = 10;
