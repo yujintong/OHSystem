@@ -200,6 +200,8 @@ public:
         bool m_AllowVoteStart;
         uint32_t m_VoteStartMinPlayers;
         bool m_RanksLoaded;
+        bool m_FlameCheck;
+        string m_BotManagerName;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

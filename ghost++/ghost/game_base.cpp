@@ -1848,26 +1848,26 @@ void CBaseGame :: SendAllActions( )
                                 if ( m_FakePlayerPID != 255 && !m_PauseReq )
                                 {
                                         CGamePlayer *Player = GetPlayerFromPID( Action->GetPID( ) );
-                                        SendAllChat( "[PeaceMaker] " + Player->GetName( ) + " tried to pause the game. Unpausing." );
+                                        SendAllChat( "["+m_GHost->m_BotManagerName+"] " + Player->GetName( ) + " tried to pause the game. Unpausing." );
                                         BYTEARRAY CRC;
                                         BYTEARRAY Action;
                                         Action.push_back( 2 );
                                         m_Actions.push( new CIncomingAction( m_FakePlayerPID, CRC, Action ) );
                                         Player->SetPauseTried();
                                         if( Player->GetPauseTried() == 2 )
-                                                SendChat( Player->GetPID(), "[PeaceMaker] On the next attemp to pause the game you will be punished" );
+                                                SendChat( Player->GetPID(), "["+m_GHost->m_BotManagerName+"] On the next attemp to pause the game you will be punished" );
                                         if( Player->GetPauseTried() == 3 )
                                         {
-                                                SendAllChat( "[PeaceMaker] " + Player->GetName( ) + " got punished for trying to gameruin!" );
-                                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "3rd Pause attemp" , "PeaceMaker", 1, "add" ) ) );
+                                                SendAllChat( "["+m_GHost->m_BotManagerName+"] " + Player->GetName( ) + " got punished for trying to gameruin!" );
+                                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "3rd Pause attemp" , m_GHost->m_BotManagerName, 1, "add" ) ) );
                                         }
                                 }
                         }
  
                         if ((*Action->GetAction())[0] == 0x6) {
                                 CGamePlayer *Player = GetPlayerFromPID( Action->GetPID( ) );
-                                SendAllChat("[PeaceMaker] " + Player->GetName() + " tried to save the game. Justice has served.");
-                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "game save" , "PeaceMaker", 1, "add" ) ) );
+                                SendAllChat("["+m_GHost->m_BotManagerName+"] " + Player->GetName() + " tried to save the game. Justice has served.");
+                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "game save" , m_GHost->m_BotManagerName, 1, "add" ) ) );
                         }
  
                         // check if adding the next action to the sub actions queue would put us over the limit (1452 because the INCOMING_ACTION and INCOMING_ACTION2 packets use an extra 8 bytes)
@@ -2369,7 +2369,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         {
                 // autoban the player for spoofing name
                 if( !m_GHost->m_BNETs.empty( ) )
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, "PeaceMaker", "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
+                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
  
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game with an invalid name of length " + UTIL_ToString( joinPlayer->GetName( ).size( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
@@ -3512,12 +3512,12 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
             case 0x51 :
               n += 10;
  
-               SendAllChat( "[PeaceMaker] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
-               SendAllChat( "[PeaceMaker] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
+               SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
+               SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
                player->SetDeleteMe( true );
                player->SetLeftReason( "was kicked by host" );
                player->SetLeftCode( PLAYERLEAVE_LOST );
-               m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, "PeaceMaker", "MapHack", 0, "" ) );
+               m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
  
                delete action;
                return false;
@@ -6031,7 +6031,7 @@ void CBaseGame :: CreateFakePlayer( )
                 IP.push_back( 0 );
                 IP.push_back( 0 );
                 if( m_GHost->m_ObserverFake ) {
-                        SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, "|cFFFF0000Ghost", IP, IP, string( ) ) );
+                        SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, m_GHost->m_BotManagerName, IP, IP, string( ) ) );
                         m_Slots[SID] = CGameSlot( m_FakePlayerPID, 100, SLOTSTATUS_OCCUPIED, 0, m_Slots[SID].GetTeam( ), m_Slots[SID].GetColour( ), m_Slots[SID].GetRace( ) );
                 } else {
                         SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, "|cFFFF0000Ghost", IP, IP, string( ) ) );

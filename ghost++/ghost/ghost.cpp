@@ -1174,13 +1174,13 @@ bool CGHost :: Update( long usecBlock )
 
 
 	// refresh flamelist all 5 minutes
-	if( !m_CallableFlameList && GetTime( ) - m_LastFlameListUpdate >= 300 )
+	if( !m_CallableFlameList && GetTime( ) - m_LastFlameListUpdate >= 300 && m_FlameCheck)
 	{
 		m_CallableFlameList = m_DB->ThreadedFlameList( );
 		m_LastFlameListUpdate = GetTime( );
 	}
 
-        if( m_CallableFlameList && m_CallableFlameList->GetReady( ) )
+        if( m_CallableFlameList && m_CallableFlameList->GetReady( )&& m_FlameCheck)
         {
                 m_Flames = m_CallableFlameList->GetResult( );
                 m_DB->RecoverCallable( m_CallableFlameList );
@@ -1462,7 +1462,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_TCPNoDelay = CFG->GetInt( "tcp_nodelay", 0 ) == 0 ? false : true;
 	m_MatchMakingMethod = CFG->GetInt( "bot_matchmakingmethod", 1 );
 	m_MapGameType = CFG->GetUInt( "bot_mapgametype", 0 );
-	m_AutoMuteSpammer = CFG->GetInt( "bot_automutespammer", 1 ) == 0 ? false : true;
         m_AutoHostGameType = CFG->GetInt( "oh_autohosttype", 3 );
         m_AllGamesFinished = false;
         m_AllGamesFinishedTime = 0;
@@ -1497,6 +1496,10 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_AutoDenyUsers = CFG->GetInt("oh_general_autodeny", 0) == 0 ? false : true;
         m_AllowVoteStart = CFG->GetInt("oh_allowvotestart", 0) == 0 ? false : true;
         m_VoteStartMinPlayers = CFG->GetInt("oh_votestartminimumplayers", 3);
+	m_AutoMuteSpammer = CFG->GetInt( "oh_mutespammer", 1 ) == 0 ? false : true;
+        m_FlameCheck = CFG->GetInt("oh_flamecheck", 0) == 0 ? false : true;
+        m_BotManagerName = CFG->GetString( "oh_general_botmanagername", "PeaceMaker" );
+        
         
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
 }
