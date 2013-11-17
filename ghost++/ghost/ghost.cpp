@@ -1499,6 +1499,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_AutoMuteSpammer = CFG->GetInt( "oh_mutespammer", 1 ) == 0 ? false : true;
         m_FlameCheck = CFG->GetInt("oh_flamecheck", 0) == 0 ? false : true;
         m_BotManagerName = CFG->GetString( "oh_general_botmanagername", "PeaceMaker" );
+        m_IngameVoteKick = CFG->GetInt("oh_ingamevotekick", 1) == 0 ? false : true;
         
         
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;

@@ -2747,7 +2747,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         // !VOTEKICK
         //
  
-        else if( Command == "votekick" && m_GHost->m_VoteKickAllowed && !Payload.empty( ) )
+        else if( Command == "votekick" && m_GHost->m_VoteKickAllowed && !Payload.empty( ) && ( !m_GameLoaded || ( m_GameLoaded && m_GHost->m_IngameVoteKick) ) )
         {
                 player->SetVKTimes( );
                 if( player->GetVKTimes( ) == 8 )

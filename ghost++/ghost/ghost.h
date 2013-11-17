@@ -202,6 +202,7 @@ public:
         bool m_RanksLoaded;
         bool m_FlameCheck;
         string m_BotManagerName;
+        bool m_IngameVoteKick;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
