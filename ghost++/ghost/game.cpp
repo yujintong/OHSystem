@@ -709,7 +709,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         {
                                 SendAllChat( "[AUTO-END] The spread between the two teams is already ["+UTIL_ToString(spread)+"]" );
                                 m_Stats->SetWinner( ( Team + 1 ) % 2 );
-                                string WinTeam = ( ( ( Team + 1 ) % 2 )  == 1 ? "Sentinel" : "Scourge" );
+                                string WinTeam = ( ( ( Team + 1 ) % 2 )  == 1 ? "Scourge" : "Sentinel" );
                                 SendAllChat( "[AUTO-END] The game will end in fifty seconds. The winner is set to ["+ WinTeam +"]" );
                                 SendAllChat( "[AUTO-END] Please stay until the end to save all stats correctly." );
                                 m_GameOverTime = GetTime( );
@@ -717,7 +717,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
 
                         if( CountAlly+CountEnemy <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
                         {
-                                string Winner = ( Team + 1 ) % 2 == 1 ? "Sentinel" : "Scourge";
+                                string Winner = ( Team + 1 ) % 2 == 1 ? "Scourge" : "Sentinel";
                                 SendAllChat("[AUTO-END] Too few players ingame, this game will end in fifteen seconds." );
                                 SendAllChat("[AUTO-END] Winning team was set to ["+ Winner +"]" );
                                 m_Stats->SetWinner( ( Team + 1 ) % 2 );
@@ -3037,7 +3037,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         if( m_GameLoaded && m_ForfeitTime == 0 && ( Command == "ff" || Command == "forfeit" ) && !m_SoftGameOver )
         {
-                if( GetTime( ) - m_GameLoadedTime <= ( m_GHost->m_MinFF*60 - 200*m_Leavers ) )
+                if( GetTime( ) - m_GameLoadedTime <= ( m_GHost->m_MinFF*60 - 400*m_Leavers ) )
                         SendChat( player, "[INFO] You may FF after [20] minutes, ["+UTIL_ToString( m_GHost->m_MinFF - m_Leavers*2 - ( GetTime( ) - m_GameLoadedTime ) )+"] minutes remaining." );
                 else
                 {
