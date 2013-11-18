@@ -298,7 +298,7 @@ public:
 	bool GetIsIgnoring( string username );
 	void Ignore( string username );
 	void UnIgnore( string username );
-        void SetGlobalChatMuted( nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
+        void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
 
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
 
