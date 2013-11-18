@@ -2563,7 +2563,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                     potential->SetDeleteMe( true );
                                     return;
                             }
-                            break;
                     }
 
                     CDBBan *IPBan = IsBannedIP( potential->GetExternalIPString( ) );
@@ -2593,7 +2592,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                     potential->SetDeleteMe( true );
                                     return;
                             }
-                            break;
                     }
             }
         }

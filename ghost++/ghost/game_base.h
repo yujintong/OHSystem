@@ -168,6 +168,7 @@ protected:
         uint32_t m_LastPermissionRefresh;
         vector<string> m_GarenaPermissions;
         uint32_t m_StartedVoteStartTime;
+        uint32_t m_LastBanRefreshTime;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType );
