@@ -1505,6 +1505,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_SecondFlameBanTime = CFG->GetInt("oh_secondflamebantime", 345600);
         m_SpamBanTime = CFG->GetInt("oh_spambantime", 172800 );
         m_VKAbuseBanTime = CFG->GetInt("oh_votekickabusebantime", 432000);
+        m_VoteMuting = CFG->GetInt("oh_votemute", 1) == 0 ? false : true;
+        m_VoteMuteTime = CFG->GetInt("oh_votemutetime", 180);
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
 }
 

@@ -3740,6 +3740,131 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SendChat( player, "Error. You require a reserved slot to be able to use this command." );
         }
 */
+        //
+        // !VOTEMUTE
+        //
+        else if( Command == "votemute" && m_GameLoaded && m_GHost->m_VoteMuting)
+        {
+            if( m_VoteMuteEventTime == 0 && m_VoteMutePlayer.empty() && m_MuteType.empty() && !Payload.empty())
+            {
+                CGamePlayer *LastMatch = NULL;
+                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+                if( Matches == 0 )
+                    SendChat(player, "Unable to votemute Player ["+Payload+"]. Found no match.")
+                else if( Matches == 1)
+                {
+                    char votePlayerTeam = m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( );
+                    char targetPlayerTeam = m_Slots[GetSIDFromPID(LastMatch->GetPID())].GetTeam( );
+                    string TeamString = targetPlayerTeam == 1 ? "Sentinel" : "Scourge";
+                    if( votePlayerTeam == targetPlayerTeam )
+                    {
+                        // same team, we only take care of the allied teammates
+                        uint32_t VotesNeeded = 0;
+                        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                        {
+                            if(m_Slots[GetSIDFromPID((*i)->GetPID())].GetTeam( ) == targetPlayerTeam)
+                                VotesNeeded += 1;
+                        }
+                        //remove the target
+                        VotesNeeded--;
+                        SendAllChat("Player ["+player->GetName()+"] started a votemute for player ["+LastMatch->GetName()+"]");
+                        SendAllChat("The vote can be only done by the ["+TeamString+"] there ["+UTIL_ToString(VotesNeeded)+"] more votes needed.");
+                        SendAllChat("The votemute will expire in ["+UTIL_ToString(m_GHost->m_VoteMuteTime)+"] seconds." );
+                        m_MuteType = 0;
+                    } else {
+                        // enemy team we need 2 votes from each team to have a success votemute (only allchat is affected)
+                        SendAllChat("Player ["+player->GetName()+"] started a global mute for player ["+LastMatch->GetName()+"]");
+                        SendAllChat("The vote require [2] votes on each side. There [3] votes more needed.");
+                        SendAllChat("The votemute will expire in ["+UTIL_ToString(m_GHost->m_VoteMuteTime)+"] seconds." );
+                        m_MuteType = 1;
+                        m_EnemyVotes = 1;
+                    }
+                    m_VoteMuteEventTime = GetTime();
+                    m_VoteMutePlayer = LastMatch->GetName();
+                    m_VoteMuteTargetTeam = targetPlayerTeam;
+                    m_MuteVotes = 1;
+                }
+            }
+            else if(Payload.empty() && !m_VoteMutePlayer.empty() )
+            {
+                if( m_MuteType == 0)
+                {
+                    if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_VoteMuteTargetTeam)
+                    {
+                        m_MuteVotes++;
+                        uint32_t VotesNeeded = 0;
+                        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                        {
+                            if(m_Slots[GetSIDFromPID((*i)->GetPID())].GetTeam( ) == m_VoteMuteTargetTeam)
+                                VotesNeeded += 1;
+                        }
+                        //remove the target
+                        VoteNeeded--;
+                        if(MuteVotes >= VoteNeeded)
+                        {
+                            CGamePlayer *Player = GetPlayerFromName( m_VoteMutePlayer, true );
+                            if( Player )
+                            {
+                                Player->SetMuted(true);
+                                SendAllChat("Successfully voted to mute player ["+Player->GetName()+"]. He is now muted.");
+                            }
+                            else
+                                SendAllChat("There now enough votes to mute player ["+m_VoteMutePlayer+"]. Probably he isnt ingame anymore.");
+                            m_VoteMuteEventTime = 0;
+                            m_VoteMutePlayer.clear();
+                            m_VoteMuteTargetTeam = 0;
+                            m_EnemyVotes = 0;
+                            m_MuteVotes = 0;
+                            m_MuteType = 2;
+                        }
+                        else
+                        {
+                            SendAllChat("Player ["+player->GetName()+"] voted to mute player ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(VotesNeeded-m_MutedVots)+"] votes more needed.");
+                        }
+                    }
+                }
+                else if( m_MuteType == 1 )
+                {
+                    if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_VoteMuteTargetTeam && m_MuteVotes-m_EnemyVotes < 2)
+                    {
+                        m_MuteVotes++;
+                    }
+                    else if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) != m_VoteMuteTargetTeam && m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) != 12 && m_EnemyVotes == 1)
+                    {
+                        m_MuteVotes++;
+                        m_EnemyVotes++;
+                    }
+                    else if( m_EnemyVotes == 2 || m_MuteVotes-m_EnemyVotes == 2);
+                        SendChat(player, "Error. There no more votes left on this teamside.")
+                    else
+                        SendChat(player, "Error. You are observing and you can not vote for muting.");
+                        
+                    if(m_MuteVotes == 4)
+                    {
+                        CGamePlayer *Player = GetPlayerFromName( m_VoteMutePlayer, true );
+                        if( Player )
+                        {
+                            Player->SetGlobalChatMuted(true);
+                            SendAllChat("Successfully voted to mute the allchat of player ["+Player->GetName()+"]. He is now muted on the allchat.");
+                        }
+                        else
+                            SendAllChat("There now enough votes to mute player ["+m_VoteMutePlayer+"]. Probably he isnt ingame anymore.");
+                        m_VoteMuteEventTime = 0;
+                        m_VoteMutePlayer.clear();
+                        m_VoteMuteTargetTeam = 0;
+                        m_MuteVotes = 0;
+                        m_EnemyVotes = 0;
+                        m_MuteType = 2;
+                    }
+                    else
+                        SendAllChat("Player ["+player->GetName()+"] voted to mute ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(4-MuteVotes)+"] nore required." );
+                        
+                    }
+                }
+                else
+                    SendChat(player, "Error. There is no voting for muting a player currently in progress.");
+            }
+        }
         return HideCommand;
 }
  

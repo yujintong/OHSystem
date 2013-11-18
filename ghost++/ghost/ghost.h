@@ -208,6 +208,8 @@ public:
         uint32_t m_SecondFlameBanTime;
         uint32_t m_SpamBanTime;
         uint32_t m_VKAbuseBanTime;
+        bool m_VoteMuting;
+        uint32_t m_VoteMuteTime;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

@@ -172,6 +172,12 @@ protected:
         vector<string> m_GarenaPermissions;
         uint32_t m_StartedVoteStartTime;
         uint32_t m_LastBanRefreshTime;
+        uint32_t m_VoteMuteEventTime;
+        string m_VoteMutePlayer;
+        uint32_t m_VoteMuteTargetTeam;
+        uint32_t m_MuteVotes;
+        uint32_t m_EnemyVotes;
+        uint32_t m_MuteType;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType );

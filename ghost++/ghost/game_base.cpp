@@ -75,6 +75,12 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_CallableTBRemove = NULL;
         m_CallableBanList = NULL;
         m_StartedVoteStartTime = 0;
+        m_VoteMuteEventTime = 0;
+        m_VoteMutePlayer.clear();
+        m_VoteMuteTargetTeam = 0;
+        m_MuteVotes = 0;
+        m_EnemyVotes = 0;
+        m_MuteType = 2;
         if( m_GHost->m_GarenaHosting )
         {
                m_CallablePList = m_GHost->m_DB->ThreadedPList( "Garena" );
@@ -1479,6 +1485,17 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         return true;
         }
  
+        if( m_VoteMuteEventTime != 0 && GetTime() - m_VoteMuteEventTime >= m_GHost->m_VoteMuteTime )
+        {
+            SendAllChat("A votemute against Player ["+m_VoteMutePlayer+"] expired.");
+            m_VoteMuteEventTime = 0;
+            m_VoteMutePlayer.clear();
+            m_VoteMuteTargetTeam = 0;
+            m_MuteVotes = 0;
+            m_EnemyVotes = 0;
+            m_MuteType = 2;
+        }
+        
         if( m_PauseReq && GetTime() - m_PauseIntroTime >= 5 )
         {
                 if( !m_Paused && GetTicks( ) - m_LastCountDownTicks >= 1000 )
