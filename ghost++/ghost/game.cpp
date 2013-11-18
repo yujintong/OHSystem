@@ -3750,7 +3750,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                 if( Matches == 0 )
-                    SendChat(player, "Unable to votemute Player ["+Payload+"]. Found no match.")
+                    SendChat(player, "Unable to votemute Player ["+Payload+"]. Found no match.");
                 else if( Matches == 1)
                 {
                     char votePlayerTeam = m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( );
@@ -3779,6 +3779,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_MuteType = 1;
                         m_EnemyVotes = 1;
                     }
+                    SendAllChat("You can also vote by using '!votemute'.");
                     m_VoteMuteEventTime = GetTime();
                     m_VoteMutePlayer = LastMatch->GetName();
                     m_VoteMuteTargetTeam = targetPlayerTeam;
@@ -3834,8 +3835,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_MuteVotes++;
                         m_EnemyVotes++;
                     }
-                    else if( m_EnemyVotes == 2 || m_MuteVotes-m_EnemyVotes == 2);
-                        SendChat(player, "Error. There no more votes left on this teamside.")
+                    else if( m_EnemyVotes == 2 || m_MuteVotes-m_EnemyVotes == 2)
+                        SendChat(player, "Error. There no more votes left on this teamside.");
                     else
                         SendChat(player, "Error. You are observing and you can not vote for muting.");
                         
@@ -3864,7 +3865,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else
                     SendChat(player, "Error. There is no voting for muting a player currently in progress.");
             }
-        }
+        
         return HideCommand;
 }
  
