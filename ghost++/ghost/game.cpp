@@ -111,7 +111,7 @@ CGame :: ~CGame( )
                                 if( Counter <= 2 && VictimLevel <= 2 )
                                 {
                                         string Reason = "left at " + UTIL_ToString( LeftTime ) + "/" + UTIL_ToString( EndTime );
-                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, 86400, ""  ) );
+                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, m_GHost->m_LeaverAutoBanTime, ""  ) );
                                 }
                         }
                 }
@@ -2751,7 +2751,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
                 player->SetVKTimes( );
                 if( player->GetVKTimes( ) == 8 )
-                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", 432000, "" ) ) );
+                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "" ) ) );
                 else if( player->GetVKTimes( ) == 5 )
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( player->GetName( ), "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
                 else if( player->GetVKTimes( ) >= 2 )

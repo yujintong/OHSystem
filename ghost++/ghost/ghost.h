@@ -203,6 +203,11 @@ public:
         bool m_FlameCheck;
         string m_BotManagerName;
         bool m_IngameVoteKick;
+        uint32_t m_LeaverAutoBanTime;
+        uint32_t m_FirstFlameBanTime;
+        uint32_t m_SecondFlameBanTime;
+        uint32_t m_SpamBanTime;
+        uint32_t m_VKAbuseBanTime;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
