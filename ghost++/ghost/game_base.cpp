@@ -72,6 +72,8 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_ModeVoted = false;
         m_Leavers = 0;
         m_CallablePList = NULL;
+        m_CallableTBRemove = NULL;
+        m_CallableBanList = NULL;
         m_StartedVoteStartTime = 0;
         if( m_GHost->m_GarenaHosting )
         {
