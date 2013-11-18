@@ -1959,7 +1959,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         //
                         // !KICK (kick a player) !K
                         //
-                        else if( ( Command == "kick" || Command == 'k' ) && !Payload.empty( ) && Level >= 5 )
+                        else if( ( Command == "kick" || Command == "k" ) && !Payload.empty( ) && Level >= 5 )
                         {
                                 CGamePlayer *LastMatch = NULL;
                                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -3036,7 +3036,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 }
             }
             else
-                SendChat(player, "Error. You are not allowed to vote, you are not playing.")
+                SendChat(player, "Error. You are not allowed to vote, you are not playing.");
         }
  
         //
