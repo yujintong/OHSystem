@@ -77,6 +77,9 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         {
                m_CallablePList = m_GHost->m_DB->ThreadedPList( "Garena" );
                m_LastPermissionRefresh = GetTime();
+               m_CallableBanList = m_GHost->m_DB->ThreadedBanList( "Garena" );
+               m_LastBanRefreshTime = GetTime( );
+               m_CallableTBRemove = m_GHost->m_DB->ThreadedTBRemove( "Garena" );
         }
        
         if( m_GHost->m_SaveReplays && !m_SaveGame )
@@ -238,10 +241,22 @@ CBaseGame :: ~CBaseGame( )
  
         for( vector<PairedLogUpdate> :: iterator i = m_PairedLogUpdates.begin( ); i != m_PairedLogUpdates.end( ); ++i )
                 m_GHost->m_Callables.push_back( i->second );
+        
+        if( m_GHost->m_GarenaHosting )
+        {
+            if( m_CallablePList )
+                    m_GHost->m_Callables.push_back( m_CallablePList );
        
-        if( m_CallablePList )
-                m_GHost->m_Callables.push_back( m_CallablePList );
-       
+            if( m_CallableBanList )
+                m_GHost->m_Callables.push_back( m_CallableBanList );
+            
+            if( m_CallableTBRemove )
+                    m_GHost->m_Callables.push_back( m_CallableTBRemove );
+
+            for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
+                    delete *i;
+        }
+        
         while( !m_Actions.empty( ) )
         {
                 delete m_Actions.front( );
@@ -1577,7 +1592,32 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 delete m_CallablePList;
                 m_CallablePList = NULL;
         }
+
+               // remove temp bans every 5 min
+        // refresh the ban list every 5 minutes
  
+        if( !m_CallableBanList && GetTime( ) - m_LastBanRefreshTime >= 300 && m_GHost->m_GarenaHosting)
+        {
+                m_CallableBanList = m_GHost->m_DB->ThreadedBanList( "Garena" );
+                m_CallableTBRemove = m_GHost->m_DB->ThreadedTBRemove( "Garena" );
+        }
+ 
+        if( m_CallableBanList && m_CallableBanList->GetReady( ) && m_CallableTBRemove && m_CallableTBRemove->GetReady( ) )
+        {
+                // CONSOLE_Print( "[BNET: " + m_ServerAlias + "] refreshed ban list (" + UTIL_ToString( m_Bans.size( ) ) + " -> " + UTIL_ToString( m_CallableBanList->GetResult( ).size( ) ) + " bans)" );
+ 
+                for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
+                        delete *i;
+ 
+                m_Bans = m_CallableBanList->GetResult( );
+                m_GHost->m_DB->RecoverCallable( m_CallableBanList );
+                delete m_CallableBanList;
+                m_CallableBanList = NULL;
+                m_GHost->m_DB->RecoverCallable( m_CallableTBRemove );
+                delete m_CallableTBRemove;
+                m_CallableTBRemove = NULL;
+                m_LastBanRefreshTime = GetTime( );
+        }
         return m_Exiting;
 }
  
@@ -2439,6 +2479,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
  
         if( m_GHost->m_BanMethod != 0 && !Reserved )
         {
+            if(!m_GHost->m_GarenaHosting)
+            {
                 for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                 {
                         CDBBan *Ban = (*i)->IsBannedName( joinPlayer->GetName( ) );
@@ -2496,6 +2538,64 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                 break;
                         }
                 }
+            }
+            else
+            {
+                    CDBBan *Ban = IsBannedName( joinPlayer->GetName( ) );
+
+                    if( Ban )
+                    {
+                            if( m_GHost->m_BanMethod == 1 || m_GHost->m_BanMethod == 3 )
+                            {
+                                    CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by name" );
+                                    if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
+                                    {
+                                            SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
+                                            SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
+                                            m_IgnoredNames.insert( joinPlayer->GetName( ) );
+                                    }
+                                    // let banned players "join" the game with an arbitrary PID then immediately close the connection
+                                    // this causes them to be kicked back to the chat channel on battle.net
+                                    if(m_GHost->m_AutoDenyUsers)
+                                            m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                    vector<CGameSlot> Slots = m_Map->GetSlots( );
+                                    potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                                    potential->SetDeleteMe( true );
+                                    return;
+                            }
+                            break;
+                    }
+
+                    CDBBan *IPBan = IsBannedIP( potential->GetExternalIPString( ) );
+                    // Disabled, created laags if a player join
+                    //if( !IPBan && !potential->GetSocket( )->GetHostName( ).empty( ) )
+                    //        IPBan = (*i)->IsBannedIP( "h" + potential->GetSocket( )->GetHostName( ) );
+
+                    if( IPBan )
+                    {
+                            if( m_GHost->m_BanMethod == 2 || m_GHost->m_BanMethod == 3 )
+                            {
+                                    CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by IP address" );
+
+                                    if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
+                                    {
+                                            SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
+                                            SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
+                                            m_IgnoredNames.insert( joinPlayer->GetName( ) );
+                                    }
+
+                                    // let banned players "join" the game with an arbitrary PID then immediately close the connection
+                                    // this causes them to be kicked back to the chat channel on battle.net
+                                    if(m_GHost->m_AutoDenyUsers)
+                                        m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                    vector<CGameSlot> Slots = m_Map->GetSlots( );
+                                    potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                                    potential->SetDeleteMe( true );
+                                    return;
+                            }
+                            break;
+                    }
+            }
         }
  
         if( m_MatchMaking && m_AutoStartPlayers != 0 && !m_Map->GetMapMatchMakingCategory( ).empty( ) && m_Map->GetMapOptions( ) & MAPOPT_FIXEDPLAYERSETTINGS )
@@ -6328,4 +6428,48 @@ string CBaseGame :: GetColoredName( string defaultname )
         }
  
         return "";
+}
+
+CDBBan *CBaseGame :: IsBannedName( string name )
+{
+        transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+ 
+        // todotodo: optimize this - maybe use a map?
+ 
+        for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
+        {
+                if( (*i)->GetName( ) == name )
+                        return *i;
+        }
+ 
+        return NULL;
+}
+ 
+CDBBan *CBaseGame :: IsBannedIP( string ip )
+{
+        transform( ip.begin( ), ip.end( ), ip.begin( ), ::tolower ); //transform in case it's a hostname
+        for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
+        {
+                if( (*i)->GetIP( )[0] == ':' )
+                {
+                        string BanIP = (*i)->GetIP( ).substr( 1 );
+                        int len = BanIP.length( );
+ 
+                        if( ip.length( ) >= len && ip.substr( 0, len ) == BanIP )
+                        {
+                                return *i;
+                        }
+                        else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && ip.length( ) >= 3 && ip[0] == 'h' && ip.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
+                        {
+                                return *i;
+                        }
+                }
+ 
+                if( (*i)->GetIP( ) == ip )
+                {
+                        return *i;
+                }
+        }
+ 
+        return NULL;
 }

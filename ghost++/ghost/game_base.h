@@ -48,6 +48,8 @@ class CCallableBanAdd;
 class CCallableBanCheck2;
 class CCallableStoreLog;
 class CCallablePList;
+class CCallableBanList;
+class CCallableTBRemove;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -78,6 +80,9 @@ protected:
 	set<string> m_IPBlackList;						// set of IP addresses to blacklist from joining (todotodo: convert to uint32's for efficiency)
 	vector<CGameSlot> m_EnforceSlots;				// vector of slots to force players to use (used with saved games)
 	vector<PIDPlayer> m_EnforcePlayers;				// vector of pids to force players to use (used with saved games)
+        CCallableBanList *m_CallableBanList;			// threaded database ban list in progress
+        vector<CDBBan *> m_Bans;						// vector of cached bans
+        CCallableTBRemove *m_CallableTBRemove;
         CCallablePList *m_CallablePList;                // threaded database permission list in progress
 	CSaveGame *m_SaveGame;							// savegame data (this is a pointer to global data)
 	CReplay *m_Replay;								// replay
@@ -171,7 +176,6 @@ public:
         CMap *m_Map;
         uint16_t m_HostPort;                                                    // the port to host games on
         uint32_t m_EntryKey;                                                    // random entry key for LAN, used to prove that a player is actually joining from LAN
-
         uint32_t m_HostCounter;                                                 // a unique game number
         bool m_GameLoading;                                                             // if the game is currently loading or not
         bool m_GameLoaded;                                                              // if the game has loaded or not
@@ -327,6 +331,8 @@ public:
 	virtual void CreateFakePlayer( );
 	virtual void DeleteFakePlayer( );
 	virtual bool is_digits( const std::string &str );
+        CDBBan *IsBannedName( string name );
+	CDBBan *IsBannedIP( string ip );
 	double m_ScourgeWinPoints;						 // scourge value to calculate the winperc
 	double m_SentinelWinPoints;						 // sentinel value to calculate the winperc
 	double m_TotalWinPoints;						 // total value to calculate the winperc
