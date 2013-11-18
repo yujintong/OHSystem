@@ -3820,7 +3820,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
                         else
                         {
-                            SendAllChat("Player ["+player->GetName()+"] voted to mute player ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(VotesNeeded-m_MutedVotes)+"] votes more needed.");
+                            SendAllChat("Player ["+player->GetName()+"] voted to mute player ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(VotesNeeded-m_MuteVotes)+"] votes more needed.");
                         }
                     }
                 }
