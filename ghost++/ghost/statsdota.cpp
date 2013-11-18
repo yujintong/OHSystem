@@ -747,6 +747,11 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 									}
 									else
 										m_Players[ID]->SetKills( ValueInt );
+                                                                        if( ValueInt > 500 )
+                                                                        {
+                                                                            m_Players[ID]->SetKills( 0 );
+                                                                            CONSOLE_Print("[INFO] Noted an invalid statsrecord on playercolour ["+UTIL_ToString(ID)+"]. Set the kills to [0]" );
+                                                                        }
 								}
 								else if( KeyString == "2" )
 								{
@@ -770,11 +775,30 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 									}
 									else
 										m_Players[ID]->SetDeaths( ValueInt );
+                                                                        if( ValueInt > 500 )
+                                                                        {
+                                                                            m_Players[ID]->SetDeaths( 0 );
+                                                                            CONSOLE_Print("[INFO] Noted an invalid statsrecord on playercolour ["+UTIL_ToString(ID)+"]. Set the deaths to [0]" );
+                                                                        }
 								}
 								else if( KeyString == "3" )
+                                                                {
 									m_Players[ID]->SetCreepKills( ValueInt );
+                                                                        if( ValueInt > 5000 )
+                                                                        {
+                                                                            m_Players[ID]->SetCreepKills( 0 );
+                                                                            CONSOLE_Print("[INFO] Noted an invalid statsrecord on playercolour ["+UTIL_ToString(ID)+"]. Set the creepkills to [0]" );
+                                                                        }
+                                                                }
 								else if( KeyString == "4" )
+                                                                {
 									m_Players[ID]->SetCreepDenies( ValueInt );
+                                                                        if( ValueInt > 5000 )
+                                                                        {
+                                                                            m_Players[ID]->SetCreepDenies( 0 );
+                                                                            CONSOLE_Print("[INFO] Noted an invalid statsrecord on playercolour ["+UTIL_ToString(ID)+"]. Set the creepdenies to [0]" );
+                                                                        }
+                                                                }
 								else if( KeyString == "5" )
 								{
                                                                         if( m_AssistsOnLeaverKills[ID] >= m_Game->m_GHost->m_MinimumLeaverAssists )
@@ -784,11 +808,23 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                                                         }
                                                                         else
 										m_Players[ID]->SetAssists( ValueInt );
+                                                                        if( ValueInt > 500 )
+                                                                        {
+                                                                            m_Players[ID]->SetAssists( 0 );
+                                                                            CONSOLE_Print("[INFO] Noted an invalid statsrecord on playercolour ["+UTIL_ToString(ID)+"]. Set the assists to [0]" );
+                                                                        }
 								}
 								else if( KeyString == "6" )
 									m_Players[ID]->SetGold( ValueInt );
 								else if( KeyString == "7" )
+                                                                {
 									m_Players[ID]->SetNeutralKills( ValueInt );
+                                                                        if( ValueInt > 5000 )
+                                                                        {
+                                                                            m_Players[ID]->SetNeutralKills( 0 );
+                                                                            CONSOLE_Print("[INFO] Noted an invalid statsrecord on playercolour ["+UTIL_ToString(ID)+"]. Set the neutralkills to [0]" );
+                                                                        }
+                                                                }
 								else if( KeyString == "8_0" )
 									m_Players[ID]->SetItem( 0, string( Value.rbegin( ), Value.rend( ) ) );
 								else if( KeyString == "8_1" )
