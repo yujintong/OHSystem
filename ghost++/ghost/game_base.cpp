@@ -795,7 +795,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
         // kick AFK players
  
-        if( m_GameLoaded && ( GetTicks( ) - m_LastProcessedTicks > 1000 ) ) {
+        if( m_GameLoaded && ( GetTicks( ) - m_LastProcessedTicks > 30000 ) ) {
                 m_LastProcessedTicks = GetTicks( );
  
                 uint32_t TimeNow = GetTime( );
@@ -804,7 +804,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
                 {
                         uint32_t TimeActive = (*i)->GetTimeActive();
-                        if( TimeActive > 0 && ( (TimeNow - TimeActive ) > ( TimeLimit - 120 ) ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
+                        if( TimeActive > 0 && ( ( (*i)->GetAFKMarked( ) && ( (TimeNow - TimeActive ) > ( TimeLimit - 180 ) ) ) || ( !(*i)->GetAFKMarked( ) && ( (TimeNow - TimeActive ) > ( TimeLimit - 120 ) ) ) ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
                         {
                                 if( (*i)->GetAFKMarked( ) )
                                 {
