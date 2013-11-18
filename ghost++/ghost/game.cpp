@@ -2093,8 +2093,30 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         //
                         else if( Command == "muteall" && m_GameLoaded && Level >= 6 )
                         {
+                            if( Payload.empty())
+                            {
                                 SendAllChat( m_GHost->m_Language->GlobalChatMuted( ) );
                                 m_MuteAll = true;
+                            } else {
+                                CGamePlayer *LastMatch = NULL;
+                                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+                                if( Matches == 0 )
+                                        SendAllChat( m_GHost->m_Language->UnableToMuteNoMatchesFound( Payload ) );
+                                else if( Matches == 1 )
+                                {
+                                        uint32_t VictimLevel = LastMatch->GetLevel();
+                                        string VictimLevelName = LastMatch->GetLevelName();
+                                        if( VictimLevel <= 1 || Level >= 9 )
+                                        {
+                                                SendAllChat( "The allchat of player ["+LastMatch->GetName( )+"] was muted by ["+player->GetName()+"]" );
+                                                LastMatch->SetGlobalChatMuted( true );
+                                        }
+                                        else
+                                                SendChat( player, "You have no permission to mute this player" );
+                                }
+                                else
+                                        SendAllChat( m_GHost->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
+                            }
                         }
  
                         //
@@ -2511,8 +2533,31 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         //
                         else if( Command == "unmuteall" && m_GameLoaded && Level >= 5 )
                         {
+                            if( Payload.empty())
+                            {
                                 SendAllChat( m_GHost->m_Language->GlobalChatUnmuted( ) );
-                                m_MuteAll = false;
+                                m_MuteAll = false;                        
+                            } else {
+                                CGamePlayer *LastMatch = NULL;
+                                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+                                if( Matches == 0 )
+                                        SendAllChat( m_GHost->m_Language->UnableToMuteNoMatchesFound( Payload ) );
+                                else if( Matches == 1 )
+                                {
+                                        uint32_t VictimLevel = LastMatch->GetLevel();
+                                        string VictimLevelName = LastMatch->GetLevelName();
+                                        if( VictimLevel <= 1 || Level >= 9 )
+                                        {
+                                                SendAllChat( "The allchat of player ["+LastMatch->GetName( )+"] was unmuted by ["+player->GetName()+"]" );
+                                                LastMatch->SetGlobalChatMuted( false );
+                                        }
+                                        else
+                                                SendChat( player, "You have no permission to unmute this player" );
+                                }
+                                else
+                                        SendAllChat( m_GHost->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
+                            }
+                                
                         }
  
                         //

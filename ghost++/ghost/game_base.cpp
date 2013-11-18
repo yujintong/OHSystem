@@ -3918,7 +3918,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         // don't relay ingame messages targeted for all players if we're currently muting all
                                         // note that commands will still be processed even when muting all because we only stop relaying the messages, the rest of the function is unaffected
  
-                                        if( m_MuteAll )
+                                        if( m_MuteAll || player->GetGlobalChatMuted( ) )
                                                 Relay = false;
                                 }
                                 else if( ExtraFlags[0] == 2 )
