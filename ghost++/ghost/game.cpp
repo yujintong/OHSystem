@@ -3745,7 +3745,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( Command == "votemute" && m_GameLoaded && m_GHost->m_VoteMuting)
         {
-            if( m_VoteMuteEventTime == 0 && m_VoteMutePlayer.empty() && m_MuteType.empty() && !Payload.empty())
+            if( m_VoteMuteEventTime == 0 && m_VoteMutePlayer.empty() && m_MuteType == 2 && !Payload.empty())
             {
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -3800,8 +3800,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 VotesNeeded += 1;
                         }
                         //remove the target
-                        VoteNeeded--;
-                        if(MuteVotes >= VoteNeeded)
+                        VotesNeeded--;
+                        if(m_MuteVotes >= VotesNeeded)
                         {
                             CGamePlayer *Player = GetPlayerFromName( m_VoteMutePlayer, true );
                             if( Player )
@@ -3820,7 +3820,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
                         else
                         {
-                            SendAllChat("Player ["+player->GetName()+"] voted to mute player ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(VotesNeeded-m_MutedVots)+"] votes more needed.");
+                            SendAllChat("Player ["+player->GetName()+"] voted to mute player ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(VotesNeeded-m_MutedVotes)+"] votes more needed.");
                         }
                     }
                 }
@@ -3858,7 +3858,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_MuteType = 2;
                     }
                     else
-                        SendAllChat("Player ["+player->GetName()+"] voted to mute ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(4-MuteVotes)+"] nore required." );
+                        SendAllChat("Player ["+player->GetName()+"] voted to mute ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(4-m_MuteVotes)+"] nore required." );
                         
                     }
                 }
