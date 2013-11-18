@@ -256,7 +256,7 @@ CBaseGame :: ~CBaseGame( )
             for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
                     delete *i;
         }
-        
+       
         while( !m_Actions.empty( ) )
         {
                 delete m_Actions.front( );

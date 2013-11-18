@@ -27,6 +27,7 @@
 // CBaseGame
 //
 
+class CDBBan;
 class CTCPServer;
 class CGameProtocol;
 class CPotentialPlayer;
@@ -65,6 +66,8 @@ public:
 	CGHost *m_GHost;
 
 protected:
+    	CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
+	vector<CDBBan *> m_DBBans;					// vector of potential ban data for the database (see the Update function for more info, it's not as straightforward as you might think)
 	CTCPServer *m_Socket;							// listening socket
 	CGameProtocol *m_Protocol;						// game protocol
 	vector<CPotentialPlayer *> m_Potentials;		// vector of potential players (connections that haven't sent a W3GS_REQJOIN packet yet)
