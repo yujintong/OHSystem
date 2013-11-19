@@ -768,8 +768,8 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
         if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
         {
             string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
-            SendAllChat("The ["+m_LTeam+"] has now the chance to vote against automatically ending the game.");
-            SendAllChat("The command for the voting is a simple '!a'. There ["+m_BreakAutoEndVotesNeeded+"] votes needed.");
+            SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
+            SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
             m_EndTicks = GetTicks();
         } else if( m_EndGame )
         {
