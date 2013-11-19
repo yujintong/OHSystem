@@ -131,12 +131,12 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 
                                                                 if( Killer )
                                                                 {
-                                                                    if( m_KillCounter[ValueInt] == 0 && m_LatestKill[ValueInt] == 0 || GetTime() - m_LatestKill[ValueInt] >= 18)
+                                                                    if( ( m_KillCounter[ValueInt] == 0 && m_LatestKill[ValueInt] == 0 ) || GetTime() - m_LatestKill[ValueInt] >= 18)
                                                                     {
-                                                                        m_KillCounter[ValueInt]++;
+                                                                        m_KillCounter[ValueInt] = 1;
                                                                         m_LatestKill[ValueInt] = GetTime();
                                                                     }
-                                                                    else if( m_KillCounter[ValueInt] != 0 && GetTime() - m_LatestKill[ValueInt] < 18)
+                                                                    else if( m_KillCounter[ValueInt] != 0 && GetTime() - m_LatestKill[ValueInt] < 18 )
                                                                     {
                                                                         m_KillCounter[ValueInt]++;
                                                                         m_LatestKill[ValueInt] = GetTime();
