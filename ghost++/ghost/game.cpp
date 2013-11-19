@@ -81,8 +81,6 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
         m_LobbyLog.clear();
         m_GameLog.clear();
         m_ObservingPlayers = 0;
-        m_LoosingTeam = 0;
-        m_EndGame = false;
 }
  
 CGame :: ~CGame( )
@@ -710,19 +708,16 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         if( m_GHost->m_MaxAllowedSpread <= spread && m_Stats )
                         {
                                 SendAllChat( "[AUTO-END] The spread between the two teams is already ["+UTIL_ToString(spread)+"]" );
-                                string WinTeam = Team % 2  == 0 ? "Sentinel" : "Scourge";
-                                SendAllChat( "[AUTO-END] The game will end in fifty seconds. The winner is set to ["+ WinTeam +"]" );
-                                SendAllChat( "[AUTO-END] Please stay until the end to save all stats correctly." );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
+                                m_BreakAutoEndVotesNeeded = CountAlly;
                         }
                         else if( CountAlly+CountEnemy <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
                         {
-                                string WinTeam = Team % 2 == 1 ? "Sentinel" : "Scourge";
-                                SendAllChat("[AUTO-END] Too few players ingame, this game will end in fifteen seconds." );
-                                SendAllChat("[AUTO-END] Winning team was set to ["+ WinTeam +"]" );
+                                SendAllChat("[AUTO-END] Too few players ingame, the autoend countdown has started." );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
+                                m_BreakAutoEndVotesNeeded = CountAlly;
                         }
                         else if( CountAlly == 0 && CountEnemy >= 2 )
                         {
@@ -731,7 +726,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 if( m_GameTicks < 1000 * 180 )
                                 {
                                         SendAllChat( "[AUTO-END] Only one team is remaining, this game will end in fifteen seconds and be recorded as a draw." );
-                                        m_EndGame = true;
+                                        m_GameOverTime = GetTime();
                                 }
  
                                 // otherwise, if more than fifteen minutes have elapsed, give the other team the win
@@ -740,7 +735,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                         SendAllChat( "[AUTO-END] The other team has left, this game will be recorded as your win. You may leave at any time." );
                                         m_SoftGameOver = true;
                                         m_LoosingTeam = Team;
-                                        m_EndGame = true;
+                                        m_GameOverTime = GetTime();
                                 }
                         }
                 }
@@ -766,15 +761,22 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 // make sure leavers will get banned
                                 m_EarlyDraw = true;
                                 m_SoftGameOver = true;
-                                m_EndGame = true;
+                                m_GameOverTime = GetTime();
                         }
                 }
         }
-        if( m_EndGame )
+        if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
         {
-            if(m_LoosingTeam != 0)
-                    m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
-            m_GameOverTime = GetTime( );
+            string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
+            SendAllChat("The ["+m_LTeam+"] has now the chance to vote against automatically ending the game.");
+            SendAllChat("The command for the voting is a simple '!a'. There ["+m_BreakAutoEndVotesNeeded+"] votes needed.");
+            m_EndTicks = GetTicks();
+        } else if( m_EndGame )
+        {
+            SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
+             if(m_LoosingTeam != 0)
+                 m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+             m_GameOverTime = GetTime();
         }
 }
  
@@ -3869,6 +3871,28 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     SendChat(player, "Error. There is no voting for muting a player currently in progress.");
             }
         
+        // autoending break command
+        // !a
+        //
+        else if( Command == "a" && m_EndGame && m_EndTicks != 0)
+        {
+            if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_LoosingTeam)
+            {
+                m_BreakAutoEndVotes++;
+                if( m_BreakAutoEndVotesNeeded == m_BreakAutoEndVotes)
+                {
+                    m_EndGame = false;
+                    m_EndTicks = 0;
+                    m_BreakAutoEndVotes = 0;
+                    m_BreakAutoEndVotesNeeded = 0;
+                    m_LoosingTeam = 0;
+                    SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
+                }
+                else
+                    SendAllChat("[INFO] Player ["+player->GetName()+"] voted to interrupt the autoend. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to interrupt the autoend." );
+            }
+        }
+
         return HideCommand;
 }
  

@@ -210,6 +210,7 @@ public:
         uint32_t m_VKAbuseBanTime;
         bool m_VoteMuting;
         uint32_t m_VoteMuteTime;
+        uint32_t m_AutoEndTime;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

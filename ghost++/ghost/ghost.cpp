@@ -1507,6 +1507,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_VKAbuseBanTime = CFG->GetInt("oh_votekickabusebantime", 432000);
         m_VoteMuting = CFG->GetInt("oh_votemute", 1) == 0 ? false : true;
         m_VoteMuteTime = CFG->GetInt("oh_votemutetime", 180);
+        m_AutoEndTime = CFG->GetInt("autoend_votetime", 120);
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
 }
 

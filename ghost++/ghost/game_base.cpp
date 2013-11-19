@@ -81,6 +81,12 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_MuteVotes = 0;
         m_EnemyVotes = 0;
         m_MuteType = 2;
+        m_LoosingTeam = 0;
+        m_EndGame = false;
+        m_BreakAutoEndVotesNeeded = 0;
+        m_BreakAutoEndVoted = 0;
+        m_EndTicks = 0;
+        
         if( m_GHost->m_GarenaHosting )
         {
                m_CallablePList = m_GHost->m_DB->ThreadedPList( "Garena" );
@@ -1546,6 +1552,22 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
         }
 
+        // end countdown, default value 120 seconds (autoend function)
+        // the idea is to give the loosing side the option to break the autoend cooldown that they can continue playing
+        // the cooldown can be only breaked by 100% of the loosing side votes
+        if( m_EndGame && GetTicks() - m_EndTicks % 10000 == 0 && m_GHost->m_AutoEndTime != 0 )
+        {
+            if( GetTicks() - m_EndTicks % 30000 == 0 )
+                SendAllChat("[INFO] The game will end in ["+UTIL_ToString((m_GHost->m_AutoEndTime*1000-m_EndTicks)/1000))+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
+            if( GetTicks() - m_EndTicks >= ((m_GHost->m_AutoEndTime*1000)-10000))
+            {
+                SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
+                m_GameOverTime = GetTime();
+                if(m_LoosingTeam != 0)
+                    m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+            }
+        }
+        
         if( GetTime( ) - m_LastLogDataUpdate >= 10 && m_GHost->m_LiveGames )
         {
  

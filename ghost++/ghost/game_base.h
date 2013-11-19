@@ -178,6 +178,11 @@ protected:
         uint32_t m_MuteVotes;
         uint32_t m_EnemyVotes;
         uint32_t m_MuteType;
+        uint32_t m_LoosingTeam;
+        bool m_EndGame;
+        uint32_t m_BreakAutoEndVotesNeeded;
+        uint32_t m_BreakAutoEndVotes;
+        uint32_t m_EndTicks;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType );
