@@ -42,6 +42,8 @@ CStatsDOTA :: CStatsDOTA( CBaseGame *nGame ) : CStats( nGame ), m_Winner( 0 ), m
 		m_LeaverDeaths[i] = 0;
 		m_AssistsOnLeaverKills[i] = 0;
 		m_DeathsByLeaver[i] = 0;
+                m_LatestKill[i] = 0;
+                m_KillCounter[i] = 0;   //The killcounter for checking as double kill etc (not the general kills of a player.)
 	}
 
 	m_FirstBlood = false;
@@ -127,6 +129,43 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 								CGamePlayer *Killer = m_Game->GetPlayerFromColour( ValueInt );
 								CGamePlayer *Victim = m_Game->GetPlayerFromColour( VictimColour );
 
+                                                                if( Killer )
+                                                                {
+                                                                    if( m_KillCounter[ValueInt] == 0 && m_LatestKill[ValueInt] == 0 || GetTime() - m_LatestKill[ValueInt] >= 18)
+                                                                    {
+                                                                        m_KillCounter[ValueInt]++;
+                                                                        m_LatestKill[ValueInt] = GetTime();
+                                                                    }
+                                                                    else if( m_KillCounter[ValueInt] != 0 && GetTime() - m_LatestKill[ValueInt] < 18)
+                                                                    {
+                                                                        m_KillCounter[ValueInt]++;
+                                                                        m_LatestKill[ValueInt] = GetTime();
+                                                                        if(m_KillCounter[ValueInt] == 2 )
+                                                                        {
+                                                                            m_Game->GAME_Print( 131, MinString, SecString, Killer->GetName(), "", "" );
+                                                                            CONSOLE_Print("[STATSDOTA] "+Killer->GetName()+" got a doublie kill.");
+                                                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "1" + "\n";
+                                                                        }
+                                                                        if(m_KillCounter[ValueInt] == 3 )
+                                                                        {
+                                                                            m_Game->GAME_Print( 132, MinString, SecString, Killer->GetName(), "", "" );
+                                                                            CONSOLE_Print("[STATSDOTA] "+Killer->GetName()+" got a tripple kill.");
+                                                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "2" + "\n";
+                                                                        }
+                                                                        if(m_KillCounter[ValueInt] == 4 )
+                                                                        {
+                                                                            m_Game->GAME_Print( 133, MinString, SecString, Killer->GetName(), "", "" );
+                                                                            CONSOLE_Print("[STATSDOTA] "+Killer->GetName()+" got an ultra kill.");
+                                                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "3" + "\n";
+                                                                        }
+                                                                        if(m_KillCounter[ValueInt] >= 5 )
+                                                                        {
+                                                                            m_Game->GAME_Print( 134, MinString, SecString, Killer->GetName(), "", "" );
+                                                                            CONSOLE_Print("[STATSDOTA] "+Killer->GetName()+" got a rampage.");
+                                                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "4" + "\n";
+                                                                        }
+                                                                    }
+                                                                }
 								if( Killer && Victim )
 								{
 									if( ( ValueInt >= 1 && ValueInt <= 5 ) || ( ValueInt >= 7 && ValueInt <= 11 ) )
@@ -203,11 +242,14 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 									}
 									else
 									{
+                                                                            // removing this, occur probably on neutral kills
+                                                                            /*
                                                                         	CONSOLE_Print( "[ANTIFARM] player [" + Victim->GetName() + "] got killed by a leaver." );
                                                                         	if( m_LeaverKills[VictimColour] == 0 && m_AssistsOnLeaverKills[VictimColour] == 0 )
                                                                         	        m_DeathsByLeaver[VictimColour]++;
                                                                         	else
 											m_Game->SendAllChat( "[ANTIFARM] Player ["+Victim->GetName()+"] killed already ["+UTIL_ToString(m_DeathsByLeaver[VictimColour])+"] leavers and assisted on ["+UTIL_ToString(m_AssistsOnLeaverKills[VictimColour])+"] kills. Justice has been done!" );
+                                                                            */
 									}
 								}
 

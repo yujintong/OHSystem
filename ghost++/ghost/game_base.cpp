@@ -6265,7 +6265,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
  
                 m_GameLog.push_back( StorePacket );
         }
-        else if( type > 11 && type <= 31 )
+        else if( type > 11 && type <= 31 || type >= 131 && type <= 134 )
         {
                 string PSiD = "0";
                 string VSiD = "0";
@@ -6280,6 +6280,14 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 13 )
                         StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> drew a first blood on <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                else if( type == 131 )
+                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a double kill.</div>";
+                else if( type == 132 )
+                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a tripple kill.</div>";
+                else if( type == 133 )
+                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got an ultra kill.</div>";
+                else if( type == 134 )
+                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a rampage.</div>";
                 else if( type == 14 )
                         StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 15 )

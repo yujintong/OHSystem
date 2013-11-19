@@ -51,6 +51,8 @@ private:
 	uint32_t m_LeaverDeaths[12];
 	uint32_t m_AssistsOnLeaverKills[12];
 	uint32_t m_DeathsByLeaver[12];
+        uint32_t m_LatestKill[12];
+        uint32_t m_KillCounter[12];
 
 public:
 	CStatsDOTA( CBaseGame *nGame );
