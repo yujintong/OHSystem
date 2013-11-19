@@ -81,6 +81,8 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
         m_LobbyLog.clear();
         m_GameLog.clear();
         m_ObservingPlayers = 0;
+        m_LoosingTeam = 0;
+        m_EndGame = false;
 }
  
 CGame :: ~CGame( )
@@ -650,7 +652,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
         {
                 // todotodo: since we store players that crash during loading it's possible that the stats classes could have no information on them
                 // that could result in a DBGamePlayer without a corresponding DBDotAPlayer - just be aware of the possibility
- 
                 unsigned char SID = GetSIDFromPID( player->GetPID( ) );
                 unsigned char Team = 255;
                 unsigned char Colour = 255;
@@ -709,40 +710,37 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         if( m_GHost->m_MaxAllowedSpread <= spread && m_Stats )
                         {
                                 SendAllChat( "[AUTO-END] The spread between the two teams is already ["+UTIL_ToString(spread)+"]" );
-                                m_Stats->SetWinner( ( Team + 1 ) % 2 );
-                                string WinTeam = ( ( ( Team + 1 ) % 2 )  == 1 ? "Scourge" : "Sentinel" );
+                                string WinTeam = Team % 2  == 0 ? "Sentinel" : "Scourge";
                                 SendAllChat( "[AUTO-END] The game will end in fifty seconds. The winner is set to ["+ WinTeam +"]" );
                                 SendAllChat( "[AUTO-END] Please stay until the end to save all stats correctly." );
-                                m_GameOverTime = GetTime( );
+                                m_LoosingTeam = Team;
+                                m_EndGame = true;
                         }
-
-                        if( CountAlly+CountEnemy <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
+                        else if( CountAlly+CountEnemy <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
                         {
-                                string Winner = ( Team + 1 ) % 2 == 1 ? "Scourge" : "Sentinel";
+                                string WinTeam = Team % 2 == 1 ? "Sentinel" : "Scourge";
                                 SendAllChat("[AUTO-END] Too few players ingame, this game will end in fifteen seconds." );
-                                SendAllChat("[AUTO-END] Winning team was set to ["+ Winner +"]" );
-                                m_Stats->SetWinner( ( Team + 1 ) % 2 );
-                                m_GameOverTime = GetTime( );
+                                SendAllChat("[AUTO-END] Winning team was set to ["+ WinTeam +"]" );
+                                m_LoosingTeam = Team;
+                                m_EndGame = true;
                         }
- 
-                        if( CountAlly == 0 && CountEnemy >= 2 )
+                        else if( CountAlly == 0 && CountEnemy >= 2 )
                         {
                                 // if less than one minute has elapsed, draw the game
                                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
                                 if( m_GameTicks < 1000 * 180 )
                                 {
                                         SendAllChat( "[AUTO-END] Only one team is remaining, this game will end in fifteen seconds and be recorded as a draw." );
-                                        m_GameOverTime = GetTime( );
+                                        m_EndGame = true;
                                 }
  
                                 // otherwise, if more than fifteen minutes have elapsed, give the other team the win
                                 else if( m_GameTicks > 1000 * 180 && m_Stats )
                                 {
                                         SendAllChat( "[AUTO-END] The other team has left, this game will be recorded as your win. You may leave at any time." );
-                                        m_Stats->SetWinner( ( Team + 1 ) % 2 );
-                                        m_Stats->LockStats( );
                                         m_SoftGameOver = true;
-                                        m_GameOverTime = GetTime( );
+                                        m_LoosingTeam = Team;
+                                        m_EndGame = true;
                                 }
                         }
                 }
@@ -766,12 +764,17 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 SendAllChat( "[AUTO-END] Please stay till the end to avoid any false bans!" );
  
                                 // make sure leavers will get banned
-                                m_GameOverTime = GetTime( );
                                 m_EarlyDraw = true;
                                 m_SoftGameOver = true;
-                                m_Stats->LockStats( );
+                                m_EndGame = true;
                         }
                 }
+        }
+        if( m_EndGame )
+        {
+            if(m_LoosingTeam != 0)
+                    m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+            m_GameOverTime = GetTime( );
         }
 }
  
