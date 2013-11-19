@@ -770,6 +770,8 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
             string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
             SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
             SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
+            if(m_LoosingTeam != 0)
+                m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
             m_EndTicks = GetTicks();
         } else if( m_EndGame )
         {
@@ -3886,6 +3888,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_BreakAutoEndVotes = 0;
                     m_BreakAutoEndVotesNeeded = 0;
                     m_LoosingTeam = 0;
+                    m_Stats->SetWinner( 0 );
                     SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
                 }
                 else
