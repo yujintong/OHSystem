@@ -764,21 +764,22 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 m_GameOverTime = GetTime();
                         }
                 }
-        }
-        if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
-        {
-            string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
-            SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
-            SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
-            if(m_LoosingTeam != 0)
-                m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
-            m_EndTicks = GetTicks();
-        } else if( m_EndGame )
-        {
-            SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
-             if(m_LoosingTeam != 0)
-                 m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
-             m_GameOverTime = GetTime();
+                
+            if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
+            {
+                string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
+                SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
+                SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
+                if(m_LoosingTeam != 0)
+                    m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+                m_EndTicks = GetTicks();
+            } else if( m_EndGame )
+            {
+                SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
+                 if(m_LoosingTeam != 0)
+                     m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+                 m_GameOverTime = GetTime();
+            }
         }
 }
  
