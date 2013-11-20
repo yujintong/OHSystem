@@ -212,6 +212,7 @@ public:
         uint32_t m_VoteMuteTime;
         uint32_t m_AutoEndTime;
         bool m_AllowHighPingSafeDrop;
+        uint32_t m_MinPauseLevel;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

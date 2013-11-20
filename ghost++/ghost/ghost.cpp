@@ -1509,6 +1509,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_VoteMuteTime = CFG->GetInt("oh_votemutetime", 180);
         m_AutoEndTime = CFG->GetInt("autoend_votetime", 120);
         m_AllowHighPingSafeDrop = CFG->GetInt("oh_allowsafedrop", 1);
+        m_MinPauseLevel = CFG->GetInt("oh_minpauselevel", 3);
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
 }
 

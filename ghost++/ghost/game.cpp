@@ -3430,7 +3430,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( Command == "pause" && !m_GameLoading && m_GameLoaded && !player->GetUsedPause() )
         {
-                if( Level > 2 )
+                if( Level >= m_GHost->m_MinPauseLevel )
                 {
                         if( !m_PauseReq )
                         {
