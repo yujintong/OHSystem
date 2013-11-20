@@ -1596,7 +1596,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         }
         
         // ping warning
-        if( GetTime() - m_LastPingWarn >= 60 && m_GameLoaded )
+        if( GetTime() - m_LastPingWarn >= 60 && m_GameLoaded && m_GHost->m_AllowHighPingSafeDrop )
         {
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                 {
