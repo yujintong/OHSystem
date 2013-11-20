@@ -42,7 +42,7 @@ using namespace std;
 
 void CONSOLE_Print( string message )
 {
-	cout << message << endl;
+	cout+"[STATSUPDATE] "+message+endl;
 }
 
 string MySQLEscapeString( MYSQL *conn, string str )
@@ -129,59 +129,62 @@ float UTIL_ToFloat( string &s )
 	SS >> result;
 	return result;
 }
+StartUp( )
+{
+    string CFGFile = "default.cfg";
+
+    if( argc > 1 && argv[1] )
+            CFGFile = argv[1];
+
+    CConfig CFG;
+    CFG.Read( CFGFile );
+    string Server = CFG.GetString( "db_mysql_server", string( ) );
+    string Database = CFG.GetString( "db_mysql_database", "ghost" );
+    string User = CFG.GetString( "db_mysql_user", string( ) );
+    string Password = CFG.GetString( "db_mysql_password", string( ) );
+    int Port = CFG.GetInt( "db_mysql_port", 0 );
+
+    CONSOLE_Print( "Connecting to database..." );
+    MYSQL *Connection = NULL;
+
+    if( !( Connection = mysql_init( NULL ) ) )
+    {
+            CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
+            return 1;
+    }
+
+    my_bool Reconnect = true;
+    mysql_options( Connection, MYSQL_OPT_RECONNECT, &Reconnect );
+
+    if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
+    {
+            CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
+            return 1;
+    }
+
+    CONSOLE_Print( "Successfully connected to the database." );
+}
 
 int main( int argc, char **argv )
 {
-	string CFGFile = "default.cfg";
-
-	if( argc > 1 && argv[1] )
-		CFGFile = argv[1];
-
-	CConfig CFG;
-	CFG.Read( CFGFile );
-	string Server = CFG.GetString( "db_mysql_server", string( ) );
-	string Database = CFG.GetString( "db_mysql_database", "ghost" );
-	string User = CFG.GetString( "db_mysql_user", string( ) );
-	string Password = CFG.GetString( "db_mysql_password", string( ) );
-	int Port = CFG.GetInt( "db_mysql_port", 0 );
-
-	cout << "connecting to database server" << endl;
-	MYSQL *Connection = NULL;
-
-	if( !( Connection = mysql_init( NULL ) ) )
-	{
-		cout << "error: " << mysql_error( Connection ) << endl;
-		return 1;
-	}
-
-	my_bool Reconnect = true;
-	mysql_options( Connection, MYSQL_OPT_RECONNECT, &Reconnect );
-
-	if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
-	{
-		cout << "error: " << mysql_error( Connection ) << endl;
-		return 1;
-	}
-
-	cout << "connected" << endl;
-	cout << "beginning transaction" << endl;
+    StartUp( );
+	CONSOLE_Print( "Starting transaction:" );
 
 	string QBegin = "BEGIN";
 
 	if( mysql_real_query( Connection, QBegin.c_str( ), QBegin.size( ) ) != 0 )
 	{
-		cout << "error: " << mysql_error( Connection ) << endl;
+		CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 		return 1;
 	}
 
-	cout << "getting unscored games" << endl;
 	queue<uint32_t> UnscoredGames;
 
 	string QSelectUnscored = "SELECT `id` FROM `games` WHERE `stats` = '0' ORDER BY id;";
 
 	if( mysql_real_query( Connection, QSelectUnscored.c_str( ), QSelectUnscored.size( ) ) != 0 )
 	{
-		cout << "error: " << mysql_error( Connection ) << endl;
+		CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 		return 1;
 	}
 	else
@@ -202,12 +205,12 @@ int main( int argc, char **argv )
 		}
 		else
 		{
-			cout << "error: " << mysql_error( Connection ) << endl;
+			CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 			return 1;
 		}
 	}
 
-	cout << "found " << UnscoredGames.size( ) << " unscored games" << endl;
+	CONSOLE_Print( "Found ["+UTIL_ToString(UnscoredGames.size( ))+"] unscored games." );
 
 	while( !UnscoredGames.empty( ) )
 	{
@@ -217,7 +220,7 @@ int main( int argc, char **argv )
 		string QSelectPlayers = "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak FROM gameplayers as gp LEFT JOIN dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN games as g on g.id=gp.gameid LEFT JOIN stats as s ON gp.name = s.player_lower LEFT JOIN dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + UTIL_ToString( GameID );
 		if( mysql_real_query( Connection, QSelectPlayers.c_str( ), QSelectPlayers.size( ) ) != 0 )
 		{
-			cout << "error: " << mysql_error( Connection ) << endl;
+			CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 			return 1;
 		}
 		else
@@ -226,7 +229,7 @@ int main( int argc, char **argv )
 
 			if( Result )
 			{
-				cout << "gameid " << UTIL_ToString( GameID ) << " found" << endl;
+				CONSOLE_Print( "Starting update for gameid ["+UTIL_ToString( GameID )+"]" );
 
 				bool ignore = false;
 				uint32_t rowids[10];
@@ -283,7 +286,7 @@ int main( int argc, char **argv )
 				{
 					if( num_players >= 10 )
 					{
-						cout << "gameid " << UTIL_ToString( GameID ) << " has more than 10 players, ignoring" << endl;
+						CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has more than 10 players. Ignoring this game." );
 						ignore = true;
 						break;
 					}
@@ -292,7 +295,7 @@ int main( int argc, char **argv )
 
 					if( Winner != 1 && Winner != 2 && Winner != 0)
 					{
-						cout << "gameid " << UTIL_ToString( GameID ) << " is not a two team map, ignoring" << endl;
+						CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] is not a two team map. Ignoring this game." );
 						ignore = true;
 						break;
 					}
@@ -324,7 +327,7 @@ int main( int argc, char **argv )
                                         string PlayerStatus = "SELECT name FROM `bans` WHERE name = '" + Row[1] + "';";
                                         if( mysql_real_query( Connection, PlayerStatus.c_str( ), PlayerStatus.size( ) ) != 0 )
                                         {
-                                                cout << "error: " << mysql_error( Connection ) << endl;
+                                                CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
                                                 return 1;
                                         }
                                         else
@@ -342,7 +345,7 @@ int main( int argc, char **argv )
 						exists[num_players] = true;
 					else
 					{
-						cout << "new player [" << Row[1] << "] found" << endl;
+						CONSOLE_Print( "Unscored Player ["+Row[1]+"] found." );
 						exists[num_players] = false;
 					}
 
@@ -506,7 +509,7 @@ int main( int argc, char **argv )
 					}
 					else
 					{
-						cout << "gameid " << UTIL_ToString( GameID ) << " has a player with an invalid newcolour, ignoring" << endl;
+						CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" has a player with an invalid newcolour. Ignoring this Game." );
 						ignore = true;
 						break;
 					}
@@ -546,18 +549,18 @@ int main( int argc, char **argv )
 				if( !ignore )
 				{
 					if( num_players == 0 )
-						cout << "gameid " << UTIL_ToString( GameID ) << " has no players, ignoring" << endl;
+						CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"} has no players. Ignoring this game." );
 					else if( team_numplayers[0] == 0 )
-						cout << "gameid " << UTIL_ToString( GameID ) << " has no Sentinel players, ignoring" << endl;
+						CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no Sentinel players. Ignoring this game." );
 					else if( team_numplayers[1] == 0 )
-						cout << "gameid " << UTIL_ToString( GameID ) << " has no Scourge players, ignoring" << endl;
+						CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no Scourge players. Ignoring this game." );
 					else
 					{
-						cout << "gameid " << UTIL_ToString( GameID ) << " is calculating" << endl;
+						CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" is calculating..." );
 
 						for( int i = 0; i < num_players; i++ )
 						{
-							cout << "player [" << names[i] << "] score " << " -> " << Int32_ToString( nscore[i] ) << endl;
+							CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
 
 							if( exists[i] )
 							{
@@ -565,7 +568,7 @@ int main( int argc, char **argv )
 
 								if( mysql_real_query( Connection, QUpdateScore.c_str( ), QUpdateScore.size( ) ) != 0 )
 								{
-									cout << "error: " << mysql_error( Connection ) << endl;
+									CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 									return 1;
 								}
 							}
@@ -578,7 +581,7 @@ int main( int argc, char **argv )
 
 								if( mysql_real_query( Connection, QInsertScore.c_str( ), QInsertScore.size( ) ) != 0 )
 								{
-									cout << "error: " << mysql_error( Connection ) << endl;
+									CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 									return 1;
 								}
 							}
@@ -588,7 +591,7 @@ int main( int argc, char **argv )
 			}
 			else
 			{
-				cout << "error: " << mysql_error( Connection ) << endl;
+				CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 				return 1;
 			}
 		}
@@ -597,21 +600,21 @@ int main( int argc, char **argv )
 
                 if( mysql_real_query( Connection, QInsertScored1.c_str( ), QInsertScored1.size( ) ) != 0 )
                 {
-                        cout << "error: " << mysql_error( Connection ) << endl;
+                        CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
                         return 1;
                 }
 
 	}
-	cout << "committing transaction" << endl;
+	CONSOLE_Print( "Committing transaction..." );
 
 	string QCommit = "COMMIT";
 
 	if( mysql_real_query( Connection, QCommit.c_str( ), QCommit.size( ) ) != 0 )
 	{
-		cout << "error: " << mysql_error( Connection ) << endl;
+		CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
 		return 1;
 	}
 
-	cout << "done" << endl;
+	CONSOLE_Print( "Transaction done. Closing connection." );
 	return 0;
 }
