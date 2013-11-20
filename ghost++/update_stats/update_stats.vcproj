@@ -194,6 +194,10 @@
 				RelativePath="..\ghost\config.h"
 				>
 			</File>
+			<File
+				RelativePath="..\ghost\includes.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
