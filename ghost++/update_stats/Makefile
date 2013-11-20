@@ -2,8 +2,8 @@ SHELL = /bin/sh
 SYSTEM = $(shell uname)
 C++ = g++
 DFLAGS =
-OFLAGS = -O3
-LFLAGS = -lmysqlclient
+OFLAGS = -O3 -g
+LFLAGS = -lmysqlclient -lboost_system
 CFLAGS =
 
 ifeq ($(SYSTEM),Darwin)

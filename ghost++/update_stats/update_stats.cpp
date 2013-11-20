@@ -42,7 +42,8 @@ using namespace std;
 
 void CONSOLE_Print( string message )
 {
-	cout+"[STATSUPDATE] "+message+endl;
+	string outer = "[STATSUPDATE] " + message;
+	cout << outer << endl;
 }
 
 string MySQLEscapeString( MYSQL *conn, string str )
@@ -129,7 +130,14 @@ float UTIL_ToFloat( string &s )
 	SS >> result;
 	return result;
 }
-StartUp( )
+
+void Print_Error( std::string error )
+{
+	CONSOLE_Print( "[Error]: "+error );
+	return;
+}
+
+MYSQL* StartUp( int argc, char **argv )
 {
     string CFGFile = "default.cfg";
 
@@ -149,8 +157,8 @@ StartUp( )
 
     if( !( Connection = mysql_init( NULL ) ) )
     {
-            CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-            return 1;
+            Print_Error( mysql_error( Connection ) );
+            return Connection;
     }
 
     my_bool Reconnect = true;
@@ -158,56 +166,48 @@ StartUp( )
 
     if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
     {
-            CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-            return 1;
+            Print_Error( mysql_error( Connection ) );
+            return Connection;
     }
 
     CONSOLE_Print( "Successfully connected to the database." );
+
+  return Connection;
+}
+
+MYSQL_RES *QueryBuilder( MYSQL* Connection, string Query )
+{
+	if( mysql_real_query( Connection, Query.c_str( ), Query.size( ) ) != 0 )
+	{
+		Print_Error( mysql_error( Connection ) );
+		return 0;
+	}
+	return mysql_store_result( Connection );
 }
 
 int main( int argc, char **argv )
 {
-    StartUp( );
-	CONSOLE_Print( "Starting transaction:" );
+     	MYSQL* Connection = StartUp( argc, argv );
+	CONSOLE_Print( "Starting transaction..." );
 
-	string QBegin = "BEGIN";
-
-	if( mysql_real_query( Connection, QBegin.c_str( ), QBegin.size( ) ) != 0 )
-	{
-		CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-		return 1;
-	}
+	MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
 	queue<uint32_t> UnscoredGames;
-
-	string QSelectUnscored = "SELECT `id` FROM `games` WHERE `stats` = '0' ORDER BY id;";
-
-	if( mysql_real_query( Connection, QSelectUnscored.c_str( ), QSelectUnscored.size( ) ) != 0 )
+	MYSQL_RES *Result = QueryBuilder(Connection, "SELECT `id` FROM `oh_games` WHERE `stats` = '0' ORDER BY id;" );
+	if( Result )
 	{
-		CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-		return 1;
+		vector<string> Row = MySQLFetchRow( Result );
+		while( !Row.empty( ) )
+		{
+			UnscoredGames.push( UTIL_ToUInt32( Row[0] ) );
+			Row = MySQLFetchRow( Result );
+		}
+		mysql_free_result( Result );
 	}
 	else
 	{
-		MYSQL_RES *Result = mysql_store_result( Connection );
-
-		if( Result )
-		{
-			vector<string> Row = MySQLFetchRow( Result );
-
-			while( !Row.empty( ) )
-			{
-				UnscoredGames.push( UTIL_ToUInt32( Row[0] ) );
-				Row = MySQLFetchRow( Result );
-			}
-
-			mysql_free_result( Result );
-		}
-		else
-		{
-			CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-			return 1;
-		}
+		Print_Error( mysql_error( Connection ) );
+		return 1;
 	}
 
 	CONSOLE_Print( "Found ["+UTIL_ToString(UnscoredGames.size( ))+"] unscored games." );
@@ -217,22 +217,14 @@ int main( int argc, char **argv )
 		uint32_t GameID = UnscoredGames.front( );
 		UnscoredGames.pop( );
 
-		string QSelectPlayers = "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak FROM gameplayers as gp LEFT JOIN dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN games as g on g.id=gp.gameid LEFT JOIN stats as s ON gp.name = s.player_lower LEFT JOIN dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + UTIL_ToString( GameID );
-		if( mysql_real_query( Connection, QSelectPlayers.c_str( ), QSelectPlayers.size( ) ) != 0 )
-		{
-			CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-			return 1;
-		}
-		else
-		{
-			MYSQL_RES *Result = mysql_store_result( Connection );
+		MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + UTIL_ToString( GameID ) );
 
 			if( Result )
 			{
 				CONSOLE_Print( "Starting update for gameid ["+UTIL_ToString( GameID )+"]" );
 
+				int id[10];
 				bool ignore = false;
-				uint32_t rowids[10];
 				string names[10];
 				string servers[10];
 				bool exists[10];
@@ -310,11 +302,6 @@ int main( int argc, char **argv )
 						team_winners[1] = 1.0;
 					}
 
-					if( !Row[55].empty( ) )
-						rowids[num_players] = UTIL_ToUInt32( Row[55] );
-					else
-						rowids[num_players] = 0;
-
 					names[num_players] = Row[1];
                                         string name = Row[1];
                                         std::transform( name.begin(), name.end(), name.begin(), ::tolower);
@@ -324,23 +311,13 @@ int main( int argc, char **argv )
                                         nscore[num_players] = 0;
 					banned[num_players] = 0;
 
-                                        string PlayerStatus = "SELECT name FROM `bans` WHERE name = '" + Row[1] + "';";
-                                        if( mysql_real_query( Connection, PlayerStatus.c_str( ), PlayerStatus.size( ) ) != 0 )
+                                        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT name FROM `oh_bans` WHERE name = '" + Row[1] + "';" );
+                                        if( Result )
                                         {
-                                                CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-                                                return 1;
+ 	                                       vector<string> Row = MySQLFetchRow( Result );
+                                               if( Row.size( ) == 1 )
+        	                                       banned[num_players] = 1;
                                         }
-                                        else
-                                        {
-                                                MYSQL_RES *Result = mysql_store_result( Connection );
-                                                if( Result )
-                                                {
-                                                        vector<string> Row = MySQLFetchRow( Result );
-                                                        if( Row.size( ) == 1 )
-                                                                banned[num_players] = 1;
-                                                }
-                                        }
-
 					if( !Row[0].empty( ) )
 						exists[num_players] = true;
 					else
@@ -348,6 +325,7 @@ int main( int argc, char **argv )
 						CONSOLE_Print( "Unscored Player ["+Row[1]+"] found." );
 						exists[num_players] = false;
 					}
+					id[num_players] = UTIL_ToUInt32( Row[0] );
 
 					uint32_t Colour = UTIL_ToUInt32( Row[16] );
 
@@ -563,27 +541,13 @@ int main( int argc, char **argv )
 							CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
 
 							if( exists[i] )
-							{
-								string QUpdateScore = "UPDATE `stats` SET leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( rowids[i] );
-
-								if( mysql_real_query( Connection, QUpdateScore.c_str( ), QUpdateScore.size( ) ) != 0 )
-								{
-									CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-									return 1;
-								}
-							}
+								MYSQL_RES *Result = QueryBuilder(Connection, "UPDATE `oh_stats` SET leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( id[i] ) );
 							else
 							{
 								string EscName = MySQLEscapeString( Connection, names[i] );
 								string EscLName = MySQLEscapeString( Connection, lnames[i] );
 								string EscServer = MySQLEscapeString( Connection, servers[i] );
-								string QInsertScore = "INSERT INTO `stats` ( player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver ) VALUES ( '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + " )";
-
-								if( mysql_real_query( Connection, QInsertScore.c_str( ), QInsertScore.size( ) ) != 0 )
-								{
-									CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-									return 1;
-								}
+								MYSQL_RES *Result = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver ) VALUES ( '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + " )" );
 							}
 						}
 					}
@@ -591,30 +555,16 @@ int main( int argc, char **argv )
 			}
 			else
 			{
-				CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
+				Print_Error(mysql_error( Connection ) );
 				return 1;
 			}
-		}
 
-                string QInsertScored1 = "UPDATE `games` SET `stats` = '1' WHERE `id` = " + UTIL_ToString( GameID ) + ";";
-
-                if( mysql_real_query( Connection, QInsertScored1.c_str( ), QInsertScored1.size( ) ) != 0 )
-                {
-                        CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-                        return 1;
-                }
-
+                MYSQL_RES *UpdateResult = QueryBuilder(Connection, "UPDATE `oh_games` SET `stats` = '1' WHERE `id` = " + UTIL_ToString( GameID ) + ";" );
+		if( UpdateResult )
+			CONSOLE_Print( "Successfully updated players from GameID "+UTIL_ToString( GameID ) );
 	}
 	CONSOLE_Print( "Committing transaction..." );
-
-	string QCommit = "COMMIT";
-
-	if( mysql_real_query( Connection, QCommit.c_str( ), QCommit.size( ) ) != 0 )
-	{
-		CONSOLE_Print( "[Error] "+mysql_error( Connection ) );
-		return 1;
-	}
-
+	MYSQL_RES *CommitResult = QueryBuilder(Connection, "COMMIT" );
 	CONSOLE_Print( "Transaction done. Closing connection." );
 	return 0;
 }
