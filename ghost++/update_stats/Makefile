@@ -3,7 +3,7 @@ SYSTEM = $(shell uname)
 C++ = g++
 DFLAGS =
 OFLAGS = -O3 -g
-LFLAGS = -lmysqlclient -lboost_system
+LFLAGS = -lmysqlclient -lboost_system -lboost_thread
 CFLAGS =
 
 ifeq ($(SYSTEM),Darwin)
@@ -45,4 +45,4 @@ $(OBJS): %.o: %.cpp
 all: $(PROGS)
 
 config.o: ../ghost/ghost.h ../ghost/config.h
-update_stats.o: ../ghost/config.h 
+update_stats.o: ../ghost/config.h ../ghost/includes.h
