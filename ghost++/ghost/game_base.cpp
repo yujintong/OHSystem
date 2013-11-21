@@ -455,6 +455,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         }
                                         Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
                                         Player->SetForcedGproxy( StatsPlayerSummary->GetForcedGproxy( ) );
+                                        Player->SetScore( StatsPlayerSummary->GetScore(), 2);
                                 }
                         }
  
@@ -928,9 +929,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         {
                                 if( m_GameType == 3 )
                                 {
-                                        if( (*i)->GetGames( ) < m_GHost->m_MinLimit  && !IsReserved( (*i)->GetName() ) )
+                                        if( (*i)->GetGames( ) < m_GHost->m_MinLimit && !IsReserved( (*i)->GetName() ) )
                                         {
                                                 SendChat( (*i)->GetPID( ), "[INFO] You have to less games, you require at least 50 Games. You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
+                                                (*i)->SetAnnounceTime( );
+                                        }
+                                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->MinScoreLimit && !IsReserved( (*i)->GetName() ) )
+                                        {
+                                                SendChat( (*i)->GetPID( ), "[INFO] Youre score is to low, you require at least a score of ["+UTIL_ToString((*i)->GetScore( ), 0)+"] You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
                                                 (*i)->SetAnnounceTime( );
                                         }
                                 }
@@ -973,6 +979,17 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                                     m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                                 (*i)->SetDeleteMe( true );
                                                 (*i)->SetLeftReason( "got kicked because he does not have enough games." );
+                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                        }
+                                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit  && !IsReserved( (*i)->GetName() ) )
+                                        {
+                                                string name=(*i)->GetName();
+                                                string realm=(*i)->GetJoinedRealm( );
+                                                if(m_GHost->m_AutoDenyUsers)
+                                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                (*i)->SetDeleteMe( true );
+                                                (*i)->SetLeftReason( "got kicked because he does not have enough score points." );
                                                 (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                                                 OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                                         }

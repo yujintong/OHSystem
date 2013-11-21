@@ -213,6 +213,7 @@ public:
         uint32_t m_AutoEndTime;
         bool m_AllowHighPingSafeDrop;
         uint32_t m_MinPauseLevel;
+        uint32_t m_MinScoreLimit;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
