@@ -429,9 +429,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                         }
                                                 }
                                                 if(m_GHost->m_RanksLoaded)
-                                                        SendAllChat( "["+Player->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                                        SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                                 else {
-                                                        SendAllChat( "["+Player->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                                        SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                                         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                                                 }
                                         }
