@@ -654,7 +654,7 @@ public:
 class CMySQLCallableConnectCheck : public CCallableConnectCheck, public CMySQLCallable
 {
 public:
-        CMySQLCallableConnectCheck( string nName, uint32_t nSessionKey, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort, CGHostDBMySQL *nDB ) : CBaseCallable( ), CCallableConnectCheck( nName, nSessionKey ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort, nDB ) { }
+        CMySQLCallableConnectCheck( string nName, uint32_t nSessionKey, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableConnectCheck( nName, nSessionKey ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
         virtual ~CMySQLCallableConnectCheck( ) { }
 
         virtual void operator( )( );

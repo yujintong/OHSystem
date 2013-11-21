@@ -655,7 +655,7 @@ CCallableConnectCheck *CGHostDBMySQL :: ThreadedConnectCheck( string name, uint3
         if( !Connection )
                 ++m_NumConnections;
 
-        CCallableConnectCheck *Callable = new CMySQLCallableConnectCheck( name, sessionkey, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port, this );
+        CCallableConnectCheck *Callable = new CMySQLCallableConnectCheck( name, sessionkey, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
         CreateThread( Callable );
         m_Name.push_back("WC3Connect");
         ++m_OutstandingCallables;
