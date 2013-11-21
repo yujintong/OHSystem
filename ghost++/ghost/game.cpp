@@ -95,7 +95,7 @@ CGame :: ~CGame( )
                         uint32_t VictimLevel = 0;
                         for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
                         {
-                               if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) )
+                               if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) || (*i)->GetSpoofedRealm( ) == "WC3Connect")
                                {
                                        VictimLevel = (*k)->IsLevel( (*i)->GetName( ) );
                                        break;
@@ -397,7 +397,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         string LevelName;
                                         for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
                                         {
-                                                if( (*k)->GetServer( ) == StatsPlayerSummary->GetRealm( ) && m_GHost->m_RanksLoaded )
+                                                if( ( (*k)->GetServer( ) == StatsPlayerSummary->GetRealm( ) || (*k)->GetServer( ) == "WC3Connect" ) && m_GHost->m_RanksLoaded )
                                                 {
                                                         Level = (*k)->IsLevel( i->second->GetName( ) );
                                                         LevelName = (*k)->GetLevelName( Level );
@@ -421,7 +421,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 string LevelName;
                                                 for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
                                                 {
-                                                        if( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) && m_GHost->m_RanksLoaded)
+                                                        if( ( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) || Player->GetSpoofedRealm( ) == "WC3Connect" ) && m_GHost->m_RanksLoaded)
                                                         {
                                                                 Level = (*k)->IsLevel( Player->GetName( ) );
                                                                 LevelName = (*k)->GetLevelName( Level );
@@ -1524,7 +1524,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 string CLevelName;
                                                 for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                                 {
-                                                        if( (*i)->GetServer( ) == player->GetSpoofedRealm( ) )
+                                                        if( (*i)->GetServer( ) == player->GetSpoofedRealm( )  || player->GetSpoofedRealm( ) == "WC3Connect" )
                                                         {
                                                                 CLevel = (*i)->IsLevel( LastMatch->GetName( ) );
                                                                 CLevelName = (*i)->GetLevelName( CLevel );
@@ -2874,7 +2874,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         string VLevelName;
                                         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                         {
-                                                if( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( ) )
+                                                if( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == "WC3Connect" )
                                                 {
                                                         VLevel = (*i)->IsLevel( LastMatch->GetName( ) );
                                                         VLevelName = (*i)->GetLevelName( Level );
@@ -3543,7 +3543,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 string VLevelName;
                 for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                 {
-                        if( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( ) && m_GHost->m_RanksLoaded )
+                        if( ( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == "WC3Connect" ) && m_GHost->m_RanksLoaded )
                         {
                                 VLevel = (*i)->IsLevel( LastMatch->GetName( ) );
                                 VLevelName = (*i)->GetLevelName( Level );

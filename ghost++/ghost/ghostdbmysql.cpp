@@ -647,6 +647,21 @@ CCallableScoreCheck *CGHostDBMySQL :: ThreadedScoreCheck( string category, strin
 	return Callable;
 }
 
+
+CCallableConnectCheck *CGHostDBMySQL :: ThreadedConnectCheck( string name, uint32_t sessionkey )
+{
+        void *Connection = GetIdleConnection( );
+
+        if( !Connection )
+                ++m_NumConnections;
+
+        CCallableConnectCheck *Callable = new CMySQLCallableConnectCheck( name, sessionkey, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+        CreateThread( Callable );
+        m_Name.push_back("WC3Connect");
+        ++m_OutstandingCallables;
+        return Callable;
+}
+
 CCallableW3MMDPlayerAdd *CGHostDBMySQL :: ThreadedW3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
 {
 	void *Connection = GetIdleConnection( );
@@ -2390,6 +2405,38 @@ double MySQLScoreCheck( void *conn, string *error, uint32_t botid, string catego
 	return Score;
 }
 
+bool MySQLConnectCheck( void *conn, string *error, uint32_t botid, string name, uint32_t sessionkey )
+{
+        transform( name.begin( ), name.end( ), name.begin( ), (int(*)(int))tolower );
+        string EscName = MySQLEscapeString( conn, name );
+        bool Check = false;
+        string Query = "SELECT sessionkey FROM wc3connect WHERE username='" + EscName + "' AND TIMESTAMPDIFF(HOUR, time, NOW()) < 10";
+
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+        else
+        {
+                MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+                if( Result )
+                {
+                        vector<string> Row = MySQLFetchRow( Result );
+
+                        if( Row.size( ) == 1 )
+                        {
+                                if( UTIL_ToUInt32( Row[0] ) == sessionkey )
+                                        Check = true;
+                        }
+
+                        mysql_free_result( Result );
+                }
+                else
+                        *error = mysql_error( (MYSQL *)conn );
+        }
+
+        return Check;
+}
+
 uint32_t MySQLW3MMDPlayerAdd( void *conn, string *error, uint32_t botid, string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
 {
 	transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
@@ -2848,6 +2895,16 @@ void CMySQLCallableScoreCheck :: operator( )( )
 		m_Result = MySQLScoreCheck( m_Connection, &m_Error, m_SQLBotID, m_Category, m_Name, m_Server );
 
 	Close( );
+}
+
+void CMySQLCallableConnectCheck :: operator( )( )
+{
+        Init( );
+
+        if( m_Error.empty( ) )
+                m_Result = MySQLConnectCheck( m_Connection, &m_Error, m_SQLBotID, m_Name, m_SessionKey );
+
+        Close( );
 }
 
 void CMySQLCallableW3MMDPlayerAdd :: operator( )( )

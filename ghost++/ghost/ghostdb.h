@@ -57,6 +57,7 @@ class CCallableDotAPlayerAdd;
 class CCallableDotAPlayerSummaryCheck;
 class CCallableDownloadAdd;
 class CCallableScoreCheck;
+class CCallableConnectCheck;
 class CCallableW3MMDPlayerAdd;
 class CCallableW3MMDVarAdd;
 class CDBBan;
@@ -124,7 +125,8 @@ public:
 	virtual uint32_t DotAPlayerCount( string name );
 	virtual CDBDotAPlayerSummary *DotAPlayerSummaryCheck( string name );
 	virtual bool DownloadAdd( string map, uint32_t mapsize, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t downloadtime );
-	virtual uint32_t W3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing );
+        virtual CCallableConnectCheck *ThreadedConnectCheck( string name, uint32_t sessionkey );
+ 	virtual uint32_t W3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing );
 	virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints );
 	virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals );
 	virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings );
@@ -783,6 +785,22 @@ public:
 	virtual string GetName( )					{ return m_Name; }
 	virtual double GetResult( )					{ return m_Result; }
 	virtual void SetResult( double nResult )	{ m_Result = nResult; }
+};
+
+class CCallableConnectCheck : virtual public CBaseCallable
+{
+protected:
+        string m_Name;
+        uint32_t m_SessionKey;
+        bool m_Result;
+
+public:
+        CCallableConnectCheck( string nName, uint32_t nSessionKey ) : CBaseCallable( ), m_Name( nName ), m_SessionKey( nSessionKey ), m_Result( false ) { }
+        virtual ~CCallableConnectCheck( );
+
+        virtual string GetName( )                                        { return m_Name; }
+        virtual bool GetResult( )                                        { return m_Result; }
+        virtual void SetResult( bool nResult )                { m_Result = nResult; }
 };
 
 class CCallableW3MMDPlayerAdd : virtual public CBaseCallable
