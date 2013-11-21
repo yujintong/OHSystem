@@ -458,7 +458,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         }
                                         Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
                                         Player->SetForcedGproxy( StatsPlayerSummary->GetForcedGproxy( ) );
-                                        Player->SetScore( StatsPlayerSummary->GetScore(), 2);
+                                        Player->SetScore( StatsPlayerSummary->GetScore());
                                 }
                         }
  
@@ -972,7 +972,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                                 SendChat( (*i)->GetPID( ), "[INFO] You have to less games, you require at least 50 Games. You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
                                                 (*i)->SetAnnounceTime( );
                                         }
-                                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->MinScoreLimit && !IsReserved( (*i)->GetName() ) )
+                                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && !IsReserved( (*i)->GetName() ) )
                                         {
                                                 SendChat( (*i)->GetPID( ), "[INFO] Youre score is to low, you require at least a score of ["+UTIL_ToString((*i)->GetScore( ), 0)+"] You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
                                                 (*i)->SetAnnounceTime( );
@@ -2425,7 +2425,7 @@ void CBaseGame :: EventPlayerDisconnectConnectionClosed( CGamePlayer *player )
 void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer )
 {
         uint32_t HostCounterID = joinPlayer->GetHostCounter( ) >> 28;
-        string JoinedRealm;
+        string JoinedRealm = GetJoinedRealm( joinPlayer->GetHostCounter( ) );
  
         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
         {
@@ -2541,8 +2541,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 potential->SetDeleteMe( true );
                 return;
         }
- 
-        string JoinedRealm = GetJoinedRealm( joinPlayer->GetHostCounter( ) );
         
         if( JoinedRealm == "WC3Connect" )
         {
