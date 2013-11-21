@@ -186,22 +186,12 @@ MYSQL_RES *QueryBuilder( MYSQL* Connection, string Query )
 	return mysql_store_result( Connection );
 }
 
-void CreateThread( )
-{
-        try
-        {
-                boost :: thread Thread( );
-        }
-        catch( boost :: thread_resource_error tre )
-        {
-                Print_Error( "Could not create a Thread. Handle now without a thread." );
-        }
-        return;
-}
-
 int main( int argc, char **argv )
 {
-    CreateThread( );
+ boost::mutex m_UpdateMutex;
+
+ boost::mutex::scoped_lock updateLock( m_UpdateMutex );
+
     MYSQL* Connection = StartUp( argc, argv );
     CONSOLE_Print( "Starting transaction..." );
 
@@ -585,5 +575,6 @@ int main( int argc, char **argv )
 
     MYSQL_RES *CommitResult = QueryBuilder(Connection, "COMMIT" );
     CONSOLE_Print( "Transaction done. Closing connection." );
+ updateLock.unlock( );
     return 0;
 }
