@@ -397,7 +397,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         string LevelName;
                                         for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
                                         {
-                                                if( ( (*k)->GetServer( ) == StatsPlayerSummary->GetRealm( ) || (*k)->GetSpoofedRealm( ) == "WC3Connect" ) && m_GHost->m_RanksLoaded )
+                                                if( ( (*k)->GetServer( ) == StatsPlayerSummary->GetRealm( ) || (*k)->GetServer( ) == "WC3Connect" ) && m_GHost->m_RanksLoaded )
                                                 {
                                                         Level = (*k)->IsLevel( i->second->GetName( ) );
                                                         LevelName = (*k)->GetLevelName( Level );
