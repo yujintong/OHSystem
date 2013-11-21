@@ -699,7 +699,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
  
                         uint32_t spread = CountAlly > CountEnemy ? CountAlly - CountEnemy : CountEnemy - CountAlly;
  
-                        if( spread <= 1 && !player->GetSafeDrop() )
+                        if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll)
                         {
                                 m_AutoBans.push_back( player->GetName( ) );
                                 SendAllChat( "User ["+player->GetName( ) +"] will be autobanned at the end of the game, if he/seh didn't left within the last 5 minutes." );

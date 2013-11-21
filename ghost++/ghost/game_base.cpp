@@ -2289,7 +2289,7 @@ void CBaseGame :: EventPlayerDisconnectTimedOut( CGamePlayer *player )
                 player->SetDeleteMe( true );
                 player->SetLeftReason( m_GHost->m_Language->HasLostConnectionTimedOut( ) );
                 player->SetLeftCode( PLAYERLEAVE_DISCONNECT );
-                if( player->GetLeavePerc() >= 20 && !player->GetGProxy() && !player->GetSafeDrop( ) )
+                if( player->GetLeavePerc() >= 20 && !player->GetGProxy() && !player->GetSafeDrop( ) && m_GHost->m_AutobanAll)
                 {
                         player->SetAutoban( true );
                 }
@@ -6140,7 +6140,7 @@ void CBaseGame :: StopLaggers( string reason )
                         (*i)->SetDeleteMe( true );
                         (*i)->SetLeftReason( reason );
                         (*i)->SetLeftCode( PLAYERLEAVE_DISCONNECT );
-                        if( (*i)->GetLeavePerc() >= 20 && !(*i)->GetGProxy() && !(*i)->GetSafeDrop( ) )
+                        if( (*i)->GetLeavePerc() >= 20 && !(*i)->GetGProxy() && !(*i)->GetSafeDrop( ) && m_GHost->m_AutobanAll )
                                 (*i)->SetAutoban( true );
                         (*i)->SetLeft( true );
                 }

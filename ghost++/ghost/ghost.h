@@ -214,6 +214,7 @@ public:
         bool m_AllowHighPingSafeDrop;
         uint32_t m_MinPauseLevel;
         uint32_t m_MinScoreLimit;
+        bool m_AutobanAll;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
