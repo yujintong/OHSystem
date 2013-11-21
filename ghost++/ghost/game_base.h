@@ -51,6 +51,7 @@ class CCallableStoreLog;
 class CCallablePList;
 class CCallableBanList;
 class CCallableTBRemove;
+class CCallableConnectCheck;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -85,6 +86,7 @@ protected:
 	vector<PIDPlayer> m_EnforcePlayers;				// vector of pids to force players to use (used with saved games)
         CCallableBanList *m_CallableBanList;			// threaded database ban list in progress
         vector<CDBBan *> m_Bans;						// vector of cached bans
+        vector<CCallableConnectCheck *> m_ConnectChecks;        // session validation for wc3connect system
         CCallableTBRemove *m_CallableTBRemove;
         CCallablePList *m_CallablePList;                // threaded database permission list in progress
 	CSaveGame *m_SaveGame;							// savegame data (this is a pointer to global data)
@@ -369,6 +371,7 @@ public:
         virtual void GAME_Print( uint32_t type, string MinString, string SecString, string Player1, string Player2, string message );
 	virtual void AnnounceEvent( uint32_t randomnumber );
 	string GetColoredName( string defaultname );
+        virtual string GetJoinedRealm( uint32_t hostcounter );
 };
 
 #endif

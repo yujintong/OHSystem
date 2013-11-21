@@ -412,6 +412,11 @@ CCallableScoreCheck *CGHostDB :: ThreadedScoreCheck( string category, string nam
 	return NULL;
 }
 
+CCallableConnectCheck *CGHostDB :: ThreadedConnectCheck( string name, uint32_t sessionkey )
+{
+        return NULL;
+}
+
 CCallableW3MMDPlayerAdd *CGHostDB :: ThreadedW3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
 {
 	return NULL;
@@ -603,6 +608,11 @@ CCallableDownloadAdd :: ~CCallableDownloadAdd( )
 }
 
 CCallableScoreCheck :: ~CCallableScoreCheck( )
+{
+
+}
+
+CCallableConnectCheck :: ~CCallableConnectCheck( )
 {
 
 }

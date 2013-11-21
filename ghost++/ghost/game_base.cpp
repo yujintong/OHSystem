@@ -256,6 +256,9 @@ CBaseGame :: ~CBaseGame( )
         for( vector<PairedLogUpdate> :: iterator i = m_PairedLogUpdates.begin( ); i != m_PairedLogUpdates.end( ); ++i )
                 m_GHost->m_Callables.push_back( i->second );
         
+        for( vector<CCallableConnectCheck *> :: iterator i = m_ConnectChecks.begin( ); i != m_ConnectChecks.end( ); ++i )
+                m_GHost->m_Callables.push_back( *i );
+        
         if( m_GHost->m_GarenaHosting )
         {
             if( m_CallablePList )
@@ -554,6 +557,41 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
                         i = m_PairedBanAdds.erase( i );
+                }
+                else
+                        ++i;
+        }
+
+        for( vector<CCallableConnectCheck *> :: iterator i = m_ConnectChecks.begin( ); i != m_ConnectChecks.end( ); )
+        {
+                if( (*i)->GetReady( ) )
+                {
+                        bool Check = (*i)->GetResult( );
+
+                        for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
+                        {
+                                if( (*j)->GetName( ) == (*i)->GetName( ) )
+                                {
+                                        if( Check )
+                                        {
+                                                (*j)->SetSpoofed( true );
+                                                (*j)->SetSpoofedRealm( "WC3Connect" );
+                                        }
+                                        else
+                                        {
+                                                (*j)->SetDeleteMe( true );
+                                                (*j)->SetLeftReason( "invalid session" );
+                                                (*j)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                OpenSlot( GetSIDFromPID( (*j)->GetPID( ) ), false );
+                                        }
+                                        
+                                        break;
+                                }
+                        }
+
+                        m_GHost->m_DB->RecoverCallable( *i );
+                        delete *i;
+                        i = m_ConnectChecks.erase( i );
                 }
                 else
                         ++i;
@@ -2504,6 +2542,15 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
  
+        string JoinedRealm = GetJoinedRealm( joinPlayer->GetHostCounter( ) );
+        
+        if( JoinedRealm == "WC3Connect" )
+        {
+                // to spoof this user, we will validate their entry key with our copy in database
+                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] joining from EntConnect; skey=" + UTIL_ToString( joinPlayer->GetEntryKey( ) ) );
+                m_ConnectChecks.push_back( m_GHost->m_DB->ThreadedConnectCheck( joinPlayer->GetName( ), joinPlayer->GetEntryKey( ) ) );
+        }
+        
         // identify their joined realm
         // this is only possible because when we send a game refresh via LAN or battle.net we encode an ID value in the 4 most significant bits of the host counter
         // the client sends the host counter when it joins so we can extract the ID value here
@@ -6534,4 +6581,24 @@ CDBBan *CBaseGame :: IsBannedIP( string ip )
         }
  
         return NULL;
+}
+
+string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
+{
+        uint32_t HostCounterID = hostcounter >> 28;
+        string JoinedRealm;
+
+        for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+        {
+                if( (*i)->GetHostCounterID( ) == HostCounterID )
+                        JoinedRealm = (*i)->GetServer( );
+        }
+        
+        if( HostCounterID == 15 )
+        {
+                JoinedRealm = "WC3Connect";
+        } else if( JoinedRealm.empty() )
+            JoinedRealm = "Garena";
+        
+        return JoinedRealm;
 }
