@@ -215,6 +215,7 @@ public:
         uint32_t m_MinPauseLevel;
         uint32_t m_MinScoreLimit;
         bool m_AutobanAll;
+        string m_WC3ConnectAlias;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
