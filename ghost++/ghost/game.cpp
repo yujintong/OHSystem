@@ -142,11 +142,12 @@ CGame :: ~CGame( )
                 delete m_CallableGameAdd;
                 m_CallableGameAdd = NULL;
         }
+        
         if( m_CallableGameDBInit && m_CallableGameDBInit->GetReady( ) )
         {
                 if (m_GHost->m_GameIDReplays)
                 {
-                        m_DatabaseID = m_CallableGameDBInit->GetResult();
+                        m_DatabaseID = m_HostCounter );
                 }
                 if( m_DatabaseID > 0 )
                 {
@@ -2268,11 +2269,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         m_GameState = GAME_PRIVATE;
                                         m_LastGameName = m_GameName;
                                         m_GameName = Payload;
-                                        m_HostCounter = m_GHost->m_HostCounter++;
                                         m_RefreshError = false;
                                         m_RefreshRehosted = true;
-                                        m_GHost->SaveHostCounter();
-                                        m_HostCounter = m_GHost->m_HostCounter;
  
                                         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                         {
@@ -2311,11 +2309,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         m_GameState = GAME_PUBLIC;
                                         m_LastGameName = m_GameName;
                                         m_GameName = Payload;
-                                        m_HostCounter = m_GHost->m_HostCounter++;
                                         m_RefreshError = false;
                                         m_RefreshRehosted = true;
-                                        m_GHost->SaveHostCounter();
-                                        m_HostCounter = m_GHost->m_HostCounter;
                                         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                         {
                                                 // unqueue any existing game refreshes because we're going to assume the next successful game refresh indicates that the rehost worked
@@ -3924,7 +3919,7 @@ void CGame :: EventGameStarted( )
         {
             m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
         }
-        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, m_GameName );
+        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
 }
  
 bool CGame :: IsGameDataSaved( )

@@ -452,7 +452,6 @@ CGHost :: CGHost( CConfig *CFG )
 	m_ExitingNice = false;
 	m_Enabled = true;
 	m_Version = "17.2";
-	m_HostCounter = 1;
 	m_AutoHostMaximumGames = CFG->GetInt( "autohost_maxgames", 0 );
 	m_AutoHostAutoStartPlayers = CFG->GetInt( "autohost_startplayers", 0 );
 	m_AutoHostGameName = CFG->GetString( "autohost_gamename", string( ) );
@@ -1080,11 +1079,12 @@ bool CGHost :: Update( long usecBlock )
 		{
 			if( m_AutoHostMap->GetValid( ) )
 			{
+                            uint32_t m_HostCounter = GetNewHostCounter( m_AutoHostGameName ); 
 				string GameName = m_AutoHostGameName + " #" + UTIL_ToString( m_HostCounter );
 
 				if( GameName.size( ) <= 31 )
 				{
-					CreateGame( m_AutoHostMap, GAME_PUBLIC, false, GameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, m_AutoHostGameType, false );
+					CreateGame( m_AutoHostMap, GAME_PUBLIC, false, GameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, m_AutoHostGameType, false, m_HostCounter );
 
 					if( m_CurrentGame )
 					{
@@ -1586,7 +1586,7 @@ void CGHost :: ExtractScripts( )
 		CONSOLE_Print( "[GHOST] warning - unable to load MPQ file [" + PatchMPQFileName + "] - error code " + UTIL_ToString( GetLastError( ) ) );
 }
 
-void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper )
+void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper, uint32_t m_HostCounter )
 {
 	if( !m_Enabled )
 	{
@@ -1711,8 +1711,10 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 	}
 
 	CONSOLE_Print( "[GHOST] creating game [" + gameName + "]" );
+        if( m_HostCounter == 0 )
+                m_HostCounter = GetNewHostCounter( gameName );
 	m_Callables.push_back( m_DB->Threadedgs( m_HostCounter, gameName, 1, gameType ) );
-
+        
 	if( saveGame )
 		m_CurrentGame = new CGame( this, map, m_SaveGame, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType );
 	else
@@ -1806,23 +1808,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
     m_CurrentGame->GAME_Print( 11, "", "", "System", "", "Game Created ["+m_CurrentGame->GetMapName( )+"|"+m_CurrentGame->GetGameName()+"] game created by ["+m_CurrentGame->GetCreatorName()+"]" );
 }
 
-void CGHost :: SaveHostCounter()
-{
-	string File = "hostcounter.cfg";
-	ofstream tmpcfg;
-	tmpcfg.open( File.c_str( ), ios :: trunc );
-	tmpcfg << "hostcounter = " << UTIL_ToString(m_HostCounter) << endl;
-	tmpcfg.close( );
-}
-
-void CGHost :: LoadHostCounter()
-{
-	string File = "hostcounter.cfg";
-	CConfig CFGH;
-	CFGH.Read( File );
-	m_HostCounter = CFGH.GetInt( "hostcounter", 1 );
-}
-
 bool CGHost :: FlameCheck( string message )
 {
 	transform( message.begin( ), message.end( ), message.begin( ), ::tolower );
@@ -1902,6 +1887,11 @@ void CGHost :: LoadRules( )
 	CONSOLE_Print( "Unable to open rules.txt" );
 }
 
+void CGHost :: GetNewHostCounter( string gamename )
+{
+    uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<string>(), gamename, 0 );
+    return m_Result;
+}
 void CGHost :: LoadRanks( )
 {
     //TODO Fix if the file is empty, dont check levels else there is a crash

@@ -243,14 +243,13 @@ public:
 	void ReloadConfigs( );
 	void SetConfigs( CConfig *CFG );
 	void ExtractScripts( );
-	void CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper );
-        void SaveHostCounter();
-        void LoadHostCounter();
+	void CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper, uint32_t m_HostCounter );
 	bool FlameCheck( string message );
 	void GetDeniedCountries( );
 	void LoadDatas( );
         void LoadRules( );
         void LoadRanks( );
+        void GetNewHostCounter( string gamename );
 };
 
 #endif
