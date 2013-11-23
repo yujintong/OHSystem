@@ -605,7 +605,7 @@ protected:
     
 public:
     CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_Result( 0 ) { }
-    virtual ~CallableGameDBInit( );
+    virtual ~CCallableGameDBInit( );
 
     virtual uint32_t GetResult( )				{ return m_Result; }
     virtual void SetResult( uint32_t nResult )	{ m_Result = nResult; }
