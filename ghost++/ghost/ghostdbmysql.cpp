@@ -1976,7 +1976,7 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
                  RowID = mysql_insert_id( (MYSQL *)conn );
         
         string newgamename = gamename+" #"+UTIL_ToString(RowID);
-        string UpdateQuery = "UPDATE oh_games SET gamename='"+newgamename+"' WHERE id ='"+RowID+"';";
+        string UpdateQuery = "UPDATE oh_games SET gamename='"+newgamename+"' WHERE id ='"+UTIL_ToString(RowID)+"';";
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         
