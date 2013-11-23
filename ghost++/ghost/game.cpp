@@ -147,7 +147,7 @@ CGame :: ~CGame( )
         {
                 if (m_GHost->m_GameIDReplays)
                 {
-                        m_DatabaseID = m_HostCounter );
+                        m_DatabaseID = m_HostCounter;
                 }
                 if( m_DatabaseID > 0 )
                 {
