@@ -378,6 +378,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_CheckForFinishedGames = 0;
         m_GarenaHosting = false;
         m_RanksLoaded = true;
+        m_ReservedHostCounter = 0;
 	string DBType = CFG->GetString( "db_type", "mysql" );
 	CONSOLE_Print( "[GHOST] opening primary database" );
 
