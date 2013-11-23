@@ -362,7 +362,7 @@ CCallableGameAdd *CGHostDB :: ThreadedGameAdd( string server, string map, string
 	return NULL;
 }
 
-CCallableGameIDInit *CGHostDB :: ThreadedGameInit( vector<CGamePlayer *> players )
+CCallableGameDBInit *CGHostDB :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename )
 {
         return NULL;
 }
