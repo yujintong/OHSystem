@@ -41,17 +41,17 @@ define('OS_HOME_TITLE',    $HomeTitle);
 define('OS_TIMEZONE',      $TimeZone);
 
 define('OSDB_ADMINS',   'admins'); //do not change
-define('OSDB_BANS',     'bans'); //do not change
-define('OSDB_APPEALS',  'ban_appeals');
-define('OSDB_REPORTS',  'ban_reports');
-define('OSDB_COMMENTS', 'comments');
-define('OSDB_CUSTOM_FIELDS',  'custom_fields');
-define('OSDB_DG',       'dotagames'); //do not change
-define('OSDB_DP',       'dotaplayers'); //do not change
-define('OSDB_DL',       'downloads'); //do not change
-define('OSDB_GP',       'gameplayers'); //do not change
-define('OSDB_GAMES',    'games'); //do not change
-define('OSDB_GAMELIST', 'gamelist'); //table for gamelist patch
+define('OSDB_BANS',     'oh_bans'); //do not change
+define('OSDB_APPEALS',  'oh_ban_appeals');
+define('OSDB_REPORTS',  'oh_ban_reports');
+define('OSDB_COMMENTS', 'oh_comments');
+define('OSDB_CUSTOM_FIELDS',  'oh_custom_fields');
+define('OSDB_DG',       'oh_dotagames'); //do not change
+define('OSDB_DP',       'oh_dotaplayers'); //do not change
+define('OSDB_DL',       'oh_downloads'); //do not change
+define('OSDB_GP',       'oh_gameplayers'); //do not change
+define('OSDB_GAMES',    'oh_games'); //do not change
+define('OSDB_GAMELIST', 'oh_gamelist'); //table for gamelist patch
 define('OSDB_HEROES',   'heroes');
 define('OSDB_GUIDES',   'hero_guides');
 define('OSDB_ITEMS',    'items');
@@ -60,8 +60,8 @@ define('OSDB_NOTES',    'notes');
 define('OSDB_PERMISSIONS', 'permissions');
 define('OSDB_SAFELIST',    'safelist'); //do not change
 define('OSDB_SCORES',      'scores');
-define('OSDB_STATS',       'stats');
-define('OSDB_USERS',       'users');
+define('OSDB_STATS',       'oh_stats');
+define('OSDB_USERS',       'oh_users');
 //define('OSDB_VISITORS',    'visitors');
 define('OSDB_W3PL',        'w3mmdplayers'); //do not change
 define('OSDB_W3VARS',      'w3mmdvars'); //do not change
