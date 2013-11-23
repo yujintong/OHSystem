@@ -1076,10 +1076,11 @@ bool CGHost :: Update( long usecBlock )
 		// instead we fail silently and try again soon
 
 		if( !m_ExitingNice && m_Enabled && !m_CurrentGame && m_Games.size( ) < m_MaxGames && m_Games.size( ) < m_AutoHostMaximumGames )
-		{
-			if( m_AutoHostMap->GetValid( ) )
+		{       
+                    m_HostCounter = GetNewHostCounter( m_AutoHostGameName );
+			if( m_AutoHostMap->GetValid( ) && m_HostCounter != 0 )
 			{
-                                m_HostCounter = GetNewHostCounter( m_AutoHostGameName ); 
+                                
 				string GameName = m_AutoHostGameName + " #" + UTIL_ToString( m_HostCounter );
 
 				if( GameName.size( ) <= 31 )
@@ -1890,8 +1891,6 @@ uint32_t CGHost :: GetNewHostCounter( string gamename )
 {
     uint32_t gameid = 0;
     uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid )->GetResult();
-    m_DB->RecoverCallable( m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid ) );
-    delete m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid );
     CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
     return m_Result;
 }
