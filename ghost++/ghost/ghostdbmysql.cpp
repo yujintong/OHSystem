@@ -515,7 +515,7 @@ CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, s
 	return Callable;
 }
 
-CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CGamePlayer *> players, string gamename )
+CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename )
 {
 	void *Connection = GetIdleConnection( );
 
@@ -1963,7 +1963,7 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
 	return RowID;
 }
 
-uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CGamePlayer *> players, string gamename )
+uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBBan *> players, string gamename )
 {
     uint32_t RowID = 0;
     string Query = "INSERT INTO oh_games (botid, gamename, gamestatus) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0);";
@@ -1972,9 +1972,9 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CGam
     else
              RowID = mysql_insert_id( (MYSQL *)conn );
 
-    for( vector<CGamePlayer *> :: iterator i = players.begin( ); i != players.end( ); i++ )
+    for( vector<CDBBan *> :: iterator i = players.begin( ); i != players.end( ); i++ )
     {
-        string PlayerQuery = "INSERT INTO oh_gameplayer (botid, gameid, name, ip) VALUES ("+UTIL_ToString(botid)+", "+UTIL_ToString(RowID)+", "+(*i)->GetName()+", "+(*i)->GetExternalIPString( )+");";
+        string PlayerQuery = "INSERT INTO oh_gameplayer (botid, gameid, name, ip) VALUES ("+UTIL_ToString(botid)+", "+UTIL_ToString(RowID)+", "+(*i)->GetName()+", "+(*i)->GetIP( )+");";
         if( mysql_real_query( (MYSQL *)conn, PlayerQuery.c_str( ), PlayerQuery.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
     }

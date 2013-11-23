@@ -158,7 +158,7 @@ public:
         virtual CCallableTBRemove *ThreadedTBRemove( string server );
 	virtual CCallableCommandList *ThreadedCommandList( );
 	virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
-        virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CGamePlayer *> players, string gamename );
+        virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename );
 	virtual CCallableGameUpdate *ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add );
 	virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
 	virtual CCallableGamePlayerSummaryCheck *ThreadedGamePlayerSummaryCheck( string name );
@@ -599,12 +599,12 @@ public:
 class CCallableGameDBInit : virtual public CBaseCallable
 {
 protected:
-    vector<CGamePlayer *> m_Players;
+    vector<CDBBan *> m_Players;
     string m_GameName;
     uint32_t m_Result;
     
 public:
-    CCallableGameDBInit( vector<CGamePlayer *> nPlayers, string nGameName ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_Result( 0 ) { }
+    CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_Result( 0 ) { }
     virtual ~CCallableGameDBInit( );
 
     virtual uint32_t GetResult( )				{ return m_Result; }
