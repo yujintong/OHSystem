@@ -219,6 +219,7 @@ public:
         bool m_AutobanAll;
         string m_WC3ConnectAlias;
         uint32_t m_LastHCUpdate;
+        uint32_t m_ReservedHostCounter;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

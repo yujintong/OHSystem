@@ -1072,7 +1072,7 @@ bool CGHost :: Update( long usecBlock )
 
 	// autohost
 
-	if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 && GetTime( ) - m_LastAutoHostTime >= 30 && m_HostCounter != 0 )
+	if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 && GetTime( ) - m_LastAutoHostTime >= 30 && m_ReservedHostCounter != 0 )
 	{
 		// copy all the checks from CGHost :: CreateGame here because we don't want to spam the chat when there's an error
 		// instead we fail silently and try again soon
@@ -1081,7 +1081,6 @@ bool CGHost :: Update( long usecBlock )
 		{       
 			if( m_AutoHostMap->GetValid( ) )
 			{
-                                
 				string GameName = m_AutoHostGameName + " #" + UTIL_ToString( GetNewHostCounter( ) );
 
 				if( GameName.size( ) <= 31 )
@@ -1222,8 +1221,8 @@ bool CGHost :: Update( long usecBlock )
                 m_CallableDCountryList = NULL;
         }
         
-        // load a new hostcounter
-        if( m_HostCounter == 0 && GetTime( ) - m_LastHCUpdate >= 1 )
+        // load a new m_ReservedHostCounter
+        if( m_ReservedHostCounter == 0 && GetTime( ) - m_LastHCUpdate >= 1 )
         {
                 m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0 );
                 m_LastHCUpdate = GetTime( );
@@ -1231,7 +1230,8 @@ bool CGHost :: Update( long usecBlock )
 
         if( m_CallableHC && m_CallableHC->GetReady( ) )
         {
-                m_HostCounter = m_CallableHC->GetResult( );
+                m_ReservedHostCounter = m_CallableHC->GetResult( );
+                m_HostCounter = m_ReservedHostCounter;
                 m_DB->RecoverCallable( m_CallableHC );
                 delete m_CallableHC;
                 m_CallableHC = NULL;
@@ -1905,10 +1905,10 @@ void CGHost :: LoadRules( )
 
 uint32_t CGHost :: GetNewHostCounter( )
 {
-    if( m_HostCounter != 0 )
+    if( m_ReservedHostCounter != 0 )
     {
         uint32_t m_Result = m_HostCounter;
-        m_HostCounter = 0;
+        m_ReservedHostCounter = 0;
         CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
         return m_Result;
     }
