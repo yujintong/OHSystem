@@ -33,7 +33,7 @@ class CStats;
 class CCallableBanCheck;
 class CCallablePassCheck;
 class CCallableGameAdd;
-class CCallableGammeDBInit;
+class CCallableGameDBInit;
 class CCallableGamePlayerSummaryCheck;
 class CCallableStatsPlayerSummaryCheck;
 class CCallableInboxSummaryCheck;

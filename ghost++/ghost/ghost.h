@@ -48,6 +48,7 @@ class CCallableGameUpdate;
 class CCallableFlameList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
+class CCallableGameDBInit;
 
 class CGHost
 {
@@ -116,6 +117,7 @@ public:
 	CCallableCommandList *m_CallableCommandList;			// threaded database command list in progress
 	uint32_t m_LastGameUpdateTime;			// GetTime when the gamelist was last updated
 	CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
+        CCallableGameDBInit *m_CallableHC;
 	double m_AutoHostMinimumScore;
 	double m_AutoHostMaximumScore;
 	bool m_AllGamesFinished;				// if all games finished (used when exiting nicely)
@@ -216,6 +218,7 @@ public:
         uint32_t m_MinScoreLimit;
         bool m_AutobanAll;
         string m_WC3ConnectAlias;
+        uint32_t m_LastHCUpdate;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

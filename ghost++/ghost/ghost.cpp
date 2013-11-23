@@ -374,6 +374,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
+        m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
         m_GarenaHosting = false;
         m_RanksLoaded = true;
@@ -462,6 +463,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastFlameListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
 	m_LastDCountryUpdate = 0;
+        m_LastHCUpdate = 0;
 	m_AutoHostMatchMaking = false;
 	m_AutoHostMinimumScore = 0.0;
 	m_AutoHostMaximumScore = 0.0;
@@ -1070,18 +1072,17 @@ bool CGHost :: Update( long usecBlock )
 
 	// autohost
 
-	if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 && GetTime( ) - m_LastAutoHostTime >= 30 )
+	if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 && GetTime( ) - m_LastAutoHostTime >= 30 && m_HostCounter != 0 )
 	{
 		// copy all the checks from CGHost :: CreateGame here because we don't want to spam the chat when there's an error
 		// instead we fail silently and try again soon
 
 		if( !m_ExitingNice && m_Enabled && !m_CurrentGame && m_Games.size( ) < m_MaxGames && m_Games.size( ) < m_AutoHostMaximumGames )
 		{       
-                    m_HostCounter = GetNewHostCounter( m_AutoHostGameName );
-			if( m_AutoHostMap->GetValid( ) && m_HostCounter != 0 )
+			if( m_AutoHostMap->GetValid( ) )
 			{
                                 
-				string GameName = m_AutoHostGameName + " #" + UTIL_ToString( m_HostCounter );
+				string GameName = m_AutoHostGameName + " #" + GetNewHostCounter( ) );
 
 				if( GameName.size( ) <= 31 )
 				{
@@ -1219,6 +1220,21 @@ bool CGHost :: Update( long usecBlock )
                 m_DB->RecoverCallable( m_CallableDCountryList );
                 delete m_CallableDCountryList;
                 m_CallableDCountryList = NULL;
+        }
+        
+        // load a new hostcounter
+        if( hostcounter == 0 && GetTime( ) - m_LastHCUpdate >= 1 )
+        {
+                m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0 );
+                m_LastHCUpdate = GetTime( );
+        }
+
+        if( m_CallableHC && m_CallableHC->GetReady( ) )
+        {
+                m_HostCounter = m_CallableHC->GetResult( );
+                m_DB->RecoverCallable( m_CallableHC );
+                delete m_CallableHC;
+                m_CallableHC = NULL;
         }
 
 	//refresh command list every 5 seconds
@@ -1712,7 +1728,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 
 	CONSOLE_Print( "[GHOST] creating game [" + gameName + "]" );
         if( m_HostCounter == 0 )
-                m_HostCounter = GetNewHostCounter( gameName );
+                m_HostCounter = GetNewHostCounter( );
 	m_Callables.push_back( m_DB->Threadedgs( m_HostCounter, gameName, 1, gameType ) );
         
 	if( saveGame )
@@ -1887,10 +1903,10 @@ void CGHost :: LoadRules( )
 	CONSOLE_Print( "Unable to open rules.txt" );
 }
 
-uint32_t CGHost :: GetNewHostCounter( string gamename )
+uint32_t CGHost :: GetNewHostCounter( )
 {
-    uint32_t gameid = 0;
-    uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid )->GetResult();
+    uint32_t m_Result = m_HostCounter;
+    m_HostCounter = 0;
     CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
     return m_Result;
 }
