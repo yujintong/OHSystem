@@ -3924,7 +3924,7 @@ void CGame :: EventGameStarted( )
         {
             m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
         }
-        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, m_GameName );
+        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_Players, m_GameName );
 }
  
 bool CGame :: IsGameDataSaved( )
