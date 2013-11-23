@@ -45,7 +45,7 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
    if ( isset($_GET["edit"])  AND is_numeric($_GET["edit"])  ) $id = safeEscape( (int) $_GET["edit"] );
    //UPDATE
     if ( isset($_POST["edit_ban"]) ) {
-	  $name     = safeEscape( trim($_POST["name"]));
+	  $name     = safeEscape( trim(strtolower($_POST["name"])));
 	  $server   = safeEscape( trim($_POST["server"]));
 	  $reason   = EscapeStr( convEnt2(trim($_POST["reason"])));
 	  $ip       = safeEscape( trim($_POST["ip"]));
