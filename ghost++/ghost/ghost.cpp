@@ -1890,6 +1890,9 @@ uint32_t CGHost :: GetNewHostCounter( string gamename )
 {
     uint32_t gameid = 0;
     uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid )->GetResult();
+    m_DB->RecoverCallable( m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid ) );
+    delete m_DB->ThreadedGameDBInit( vector<CDBBan *>(), gamename, gameid );
+    CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
     return m_Result;
 }
 void CGHost :: LoadRanks( )
