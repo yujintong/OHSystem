@@ -33,6 +33,7 @@ class CStats;
 class CCallableBanCheck;
 class CCallablePassCheck;
 class CCallableGameAdd;
+class CCallableGammeDBInit;
 class CCallableGamePlayerSummaryCheck;
 class CCallableStatsPlayerSummaryCheck;
 class CCallableInboxSummaryCheck;
@@ -59,6 +60,7 @@ protected:
 	vector<CDBGamePlayer *> m_DBGamePlayers;	// vector of potential gameplayer data for the database
 	CStats *m_Stats;							// class to keep track of game stats such as kills/deaths/assists in dota
 	CCallableGameAdd *m_CallableGameAdd;		// threaded database game addition in progress
+        CCallableGameDBInit *m_CallableGameDBInit;
 	vector<PairedBanCheck> m_PairedBanChecks;	// vector of paired threaded database ban checks in progress
         vector<PairedPassCheck> m_PairedPassChecks;       // vector of paired threaded database password checks in progress
 	vector<PairedGSCheck> m_PairedGSChecks;	// vector of paired threaded database game player summary checks in progress

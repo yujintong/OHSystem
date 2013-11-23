@@ -357,9 +357,14 @@ CCallableCommandList *CGHostDB :: ThreadedCommandList( )
 	return NULL;
 }
 
-CCallableGameAdd *CGHostDB :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog )
+CCallableGameAdd *CGHostDB :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid )
 {
 	return NULL;
+}
+
+CCallableGameIDInit *CGHostDB :: ThreadedGameInit( vector<CGamePlayer *> players )
+{
+        return NULL;
 }
 
 CCallableGameUpdate *CGHostDB :: ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
@@ -562,6 +567,10 @@ CCallableGameAdd :: ~CCallableGameAdd( )
 
 }
 
+CCallableGameDBInit :: ~CCallableGameDBInit( )
+{
+
+}
 CCallableGameUpdate :: ~CCallableGameUpdate( )
 {
 

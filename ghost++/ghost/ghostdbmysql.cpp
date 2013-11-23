@@ -502,14 +502,27 @@ CCallableCommandList *CGHostDBMySQL :: ThreadedCommandList( )
 	return Callable;
 }
 
-CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog )
+CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid )
 {
 	void *Connection = GetIdleConnection( );
 
 	if( !Connection )
                 ++m_NumConnections;
 
-	CCallableGameAdd *Callable = new CMySQLCallableGameAdd( server, map, gamename, ownername, duration, gamestate, creatorname, creatorserver, gametype, lobbylog, gamelog, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+	CCallableGameAdd *Callable = new CMySQLCallableGameAdd( server, map, gamename, ownername, duration, gamestate, creatorname, creatorserver, gametype, lobbylog, gamelog, databaseid, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+	CreateThread( Callable );
+        ++m_OutstandingCallables;
+	return Callable;
+}
+
+CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CGamePlayer *> players )
+{
+	void *Connection = GetIdleConnection( );
+
+	if( !Connection )
+                ++m_NumConnections;
+
+	CCallableGameDBInit *Callable = new CMySQLCallableGameDBInit( players, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
 	CreateThread( Callable );
         ++m_OutstandingCallables;
 	return Callable;
@@ -1908,7 +1921,7 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
 	return CommandList;
 }
 
-uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog )
+uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid )
 {
 	uint32_t RowID = 0;
 	string EscServer = MySQLEscapeString( conn, server );
@@ -1917,17 +1930,17 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
 	string EscOwnerName = MySQLEscapeString( conn, ownername );
 	string EscCreatorName = MySQLEscapeString( conn, creatorname );
 	string EscCreatorServer = MySQLEscapeString( conn, creatorserver );
-	string Query = 	"INSERT INTO oh_games ( botid, server, map, datetime, gamename, ownername, duration, gamestate, gametype, creatorname, creatorserver ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscMap + "', NOW( ), '" + EscGameName + "', '" + EscOwnerName + "', " + UTIL_ToString( duration ) + ", " + UTIL_ToString( gamestate ) + ", " + UTIL_ToString( gametype ) + ", '" + EscCreatorName + "', '" + EscCreatorServer + "' )";
+	string Query = 	"UPDATE oh_games SET botid="+UTIL_ToString(botid)+", server='" + EscServer + "',map='" + EscMap + "', datetime= NOW(), gamename='" + EscGameName + "', ownername='" + EscOwnerName + "', duration=" + UTIL_ToString( duration ) + ", gamestate=" + UTIL_ToString( gamestate ) + ", gametype= "+ UTIL_ToString( gametype ) + ", creatorname='" + EscCreatorName + "', creatorserver='" + EscCreatorServer + "' WHERE id = "+UTIL_ToString(databaseid)+";";
 	if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
 		*error = mysql_error( (MYSQL *)conn );
 	else
-		 RowID = mysql_insert_id( (MYSQL *)conn );;
+		 RowID = mysql_insert_id( (MYSQL *)conn );
 
-        string GIQuery = "INSERT INTO oh_game_info ( botid, gameid, server, map, datetime, gamename, ownername, duration, gamestate, gametype, creatorname, creatorserver ) VALUES ( " + UTIL_ToString( botid ) + ", '" + UTIL_ToString( RowID ) + "', '" + EscServer + "', '" + EscMap + "', NOW( ), '" + EscGameName + "', '" + EscOwnerName + "', " + UTIL_ToString( duration ) + ", " + UTIL_ToString( gamestate ) + ", " + UTIL_ToString( gametype ) + ", '" + EscCreatorName + "', '" + EscCreatorServer + "' )";
+        string GIQuery = "INSERT INTO oh_game_info ( botid, gameid, server, map, datetime, gamename, ownername, duration, gamestate, gametype, creatorname, creatorserver ) VALUES ( " + UTIL_ToString( botid ) + ", '" + UTIL_ToString( databaseid ) + "', '" + EscServer + "', '" + EscMap + "', NOW( ), '" + EscGameName + "', '" + EscOwnerName + "', " + UTIL_ToString( duration ) + ", " + UTIL_ToString( gamestate ) + ", " + UTIL_ToString( gametype ) + ", '" + EscCreatorName + "', '" + EscCreatorServer + "' )";
         if( mysql_real_query( (MYSQL *)conn, GIQuery.c_str( ), GIQuery.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
 
-	if( RowID != 0 )
+	if( databaseid != 0 )
 	{
 		string LobbyLog;
 		for( vector<string> :: iterator i = lobbylog.begin( ); i != lobbylog.end( ); i++ )
@@ -1941,7 +1954,7 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
 
 		string EscGameLog = MySQLEscapeString( conn, GameLog );
 
-		string InsertQ = "INSERT INTO oh_lobby_game_logs ( gameid, botid, gametype, lobbylog, gamelog ) VALUES ( "+UTIL_ToString(RowID)+", "+UTIL_ToString(botid)+", "+UTIL_ToString(gametype)+", '"+EscLobbyLog+"', '"+EscGameLog+"' )";
+		string InsertQ = "INSERT INTO oh_lobby_game_logs ( gameid, botid, gametype, lobbylog, gamelog ) VALUES ( "+UTIL_ToString(databaseid)+", "+UTIL_ToString(botid)+", "+UTIL_ToString(gametype)+", '"+EscLobbyLog+"', '"+EscGameLog+"' )";
 
 	        if( mysql_real_query( (MYSQL *)conn, InsertQ.c_str( ), InsertQ.size( ) ) != 0 )
         	        *error = mysql_error( (MYSQL *)conn );
@@ -1950,6 +1963,17 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
 	return RowID;
 }
 
+uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CGamePlayer *> players )
+{
+    uint32_t RowID = 0;
+    string Query = "INSERT INTO oh_games (botid) VALUES ("+UTIL_ToString(botid)+");";
+    if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+            *error = mysql_error( (MYSQL *)conn );
+    else
+             RowID = mysql_insert_id( (MYSQL *)conn );
+
+    return RowID;
+}
 string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
 {
 	if(add) {
@@ -2792,7 +2816,17 @@ void CMySQLCallableGameAdd :: operator( )( )
 	Init( );
 
 	if( m_Error.empty( ) )
-		m_Result = MySQLGameAdd( m_Connection, &m_Error, m_SQLBotID, m_Server, m_Map, m_GameName, m_OwnerName, m_Duration, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog );
+		m_Result = MySQLGameAdd( m_Connection, &m_Error, m_SQLBotID, m_Server, m_Map, m_GameName, m_OwnerName, m_Duration, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog, m_DatabaseID );
+
+	Close( );
+}
+
+void CMySQLCallableGameDBInit :: operator( )( )
+{
+	Init( );
+
+	if( m_Error.empty( ) )
+		m_Result = MySQLGameDBInit( m_Connection, &m_Error, m_SQLBotID, m_Players );
 
 	Close( );
 }
