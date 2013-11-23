@@ -1974,7 +1974,7 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
 
     for( vector<CDBBan *> :: iterator i = players.begin( ); i != players.end( ); i++ )
     {
-        string PlayerQuery = "INSERT INTO oh_gameplayer (botid, gameid, name, ip) VALUES ("+UTIL_ToString(botid)+", "+UTIL_ToString(RowID)+", "+(*i)->GetName()+", "+(*i)->GetExternalIPString()+");";
+        string PlayerQuery = "INSERT INTO oh_gameplayer (botid, gameid, name, ip) VALUES ("+UTIL_ToString(botid)+", "+UTIL_ToString(RowID)+", "+(*i)->GetName()+", "+(*i)->GetIP( )+");";
         if( mysql_real_query( (MYSQL *)conn, PlayerQuery.c_str( ), PlayerQuery.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
     }
