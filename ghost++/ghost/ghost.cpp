@@ -1889,7 +1889,7 @@ void CGHost :: LoadRules( )
 uint32_t CGHost :: GetNewHostCounter( string gamename )
 {
     uint32_t gameid = 0;
-    uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<string>(), gamename, gameid );
+    uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<CBaseGame *> unknown, gamename, gameid );
     return m_Result;
 }
 void CGHost :: LoadRanks( )
