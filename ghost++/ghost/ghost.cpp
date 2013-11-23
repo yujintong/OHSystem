@@ -1079,7 +1079,7 @@ bool CGHost :: Update( long usecBlock )
 		{
 			if( m_AutoHostMap->GetValid( ) )
 			{
-                            uint32_t m_HostCounter = GetNewHostCounter( m_AutoHostGameName ); 
+                                m_HostCounter = GetNewHostCounter( m_AutoHostGameName ); 
 				string GameName = m_AutoHostGameName + " #" + UTIL_ToString( m_HostCounter );
 
 				if( GameName.size( ) <= 31 )
@@ -1716,9 +1716,9 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 	m_Callables.push_back( m_DB->Threadedgs( m_HostCounter, gameName, 1, gameType ) );
         
 	if( saveGame )
-		m_CurrentGame = new CGame( this, map, m_SaveGame, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType );
+		m_CurrentGame = new CGame( this, map, m_SaveGame, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType, m_HostCounter );
 	else
-		m_CurrentGame = new CGame( this, map, NULL, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType );
+		m_CurrentGame = new CGame( this, map, NULL, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType, m_HostCounter );
 
 	// todotodo: check if listening failed and report the error to the user
 
