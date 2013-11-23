@@ -1905,10 +1905,14 @@ void CGHost :: LoadRules( )
 
 uint32_t CGHost :: GetNewHostCounter( )
 {
-    uint32_t m_Result = m_HostCounter;
-    m_HostCounter = 0;
-    CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
-    return m_Result;
+    if( m_HostCounter != 0 )
+    {
+        uint32_t m_Result = m_HostCounter;
+        m_HostCounter = 0;
+        CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
+        return m_Result;
+    }
+    return m_HostCounter;
 }
 void CGHost :: LoadRanks( )
 {
