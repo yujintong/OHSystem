@@ -1445,7 +1445,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_SyncLimit = CFG->GetInt( "bot_synclimit", 50 );
 	m_VoteKickAllowed = CFG->GetInt( "bot_votekickallowed", 1 ) == 0 ? false : true;
 	m_VoteKickPercentage = CFG->GetInt( "bot_votekickpercentage", 100 );
-	LoadHostCounter();
 	LoadDatas();
         LoadRules();
         LoadRanks();
@@ -1887,7 +1886,7 @@ void CGHost :: LoadRules( )
 	CONSOLE_Print( "Unable to open rules.txt" );
 }
 
-void CGHost :: GetNewHostCounter( string gamename )
+uint32_t CGHost :: GetNewHostCounter( string gamename )
 {
     uint32_t m_Result = m_DB->ThreadedGameDBInit( vector<string>(), gamename, 0 );
     return m_Result;
