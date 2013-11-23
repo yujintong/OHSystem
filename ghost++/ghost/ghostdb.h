@@ -48,6 +48,7 @@ class CCallableBanList;
 class CCallableTBRemove;
 class CCallableCommandList;
 class CCallableGameAdd;
+class CCallableGameDBInit;
 class CCallableGamePlayerAdd;
 class CCallableGamePlayerSummaryCheck;
 class CCallableStatsPlayerSummaryCheck;
@@ -156,7 +157,8 @@ public:
 	virtual CCallableBanList *ThreadedBanList( string server );
         virtual CCallableTBRemove *ThreadedTBRemove( string server );
 	virtual CCallableCommandList *ThreadedCommandList( );
-	virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog );
+	virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
+        virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid );
 	virtual CCallableGameUpdate *ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add );
 	virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
 	virtual CCallableGamePlayerSummaryCheck *ThreadedGamePlayerSummaryCheck( string name );
@@ -583,14 +585,31 @@ protected:
 	uint32_t m_GameType;
 	vector<string> m_LobbyLog;
 	vector<string> m_GameLog;
+        uint32_t m_DatabaseID;
 	uint32_t m_Result;
 
 public:
-	CCallableGameAdd( string nServer, string nMap, string nGameName, string nOwnerName, uint32_t nDuration, uint32_t nGameState, string nCreatorName, string nCreatorServer, uint32_t nGameType, vector<string> nLobbyLog, vector<string> nGameLog ) : CBaseCallable( ), m_Server( nServer ), m_Map( nMap ), m_GameName( nGameName ), m_OwnerName( nOwnerName ), m_Duration( nDuration ), m_GameState( nGameState ), m_CreatorName( nCreatorName ), m_CreatorServer( nCreatorServer ), m_GameType( nGameType ), m_LobbyLog( nLobbyLog ), m_GameLog( nGameLog ), m_Result( 0 ) { }
+	CCallableGameAdd( string nServer, string nMap, string nGameName, string nOwnerName, uint32_t nDuration, uint32_t nGameState, string nCreatorName, string nCreatorServer, uint32_t nGameType, vector<string> nLobbyLog, vector<string> nGameLog, uint32_t nDatabaseID ) : CBaseCallable( ), m_Server( nServer ), m_Map( nMap ), m_GameName( nGameName ), m_OwnerName( nOwnerName ), m_Duration( nDuration ), m_GameState( nGameState ), m_CreatorName( nCreatorName ), m_CreatorServer( nCreatorServer ), m_GameType( nGameType ), m_LobbyLog( nLobbyLog ), m_GameLog( nGameLog ), m_DatabaseID( nDatabaseID ), m_Result( 0 ) { }
 	virtual ~CCallableGameAdd( );
 
 	virtual uint32_t GetResult( )				{ return m_Result; }
 	virtual void SetResult( uint32_t nResult )	{ m_Result = nResult; }
+};
+
+class CCallableGameDBInit : virtual public CBaseCallable
+{
+protected:
+    vector<CDBBan *> m_Players;
+    string m_GameName;
+    uint32_t m_GameID;
+    uint32_t m_Result;
+    
+public:
+    CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName,uint32_t nGameID ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_GameID( nGameID ), m_Result( 0 ) { }
+    virtual ~CCallableGameDBInit( );
+
+    virtual uint32_t GetResult( )				{ return m_Result; }
+    virtual void SetResult( uint32_t nResult )	{ m_Result = nResult; }
 };
 
 class CCallableGameUpdate : virtual public CBaseCallable

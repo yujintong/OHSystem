@@ -68,7 +68,7 @@ public:
 // CGame
 //
  
-CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType ) : CBaseGame( nGHost, nMap, nSaveGame, nHostPort, nGameState, nGameName, nOwnerName, nCreatorName, nCreatorServer, nGameType ), m_DBBanLast( NULL ), m_Stats( NULL ) ,m_CallableGameAdd( NULL ), m_ForfeitTime( 0 ), m_ForfeitTeam( 0 ), m_EarlyDraw( false )
+CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter ) : CBaseGame( nGHost, nMap, nSaveGame, nHostPort, nGameState, nGameName, nOwnerName, nCreatorName, nCreatorServer, nGameType, nHostCounter ), m_DBBanLast( NULL ), m_Stats( NULL ) ,m_CallableGameAdd( NULL ), m_ForfeitTime( 0 ), m_ForfeitTeam( 0 ), m_EarlyDraw( false )
 {
         m_DBGame = new CDBGame( 0, string( ), m_Map->GetMapPath( ), string( ), string( ), string( ), 0 );
  
@@ -81,6 +81,7 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
         m_LobbyLog.clear();
         m_GameLog.clear();
         m_ObservingPlayers = 0;
+        m_CallableGameDBInit = NULL;
 }
  
 CGame :: ~CGame( )
@@ -120,11 +121,6 @@ CGame :: ~CGame( )
         if( m_CallableGameAdd && m_CallableGameAdd->GetReady( ) )
         {
  
-                if (m_GHost->m_GameIDReplays)
-                {
-                        m_DatabaseID = m_CallableGameAdd->GetResult();
- 
-                }
                 if( m_CallableGameAdd->GetResult( ) > 0 )
                 {
                         CONSOLE_Print( "[GAME: " + m_GameName + "] saving player/stats data to database" );
@@ -132,11 +128,11 @@ CGame :: ~CGame( )
                         // store the CDBGamePlayers in the database
  
                         for( vector<CDBGamePlayer *> :: iterator i = m_DBGamePlayers.begin( ); i != m_DBGamePlayers.end( ); ++i )
-                                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedGamePlayerAdd( m_CallableGameAdd->GetResult(), (*i)->GetName( ), (*i)->GetIP( ), (*i)->GetSpoofed( ), (*i)->GetSpoofedRealm( ), (*i)->GetReserved( ), (*i)->GetLoadingTime( ), (*i)->GetLeft( ), (*i)->GetLeftReason( ), (*i)->GetTeam( ), (*i)->GetColour( ) ) );
+                                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedGamePlayerAdd( m_DatabaseID, (*i)->GetName( ), (*i)->GetIP( ), (*i)->GetSpoofed( ), (*i)->GetSpoofedRealm( ), (*i)->GetReserved( ), (*i)->GetLoadingTime( ), (*i)->GetLeft( ), (*i)->GetLeftReason( ), (*i)->GetTeam( ), (*i)->GetColour( ) ) );
  
                                 if( m_Stats )
                                 {
-                                        m_Stats->Save( m_GHost, m_GHost->m_DB, m_CallableGameAdd->GetResult() );
+                                        m_Stats->Save( m_GHost, m_GHost->m_DB, m_DatabaseID );
                                 }
                 }
                 else
@@ -145,6 +141,21 @@ CGame :: ~CGame( )
                 m_GHost->m_DB->RecoverCallable( m_CallableGameAdd );
                 delete m_CallableGameAdd;
                 m_CallableGameAdd = NULL;
+        }
+        
+        if( m_CallableGameDBInit && m_CallableGameDBInit->GetReady( ) )
+        {
+                if (m_GHost->m_GameIDReplays)
+                {
+                        m_DatabaseID = m_HostCounter;
+                }
+                if( m_DatabaseID > 0 )
+                {
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] Detailed player statistics can be now parsed on the Statspage." );
+                }
+                m_GHost->m_DB->RecoverCallable(m_CallableGameDBInit);
+                delete m_CallableGameDBInit;
+                m_CallableGameDBInit = NULL;
         }
  
         for( vector<PairedPUp> :: iterator i = m_PairedPUps.begin( ); i != m_PairedPUps.end( ); ++i )
@@ -2257,11 +2268,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         m_GameState = GAME_PRIVATE;
                                         m_LastGameName = m_GameName;
                                         m_GameName = Payload;
-                                        m_HostCounter = m_GHost->m_HostCounter++;
                                         m_RefreshError = false;
                                         m_RefreshRehosted = true;
-                                        m_GHost->SaveHostCounter();
-                                        m_HostCounter = m_GHost->m_HostCounter;
  
                                         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                         {
@@ -2300,11 +2308,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         m_GameState = GAME_PUBLIC;
                                         m_LastGameName = m_GameName;
                                         m_GameName = Payload;
-                                        m_HostCounter = m_GHost->m_HostCounter++;
                                         m_RefreshError = false;
                                         m_RefreshRehosted = true;
-                                        m_GHost->SaveHostCounter();
-                                        m_HostCounter = m_GHost->m_HostCounter;
                                         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                         {
                                                 // unqueue any existing game refreshes because we're going to assume the next successful game refresh indicates that the rehost worked
@@ -3910,7 +3915,10 @@ void CGame :: EventGameStarted( )
         // so we create a "potential ban" for each player and only store it in the database if requested to by an admin
  
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-                m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
+        {
+            m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
+        }
+        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
 }
  
 bool CGame :: IsGameDataSaved( )
@@ -3921,7 +3929,7 @@ bool CGame :: IsGameDataSaved( )
 void CGame :: SaveGameData( )
 {
         CONSOLE_Print( "[GAME: " + m_GameName + "] saving game data to database" );
-        m_CallableGameAdd = m_GHost->m_DB->ThreadedGameAdd( m_GHost->m_BNETs.size( ) == 1 ? m_GHost->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog );
+        m_CallableGameAdd = m_GHost->m_DB->ThreadedGameAdd( m_GHost->m_BNETs.size( ) == 1 ? m_GHost->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog,m_DatabaseID );
         m_GHost->m_FinishedGames++;
         m_GHost->m_CheckForFinishedGames = GetTime();
 }

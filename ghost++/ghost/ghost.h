@@ -48,6 +48,7 @@ class CCallableGameUpdate;
 class CCallableFlameList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
+class CCallableGameDBInit;
 
 class CGHost
 {
@@ -116,6 +117,7 @@ public:
 	CCallableCommandList *m_CallableCommandList;			// threaded database command list in progress
 	uint32_t m_LastGameUpdateTime;			// GetTime when the gamelist was last updated
 	CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
+        CCallableGameDBInit *m_CallableHC;
 	double m_AutoHostMinimumScore;
 	double m_AutoHostMaximumScore;
 	bool m_AllGamesFinished;				// if all games finished (used when exiting nicely)
@@ -216,6 +218,8 @@ public:
         uint32_t m_MinScoreLimit;
         bool m_AutobanAll;
         string m_WC3ConnectAlias;
+        uint32_t m_LastHCUpdate;
+        uint32_t m_ReservedHostCounter;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -243,14 +247,13 @@ public:
 	void ReloadConfigs( );
 	void SetConfigs( CConfig *CFG );
 	void ExtractScripts( );
-	void CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper );
-        void SaveHostCounter();
-        void LoadHostCounter();
+	void CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper, uint32_t m_HostCounter );
 	bool FlameCheck( string message );
 	void GetDeniedCountries( );
 	void LoadDatas( );
         void LoadRules( );
         void LoadRanks( );
+        virtual uint32_t GetNewHostCounter( );
 };
 
 #endif
