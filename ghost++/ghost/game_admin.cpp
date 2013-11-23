@@ -671,7 +671,7 @@ bool CAdminGame :: EventPlayerBotCommand( CGamePlayer *player, string command, s
 		//
 
                 else if( Command == "hostsg" && !Payload.empty( ) )
-			m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, true, Payload, User, User, string( ), 1, false );
+			m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, true, Payload, User, User, string( ), 1, false, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 
 		//
 		// !LOAD (load config file)
@@ -871,7 +871,7 @@ bool CAdminGame :: EventPlayerBotCommand( CGamePlayer *player, string command, s
 		//
 
                 else if( Command == "priv" && !Payload.empty( ) )
-			m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, Payload, User, User, string( ), 1, false );
+			m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, Payload, User, User, string( ), 1, false, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 
 		//
 		// !PRIVBY (host private game by other player)
@@ -890,7 +890,7 @@ bool CAdminGame :: EventPlayerBotCommand( CGamePlayer *player, string command, s
 			{
 				Owner = Payload.substr( 0, GameNameStart );
 				GameName = Payload.substr( GameNameStart + 1 );
-				m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, GameName, Owner, User, string( ), 1, false );
+				m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, GameName, Owner, User, string( ), 1, false, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 			}
 		}
 
@@ -899,7 +899,7 @@ bool CAdminGame :: EventPlayerBotCommand( CGamePlayer *player, string command, s
 		//
 
                 else if( Command == "pub" && !Payload.empty( ) )
-			m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, string( ), 2, false );
+			m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, string( ), 2, false, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 
 		//
 		// !PUBBY (host public game by other player)
@@ -918,7 +918,7 @@ bool CAdminGame :: EventPlayerBotCommand( CGamePlayer *player, string command, s
 			{
 				Owner = Payload.substr( 0, GameNameStart );
 				GameName = Payload.substr( GameNameStart + 1 );
-				m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, GameName, Owner, User, string( ), 2, false );
+				m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, GameName, Owner, User, string( ), 2, false, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 			}
 		}
 
