@@ -105,12 +105,13 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
    
    $username = OS_StrToUTF8( $_POST["reg_un"] );
    $username = EscapeStr( trim( $username ));
+   $bnetname = strtolower($username);
    $email = safeEscape( trim($_POST["reg_email"]));
    $password = safeEscape( $_POST["reg_pw"]);
    $password2 = safeEscape( $_POST["reg_pw2"]);
    $registration_errors = "";
 
-   $AllowedCharacters = 'QWERTZUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklyxcvbnmљњертзуиопшђасдфгхјклчћжѕџцвбнмšđčćžŠĐČĆŽЉЊЕРТЗУИОПШЂАСДФГХЈКЛЧЋЖЅЏЦВБНМ_-';
+   $AllowedCharacters = 'QWERTZUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklyxcvbnmљњертзуиопшђасдфгхјклчћжѕџцвбнмšđčćžŠĐČĆŽЉЊЕРТЗУИОПШЂАСДФГХЈКЛЧЋЖЅЏЦВБНМ_-1234567890.';
    
    if (!preg_match ('/^['.$AllowedCharacters.']+$/', $username))
    $registration_errors.="<div>".$lang["error_username"]."</div>";
@@ -151,6 +152,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	  
     $db->insert( OSDB_USERS, array(
 	"user_name" => $username,
+	"bnet_username" => $bnetname,
 	"user_password" => $password_db,
 	"password_hash" => $hash,
 	"user_email" => $email,
