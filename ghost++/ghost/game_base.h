@@ -185,7 +185,6 @@ protected:
         uint32_t m_BreakAutoEndVotesNeeded;
         uint32_t m_BreakAutoEndVotes;
         uint32_t m_EndTicks;
-        uint32_t m_HostCounter;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
@@ -200,7 +199,6 @@ public:
 	string m_GameName;
 	vector<string> m_BasicDenied;
         vector<Pairedpenp> m_Pairedpenps;
-        uint32_t m_HostCounter;
         vector<PairedBanAdd> m_PairedBanAdds;           // vector of paired threaded database ban adds in progress
         vector<CGameSlot> m_Slots;                                              // vector of slots
 	vector<CGamePlayer *> m_Players;                        // vector of players
@@ -211,7 +209,6 @@ public:
 	virtual unsigned char GetGameState( )			{ return m_GameState; }
 	virtual unsigned char GetGProxyEmptyActions( )	{ return m_GProxyEmptyActions; }
 	virtual string GetGameName( )					{ return m_GameName; }
-	virtual void SetHostCounter( uint32_t nHostCounter)                     { m_HostCounter = nHostCounter; }
 	virtual string GetMapName( );
 	virtual string GetLastGameName( )				{ return m_LastGameName; }
 	virtual string GetVirtualHostName( )			{ return m_VirtualHostName; }
@@ -227,7 +224,6 @@ public:
 	virtual bool GetGameLoading( )					{ return m_GameLoading; }
 	virtual bool GetGameLoaded( )					{ return m_GameLoaded; }
 	virtual bool GetLagging( )						{ return m_Lagging; }
-        virtual uint32_t GetHoustCounter( )                                     { return m_HostCounter; }
 
 	virtual void SetEnforceSlots( vector<CGameSlot> nEnforceSlots )		{ m_EnforceSlots = nEnforceSlots; }
 	virtual void SetEnforcePlayers( vector<PIDPlayer> nEnforcePlayers )	{ m_EnforcePlayers = nEnforcePlayers; }

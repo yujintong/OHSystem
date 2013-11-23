@@ -605,7 +605,7 @@ protected:
     uint32_t m_Result;
     
 public:
-    CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName,uint32_t GameID ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_GameID( nGameID ), m_Result( 0 ) { }
+    CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName,uint32_t nGameID ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_GameID( nGameID ), m_Result( 0 ) { }
     virtual ~CCallableGameDBInit( );
 
     virtual uint32_t GetResult( )				{ return m_Result; }
