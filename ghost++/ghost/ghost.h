@@ -252,7 +252,7 @@ public:
 	void LoadDatas( );
         void LoadRules( );
         void LoadRanks( );
-        virtual uint32_t GetNewHostCounter( string gamename );
+        virtual uint32_t GetNewHostCounter( );
 };
 
 #endif

@@ -1082,7 +1082,7 @@ bool CGHost :: Update( long usecBlock )
 			if( m_AutoHostMap->GetValid( ) )
 			{
                                 
-				string GameName = m_AutoHostGameName + " #" + GetNewHostCounter( ) );
+				string GameName = m_AutoHostGameName + " #" + GetNewHostCounter( );
 
 				if( GameName.size( ) <= 31 )
 				{
@@ -1223,7 +1223,7 @@ bool CGHost :: Update( long usecBlock )
         }
         
         // load a new hostcounter
-        if( hostcounter == 0 && GetTime( ) - m_LastHCUpdate >= 1 )
+        if( m_HostCounter == 0 && GetTime( ) - m_LastHCUpdate >= 1 )
         {
                 m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0 );
                 m_LastHCUpdate = GetTime( );
