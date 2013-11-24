@@ -3533,7 +3533,10 @@ void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
         player->SetDeleteMe( true );
  
         if( reason == PLAYERLEAVE_GPROXY )
+        {
                 player->SetLeftReason( m_GHost->m_Language->WasUnrecoverablyDroppedFromGProxy( ) );
+                player->SetSafeDrop( true );
+        }
         else
         {
                 player->SetLeftReason( m_GHost->m_Language->HasLeftVoluntarily( ) );
