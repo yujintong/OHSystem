@@ -735,6 +735,14 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                         m_GameOverTime = GetTime();
                                 }
                         }
+                        
+                        if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
+                        {
+                            string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
+                            SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
+                            SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
+                            m_EndTicks = GetTicks();
+                        }
                 }
  
                 // if stats and not solo, and at least two leavers in first four minutes, then draw the game
@@ -761,14 +769,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 m_GameOverTime = GetTime();
                         }
                 }
-                
-            if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
-            {
-                string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
-                SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
-                SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
-                m_EndTicks = GetTicks();
-            }
         }
 }
  
@@ -3910,7 +3910,7 @@ bool CGame :: IsGameDataSaved( )
 void CGame :: SaveGameData( )
 {
         CONSOLE_Print( "[GAME: " + m_GameName + "] saving game data to database" );
-        if( m_LoosingTeam )
+        if( m_LoosingTeam && m_EndGame )
             m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
         m_CallableGameAdd = m_GHost->m_DB->ThreadedGameAdd( m_GHost->m_BNETs.size( ) == 1 ? m_GHost->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog,m_DatabaseID );
         m_GHost->m_FinishedGames++;
