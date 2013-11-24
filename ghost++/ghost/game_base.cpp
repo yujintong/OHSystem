@@ -230,22 +230,6 @@ CBaseGame :: ~CBaseGame( )
         delete m_Map;
         delete m_Replay;
 
-                
-        if( m_CallableGameDBInit && m_CallableGameDBInit->GetReady( ) )
-        {
-                if (m_GHost->m_GameIDReplays)
-                {
-                        m_DatabaseID = m_HostCounter;
-                }
-                if( m_DatabaseID > 0 )
-                {
-                    CONSOLE_Print( "[GAME: " + m_GameName + "] Detailed player statistics can be now parsed on the Statspage." );
-                }
-                m_GHost->m_DB->RecoverCallable(m_CallableGameDBInit);
-                delete m_CallableGameDBInit;
-                m_CallableGameDBInit = NULL;
-        }
- 
         for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
                 delete *i;
  
@@ -1723,6 +1707,22 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 m_CallableTBRemove = NULL;
                 m_LastBanRefreshTime = GetTime( );
         }
+        
+        if( m_CallableGameDBInit && m_CallableGameDBInit->GetReady( ) )
+        {
+                if (m_GHost->m_GameIDReplays)
+                {
+                        m_DatabaseID = m_HostCounter;
+                }
+                if( m_DatabaseID > 0 )
+                {
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] Detailed player statistics can be now parsed on the Statspage." );
+                }
+                m_GHost->m_DB->RecoverCallable(m_CallableGameDBInit);
+                delete m_CallableGameDBInit;
+                m_CallableGameDBInit = NULL;
+        }
+        
         return m_Exiting;
 }
  

@@ -1213,16 +1213,15 @@ bool CGHost :: Update( long usecBlock )
         }
         
         // load a new m_ReservedHostCounter
-        if( m_ReservedHostCounter == 0 && GetTime( ) - m_LastHCUpdate >= 1 )
+        if( m_ReservedHostCounter == 0 && m_LastHCUpdate != 0 && GetTime( ) - m_LastHCUpdate >= 5 )
         {
                 m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0 );
-                m_LastHCUpdate = GetTime( );
+                m_LastHCUpdate = 0;
         }
 
         if( m_CallableHC && m_CallableHC->GetReady( ) )
         {
                 m_ReservedHostCounter = m_CallableHC->GetResult( );
-                m_HostCounter = m_ReservedHostCounter;
                 m_DB->RecoverCallable( m_CallableHC );
                 delete m_CallableHC;
                 m_CallableHC = NULL;
@@ -1897,8 +1896,9 @@ uint32_t CGHost :: GetNewHostCounter( )
 {
     if( m_ReservedHostCounter != 0 )
     {
-        uint32_t m_Result = m_HostCounter;
+        m_HostCounter = m_ReservedHostCounter;
         m_ReservedHostCounter = 0;
+        m_LastHCUpdate = GetTime();
         CONSOLE_Print( "[INFO] Set new hostcounter to: "+UTIL_ToString(m_Result));
         return m_Result;
     }
