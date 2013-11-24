@@ -461,7 +461,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastFlameListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
 	m_LastDCountryUpdate = 0;
-        m_LastHCUpdate = 0;
+        m_LastHCUpdate = GetTime();
 	m_AutoHostMatchMaking = false;
 	m_AutoHostMinimumScore = 0.0;
 	m_AutoHostMaximumScore = 0.0;
