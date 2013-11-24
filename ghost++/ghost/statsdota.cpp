@@ -143,7 +143,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                                                         if(m_KillCounter[ValueInt] == 2 )
                                                                         {
                                                                             m_Game->GAME_Print( 131, MinString, SecString, Killer->GetName(), "", "" );
-                                                                            CONSOLE_Print("[STATSDOTA] "+Killer->GetName()+" got a doublie kill.");
+                                                                            CONSOLE_Print("[STATSDOTA] "+Killer->GetName()+" got a double kill.");
                                                                             m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "1" + "\n";
                                                                         }
                                                                         if(m_KillCounter[ValueInt] == 3 )
