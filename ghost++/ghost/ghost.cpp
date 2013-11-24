@@ -1730,7 +1730,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 	CONSOLE_Print( "[GHOST] creating game [" + gameName + "]" );
         if( m_HostCounter == 0 )
                 m_HostCounter = GetNewHostCounter( );
-	m_Callables.push_back( m_DB->Threadedgs( m_HostCounter, gameName, 1, gameType ) );
         
 	if( saveGame )
 		m_CurrentGame = new CGame( this, map, m_SaveGame, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType, m_HostCounter );
@@ -1910,7 +1909,7 @@ uint32_t CGHost :: GetNewHostCounter( )
     {
         uint32_t m_Result = m_HostCounter;
         m_ReservedHostCounter = 0;
-        CONSOLE_Print( "Set new hostcounter to: "+UTIL_ToString(m_Result));
+        CONSOLE_Print( "[INFO] Set new hostcounter to: "+UTIL_ToString(m_Result));
         return m_Result;
     }
     return m_HostCounter;
