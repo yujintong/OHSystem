@@ -105,33 +105,7 @@ string CGHostDBMySQL :: GetStatus( )
 	m_Name.clear( );
 	return "DB STATUS --- Connections: " + UTIL_ToString( m_IdleConnections.size( ) ) + "/" + UTIL_ToString( m_NumConnections ) + " idle. Outstanding callables: " + UTIL_ToString( m_OutstandingCallables ) + ".";
 }
-/*
-void CGHostDBMySQL :: RecoverCallable( CBaseCallable *callable )
-{
-	CMySQLCallable *MySQLCallable = dynamic_cast<CMySQLCallable *>( callable );
 
-	if( MySQLCallable )
-	{
-		if( m_IdleConnections.size( ) > 30 )
-		{
-			mysql_close( (MYSQL *)MySQLCallable->GetConnection( ) );
-                        --m_NumConnections;
-		}
-		else
-			m_IdleConnections.push( MySQLCallable->GetConnection( ) );
-
-		if( m_OutstandingCallables == 0 )
-			CONSOLE_Print( "[MYSQL] recovered a mysql callable with zero outstanding" );
-		else
-                        --m_OutstandingCallables;
-
-		if( !MySQLCallable->GetError( ).empty( ) )
-			CONSOLE_Print( "[MYSQL] error --- " + MySQLCallable->GetError( ) );
-	}
-	else
-		CONSOLE_Print( "[MYSQL] tried to recover a non-mysql callable" );
-}
-*/
 void CGHostDBMySQL :: RecoverCallable( CBaseCallable *callable )
 {
 	CMySQLCallable *MySQLCallable = dynamic_cast<CMySQLCallable *>( callable );

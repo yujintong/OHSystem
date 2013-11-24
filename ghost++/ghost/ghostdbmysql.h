@@ -18,8 +18,6 @@
 
 */
 
-#ifdef GHOST_MYSQL
-
 #ifndef GHOSTDBMYSQL_H
 #define GHOSTDBMYSQL_H
 
@@ -698,7 +696,5 @@ public:
 	virtual void Init( ) { CMySQLCallable :: Init( ); }
 	virtual void Close( ) { CMySQLCallable :: Close( ); }
 };
-
-#endif
 
 #endif
