@@ -1900,7 +1900,7 @@ uint32_t CGHost :: GetNewHostCounter( )
         m_ReservedHostCounter = 0;
         m_LastHCUpdate = GetTime();
         CONSOLE_Print( "[INFO] Set new hostcounter to: "+UTIL_ToString(m_Result));
-        return m_Result;
+        return m_HostCounter;
     }
     return m_HostCounter;
 }
