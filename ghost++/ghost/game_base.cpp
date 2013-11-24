@@ -1613,8 +1613,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             {
                 SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
                 m_GameOverTime = GetTime();
-                if( m_LoosingTeam )
-                        m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
             }
         }
         
