@@ -1932,7 +1932,7 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
         	        *error = mysql_error( (MYSQL *)conn );
 	}
 
-	return RowID;
+	return databaseid;
 }
 
 uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBBan *> players, string gamename, uint32_t gameid )
