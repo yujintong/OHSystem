@@ -736,6 +736,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
                                 if( m_GameTicks < 1000 * 180 )
                                 {
+                                        m_Stats->SetWinner( ( Team + 1 ) % 2 );
                                         SendAllChat( "[AUTO-END] Only one team is remaining, this game will end in fifteen seconds and be recorded as a draw." );
                                         m_GameOverTime = GetTime();
                                 }
@@ -744,6 +745,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 else if( m_GameTicks > 1000 * 180 && m_Stats )
                                 {
                                         SendAllChat( "[AUTO-END] The other team has left, this game will be recorded as your win. You may leave at any time." );
+                                        m_Stats->SetWinner( ( Team + 1 ) % 2 );
                                         m_SoftGameOver = true;
                                         m_LoosingTeam = Team;
                                         m_GameOverTime = GetTime();
@@ -784,12 +786,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                 if(m_LoosingTeam != 0)
                     m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
                 m_EndTicks = GetTicks();
-            } else if( m_EndGame )
-            {
-                SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
-                 if(m_LoosingTeam != 0)
-                     m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
-                 m_GameOverTime = GetTime();
             }
         }
 }
