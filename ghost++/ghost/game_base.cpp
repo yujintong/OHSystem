@@ -4623,6 +4623,14 @@ void CBaseGame :: EventGameStarted( )
                 (*i)->QueueGameUncreate( );
                 (*i)->QueueEnterChat( );
         }
+        
+        // move this here, lets test if this does work :-P
+        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+        {
+            m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
+        }
+        
+        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
 }
  
 void CBaseGame :: EventGameLoaded( )
@@ -4657,7 +4665,6 @@ void CBaseGame :: EventGameLoaded( )
  
  
         m_GameLoadedTime = GetTime();
-        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
 }
  
 unsigned char CBaseGame :: GetSIDFromPID( unsigned char PID )
