@@ -33,6 +33,7 @@ class CGameProtocol;
 class CPotentialPlayer;
 class CGamePlayer;
 class CMap;
+class CStats;
 class CSaveGame;
 class CReplay;
 class CIncomingJoinPlayer;
@@ -68,6 +69,7 @@ public:
 	CGHost *m_GHost;
 
 protected:
+	CStats *m_Stats;							// class to keep track of game stats such as kills/deaths/assists in dota
     	CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
 	vector<CDBBan *> m_DBBans;					// vector of potential ban data for the database (see the Update function for more info, it's not as straightforward as you might think)
 	CTCPServer *m_Socket;							// listening socket

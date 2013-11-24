@@ -767,8 +767,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                 string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
                 SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
                 SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
-                if(m_LoosingTeam != 0)
-                    m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
                 m_EndTicks = GetTicks();
             }
         }
@@ -3868,7 +3866,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_LoosingTeam)
             {
                 m_BreakAutoEndVotes++;
-                if( m_BreakAutoEndVotesNeeded == m_BreakAutoEndVotes)
+                if( m_BreakAutoEndVotesNeeded >= m_BreakAutoEndVotes)
                 {
                     m_EndGame = false;
                     m_EndTicks = 0;

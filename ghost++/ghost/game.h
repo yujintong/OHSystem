@@ -29,7 +29,6 @@ class CDBBan;
 class CDBGame;
 class CDBGamePlayer;
 class CDBInbox;
-class CStats;
 class CCallableBanCheck;
 class CCallablePassCheck;
 class CCallableGameAdd;
@@ -57,7 +56,6 @@ protected:
 	vector<CDBBan *> m_DBBans;					// vector of potential ban data for the database (see the Update function for more info, it's not as straightforward as you might think)
 	CDBGame *m_DBGame;							// potential game data for the database
 	vector<CDBGamePlayer *> m_DBGamePlayers;	// vector of potential gameplayer data for the database
-	CStats *m_Stats;							// class to keep track of game stats such as kills/deaths/assists in dota
 	CCallableGameAdd *m_CallableGameAdd;		// threaded database game addition in progress
 	vector<PairedBanCheck> m_PairedBanChecks;	// vector of paired threaded database ban checks in progress
         vector<PairedPassCheck> m_PairedPassChecks;       // vector of paired threaded database password checks in progress
@@ -75,7 +73,6 @@ protected:
 	uint32_t m_ForfeitTeam;						// id of team that forfeited
         uint32_t m_ObservingPlayers;
         uint32_t m_LoosingTeam;
-        bool m_EndGame;
 
 public:
 	CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
