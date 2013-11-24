@@ -382,10 +382,7 @@ CGHost :: CGHost( CConfig *CFG )
 	string DBType = CFG->GetString( "db_type", "mysql" );
 	CONSOLE_Print( "[GHOST] opening primary database" );
 
-// lets try this, ported from origin ghost++ code, thought it isnt relating anymore for this...
-#ifdef GHOST_MYSQL
 	m_DB = new CGHostDBMySQL( CFG );
-#endif
         
 	// get a list of local IP addresses
 	// this list is used elsewhere to determine if a player connecting to the bot is local or not
@@ -651,14 +648,7 @@ CGHost :: CGHost( CConfig *CFG )
 		CONSOLE_Print( "[GHOST] warning - no battle.net connections found and no admin game created" );
         }
         
-#ifdef GHOST_MYSQL
 	CONSOLE_Print( "[GHOST] GHost++ Version " + m_Version + " (with MySQL support)" );
-#else
-	CONSOLE_Print( "[GHOST] GHost++ Version " + m_Version + " (without MySQL support)" );
-#endif
-
-
-
 }
 
 CGHost :: ~CGHost( )

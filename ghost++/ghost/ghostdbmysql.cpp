@@ -18,8 +18,6 @@
 
 */
 
-#ifdef GHOST_MYSQL
-
 #include "ghost.h"
 #include "util.h"
 #include "config.h"
@@ -2984,5 +2982,3 @@ void CMySQLCallableW3MMDVarAdd :: operator( )( )
 
 	Close( );
 }
-
-#endif
