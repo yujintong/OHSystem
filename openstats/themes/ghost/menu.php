@@ -71,12 +71,13 @@ if ( !isset($s) ) $s = $lang["search_players"];
     <li class="<?=$MenuClass["members"]?>"><a href="<?=OS_HOME?>?members"><?=$lang["members"]?></a></li>
     <?php } ?>	
    
-   <?php if (!is_logged() AND $UserRegistration == 1) { ?>
+   <?php if (!os_is_logged() AND $UserRegistration == 1) { ?>
     <li class="<?=$MenuClass["profile"]?>"><a href="<?=OS_HOME?>?login"><?=$lang["login_register"]?></a></li>
+   <?php if ( $FBLogin == 1) { ?>
 	<li class="<?=$MenuClass["fb"]?>"><a href="<?=OS_HOME?>?action=facebook"><img src="<?=OS_HOME?>img/fb.png" alt="fb" class="imgvalign" width="16" height="16" /> LOGIN</a></li>
-   <?php } ?>
+   <?php } } ?>
    
-   <?php if (is_logged() ) { ?>
+   <?php if (os_is_logged() ) { ?>
    <li class="<?=$MenuClass["profile"]?>">
     <a href="<?=OS_HOME?>?profile"><b><?=substr($_SESSION["username"],0,30)?></b> <? if( isset( $_SESSION["bnet"]) ) { ?><?=OS_bnet_icon( $_SESSION["bnet"], 24, 24, "imgvalign", 0 )?> <? } ?> </a>
       <ul>

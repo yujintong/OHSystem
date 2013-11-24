@@ -233,11 +233,13 @@ CREATE TABLE IF NOT EXISTS `oh_games` (
   `gametype` tinyint(2) NOT NULL,
   `stats` tinyint(1) NOT NULL,
   `views` int(11) NOT NULL,
+  `gamestatus` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `datetime` (`datetime`),
   KEY `map` (`map`),
   KEY `duration` (`duration`),
-  KEY `gamestate` (`gamestate`)
+  KEY `gamestate` (`gamestate`),
+  KEY `gamestatus` (`gamestatus`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_game_info`;

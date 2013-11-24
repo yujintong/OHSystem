@@ -1076,6 +1076,8 @@ vertical-align:bottom;
 #search { position:absolute; right: 10px; margin-top: -16px; }
 #search input[type="text"] { height:21px; width: 130px; }
 
+#search_results_live { position:absolute; top: 166px; right:10px; background-color: #fff; color:#000; border:3px solid #ccc; border-radius: 2px solid #ccc; width:210px; height: 380px; overflow: scroll; padding-left: 5px; padding-top: 4px; font-size:12px; opacity:0.9; overflow-x: hidden; }
+
 .no_rank { font-size:11px; }
 .user_location { width: 700px; height: 320px; margin:0 auto; border: 8px solid #ccc; }
 .user_country { margin-bottom: 16px; }
