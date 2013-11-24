@@ -2998,14 +2998,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 player->SetKickVote( true );
                 uint32_t VotesNeeded = (float)( ( GetNumHumanPlayers( ) - 1 ) /2) * 0.75;
                 uint32_t Votes = 0;
-                uint32_t voteplayerteam;
+                uint32_t voteplayersid;
  
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                 {
                         if( (*i)->GetName( ) == m_KickVotePlayer )
-                                voteplayerteam = m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam( );
+                                voteplayersid = GetSIDFromPID( (*i)->GetPID( ) );
                 }
-                if( m_Slots[GetSIDFromPID( player->GetPID( ) )].GetTeam( ) == voteplayerteam )
+                uint32_t playersid = GetSIDFromPID( player->GetPID());
+                if( ( playersid >= 0 && playersid <= 4 && voteplayersid >= 0 && voteplayersid <= 4) || ( playersid >= 5 && playersid <= 9 && voteplayersid >= 5 && voteplayersid <= 9 ) )
                 {
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                         {
