@@ -81,7 +81,6 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
         m_LobbyLog.clear();
         m_GameLog.clear();
         m_ObservingPlayers = 0;
-        m_CallableGameDBInit = NULL;
 }
  
 CGame :: ~CGame( )
@@ -142,22 +141,7 @@ CGame :: ~CGame( )
                 delete m_CallableGameAdd;
                 m_CallableGameAdd = NULL;
         }
-        
-        if( m_CallableGameDBInit && m_CallableGameDBInit->GetReady( ) )
-        {
-                if (m_GHost->m_GameIDReplays)
-                {
-                        m_DatabaseID = m_HostCounter;
-                }
-                if( m_DatabaseID > 0 )
-                {
-                    CONSOLE_Print( "[GAME: " + m_GameName + "] Detailed player statistics can be now parsed on the Statspage." );
-                }
-                m_GHost->m_DB->RecoverCallable(m_CallableGameDBInit);
-                delete m_CallableGameDBInit;
-                m_CallableGameDBInit = NULL;
-        }
- 
+
         for( vector<PairedPUp> :: iterator i = m_PairedPUps.begin( ); i != m_PairedPUps.end( ); ++i )
                 m_GHost->m_Callables.push_back( i->second );
         
@@ -3915,7 +3899,6 @@ void CGame :: EventGameStarted( )
         {
             m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
         }
-        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
 }
  
 bool CGame :: IsGameDataSaved( )

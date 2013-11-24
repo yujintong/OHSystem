@@ -52,6 +52,7 @@ class CCallablePList;
 class CCallableBanList;
 class CCallableTBRemove;
 class CCallableConnectCheck;
+class CCallableGameDBInit;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -78,6 +79,7 @@ protected:
 	vector<PairedWPCheck> m_PairedWPChecks;
         vector<PairedBanCheck2> m_PairedBanCheck2s;
         vector<PairedLogUpdate> m_PairedLogUpdates;
+        CCallableGameDBInit *m_CallableGameDBInit;
 	queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
 	vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)
 	set<string> m_IgnoredNames;						// set of player names to NOT print ban messages for when joining because they've already been printed

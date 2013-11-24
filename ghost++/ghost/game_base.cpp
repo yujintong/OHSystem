@@ -83,6 +83,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_BreakAutoEndVotesNeeded = 0;
         m_BreakAutoEndVotes = 0;
         m_EndTicks = 0;
+        m_CallableGameDBInit = NULL;
         
         if( m_GHost->m_GarenaHosting )
         {
@@ -228,6 +229,22 @@ CBaseGame :: ~CBaseGame( )
         delete m_Protocol;
         delete m_Map;
         delete m_Replay;
+
+                
+        if( m_CallableGameDBInit && m_CallableGameDBInit->GetReady( ) )
+        {
+                if (m_GHost->m_GameIDReplays)
+                {
+                        m_DatabaseID = m_HostCounter;
+                }
+                if( m_DatabaseID > 0 )
+                {
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] Detailed player statistics can be now parsed on the Statspage." );
+                }
+                m_GHost->m_DB->RecoverCallable(m_CallableGameDBInit);
+                delete m_CallableGameDBInit;
+                m_CallableGameDBInit = NULL;
+        }
  
         for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
                 delete *i;
@@ -4640,6 +4657,7 @@ void CBaseGame :: EventGameLoaded( )
  
  
         m_GameLoadedTime = GetTime();
+        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
 }
  
 unsigned char CBaseGame :: GetSIDFromPID( unsigned char PID )
