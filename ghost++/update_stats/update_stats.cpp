@@ -198,7 +198,7 @@ int main( int argc, char **argv )
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<uint32_t> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id` FROM `oh_games` WHERE `stats` = '0' ORDER BY id;" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id` FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id;" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
