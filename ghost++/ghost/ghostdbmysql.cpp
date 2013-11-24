@@ -1140,12 +1140,12 @@ uint32_t MySQLpm( void *conn, string *error, uint32_t botid, string user, string
 vector<string> MySQLPList( void *conn, string *error, uint32_t botid, string server )
 {
         string EscServer = MySQLEscapeString( conn, server );
-	string DeleteQuery = "UPDATE `oh_users` SET `user_level` = '0' WHERE `user_bnet` >= '1' AND `admin_realm` = '" + EscServer + "' AND `expire_date`  <= CURRENT_TIMESTAMP() AND expire_date != '' AND expire_date!='0000-00-00 00:00:00';";
-        if( mysql_real_query( (MYSQL *)conn, DeleteQuery.c_str( ), DeleteQuery.size( ) ) != 0 )
-                *error = mysql_error( (MYSQL *)conn );
 
         vector<string> PList;
-        string Query = "SELECT `bnet_username`, `user_level` FROM oh_users WHERE `user_bnet` >= '1' AND `admin_realm` = '" + EscServer + "'";
+        if( EscServer == "Garena" )
+                string Query = "SELECT `bnet_username`, `user_level` FROM oh_users WHERE `user_bnet` >= '1' AND `admin_realm` = 'Garena' OR `admin_realm` = 'WC3Connect'";
+        else
+                string Query = "SELECT `bnet_username`, `user_level` FROM oh_users WHERE `user_bnet` >= '1' AND `admin_realm` = '" + EscServer + "'";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
@@ -1831,7 +1831,10 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
 {
 	string EscServer = MySQLEscapeString( conn, server );
 	vector<CDBBan *> BanList;
-	string Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        if( EscServer == "Garena")
+        	string Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' OR server='WC3Connect' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        else
+        	string Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
 
 	if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
 		*error = mysql_error( (MYSQL *)conn );
