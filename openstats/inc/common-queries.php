@@ -552,8 +552,8 @@ function GetMostKillsHero($username, $limit = 1) {
    $sql = "SELECT 
 	original, description, max(kills) as maxkills, g.id as gameid
 	FROM ".OSDB_DP." as dp
-	LEFT JOIN gameplayers AS gp ON gp.gameid = dp.gameid AND dp.colour = gp.colour 
-	LEFT JOIN heroes on hero = heroid 
+	LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid AND dp.colour = gp.colour 
+	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id = dp.gameid
 	WHERE (name)= ('".$username."') 
 	GROUP BY kills 
@@ -565,8 +565,8 @@ function GetMostDeathsHero($username, $limit = 1) {
    $username = strtolower($username);
    $sql = "SELECT original, description, max(deaths) as maxdeaths, g.id as gameid
 	FROM ".OSDB_DP." AS a 
-	LEFT JOIN gameplayers AS b ON b.gameid = a.gameid and a.colour = b.colour 
-	LEFT JOIN heroes on hero = heroid 
+	LEFT JOIN ".OSDB_GP." AS b ON b.gameid = a.gameid and a.colour = b.colour 
+	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id = a.gameid
 	WHERE (name) = ('".$username."') 
 	GROUP BY deaths 
@@ -579,8 +579,8 @@ function GetMostAssistsHero($username, $limit = 1) {
    $username = strtolower($username);
    $sql = "SELECT original, description, max(assists) as maxassists, g.id as gameid
 	FROM ".OSDB_DP." AS a 
-	LEFT JOIN gameplayers AS b ON b.gameid = a.gameid and a.colour = b.colour 
-	LEFT JOIN heroes on hero = heroid 
+	LEFT JOIN ".OSDB_GP." AS b ON b.gameid = a.gameid and a.colour = b.colour 
+	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id = a.gameid
 	WHERE (name) = ('".$username."') 
 	GROUP BY assists 
@@ -818,12 +818,12 @@ function OS_MostPlayedHero( $username) {
 
    	$sql = "SELECT SUM(`left`) AS timeplayed, original, description, 
 	COUNT(*) AS played 
-	FROM gameplayers 
-	LEFT JOIN games ON games.id=gameplayers.gameid 
-	LEFT JOIN dotaplayers ON dotaplayers.gameid=games.id 
-	AND dotaplayers.colour=gameplayers.colour  
-	LEFT JOIN dotagames ON games.id=dotagames.gameid 
-    JOIN heroes on hero = heroid 
+	FROM ".OSDB_GP." as gp 
+	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
+	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 
+	AND dp.colour=gp.colour  
+	LEFT JOIN ".OSDB_DG." as dg ON g.id=dg.gameid 
+    JOIN ".OSDB_HEROES." on hero = heroid 
 	WHERE (name)=('".safeEscape($username)."')
 	GROUP BY original 
 	ORDER BY played DESC LIMIT 1";
