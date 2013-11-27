@@ -41,6 +41,33 @@ using namespace std;
 
 #include <stdio.h>
 
+uint32_t GetTicks( )
+{
+#ifdef WIN32
+	// don't use GetTickCount anymore because it's not accurate enough (~16ms resolution)
+	// don't use QueryPerformanceCounter anymore because it isn't guaranteed to be strictly increasing on some systems and thus requires "smoothing" code
+	// use timeGetTime instead, which typically has a high resolution (5ms or more) but we request a lower resolution on startup
+
+	return timeGetTime( );
+#elif __APPLE__
+	uint64_t current = mach_absolute_time( );
+	static mach_timebase_info_data_t info = { 0, 0 };
+	// get timebase info
+	if( info.denom == 0 )
+		mach_timebase_info( &info );
+	uint64_t elapsednano = current * ( info.numer / info.denom );
+	// convert ns to ms
+	return elapsednano / 1e6;
+#else
+	uint32_t ticks;
+	struct timespec t;
+	clock_gettime( CLOCK_MONOTONIC, &t );
+	ticks = t.tv_sec * 1000;
+	ticks += t.tv_nsec / 1000000;
+	return ticks;
+#endif
+}
+
 void CONSOLE_Print( string message )
 {
 	string outer = "[STATSUPDATE] " + message;
@@ -217,8 +244,9 @@ int main( int argc, char **argv )
 
     bool updatedstats = UnscoredGames.size( ) == 0 ? false : true;
 
-    CONSOLE_Print( "Found ["+UTIL_ToString(UnscoredGames.size( ))+"] unscored games." );
-
+    uint32_t GameAmount=UnscoredGames.size( );
+    CONSOLE_Print( "Found ["+UTIL_ToString(GameAmount)+"] unscored games." );
+    uint32_t StartTicks = GetTicks();
     while( !UnscoredGames.empty( ) )
     {
         uint32_t GameID = UnscoredGames.front( );
@@ -509,7 +537,8 @@ int main( int argc, char **argv )
                                         }
                                 }
                         }
-                        else
+                        //if a player got a connection error his stats arent safed properly, there is an issue that his newcolour gets automatically set to 0
+                        else if( Colour != 0 )  
                         {
                                 CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" has a player with an invalid newcolour. Ignoring this Game." );
                                 ignore = true;
@@ -592,6 +621,8 @@ int main( int argc, char **argv )
 
     MYSQL_RES *CommitResult = QueryBuilder(Connection, "COMMIT" );
     CONSOLE_Print( "Transaction done. Closing connection." );
+    uint32_t EndTicks = GetTicks();
+    CONSOLE_Print( "Statistic: Updated ["+UTIL_ToString(GameAmount)+"] in ["+UTIL_ToString(EndTicks-StartTicks)+"] ms.");
  updateLock.unlock( );
     return 0;
 }

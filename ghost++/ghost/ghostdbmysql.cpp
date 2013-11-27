@@ -1959,9 +1959,13 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
         
         return RowID;
     }
+    uint32_t c=0;
     for( vector<CDBBan *> :: iterator i = players.begin( ); i != players.end( ); i++ )
     {
-        string PlayerQuery = "INSERT INTO oh_gameplayers (botid, gameid, name, ip) VALUES ("+UTIL_ToString(botid)+", "+UTIL_ToString(gameid)+", '"+(*i)->GetName()+"', '"+(*i)->GetIP( )+"');";
+        c++;
+        if( c==5)
+            c++;
+        string PlayerQuery = "INSERT INTO oh_gameplayers (botid, gameid, name, ip, colour) VALUES ("+UTIL_ToString(botid)+", "+UTIL_ToString(gameid)+", '"+(*i)->GetName()+"', '"+(*i)->GetIP( )+"', '"+UTIL_ToString(c)+"');";
         if( mysql_real_query( (MYSQL *)conn, PlayerQuery.c_str( ), PlayerQuery.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
     }
@@ -2037,8 +2041,8 @@ uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t
 	string EscIP = MySQLEscapeString( conn, ip );
 	string EscSpoofedRealm = MySQLEscapeString( conn, spoofedrealm );
 	string EscLeftReason = MySQLEscapeString( conn, leftreason );
-
-	string Query = "UPDATE oh_gameplayers SET spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", colour="+UTIL_ToString( colour )+", spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid="+UTIL_ToString(gameid)+" AND name='"+EscName+"' AND ip='"+EscIP+"';";
+        string Colour = colour == 0 ? "" : "colour="+UTIL_ToString(colour)+", "; 
+	string Query = "UPDATE oh_gameplayers SET spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", "+Colour+" spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid="+UTIL_ToString(gameid)+" AND name='"+EscName+"' AND ip='"+EscIP+"';";
 
 	if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
 		*error = mysql_error( (MYSQL *)conn );
