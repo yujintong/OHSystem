@@ -1861,7 +1861,7 @@ bool CGHost :: FlameCheck( string message )
 void CGHost :: LoadDatas( )
 {
 	CConfig CFG;
-        CFG.Read( m_ColoredNamePath + "oh_config.cfg" );
+        CFG.Read( "default.cfg" );
 
         for( uint32_t i = 1; i < 20; ++i )
         {
