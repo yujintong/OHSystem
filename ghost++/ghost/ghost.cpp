@@ -1498,6 +1498,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_GarenaHosting = CFG->GetInt("oh_general_garenahosting", 0 ) == 0 ? false : true;
         m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
         m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
+        if( m_FunCommands )
+            LoadInsult( );
         m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
         m_AccountProtection = CFG->GetInt("oh_general_accountprotection", 1 ) == 0 ? false : true;
         m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
@@ -1938,4 +1940,24 @@ void CGHost :: LoadRanks( )
         CONSOLE_Print("Error. Unable to read file [ranks.txt]. User levels will not work for this session.");
         m_RanksLoaded = false;
     }
+}
+
+void CGHost :: LoadInsult()
+{
+    //TODO Fix if the file is empty, dont check levels else there is a crash
+    string File = "insult.txt";
+    ifstream in;
+    in.open( File.c_str() );
+    if( !in.fail( ) )
+    {
+            string Line;
+            while( !in.eof( )  )
+            {
+                getline( in, Line );
+                m_Insults.push_back(Line);
+            }
+            in.close( );
+    }
+    else
+        CONSOLE_Print("Error. Unable to read file [insult.txt]. User levels will not work for this session.");
 }

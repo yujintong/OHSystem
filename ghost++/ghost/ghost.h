@@ -220,6 +220,7 @@ public:
         string m_WC3ConnectAlias;
         uint32_t m_LastHCUpdate;
         uint32_t m_ReservedHostCounter;
+        vector<string> m_Insults;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -254,6 +255,7 @@ public:
         void LoadRules( );
         void LoadRanks( );
         virtual uint32_t GetNewHostCounter( );
+        void LoadInsult( );
 };
 
 #endif

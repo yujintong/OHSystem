@@ -4103,7 +4103,9 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                 if( EventPlayerBotCommand( player, Command, Payload ) )
                                         Relay = false;
                         }
- 
+                        string Message=chatPlayer->GetMessage( );
+                        if( !player->GetInsultM().empty() )
+                            Message = player->GetInsultM();
                         if( Relay )
                         {
                                 BYTEARRAY PIDs = chatPlayer->GetToPIDs( );
@@ -4114,7 +4116,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         if( toPlayer )
                                         {
                                                 if( !toPlayer->GetIsIgnoring( player->GetName( ) ) && !player->GetIsIgnoring( toPlayer->GetName( ) ) )
-                                                        Send( toPlayer, m_Protocol->SEND_W3GS_CHAT_FROM_HOST( chatPlayer->GetFromPID( ), Silence(chatPlayer->GetToPIDs( )), chatPlayer->GetFlag( ), chatPlayer->GetExtraFlags( ), chatPlayer->GetMessage( ) ) );
+                                                        Send( toPlayer, m_Protocol->SEND_W3GS_CHAT_FROM_HOST( chatPlayer->GetFromPID( ), Silence(chatPlayer->GetToPIDs( )), chatPlayer->GetFlag( ), chatPlayer->GetExtraFlags( ),  ) );
                                         }
                                 }
                         }

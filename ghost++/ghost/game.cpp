@@ -815,327 +815,380 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         //save admin log
                         m_AdminLog.push_back( User + " gl" + "\t" + UTIL_ToString( Level ) + "\t" + Command + "\t" + Payload );
- 
-                                //
-                                // !SETPERMISSION
-                                //
-                                if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() == 10 && m_GHost->m_GarenaHosting )
-                                {
-                                        string Name;
-                                        string NewLevel;
-                                        stringstream SS;
-                                        SS << Payload;
-                                        SS >> Name;
- 
-                                        if( Name.length() <= 3 )
-                                        {
-                                                SendChat( player, "This is not a valid Name" );
-                                                return true;
-                                        }
- 
-                                        SS >> NewLevel;
- 
-                                        if( SS.fail( ) || NewLevel.empty() )
-                                        {
-                                                SendChat( player, "Error. Wrong input, please add a level." );
-                                                return true;
-                                        }
-                                        else
-                                        {
-                                                if( !NewLevel.find_first_not_of( "1234567890" ) == string :: npos )
-                                                {
-                                                        SendChat( player, "This is not a valid level. Please use a correct number" );
-                                                        return true;
-                                                }
- 
-                                                m_PairedPUps.push_back( PairedPUp( string( ), m_GHost->m_DB->ThreadedPUp( Name, UTIL_ToUInt32( NewLevel ), "Garena", player->GetName()) ) );
-                                        }
-                                }
                         
-                                //
-                                // !ONLY
-                                //
-                                if( ( Command == "only" || Command == "unallow" || Command == "disallow" || Command == "deniecountry" ) && !m_GameLoading && !m_GameLoaded )
+                        /***********************/
+                        /***  FUN COMMANDS :-) */
+                        /***********************/
+                        if( m_GHost->m_FunCommands )
+                        {
+                            //
+                            // !INSULT
+                            //
+                            if( Command=="insult" || Command="i")
+                            {
+                                if( Payload.empty())
+                                    SendAllChat(m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
+                                else
                                 {
-                                        if ( Payload.empty( ) || Payload == "0" || Payload == "clear" )
+                                    CGamePlayer *LastMatch = NULL;
+                                    uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
+                                    if(Matches==0)
+                                            SendChat(player,"Error. Found no match on the playername.");
+                                    else if(Matches==1)
+                                    {
+                                            SendChat( player,"Successfully let the player insult.");
+                                            SendAllChat((unsigned char)LastMatch->GetPID(),m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
+                                    }
+                                    else if(Matches>1)
+                                            SendChat(player,"Error. Found more than one match for this playername.");
+                                }
+                                return true;
+                            }
+
+                            //
+                            // !SETINSULT
+                            //
+                            else if( Command=="setinsult" || Command=="si" )
+                            {
+                                if(Payload.empty())
+                                    SendChat(player, "Error you must specify a player.");
+                                else
+                                {
+                                    CGamePlayer *LastMatch = NULL;
+                                    uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
+                                    if(Matches==0)
+                                            SendChat(player,"Error. Found no match on the playername.");
+                                    else if(Matches==1)
+                                    {
+                                            SendChat( player,"Successfully sent a insult message.");
+                                            LastMatch->SetInsultM( m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
+                                    }
+                                    else if(Matches>1)
+                                            SendChat(player,"Error. Found more than one match for this playername.");                                   
+                                }
+                                return true;
+                            }
+                            //
+                            // !SIMULATECHAT
+                            //
+                            else if(Command=="simulatechat" && !Payload.empty() )
+                            {
+                                    string suser;
+                                    string message;
+                                    stringstream SS;
+                                    SS<<Payload;
+                                    SS>>suser;
+                                    if(SS.fail()||suser.empty())
+                                            SendChat(player,"Error, wrong input, use '!simulatechat user message'");
+                                    else if(suser.size()<3)
+                                            SendChat(player,"Error, the name is to short, please add a valied name");
+                                    else
+                                    {
+                                            SS>>message;
+                                            if(!SS.eof())
+                                            {
+                                                    getline(SS,message);
+                                                    string :: size_type Start=message.find_first_not_of(" ");
+                                                    if(Start!=string :: npos)
+                                                            message=message.substr(Start);
+                                            }
+                                            if(message.length()>100)
+                                                    SendChat(player,"Error, this message is to long, may choose a more shorten message.");
+                                            else if(message.empty())
+                                                    SendChat(player,"Error, there is no message set.");
+                                            else
+                                            {
+                                                    CGamePlayer *LastMatch = NULL;
+                                                    uint32_t Matches=GetPlayerFromNamePartial(suser,&LastMatch);
+                                                    if(Matches==0)
+                                                            SendChat(player,"Error. Found no match on the playername");
+                                                    else if(Matches==1)
+                                                    {
+                                                            SendChat( player,"Successfully sent a simulated message");
+                                                            SendAllChat((unsigned char)LastMatch->GetPID(),message);
+                                                    }
+                                                    else if(Matches>1)
+                                                            SendChat(player,"Error. Found more than one match for this playername.");
+                                            }
+                                    }
+                                    return true;
+                            }
+                        }
+                        
+                        //
+                        // !SETPERMISSION
+                        //
+                        if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() == 10 && m_GHost->m_GarenaHosting )
+                        {
+                                string Name;
+                                string NewLevel;
+                                stringstream SS;
+                                SS << Payload;
+                                SS >> Name;
+
+                                if( Name.length() <= 3 )
+                                {
+                                        SendChat( player, "This is not a valid Name" );
+                                        return true;
+                                }
+
+                                SS >> NewLevel;
+
+                                if( SS.fail( ) || NewLevel.empty() )
+                                {
+                                        SendChat( player, "Error. Wrong input, please add a level." );
+                                        return true;
+                                }
+                                else
+                                {
+                                        if( !NewLevel.find_first_not_of( "1234567890" ) == string :: npos )
                                         {
-                                                if( Command == "only" )
-                                                {
-                                                        SendAllChat( "Disabled allowed country check." );
-                                                        m_LimitCountries = false;
-                                                }
-                                                else if( Command == "unallow" || Command == "disallow" || Command == "deniecountry" )
-                                                {
-                                                        SendAllChat( "Disabled unallowed country check." );
-                                                        m_DenieCountries = false;
-                                                }
-                                                m_LimitedCountries.clear();
+                                                SendChat( player, "This is not a valid level. Please use a correct number" );
+                                                return true;
                                         }
-                                        else if( m_DenieCountries && Command == "only" )
+
+                                        m_PairedPUps.push_back( PairedPUp( string( ), m_GHost->m_DB->ThreadedPUp( Name, UTIL_ToUInt32( NewLevel ), "Garena", player->GetName()) ) );
+                                }
+                        }
+
+                        //
+                        // !ONLY
+                        //
+                        if( ( Command == "only" || Command == "unallow" || Command == "disallow" || Command == "deniecountry" ) && !m_GameLoading && !m_GameLoaded )
+                        {
+                                if ( Payload.empty( ) || Payload == "0" || Payload == "clear" )
+                                {
+                                        if( Command == "only" )
                                         {
-                                                SendChat( player, "Currently there countries denied, please clear the deny list before using only." );
-                                                return HideCommand;
+                                                SendAllChat( "Disabled allowed country check." );
+                                                m_LimitCountries = false;
                                         }
-                                        else if( m_LimitCountries && Command == "unallow" || Command == "disallow" || Command == "deniecountry" )
+                                        else if( Command == "unallow" || Command == "disallow" || Command == "deniecountry" )
                                         {
-                                                SendChat( player, "Currently there limited countries allowed, please clear the only list before using deniecountries." );
-                                                return HideCommand;
+                                                SendAllChat( "Disabled unallowed country check." );
+                                                m_DenieCountries = false;
                                         }
+                                        m_LimitedCountries.clear();
+                                }
+                                else if( m_DenieCountries && Command == "only" )
+                                {
+                                        SendChat( player, "Currently there countries denied, please clear the deny list before using only." );
+                                        return HideCommand;
+                                }
+                                else if( m_LimitCountries && Command == "unallow" || Command == "disallow" || Command == "deniecountry" )
+                                {
+                                        SendChat( player, "Currently there limited countries allowed, please clear the only list before using deniecountries." );
+                                        return HideCommand;
+                                }
+                                else
+                                {
+                                        if( Command == "only" )
+                                                m_LimitCountries = true;
                                         else
+                                                m_DenieCountries = true;
+
+                                        transform( Payload.begin( ), Payload.end( ), Payload.begin( ), (int(*)(int))toupper );
+                                        m_LimitedCountries.push_back( Payload );
+                                        string AllLimitedCountries;
+                                        for( vector<string> :: iterator i = m_LimitedCountries.begin( ); i != m_LimitedCountries.end( ); i++ )
                                         {
-                                                if( Command == "only" )
-                                                        m_LimitCountries = true;
+                                                if( AllLimitedCountries.empty() )
+                                                        AllLimitedCountries = *i;
                                                 else
-                                                        m_DenieCountries = true;
- 
-                                                transform( Payload.begin( ), Payload.end( ), Payload.begin( ), (int(*)(int))toupper );
-                                                m_LimitedCountries.push_back( Payload );
-                                                string AllLimitedCountries;
-                                                for( vector<string> :: iterator i = m_LimitedCountries.begin( ); i != m_LimitedCountries.end( ); i++ )
-                                                {
-                                                        if( AllLimitedCountries.empty() )
-                                                                AllLimitedCountries = *i;
-                                                        else
-                                                                AllLimitedCountries = AllLimitedCountries + ", " + *i;
-                                                }
- 
-                                                SendAllChat( "Country check enabled, " + ( Command = "only" ? "allowed countries: " : "denied countries: " ) + AllLimitedCountries );
- 
-                                                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
-                                                {
-                                                        string CC = (*i)->GetCLetter( );
-                                                        transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
-                                                        bool isReserved;
-                                                        for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); j++ )
-                                                        {
-                                                                if( (*j)->IsLevel( (*i)->GetName( ) ) != 0 )
-                                                                {
-                                                                        SendAllChat("Player: " + (*i)->GetName( ) + "("+ CC +") is " + (isReserved?"":"not ") + "a " + (*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) + "." );
-                                                                        isReserved = true;
-                                                                        break;
-                                                                }
-                                                        }
-                                                        bool unallowedcountry = false;
-                                                        for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); k++ )
-                                                        {
-                                                                if( *k == CC && m_DenieCountries )
-                                                                        unallowedcountry = true;
-                                                                if( *k != CC && m_LimitCountries )
-                                                                        unallowedcountry = true;
-                                                        }
- 
-                                                        if ( !isReserved && (*i)->GetName( ) != User && unallowedcountry )
-                                                        {
-                                                                SendAllChat( "Kicked user " + (*i)->GetName( ) + " for having an unallowed country." );
-                                                                (*i)->SetDeleteMe( true );
-                                                                (*i)->SetLeftReason( "was autokicked by having an unallowed country.");
-                                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                                        }
-                                                }
+                                                        AllLimitedCountries = AllLimitedCountries + ", " + *i;
                                         }
-                                }
- 
-                                //
-                                // !NOGARENA
-                                //
-                                else if( Command == "nogarena" && !Payload.empty() && !m_GameLoading && !m_GameLoaded )
-                                {
-                                        if( Payload == "on" )
+
+                                        SendAllChat( "Country check enabled, " + ( Command = "only" ? "allowed countries: " : "denied countries: " ) + AllLimitedCountries );
+
+                                        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
                                         {
-                                                m_GameNoGarena = true;
-                                                SendAllChat( "No Garena option enabled for this game. Kicking all Garena Users" );
-                                                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
+                                                string CC = (*i)->GetCLetter( );
+                                                transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
+                                                bool isReserved;
+                                                for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); j++ )
                                                 {
-                                                        bool isReserved = false;
-                                                        for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); j++ )
+                                                        if( (*j)->IsLevel( (*i)->GetName( ) ) != 0 )
                                                         {
-                                                                if( (*j)->IsLevel( (*i)->GetName( ) ) != 0 )
-                                                                {
-                                                                        SendAllChat("Player: " + (*i)->GetName( ) + "("+ (*i)->GetSpoofedRealm( ) +") is " + (isReserved?"":"not ") + "a " + (*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) + "." );
-                                                                        isReserved = true;
-                                                                        break;
-                                                                }
-                                                        }
-                                                        if( !isReserved && (*i)->GetSpoofedRealm( ) == "garena" )
-                                                        {
-                                                                SendAllChat( "Kicked user " + (*i)->GetName( ) + " for being a garena user." );
-                                                                (*i)->SetDeleteMe( true );
-                                                                (*i)->SetLeftReason( "was autokicked by having an unallowed realm.");
-                                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                                                SendAllChat("Player: " + (*i)->GetName( ) + "("+ CC +") is " + (isReserved?"":"not ") + "a " + (*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) + "." );
+                                                                isReserved = true;
+                                                                break;
                                                         }
                                                 }
+                                                bool unallowedcountry = false;
+                                                for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); k++ )
+                                                {
+                                                        if( *k == CC && m_DenieCountries )
+                                                                unallowedcountry = true;
+                                                        if( *k != CC && m_LimitCountries )
+                                                                unallowedcountry = true;
+                                                }
+
+                                                if ( !isReserved && (*i)->GetName( ) != User && unallowedcountry )
+                                                {
+                                                        SendAllChat( "Kicked user " + (*i)->GetName( ) + " for having an unallowed country." );
+                                                        (*i)->SetDeleteMe( true );
+                                                        (*i)->SetLeftReason( "was autokicked by having an unallowed country.");
+                                                        (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                        OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                                }
                                         }
-                                        else if( Payload == "off" )
-                                                m_GameNoGarena = false;
-                                        else
-                                                SendChat( player, "Error please use on/off as config settings" );
                                 }
+                        }
+
+                        //
+                        // !NOGARENA
+                        //
+                        else if( Command == "nogarena" && !Payload.empty() && !m_GameLoading && !m_GameLoaded )
+                        {
+                                if( Payload == "on" )
+                                {
+                                        m_GameNoGarena = true;
+                                        SendAllChat( "No Garena option enabled for this game. Kicking all Garena Users" );
+                                        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
+                                        {
+                                                bool isReserved = false;
+                                                for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); j++ )
+                                                {
+                                                        if( (*j)->IsLevel( (*i)->GetName( ) ) != 0 )
+                                                        {
+                                                                SendAllChat("Player: " + (*i)->GetName( ) + "("+ (*i)->GetSpoofedRealm( ) +") is " + (isReserved?"":"not ") + "a " + (*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) + "." );
+                                                                isReserved = true;
+                                                                break;
+                                                        }
+                                                }
+                                                if( !isReserved && (*i)->GetSpoofedRealm( ) == "garena" )
+                                                {
+                                                        SendAllChat( "Kicked user " + (*i)->GetName( ) + " for being a garena user." );
+                                                        (*i)->SetDeleteMe( true );
+                                                        (*i)->SetLeftReason( "was autokicked by having an unallowed realm.");
+                                                        (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                        OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                                }
+                                        }
+                                }
+                                else if( Payload == "off" )
+                                        m_GameNoGarena = false;
+                                else
+                                        SendChat( player, "Error please use on/off as config settings" );
+                        }
+
+                        //
+                        // !DENY
+                        //
+                        else if( Command == "deny" && !Payload.empty() && !m_GameLoading && !m_GameLoaded )
+                        {
+                                CGamePlayer *LastMatch = NULL;
+                                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+                                if( Matches == 0 )
+                                {
+                                        m_Denied.push_back( Payload + "   " + UTIL_ToString( GetTime() ) );
+                                        SendAllChat( "Denied User [" + Payload + "] for this game lobby" );
+                                }
+                                else if( Matches == 1 )
+                                {
+                                        m_Denied.push_back( LastMatch->GetName() + " " + LastMatch->GetExternalIPString( ) + " 0" );
+                                        SendAllChat( "Denied User [" + LastMatch->GetName( ) + "] for this game lobby" );
+                                        LastMatch->SetDeleteMe( true );
+                                        LastMatch->SetLeftReason( "got denied for this lobby" );
+                                        LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                        OpenSlot( GetSIDFromPID( LastMatch->GetPID( ) ), false );
+                                        m_Balanced = false;
+                                }
+                                else
+                                        SendChat( player, "Error. Found multiply matches for the name: " + Payload );
+                        }
+
+                        //
+                        // !CheckPP
+                        //
+                        else if( Command == "pp" || Command == "checkpp" )
+                        {
+                            string StatsUser = User;
+                            if( !Payload.empty() )
+                                    StatsUser = Payload;
+
+                             m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( StatsUser, "", "", 0, "check" ) ) );
+                        }
+
+                        //
+                        // !PPADD !PUNISH
+                        //
+                        else if(  Command == "ppadd" || Command == "punish" )
+                        {
+                                string Victim;
+                                string Amount;
+                                string Reason;
+                                stringstream SS;
+                                SS << Payload;
+                                SS >> Victim;
+
+                                if( SS.fail( ) || Victim.empty() )
+                                        CONSOLE_Print( "[PP] bad input #1 to !TEMPBAN command" );
+                                else if( Victim.size() < 3 )
+                                        SendChat( player, "Error. The name is too short, please add a valied name" );
+                                else
+                                {
+                                        SS >> Amount;
+
+                                        if( SS.fail( ) || Amount == "0" )
+                                                CONSOLE_Print( "[PP] bad input #2 to !TEMPBAN command" );
+                                        else if( ( UTIL_ToUInt32( Amount ) > 3 && Level < 8 ) || UTIL_ToUInt32( Amount ) > 10 && Level <= 10 )
+                                                SendChat( player, "You shouldn't add more than 3 penality points" );
+                                        else
+                                        {
+                                                SS >> Reason;
+
+                                                if( !SS.eof( ) )
+                                                {
+                                                        getline( SS, Reason );
+                                                        string :: size_type Start = Reason.find_first_not_of( " " );
+
+                                                        if( Start != string :: npos )
+                                                                Reason = Reason.substr( Start );
+                                                }
+                                                if( !Reason.empty() )
+                                                {
+                                                        CGamePlayer *LastMatch = NULL;
+                                                        uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
+                                                        if( Matches == 0 )
+                                                        SendChat( player, "Error. Found no match on the playername" );
+                                                else if( Matches == 1 )
+                                                            m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( LastMatch->GetName( ), Reason, User, UTIL_ToUInt32( Amount ), "add" ) ) );
+                                                else if( Matches > 1 )
+                                                                SendChat( player, "Error. Found more than one match for this playername." );
+                                                }
+                                                else
+                                                        SendChat( player, "Error. Please state a reason to punish someone" );
+                                        }
+                                }
+                        }
  
-                                //
-                                // !DENY
-                                //
-                                else if( Command == "deny" && !Payload.empty() && !m_GameLoading && !m_GameLoaded )
+                        //
+                        //setcookies
+                        //
+                        else if( Command == "setcookies" && Level >= 9 && m_GHost->m_FunCommands)
+                        {
+                                if( Payload.empty( ) )
+                                {
+                                        SendAllChat( "Player "+player->GetName()+" refilled his cookie jar." );
+                                        player->SetCookie( 3 );
+                                }
+                                else
                                 {
                                         CGamePlayer *LastMatch = NULL;
                                         uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+
                                         if( Matches == 0 )
-                                        {
-                                                m_Denied.push_back( Payload + "   " + UTIL_ToString( GetTime() ) );
-                                                SendAllChat( "Denied User [" + Payload + "] for this game lobby" );
-                                        }
-                                        else if( Matches == 1 )
-                                        {
-                                                m_Denied.push_back( LastMatch->GetName() + " " + LastMatch->GetExternalIPString( ) + " 0" );
-                                                SendAllChat( "Denied User [" + LastMatch->GetName( ) + "] for this game lobby" );
-                                                LastMatch->SetDeleteMe( true );
-                                                LastMatch->SetLeftReason( "got denied for this lobby" );
-                                                LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                OpenSlot( GetSIDFromPID( LastMatch->GetPID( ) ), false );
-                                                m_Balanced = false;
-                                        }
-                                        else
-                                                SendChat( player, "Error. Found multiply matches for the name: " + Payload );
-                                }
- 
-                //
-                // !CheckPP
-                //
-                else if( Command == "pp" || Command == "checkpp" )
-                {
-                    string StatsUser = User;
-                    if( !Payload.empty() )
-                            StatsUser = Payload;
- 
-                     m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( StatsUser, "", "", 0, "check" ) ) );
-                }
- 
-                                //
-                                // !SIMULATECHAT
-                                //
-                                else if(Command=="simulatechat" && !Payload.empty() )
-                                {
-                                        string suser;
-                                        string message;
-                                        stringstream SS;
-                                        SS<<Payload;
-                                        SS>>suser;
-                                        if(SS.fail()||suser.empty())
-                                                SendChat(player,"Error, wrong input, use '!simulatechat user message'");
-                                        else if(suser.size()<3)
-                                                SendChat(player,"Error, the name is to short, please add a valied name");
-                                        else
-                                        {
-                                                SS>>message;
-                                                if(!SS.eof())
-                                                {
-                                                        getline(SS,message);
-                                                        string :: size_type Start=message.find_first_not_of(" ");
-                                                        if(Start!=string :: npos)
-                                                                message=message.substr(Start);
-                                                }
-                                                if(message.length()>100)
-                                                        SendChat(player,"Error, this message is to long, may choose a more shorten message.");
-                                                else if(message.empty())
-                                                        SendChat(player,"Error, there is no message set.");
-                                                else
-                                                {
-                                                        CGamePlayer *LastMatch = NULL;
-                                                        uint32_t Matches=GetPlayerFromNamePartial(suser,&LastMatch);
-                                                        if(Matches==0)
-                                                                SendChat(player,"Error. Found no match on the playername");
-                                                        else if(Matches==1)
-                                                        {
-                                                                SendChat( player,"Successfully sent a simulated message");
-                                                                SendAllChat((unsigned char)LastMatch->GetPID(),message);
-                                                        }
-                                                        else if(Matches>1)
-                                                                SendChat(player,"Error. Found more than one match for this playername.");
-                                                }
-                                        }
-                                        return true;
-                                }
- 
-                //
-                // !PPADD !PUNISH
-                //
-                else if(  Command == "ppadd" || Command == "punish" )
-                {
-                        string Victim;
-                        string Amount;
-                        string Reason;
-                        stringstream SS;
-                        SS << Payload;
-                        SS >> Victim;
- 
-                        if( SS.fail( ) || Victim.empty() )
-                                CONSOLE_Print( "[PP] bad input #1 to !TEMPBAN command" );
-                        else if( Victim.size() < 3 )
-                                SendChat( player, "Error. The name is too short, please add a valied name" );
-                        else
-                        {
-                                SS >> Amount;
- 
-                                if( SS.fail( ) || Amount == "0" )
-                                        CONSOLE_Print( "[PP] bad input #2 to !TEMPBAN command" );
-                                else if( ( UTIL_ToUInt32( Amount ) > 3 && Level < 8 ) || UTIL_ToUInt32( Amount ) > 10 && Level <= 10 )
-                                        SendChat( player, "You shouldn't add more than 3 penality points" );
-                                else
-                                {
-                                        SS >> Reason;
- 
-                                        if( !SS.eof( ) )
-                                        {
-                                                getline( SS, Reason );
-                                                string :: size_type Start = Reason.find_first_not_of( " " );
- 
-                                                if( Start != string :: npos )
-                                                        Reason = Reason.substr( Start );
-                                        }
-                                        if( !Reason.empty() )
-                                        {
-                                                CGamePlayer *LastMatch = NULL;
-                                                uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
-                                                if( Matches == 0 )
                                                 SendChat( player, "Error. Found no match on the playername" );
                                         else if( Matches == 1 )
-                                                    m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( LastMatch->GetName( ), Reason, User, UTIL_ToUInt32( Amount ), "add" ) ) );
-                                        else if( Matches > 1 )
-                                                        SendChat( player, "Error. Found more than one match for this playername." );
+                                        {
+                                                LastMatch->SetCookie( 3 );
+                                                SendAllChat( "Player "+player->GetName()+" refilled "+LastMatch->GetName()+"'s cookie jar." );
                                         }
-                                        else
-                                                SendChat( player, "Error. Please state a reason to punish someone" );
+                                        else if( Matches > 1 )
+                                                SendChat( player, "Error. Found more than one match for this playername." );
                                 }
                         }
-                }
- 
-                                //
-                                //setcookies
-                                //
-                                else if( Command == "setcookies" && Level >= 9 && m_GHost->m_FunCommands)
-                                {
-                                        if( Payload.empty( ) )
-                                        {
-                                                SendAllChat( "Player "+player->GetName()+" refilled his cookie jar." );
-                                                player->SetCookie( 3 );
-                                        }
-                                        else
-                                        {
-                                                CGamePlayer *LastMatch = NULL;
-                                                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
- 
-                                                if( Matches == 0 )
-                                                        SendChat( player, "Error. Found no match on the playername" );
-                                                else if( Matches == 1 )
-                                                {
-                                                        LastMatch->SetCookie( 3 );
-                                                        SendAllChat( "Player "+player->GetName()+" refilled "+LastMatch->GetName()+"'s cookie jar." );
-                                                }
-                                                else if( Matches > 1 )
-                                                        SendChat( player, "Error. Found more than one match for this playername." );
-                                        }
-                                }
  
                         /*****************
                         * ADMIN COMMANDS *

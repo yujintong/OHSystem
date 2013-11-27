@@ -164,6 +164,7 @@ private:
         string m_LevelName;
         bool m_StartVoted;
         bool m_GlobalChatMuted;
+        string m_InsultM;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -239,6 +240,7 @@ public:
         string GetLevelName( )                                          { return m_LevelName; }
         bool GetStartVote( )                                            { return m_StartVoted; }
         bool GetGlobalChatMuted( )                                      { return m_GlobalChatMuted; }
+        string GetInsultM( )                                            { return m_InsultM; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
@@ -299,6 +301,7 @@ public:
 	void Ignore( string username );
 	void UnIgnore( string username );
         void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
+        void SetInsultM( string nInsultM )                                                                              { m_InsultM = nInsultM; }
 
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
 
