@@ -1240,8 +1240,12 @@ bool CGHost :: Update( long usecBlock )
 
         	for( vector<string> :: iterator i = commands.begin( ); i != commands.end( ); ++i )
 	    	{
+                    if( !m_BNETs.empty( ) ) {
             		CONSOLE_Print("[GHOST] Executing command from MYSQL: " + *i);
 		    	m_BNETs[0]->BotCommand(*i, m_BNETs[0]->GetUserName(), true, true );
+                    } else {
+                        CONSOLE_Print("[GHOST] Couldn't execute commands from MYSQL, no battle net connection found.");
+                    }
 	    	}
 
 		m_DB->RecoverCallable( m_CallableCommandList );
