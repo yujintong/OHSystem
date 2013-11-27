@@ -247,6 +247,7 @@ int main( int argc, char **argv )
     uint32_t GameAmount=UnscoredGames.size( );
     CONSOLE_Print( "Found ["+UTIL_ToString(GameAmount)+"] unscored games." );
     uint32_t StartTicks = GetTicks();
+    uint32_t SkippedGames = 0;
     while( !UnscoredGames.empty( ) )
     {
         uint32_t GameID = UnscoredGames.front( );
@@ -316,6 +317,7 @@ int main( int argc, char **argv )
                         if( num_players >= 10 )
                         {
                                 CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has more than 10 players. Ignoring this game." );
+                                SkippedGames++;
                                 ignore = true;
                                 break;
                         }
@@ -325,6 +327,7 @@ int main( int argc, char **argv )
                         if( Winner != 1 && Winner != 2 && Winner != 0)
                         {
                                 CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] is not a two team map. Ignoring this game." );
+                                SkippedGames++;
                                 ignore = true;
                                 break;
                         }
@@ -538,9 +541,10 @@ int main( int argc, char **argv )
                                 }
                         }
                         //if a player got a connection error his stats arent safed properly, there is an issue that his newcolour gets automatically set to 0
-                        else if( Colour != 0 )  
+                        else if( Colour != NULL )  
                         {
                                 CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" has a player with an invalid newcolour. Ignoring this Game." );
+                                SkippedGames++;
                                 ignore = true;
                                 break;
                         }
@@ -579,12 +583,18 @@ int main( int argc, char **argv )
 
                 if( !ignore )
                 {
-                        if( num_players == 0 )
+                        if( num_players == 0 ) {
                                 CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"} has no players. Ignoring this game." );
-                        else if( team_numplayers[0] == 0 )
+                                SkippedGames++;
+                        }
+                        else if( team_numplayers[0] == 0 ) {
                                 CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no Sentinel players. Ignoring this game." );
-                        else if( team_numplayers[1] == 0 )
+                                SkippedGames++;
+                        }
+                        else if( team_numplayers[1] == 0 ) {
                                 CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no Scourge players. Ignoring this game." );
+                                SkippedGames++;
+                        }
                         else
                         {
                                 CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" is calculating..." );
@@ -622,7 +632,7 @@ int main( int argc, char **argv )
     MYSQL_RES *CommitResult = QueryBuilder(Connection, "COMMIT" );
     CONSOLE_Print( "Transaction done. Closing connection." );
     uint32_t EndTicks = GetTicks();
-    CONSOLE_Print( "Statistic: Updated ["+UTIL_ToString(GameAmount)+"] in ["+UTIL_ToString(EndTicks-StartTicks)+"] ms.");
+    CONSOLE_Print( "Statistic: Updated ["+UTIL_ToString(GameAmount)+"], skipped ["+UTIL_ToString(SkippedGames)+"] games, in ["+UTIL_ToString(EndTicks-StartTicks)+"] ms.");
  updateLock.unlock( );
     return 0;
 }
