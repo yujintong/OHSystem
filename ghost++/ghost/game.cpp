@@ -824,7 +824,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             //
                             // !INSULT
                             //
-                            if( Command=="insult" || Command="i")
+                            if( Command=="insult" || Command=="i")
                             {
                                 if( Payload.empty())
                                     SendAllChat(m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
