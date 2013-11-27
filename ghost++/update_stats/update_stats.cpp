@@ -541,7 +541,7 @@ int main( int argc, char **argv )
                                 }
                         }
                         //if a player got a connection error his stats arent safed properly, there is an issue that his newcolour gets automatically set to 0
-                        else if( Colour != NULL )  
+                        else if( !Row[16].empty( ) )  
                         {
                                 CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" has a player with an invalid newcolour. Ignoring this Game." );
                                 SkippedGames++;
