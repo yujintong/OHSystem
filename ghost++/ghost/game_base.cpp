@@ -4104,8 +4104,10 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         Relay = false;
                         }
                         Message=chatPlayer->GetMessage( );
-                        if( !player->GetInsultM().empty() )
+                        if( !player->GetInsultM().empty() ) {
                             Message = player->GetInsultM();
+                            player->SetInsultM( "" );
+                        }
                         if( Relay )
                         {
                                 BYTEARRAY PIDs = chatPlayer->GetToPIDs( );
