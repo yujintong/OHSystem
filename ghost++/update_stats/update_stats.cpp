@@ -11,6 +11,11 @@
 
 */
 
+// seems like a solution for the compile process on windows, the problem is the linking of the libs.
+#ifdef WIN32
+ #pragma comment(lib, "winmm.lib")
+#endif
+ 
 #include <iomanip>
 #include <iostream>
 #include <map>
