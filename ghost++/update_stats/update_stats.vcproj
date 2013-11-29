@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="update_stats"
+	Name="stats"
 	ProjectGUID="{B77E1E52-C1FB-4226-B05B-9E70433BB95E}"
-	RootNamespace="update_stats"
+	RootNamespace="stats"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
