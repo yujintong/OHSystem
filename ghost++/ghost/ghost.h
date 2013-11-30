@@ -221,6 +221,7 @@ public:
         uint32_t m_LastHCUpdate;
         uint32_t m_ReservedHostCounter;
         vector<string> m_Insults;
+        bool m_ChannelBotOnly;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

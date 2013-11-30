@@ -1525,6 +1525,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_MinScoreLimit = CFG->GetInt("oh_minscorelimit", 0);
         m_AutobanAll = CFG->GetInt("oh_autobanall", 1) == 0 ? false : true;
         m_WC3ConnectAlias = CFG->GetString("wc3connect_alias", "WC3Connect");
+        m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
 }
 

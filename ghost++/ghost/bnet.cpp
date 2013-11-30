@@ -2839,14 +2839,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !HOSTSG
                                 //
  
-                                else if( Command == "hostsg" && !Payload.empty( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "hostsg" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
                                         m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, true, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
  
                                 //
                                 // !LOAD (load config file)
                                 //
  
-                                else if( Command == "load" && IsLevel( User ) >= 8 )
+                                else if( Command == "load" && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
                                 {
                                         if( Payload.empty( ) )
                                                 QueueChatCommand( m_GHost->m_Language->CurrentlyLoadedMapCFGIs( m_GHost->m_Map->GetCFGFile( ) ), User, Whisper );
@@ -2925,7 +2925,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !LOADSG
                                 //
  
-                                else if( Command == "loadsg" && !Payload.empty( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "loadsg" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
                                 {
                                         // only load files in the current directory just to be safe
  
@@ -2958,7 +2958,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !MAP (load map file)
                                 //
  
-                                else if( Command == "map" && IsLevel( User ) >= 8 )
+                                else if( Command == "map" && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
                                 {
                                         if( Payload.empty( ) )
                                                 QueueChatCommand( m_GHost->m_Language->CurrentlyLoadedMapCFGIs( m_GHost->m_Map->GetCFGFile( ) ), User, Whisper );
@@ -3083,13 +3083,13 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !PRIV (host private game)
                                 //
  
-                                else if( Command == "priv" && !Payload.empty( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "priv" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
                                         m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
  
                                 //
                                 // !VIP (host vip games)
                                 //
-                                else if( Command == "vip" && !Payload.empty( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "vip" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
                                         m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, "[VIP] "+Payload, User, User, m_Server, 4, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
  
                                 //
@@ -3176,14 +3176,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !PUB (host public game)
                                 //
  
-                                else if( Command == "pub" && !Payload.empty( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "pub" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly)
                                         m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, m_Server, 2, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
  
                                 //
                                 // !PUBBY (host public game by other player)
                                 //
  
-                                else if( Command == "pubby" && !Payload.empty( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "pubby" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly)
                                 {
                                         // extract the owner and the game name
                                         // e.g. "Varlock dota 6.54b arem ~~~" -> owner: "Varlock", game name: "dota 6.54b arem ~~~"
@@ -3418,7 +3418,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !UNHOST
                                 //
  
-                                else if( Command == "unhost" && IsLevel( User ) >= 8 && ForceRoot )
+                                else if( Command == "unhost" && IsLevel( User ) >= 8 && ForceRoot && ! m_GHost->m_ChannelBotOnly)
                                 {
                                         if( m_GHost->m_CurrentGame )
                                         {
