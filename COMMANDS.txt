@@ -1,0 +1,84 @@
+############################
+##### CHANNELCOMMNADS ######
+############################
+
+##### OHSYSTEM ADMIN COMMANDS 
+
+### RCON COMMANDS
+### rcon commands include always two types of players:
+### targetplayer is the target/victim
+### usedplayer is the player who used the command
+
+# un-/muting a player in a game, the mute is permanently and for the the complete chat
+!rcon mute <usedplayer> <targetplayer>
+!rcon unmute <usedplayer> <targetplayer>
+
+# kick a player, probably will add him to the banlist if he/she was not kicked within the last 5 minuts of the game
+!rcon kick <usedplayer> <targetplayer>
+
+# saylobby allow to send something to the allchat of the current hosted lobby
+!rcon saylobby <usedplayer> <message>
+
+# saygame allow to send a message to a specific game which is hosted, it is splited from the normal/default command, it allow us to use the hostcounter/gameid as target
+!rcon saygame <usedplayer> <hostcounter> <message>
+
+# lobbyteam allow to send a chatmessage to the current hosted lobby specidfied to a team
+# team should be 1 for sentinel and 2 for scourge
+!rcon lobbyteam <usedplayer> <team> <message>
+
+# gameteam allow to send a chatmessage to a current running game specified to a team
+# team should be 1 for sentinel and 2 for scourge
+# as on saygame we using the hostcounter/gameid, not the gamenumber
+!rcon gameteam <usedplayer> <hostcounter> <team> <message>
+
+# from allow to display the current countriescodes of all players in the game
+!rcon from
+
+### OTHER CHANNEL COMMANDS
+# vouch allow to vouch a registered&confirmed player, he is able to join then also if he plays with a banned counter or if the garena players are denied and he is a garena player etc.
+!vouch <playername>
+
+# setpermuission is a very powerful command and should be used by rootadmins only. The command set the userlevel and is a general command overall connections from the bot
+# the realm is optional, without a realm the current realm where the usedplayer is online will be taken
+# this command works only if a user is registered&confirmed
+!setpermission <playername> <level> <realm>
+!setp <playername> <level> <realm>
+!sep <playername> <level> <realm>
+
+# update allow a manual activation of the update script on the bot side
+!update
+
+# permission allow to see a current level of a player, if playername isnt set it will display the usedplayer permission
+!permission <playername>
+!perm <playername>
+
+# checkpp will check the penality points of a player, if playername isnt set it will display the usedplayer penality points
+!checkpp <playername>
+!pp <playername>
+
+# ppadd/punish allow to punish a player in the way of adding him penality points. It is a very powerful commands because it can allow long ban ranges for a player.
+!ppadd <playername> <amount> <reason>
+!punish <playername> <amount> <reason>
+
+# removepp allow to remove specific penality points or all, head up to the usage
+# the amount does specifiy the maximum pp's which should be removed
+# in combination with the reason it will remove the first pp's with this reason until the amount has reached
+# by setting the amount to 0 it will remove all ppoints which are related to a reason
+# by setting the amount to 0 and dont leave the reason empty, all pp's will be removed
+!removepp <playername> <amount> <reason>
+!rpp <playername> <amount> <reason>
+
+# addban is a command to permanently ban a user from the bot
+!addban <playername> <reason>
+!ban <playername> <reason>
+
+#iprangeban allows to ban a iprange, if a user/admin/owner is not familair with ipranges he should avoid the usage of it.
+!iprangeban <ip>
+!iprangeadd <ip>
+!irb <ip>
+
+# tempban is a command to ban a player for a specific time, the usage is simple, the command get the time over an amount and suffix
+# amount should be related to the choosen suffix
+# suffix can be: h, hour, hours, d, day, days, w, week, weeks, m, month, months
+!tempban <playernam> <amount> <suffix> <reason>
+!tban <playernam> <amount> <suffix> <reason>
