@@ -261,10 +261,10 @@ int main( int argc, char **argv )
         string Month;
         string Year;
         stringstream SS;
-        SS >> Data;
-        SS << GameID;
-        SS << Month;
-        SS << Year;
+        SS << Data;
+        SS >> GameID;
+        SS >> Month;
+        SS >> Year;
         CONSOLE_Print( Data + " " + GameID + " " + Month + " "+ Year);
         MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
 
