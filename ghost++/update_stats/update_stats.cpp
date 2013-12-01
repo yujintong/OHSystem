@@ -229,14 +229,14 @@ int main( int argc, char **argv )
 
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
-    queue<uint32_t> UnscoredGames;
+    queue<string> UnscoredGames;
     MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id;" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
             while( !Row.empty( ) )
             {
-                    UnscoredGames.push( UTIL_ToUInt32( Row[0]+" "+Row[1]+" "+Row[2] ) );
+                    UnscoredGames.push( Row[0]+" "+Row[1]+" "+Row[2] );
                     Row = MySQLFetchRow( GameResult );
             }
             mysql_free_result( GameResult );
