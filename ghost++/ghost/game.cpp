@@ -4067,7 +4067,7 @@ bool CGame :: CustomVoteKickReason( string reason )
 {
         transform( reason.begin( ), reason.end( ), reason.begin( ), ::tolower );
         //Votekick reasons: maphack, fountainfarm, feeding, flaming, game ruin
-        if( reason.find( "maphack" ) != string::npos || reason.find( "fountainfarm" ) != string::npos || reason.find( "feeding" ) != string::npos || reason.find( "flaming" ) != string::npos || reason.find( "gameruin" ) != string::npos )
+        if( reason.find( "maphack" ) != string::npos || reason.find( "fountainfarm" ) != string::npos || reason.find( "feeding" ) != string::npos || reason.find( "flaming" ) != string::npos || reason.find( "gameruin" ) != string::npos || reason.find( "lagging" ) != string::npos )
                 return true;
  
         return false;
