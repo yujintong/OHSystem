@@ -2104,7 +2104,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         string EscName = MySQLEscapeString( conn, name );
         CDBStatsPlayerSummary *StatsPlayerSummary = NULL;
 
-	string Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy` FROM `oh_stats` WHERE `player_lower` = '" + EscName + "';";
+	string Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide` FROM `oh_stats` WHERE `player_lower` = '" + EscName + "';";
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         else
@@ -2115,7 +2115,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 {
                         vector<string> Row = MySQLFetchRow( Result );
 
-                        if( Row.size( ) == 24 )
+                        if( Row.size( ) == 25 )
                         {
                                 uint32_t id = UTIL_ToUInt32( Row[0] );
                                 string player = Row[1];
@@ -2141,6 +2141,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
 				string realm = Row[21];
 				uint32_t leaves = UTIL_ToUInt32( Row[22] );
 				uint32_t forcedgproxy = UTIL_ToUInt32( Row[23] );
+                                bool hiddenacc = UTIL_ToUInt32( Row[25] );
 				uint32_t allcount = 0;
 				uint32_t rankcount = 0;
 				if( score > 0 )
@@ -2172,10 +2173,10 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                                                 }
                                         }
 				}
-                                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, forcedgproxy );
+                                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, forcedgproxy, hiddenacc );
                         }
-                        //else
-                              //  *error = "error checking statsplayersummary [" + name + "] - row doesn't have 23 columns";
+                        else
+                                *error = "error checking statsplayersummary [" + name + "] - row doesn't have 25 columns";
 
                         mysql_free_result( Result );
                 }

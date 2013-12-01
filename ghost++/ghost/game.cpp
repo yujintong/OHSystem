@@ -324,13 +324,15 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
                                 if( i->first.empty( ) )
                                 {
                                         string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
                                         if( StatsPlayerSummary->GetStreak( ) < 0 )
                                                 string Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
  
-                                        SendAllChat( m_GHost->m_Language->HasPlayedGamesWithThisBot( StatsPlayerSummary->GetPlayer( ),
+                                                SendAllChat( m_GHost->m_Language->HasPlayedGamesWithThisBot( StatsPlayerSummary->GetPlayer( ),
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
@@ -356,6 +358,24 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 Streak ) );
                                         }
                                 }
+                            }
+                            else
+                            {
+                                CGamePlayer *Player = GetPlayerFromName( i->first, true );
+
+                                if( Player )
+                                {
+                                    if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
+                                            SendChat( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    else
+                                            SendChat( Player, m_GHost->m_Language->HasPlayedGamesWithThisBot( Player->GetName( ),
+                                                UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
+                                                UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
+                                                UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                Streak ) );
+                                }
+                            }
+                                
                         }
                         else
                         {
@@ -386,6 +406,8 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
                                 if( i->first.empty( ) )
                                 {
                                         uint32_t Level = 0;
@@ -424,13 +446,42 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                         }
                                                 }
                                                 if(m_GHost->m_RanksLoaded)
-                                                        SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                                 else {
-                                                        SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                                         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                                                 }
                                         }
                                 }
+                            } else {
+                                CGamePlayer *Player = GetPlayerFromName( i->first, true );
+
+                                if( Player )
+                                {
+                                    if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
+                                            SendChat( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    else
+                                    {
+                                        uint32_t Level = 0;
+                                        string LevelName;
+                                        for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+                                        {
+                                                if( ( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) || Player->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias ) && m_GHost->m_RanksLoaded)
+                                                {
+                                                        Level = (*k)->IsLevel( Player->GetName( ) );
+                                                        LevelName = (*k)->GetLevelName( Level );
+                                                        break;
+                                                }
+                                        }
+                                        if(m_GHost->m_RanksLoaded)
+                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                        else {
+                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                            CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
+                                        }
+                                    }
+                                }                               
+                            }
                         }
                         else
                         {
@@ -462,10 +513,28 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
                                 if( StatsPlayerSummary->GetStreak( ) != 0 )
                                         SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                 else
                                         SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                            } else {
+                                CGamePlayer *Player = GetPlayerFromName( i->first, true );
+
+                                if( Player )
+                                {
+                                    if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
+                                            SendChat( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    else
+                                    {
+                                        if( StatsPlayerSummary->GetStreak( ) != 0 )
+                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        else
+                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                    }
+                                }
+                            }
                         }
                         else
                                 SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ) );
@@ -529,6 +598,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ) );
  
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
                                 if( i->first.empty( ) )
                                         SendAllChat( Summary );
                                 else
@@ -538,6 +609,17 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         if( Player )
                                                 SendChat( Player, Summary );
                                 }
+                            } else {
+                                CGamePlayer *Player = GetPlayerFromName( i->first, true );
+
+                                if( Player )
+                                {
+                                    if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
+                                        SendChat( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    else
+                                        SendChat( Player, Summary );
+                                }
+                            }
                         }
                         else
                         {

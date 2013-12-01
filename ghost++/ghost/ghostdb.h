@@ -1054,9 +1054,10 @@ private:
 	uint32_t m_ALLCount;
 	uint32_t m_RankCount;
 	uint32_t m_ForcedGproxy;
+        bool m_Hidden;
 
 public:
-        CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, uint32_t nForcedGproxy );
+        CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, uint32_t nForcedGproxy, bool nHidden );
         ~CDBStatsPlayerSummary( );
 
         uint32_t GetID( )                                     { return m_ID; }
@@ -1084,6 +1085,7 @@ public:
 	uint32_t GetLeaves( )						{ return m_Leaves; }
 	string GetRank( )						{ return "#"+UTIL_ToString(m_RankCount+1)+"/"+UTIL_ToString(m_ALLCount); }
 	bool GetForcedGproxy( )						{ return m_ForcedGproxy; }
+        bool GetHidden( )                                               { return m_Hidden; }
 
         float GetAvgKills( )                            { return m_Games > 0 ? (float)m_Kills / m_Games : 0; }
         float GetAvgDeaths( )                           { return m_Games > 0 ? (float)m_Deaths / m_Games : 0; }

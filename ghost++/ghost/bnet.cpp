@@ -550,6 +550,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
+                            if(! StatsPlayerSummary->GetHidden())
+                            {
                                 string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
                                 if( StatsPlayerSummary->GetStreak( ) < 0 )
                                         string Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
@@ -559,6 +561,18 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak ) );
+                            }
+                            else
+                            {
+                                if( i->first->GetName() != i->second->GetName( ) )
+                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                else
+                                    QueueChatCommand( m_GHost->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
+                                                UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
+                                                UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
+                                                UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                Streak ), i->first, true );
+                            }
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
@@ -576,11 +590,26 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
- 
-                        if( StatsPlayerSummary && m_GHost->m_RanksLoaded )
-                                QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
-                        else if( StatsPlayerSummary )
-                                QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
+                        if( StatsPlayerSummary )
+                        {
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
+                                if( m_GHost->m_RanksLoaded )
+                                        QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
+                                else
+                                        QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
+                            } else {
+                              if( i->first != i->second->GetName( ) )
+                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                else
+                                {
+                                    if( m_GHost->m_RanksLoaded )
+                                            QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, true );
+                                    else
+                                            QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, true );
+                                }
+                            }
+                        }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
  
@@ -600,10 +629,23 @@ bool CBNET :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
                                 if( StatsPlayerSummary->GetStreak( ) != 0 )
                                         QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                 else
                                         QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                            } else {
+                                if( i->first->GetName() != i->second->GetName())
+                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                else
+                                {
+                                    if( StatsPlayerSummary->GetStreak( ) != 0 )
+                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
+                                    else
+                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
+                                }
+                            }
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
@@ -665,7 +707,15 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ) );
  
+                            if(! StatsPlayerSummary->GetHidden() )
+                            {
                                 QueueChatCommand( Summary, i->first, !i->first.empty( ) );
+                            } else {
+                                if( i->first->GetName() != i->second->GetName())
+                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                else
+                                    QueueChatCommand( Summary, i->first, true );
+                            }
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
