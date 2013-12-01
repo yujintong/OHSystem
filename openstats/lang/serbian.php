@@ -29,6 +29,7 @@ $lang["safelist"]   = "Sigurna lista";
 $lang["about_us"]   = "O Nama";
 $lang["members"]    = "Članovi";
 $lang["live_games"]      = "Igre Uživo";
+$lang["select_country"]  = "Izaberi Zemlju";
 
 $lang["username"]   = "Korisničko ime";
 
@@ -479,4 +480,9 @@ $lang["points_info1"]        = "Upravo si dobio ";
 $lang["points_info2"]        = "poena";
 $lang["points_info3"]        = "za dnevnu prijavu na sajt";
 $lang["points_info4"]        = "Pažnja: Samo rangirani igrači dobijaju poene";
+
+$lang["hide_stats"]          = "Ne prikazuj moju statistiku";
+$lang["show_stats"]          = "Prikaži moju statistiku";
+$lang["hide_stats_info"]     = "Ako sakriješ statistiku, niko neće moći da vidi tvoje statističke podatke (osim kod pojedinačnih igara)<div>Moraš potvrditi tvoj Battle net nalog da bi menjao ovu opciju.</div>";
+$lang["hide_stats_message"]  = "Korisnik ne želi da prikazuje svoju statistiku";
 ?>

@@ -5,6 +5,8 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 
       //$sth = $db->prepare("UPDATE ".OSDB_STATS." SET points = '50' WHERE points>=20000");
 	  //$result = $sth->execute();
+	  
+	include("../inc/countries.php");  
 ?>
 
 <div align="center" class="padBottom">
@@ -15,6 +17,20 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 		  <input type="hidden" name="players" />
 		  <input style="width: 180px; height: 24px;" type="text" name="search_users" value="<?=$s?>" />
 		  <input class="menuButtons" type="submit" value="Search players" />
+		</td>
+		<td>
+		<select name="country">
+		   <option value=""></option>
+		  <?php
+		  foreach( $Countries as $e=>$v ) {
+		  if ( !empty($_GET["country"]) AND $_GET["country"] == $e ) $s='selected="selected"'; else $s = "";
+		  ?>
+		  <option <?=$s?> value="<?=$e?>"><?=$v?></option>
+		  <?php
+		  }
+		  ?>
+		</select>  
+		<input class="menuButtons" type="submit" value="Search players" />
 		</td>
 	   </tr>
 	 </table>
@@ -106,6 +122,15 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
    $search_users= "";
   }
   
+   //SEARCH COUNTREIS
+   if ( isset($_GET["country"]) AND strlen($_GET["country"])>=2 ) {
+     $search_country = safeEscape( trim( $_GET["country"]));
+	 $sql = " AND country_code = '".$search_country."' ";
+  } else {
+   $sql = "";
+   $search_country= "";
+  }
+  
   //GEOIP CITIES - TESTING
   if ( isset($_GET["city"]) ) {
       $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE id>=1 ORDER BY score DESC LIMIT 50");
@@ -131,7 +156,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'admins' )   $sql.=' AND user_level>=9 '; 
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'banned' )   $sql.=' AND banned>=1 '; 
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'safelist' ) $sql.=' AND user_level=2 OR user_level=3'; 
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'warns' )    $sql.=" AND warn>=1"; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'hidden' )   $sql.=" AND hide>=1"; 
   
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'points' )   $ord = "points DESC";
   
@@ -143,6 +168,18 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 	OS_AddLog($_SESSION["username"], "[os_players] Edited points: ( #".$pid.", <b>$points</b> points ) ");
   }
 
+/*
+  	$sth = $db->prepare("SELECT * FROM  `oh_stats` GROUP BY country");
+	$result = $sth->execute();
+	?><textarea style="width:400px;">$Countries = array();
+<?php
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
+	?>
+$Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
+<?php
+	}
+	?></textarea><?php
+	*/
   ?>
   <div align="center">
   
@@ -150,7 +187,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=admins">Admins</a>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=banned">Banned</a>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=safelist">On Safelist</a>
-  <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=warns">Warns</a>
+  <a class="menuButtons" title="Show players who hide their stats" href="<?=OS_HOME?>adm/?players&amp;sort=hidden">Hidden</a>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players">All ranked players</a>
   <?php if (!isset($_GET["find_leavers"]) ) { ?>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;find_leavers">Find Leavers</a>

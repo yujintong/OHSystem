@@ -190,7 +190,7 @@ $TotalFiles = $c;
 	    <td width="200" class="padLeft"><b>Unranked games:</b></td>
 	    <td>
 		<?=number_format($TotalGamesForUpdate,0)?>
-		<?php if ($TotalGamesForUpdate>=1) { ?><a class="menuButtons" href="<?=OS_HOME?>adm/update_stats.php">Update</a><?php } ?>
+		<?php if ($TotalGamesForUpdate>=1 AND isset($FORCE_UPDATE) ) { ?><a class="menuButtons" href="<?=OS_HOME?>adm/update_stats.php">Update</a><?php } ?>
 		</td>
 	  </tr>
 	  

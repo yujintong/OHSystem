@@ -281,9 +281,19 @@ if (strstr($_SERVER['REQUEST_URI'], basename(__FILE__) ) ) {header('location: ..
 </div>
 
   
-  <footer>
-        <div id="footer-wrapper">@<?php echo date("Y"); ?> Powered by DotA OpenStats 4</div>
-  </footer>
+<div id="bottom">
+<div class="wrapper">
+  <div class="footer-wrap section" id="footer-wrap">
+   <div class="widget HTML" id="HTML2">
+    <div class="creds">Copyright &#169; <?=date("Y")?> &#183; Powered by 
+	<a class="footerlinks" href="http://ohsystem.net/">OpenHosting</a> | 
+	<a class="footerlinks" target="_blank" href="http://openstats.iz.rs/">OpenStats</a> | 
+	</div>
+   </div>
+  </div>
+ </div>
+</div>
+
   </div>
    </div>
 </body>

@@ -13,6 +13,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $clan = EscapeStr( trim($_POST["clan"]));
 	  $user_ppwd = EscapeStr( trim($_POST["user_ppwd"]));
 	  
+	  if (isset($_POST["hide"]) ) $hide = (int) EscapeStr( trim($_POST["hide"]));
+	  
 	  if (strstr( $user_ppwd , " "))    $user_ppwd  = "";
 	  if (strstr( $user_ppwd , "	")) $user_ppwd  = "";
 	  
@@ -30,7 +32,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $avatar = "";
 	  $sql.="user_avatar = '".$avatar."', ";
 	  //Check before delete avatar
-	  $sth = $db->prepare("SELECT user_avatar FROM ".OSDB_USERS." WHERE user_name = :user_name ");
+	  $sth = $db->prepare("SELECT user_avatar, bnet_username, user_bnet 
+	  FROM ".OSDB_USERS." WHERE user_name = :user_name ");
 	  
 	  $sth->bindValue(':user_name', $_SESSION["username"], PDO::PARAM_STR); 
 	  $result = $sth->execute();
@@ -41,8 +44,26 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   $delAvatar = str_replace($website, "", $row["user_avatar"]);
 		   if ( file_exists($delAvatar)  ) unlink( $delAvatar );
 		 }
+		 
 	    }
 	  }
+
+	//Update show/hide stats
+	if ( isset($hide) ) {
+	
+	  $sth = $db->prepare("SELECT user_avatar, bnet_username, user_bnet 
+	  FROM ".OSDB_USERS." WHERE user_name = :user_name ");
+	  
+	  $sth->bindValue(':user_name', $_SESSION["username"], PDO::PARAM_STR); 
+	  $result = $sth->execute();
+	  if ( $sth->rowCount()>=1 ) {
+	  $sth = $db->prepare("UPDATE ".OSDB_STATS." SET hide = :hide WHERE player = :user_name ");
+		
+		$sth->bindValue(':hide', $hide, PDO::PARAM_INT); 
+		$sth->bindValue(':user_name', $_SESSION["username"], PDO::PARAM_STR); 
+		$result = $sth->execute();
+		}
+	 }
 	  
 	  //if ( is_valid_url($avatar) OR empty($avatar) )   $sql.="user_avatar = '".$avatar."', ";
 	  //if ( strlen($location)>=3 )                
@@ -184,7 +205,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  //SET USER POINTS TO 0 (for non-battle net users)
      $ProfileData[$c]["points_int"] = 0;
 	 $ProfileData[$c]["points"] = 0;
-	 
+	 $ProfileData[$c]["hide_stats"] = 0;
 	 //CHECK POINTS FOR BNET USERS
      if ( $row["user_bnet"]>=1 ) {
 	    $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE player = :player LIMIT 1");
@@ -194,6 +215,15 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	    $row = $sth->fetch(PDO::FETCH_ASSOC);
 		$ProfileData[$c]["points_int"]  = ($row["points"]);
 		$ProfileData[$c]["points"]  = number_format($row["points"],0);
+		$ProfileData[$c]["hide"]  = ($row["hide"]);
+		
+		$ProfileData[$c]["hide_stats"] = 1;
+		
+		if ( $row["hide"] == 1 ) $ProfileData[$c]["sel_hide"] = 'selected="selected"';
+		else $ProfileData[$c]["sel_show"] = 'selected="selected"';
+	 } else {
+	 $ProfileData[$c]["sel_hide"] = 'disabled="disabled"';
+	 $ProfileData[$c]["sel_show"] = 'disabled="disabled"';
 	 }
 	 
 	  $c=0;

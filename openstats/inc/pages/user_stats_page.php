@@ -95,6 +95,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["rax"]  = ($row["rax"]);
 	$UserData[$c]["banned"]  = ($row["banned"]);
 	
+	$UserData[$c]["hide"]  = ($row["hide"]);
+	
 	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
 	
 	$UserData[$c]["warn_expire"]  = ($row["warn_expire"]);
@@ -382,7 +384,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		$PenaltyData[$c]["total"] = 0;
 		$PenaltyData[$c]["warned"] = 0;
 	}
-	   
+	
+	if ( $LiveGames == 1 ) {
+	//LAST SEEN FROM GAME LOG
+	$sth = $db->prepare("SELECT gameid, botid, log_time, log_data
+	FROM ".OSDB_GAMELOG." 
+	WHERE id>=1 AND log_data LIKE '%".$PlayerName."%'
+	ORDER BY id DESC LIMIT 1");
+	$result = $sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	
+	$LastSeen = array();
+	$LastSeen["gameid"] = $row["gameid"];
+	$LastSeen["botid"] = $row["botid"];
+	$LastSeen["time"] = date( $DateFormat, strtotime($row["log_time"]));  
+	$LastSeen["log_data"] = $row["log_data"]; 
+	}
 	   //Hook js
 	     AddEvent("os_js", "OS_UserMap");
   

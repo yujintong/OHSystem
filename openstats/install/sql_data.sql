@@ -1,5 +1,13 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
+DROP TABLE IF EXISTS `cron_logs`;
+CREATE TABLE IF NOT EXISTS `cron_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cron_data` text NOT NULL,
+  `cron_date` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 collate utf8_general_ci;
+
 DROP TABLE IF EXISTS `oh_adminlog`;
 CREATE TABLE IF NOT EXISTS `oh_adminlog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -11,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `oh_adminlog` (
   PRIMARY KEY (`id`),
   KEY `time` (`log_time`),
   KEY `gameid` (`gameid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_bans`;
 CREATE TABLE IF NOT EXISTS `oh_bans` (
@@ -33,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `oh_bans` (
   KEY `name` (`name`),
   KEY `date` (`date`),
   KEY `expire` (`expiredate`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_ban_appeals`;
 CREATE TABLE IF NOT EXISTS `oh_ban_appeals` (
@@ -50,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `oh_ban_appeals` (
   `resolved_text` varchar(255) NOT NULL,
   KEY `player_id` (`player_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_ban_reports`;
 CREATE TABLE IF NOT EXISTS `oh_ban_reports` (
@@ -65,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `oh_ban_reports` (
   `status` tinyint(4) NOT NULL,
   KEY `player_id` (`player_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_bot_configuration`;
 CREATE TABLE IF NOT EXISTS `oh_bot_configuration` (
@@ -74,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `oh_bot_configuration` (
   `cfg_description` varchar(255) NOT NULL,
   `cfg_value` varchar(100) NOT NULL,
   KEY `cfg_name` (`cfg_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_commands`;
 CREATE TABLE IF NOT EXISTS `oh_commands` (
@@ -82,28 +90,28 @@ CREATE TABLE IF NOT EXISTS `oh_commands` (
   `botid` int(11) DEFAULT NULL,
   `command` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_comments`;
 CREATE TABLE IF NOT EXISTS `oh_comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `page` varchar(16) CHARACTER SET latin1 NOT NULL,
+  `page` varchar(16) NOT NULL,
   `post_id` int(11) NOT NULL,
-  `text` text CHARACTER SET latin1 NOT NULL,
+  `text` text NOT NULL,
   `date` int(11) NOT NULL,
-  `user_ip` varchar(16) CHARACTER SET latin1 NOT NULL,
+  `user_ip` varchar(16) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_custom_fields`;
 CREATE TABLE IF NOT EXISTS `oh_custom_fields` (
   `field_id` int(11) NOT NULL,
-  `field_name` varchar(64) COLLATE utf8_bin NOT NULL,
-  `field_value` longtext COLLATE utf8_bin NOT NULL,
+  `field_name` varchar(64) NOT NULL,
+  `field_value` longtext NOT NULL,
   KEY `field_id` (`field_id`,`field_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_dotagames`;
 CREATE TABLE IF NOT EXISTS `oh_dotagames` (
@@ -132,19 +140,13 @@ CREATE TABLE IF NOT EXISTS `oh_dotaplayers` (
   `assists` int(11) NOT NULL,
   `gold` int(11) NOT NULL,
   `neutralkills` int(11) NOT NULL,
-  `item1` char(4) CHARACTER SET latin1 NOT NULL,
-  `item2` char(4) CHARACTER SET latin1 NOT NULL,
-  `item3` char(4) CHARACTER SET latin1 NOT NULL,
-  `item4` char(4) CHARACTER SET latin1 NOT NULL,
-  `item5` char(4) CHARACTER SET latin1 NOT NULL,
-  `item6` char(4) CHARACTER SET latin1 NOT NULL,
-  `spell1` varchar(5) NOT NULL,
-  `spell2` varchar(5) NOT NULL,
-  `spell3` varchar(5) NOT NULL,
-  `spell4` varchar(5) NOT NULL,
-  `spell5` varchar(5) NOT NULL,
-  `spell6` varchar(5) NOT NULL,
-  `hero` char(4) CHARACTER SET latin1 NOT NULL,
+  `item1` char(4) NOT NULL,
+  `item2` char(4) NOT NULL,
+  `item3` char(4) NOT NULL,
+  `item4` char(4) NOT NULL,
+  `item5` char(4) NOT NULL,
+  `item6` char(4) NOT NULL,
+  `hero` char(4) NOT NULL,
   `newcolour` int(11) NOT NULL,
   `towerkills` int(11) NOT NULL,
   `raxkills` int(11) NOT NULL,
@@ -193,53 +195,51 @@ CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `totalgames` int(11) DEFAULT NULL,
   `totalplayers` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MEMORY  DEFAULT CHARSET=latin1;
+) ENGINE=MEMORY  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_gameplayers`;
 CREATE TABLE IF NOT EXISTS `oh_gameplayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
   `gameid` int(11) NOT NULL,
-  `name` varchar(15) CHARACTER SET latin1 NOT NULL,
-  `ip` varchar(15) CHARACTER SET latin1 NOT NULL,
+  `name` varchar(15) NOT NULL,
+  `ip` varchar(15) NOT NULL,
   `spoofed` int(11) NOT NULL,
   `reserved` int(11) NOT NULL,
   `loadingtime` int(11) NOT NULL,
   `left` int(11) NOT NULL,
-  `leftreason` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `leftreason` varchar(100) NOT NULL,
   `team` int(11) NOT NULL,
   `colour` int(11) NOT NULL,
-  `spoofedrealm` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `spoofedrealm` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `gameid` (`gameid`),
   KEY `colour` (`colour`),
-  KEY `name` (`name`),
-  KEY `name_2` (`name`)
+  KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_games`;
 CREATE TABLE IF NOT EXISTS `oh_games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
-  `server` varchar(100) CHARACTER SET latin1 NOT NULL,
-  `map` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `server` varchar(100) NOT NULL,
+  `map` varchar(100) NOT NULL,
   `datetime` datetime NOT NULL,
-  `gamename` varchar(31) CHARACTER SET latin1 NOT NULL,
-  `ownername` varchar(15) CHARACTER SET latin1 NOT NULL,
+  `gamename` varchar(31) NOT NULL,
+  `ownername` varchar(15) NOT NULL,
   `duration` int(11) NOT NULL,
   `gamestate` int(11) NOT NULL,
-  `creatorname` varchar(15) CHARACTER SET latin1 NOT NULL,
-  `creatorserver` varchar(20) CHARACTER SET latin1 NOT NULL,
+  `creatorname` varchar(15) NOT NULL,
+  `creatorserver` varchar(20) NOT NULL,
   `gametype` tinyint(2) NOT NULL,
   `stats` tinyint(1) NOT NULL,
   `views` int(11) NOT NULL,
-  `gamestatus` tinyint(1) NOT NULL DEFAULT '0',
+  `gamestatus` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `datetime` (`datetime`),
   KEY `map` (`map`),
   KEY `duration` (`duration`),
-  KEY `gamestate` (`gamestate`),
-  KEY `gamestatus` (`gamestatus`)
+  KEY `gamestate` (`gamestate`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_game_info`;
@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `oh_game_info` (
   `sec` int(11) NOT NULL,
   `stats` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_game_log`;
 CREATE TABLE IF NOT EXISTS `oh_game_log` (
@@ -274,7 +274,7 @@ CREATE TABLE IF NOT EXISTS `oh_game_log` (
   PRIMARY KEY (`id`),
   KEY `time` (`log_time`),
   KEY `gameid` (`gameid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_game_offenses`;
 CREATE TABLE IF NOT EXISTS `oh_game_offenses` (
@@ -292,7 +292,7 @@ CREATE TABLE IF NOT EXISTS `oh_game_offenses` (
   KEY `time` (`offence_time`),
   KEY `expires` (`offence_expire`),
   KEY `pp` (`pp`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_game_status`;
 CREATE TABLE IF NOT EXISTS `oh_game_status` (
@@ -305,7 +305,7 @@ CREATE TABLE IF NOT EXISTS `oh_game_status` (
   KEY `botid` (`botid`),
   KEY `gameid` (`gameid`),
   KEY `status` (`gamestatus`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_geoip`;
 CREATE TABLE IF NOT EXISTS `oh_geoip` (
@@ -318,7 +318,7 @@ CREATE TABLE IF NOT EXISTS `oh_geoip` (
   KEY `ip_start` (`ip_start`,`ip_end`),
   KEY `code` (`code`),
   KEY `ip_integer` (`ip_start_int`,`ip_end_int`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_heroes`;
 CREATE TABLE IF NOT EXISTS `oh_heroes` (
@@ -341,24 +341,24 @@ CREATE TABLE IF NOT EXISTS `oh_heroes` (
 DROP TABLE IF EXISTS `oh_hero_guides`;
 CREATE TABLE IF NOT EXISTS `oh_hero_guides` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hid` varchar(6) COLLATE utf8_bin NOT NULL,
-  `title` varchar(255) COLLATE utf8_bin NOT NULL,
-  `link` varchar(255) COLLATE utf8_bin NOT NULL,
+  `hid` varchar(6) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `link` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `hid` (`hid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_items`;
 CREATE TABLE IF NOT EXISTS `oh_items` (
-  `itemid` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `itemid` varchar(4) NOT NULL,
   `playcount` int(11) NOT NULL,
   `code` smallint(10) NOT NULL,
-  `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `shortname` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `item_info` mediumtext CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `shortname` varchar(50) NOT NULL,
+  `item_info` mediumtext NOT NULL,
   `price` smallint(6) NOT NULL,
-  `type` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `icon` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `icon` varchar(50) NOT NULL,
   PRIMARY KEY (`itemid`),
   KEY `name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -369,17 +369,17 @@ CREATE TABLE IF NOT EXISTS `oh_lobby_game_logs` (
   `gameid` int(11) NOT NULL,
   `botid` tinyint(4) NOT NULL,
   `gametype` tinyint(4) NOT NULL,
-  `lobbylog` longtext COLLATE utf8_bin NOT NULL,
-  `gamelog` longtext COLLATE utf8_bin NOT NULL,
+  `lobbylog` longtext NOT NULL,
+  `gamelog` longtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `gameid` (`gameid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_news`;
 CREATE TABLE IF NOT EXISTS `oh_news` (
   `news_id` mediumint(8) NOT NULL AUTO_INCREMENT,
-  `news_title` varchar(255) CHARACTER SET latin1 NOT NULL,
-  `news_content` mediumtext CHARACTER SET latin1 NOT NULL,
+  `news_title` varchar(255) NOT NULL,
+  `news_content` mediumtext NOT NULL,
   `author` int(11) NOT NULL,
   `comments` int(11) NOT NULL,
   `news_date` int(11) NOT NULL,
@@ -402,18 +402,20 @@ CREATE TABLE IF NOT EXISTS `oh_pm` (
   PRIMARY KEY (`id`),
   KEY `from` (`m_from`),
   KEY `to` (`m_to`),
-  KEY `status` (`m_read`),
-  KEY `m_from` (`m_from`),
-  KEY `m_to` (`m_to`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+  KEY `status` (`m_read`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_stats`;
 CREATE TABLE IF NOT EXISTS `oh_stats` (
   `botid` int(11) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `player` varchar(30) CHARACTER SET latin1 NOT NULL,
-  `player_lower` varchar(30) CHARACTER SET latin1 NOT NULL,
+  `player` varchar(30) NOT NULL,
+  `player_lower` varchar(30) NOT NULL,
   `last_seen` datetime NOT NULL,
+  `country_code` varchar(4) NOT NULL,
+  `country` varchar(40) NOT NULL,
+  `month` varchar(2) NOT NULL DEFAULT '1',
+  `year` year(4) NOT NULL,
   `user_level` tinyint(4) NOT NULL,
   `forced_gproxy` tinyint(1) NOT NULL,
   `score` int(11) NOT NULL,
@@ -433,10 +435,10 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `penalty` tinyint(4) NOT NULL,
   `warn_expire` datetime NOT NULL,
   `warn` int(11) NOT NULL,
-  `realm` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `realm` varchar(100) NOT NULL,
   `reserved` int(11) NOT NULL,
   `leaver` int(11) NOT NULL,
-  `ip` varchar(16) CHARACTER SET latin1 NOT NULL,
+  `ip` varchar(16) NOT NULL,
   `streak` int(11) NOT NULL,
   `maxstreak` int(11) NOT NULL,
   `losingstreak` int(11) NOT NULL,
@@ -444,6 +446,7 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `zerodeaths` int(11) NOT NULL,
   `points` int(11) NOT NULL,
   `points_bet` tinyint(11) NOT NULL,
+  `hide` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `games` (`games`),
   KEY `wins` (`wins`),
@@ -455,7 +458,11 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   KEY `ck` (`creeps`),
   KEY `cd` (`denies`),
   KEY `player` (`player`),
-  KEY `player_lower` (`player_lower`)
+  KEY `player_lower` (`player_lower`),
+  KEY `country_code` (`country_code`),
+  KEY `month` (`month`),
+  KEY `year` (`year`),
+  KEY `hide` (`hide`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_users`;
@@ -493,7 +500,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   KEY `last_login` (`user_last_login`),
   KEY `joined` (`user_joined`),
   KEY `confirm` (`confirm`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `w3mmdplayers`;
 CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
@@ -526,12 +533,13 @@ DROP TABLE IF EXISTS `wc3connect`;
 CREATE TABLE IF NOT EXISTS `wc3connect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(256) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
   `sessionkey` mediumtext,
   `time` datetime DEFAULT NULL,
-  `proxy` varchar(128) DEFAULT '',
+  `proxy` varchar(128) DEFAULT NULL,
   `startalert` int(11) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `wc3connect_list`;
 CREATE TABLE IF NOT EXISTS `wc3connect_list` (
@@ -540,4 +548,4 @@ CREATE TABLE IF NOT EXISTS `wc3connect_list` (
   `data` varchar(1024) DEFAULT NULL,
   `time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;

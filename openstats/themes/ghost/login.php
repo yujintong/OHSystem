@@ -24,11 +24,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    <tr><th width="100"></th><th class="padLeft"><?=$lang["login"]?></th></tr>
    <tr class="row">
      <td width="100" class="padLeft"><?=$lang["email"]?>: </td>
-     <td class="padLeft"><input class="field" type="text" value="" name="login_email" /></td>
+     <td class="padLeft"><input class="field" type="email" value="" name="login_email" required /></td>
    </tr>
    <tr class="row">
      <td width="100" class="padLeft"><?=$lang["password"]?>: </td>
-     <td class="padLeft"><input class="field" type="password" value="" name="login_pw" /></td>
+     <td class="padLeft"><input class="field" type="password" value="" name="login_pw" required /></td>
   </tr>
   <?=os_login_fields()?>
    <tr class="row">
@@ -56,19 +56,19 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <tr><th width="140"></th><th class="padLeft"><?=$lang["register"]?></th></tr>
     <tr class="row">
       <td width="140" class="padLeft"><?=$lang["username"]?>: </td>
-      <td class="padLeft"><input class="field" type="text" value="" name="reg_un" /></td>
+      <td class="padLeft"><input class="field" type="text" value="" name="reg_un" required /></td>
    </tr>
    <tr class="row">
       <td width="140" class="padLeft"><?=$lang["email"]?>: </td>
-      <td class="padLeft"><input class="field" type="text" value="" name="reg_email" /></td>
+      <td class="padLeft"><input class="field" type="email" value="" name="reg_email" required /></td>
    </tr>
    <tr class="row">
       <td width="140" class="padLeft"><?=$lang["password"]?>: </td>
-      <td class="padLeft"><input class="field" type="password" value="" name="reg_pw" /></td>
+      <td class="padLeft"><input class="field" type="password" value="" name="reg_pw" required /></td>
   </tr>
   <tr class="row">
       <td width="140" class="padLeft"><?=$lang["confirm_password"]?>: </td>
-     <td class="padLeft"><input class="field" type="password" value="" name="reg_pw2" /></td>
+     <td class="padLeft"><input class="field" type="password" value="" name="reg_pw2" required /></td>
   </tr>
   <?=os_registration_fields()?>
   <tr class="row">

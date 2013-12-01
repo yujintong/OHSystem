@@ -37,7 +37,18 @@ if ( isset($ProfileData) AND !empty($ProfileData)  ) {
 	    <input type="button" value="Order items" class="menuButtons imgvalign" />
 	  </td>
 	</tr>
-	
+<?php $ProfileData[0]["hide_stats"] = 1; if ($ProfileData[0]["hide_stats"]) { ?>	
+    <tr>
+	  <td class="padLeft" width="130"><?=$lang["stats"]?>:</td>
+	  <td class="imgvalign" valign="middle">
+	    <select name="hide">
+		  <option <?=$ProfileData[0]["sel_hide"]?> value="1"><?=$lang["hide_stats"]?></option>
+		  <option <?=$ProfileData[0]["sel_show"]?> value="0"><?=$lang["show_stats"]?></option>
+		</select>
+		<div><?=$lang["hide_stats_info"] ?></div>
+	  </td>
+	</tr>
+<?php } ?>
     <tr>
 	  <td class="padLeft" width="130"><?=$lang["email"]?>:</td>
 	  <td><input disabled class="field" type="text" value="<?=trim($ProfileData[0]["user_email"])?>" /></td>

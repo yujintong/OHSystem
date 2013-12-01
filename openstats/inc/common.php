@@ -2036,4 +2036,40 @@ function OS_StayRatioIcon( $ratio = 0 ) {
 	<?php
   }
 }
+
+
+function OS_LoadCountries() {
+  if ( file_exists("inc/countries.php") ) include("inc/countries.php");
+  else if ( file_exists("../inc/countries.php") ) include("../inc/countries.php");
+  
+  if ( !empty($Countries) ) return $Countries;
+}
+
+function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 'top', $Value='' ) {
+   $Countries = OS_LoadCountries();
+   global $lang;
+   if ( $FullForm == 1 ) {
+   ?>
+   <form action="" method="get" >
+   
+   <input type="hidden" <?php if ( !empty($Value) ) echo 'value="'.$Value.'"'; ?> name="<?=$Page?>" />
+   <?php
+   }
+   ?>
+   <select name="<?=$field_name?>">
+   <option value=""><?=$lang["select_country"]?>:</option>
+   <?php foreach($Countries as $e=>$v) { 
+    if ( isset( $_GET[$field_name] ) AND $_GET[$field_name] == $e ) $s='selected="selected"'; else $s='';
+   ?>
+     <option <?=$s?> value="<?=$e?>"><?=$v?></option>
+   <?php } ?>	 
+   </select>
+   <?php
+   if ( $FullForm == 1 ) {
+   ?>
+   <input type="submit" value="Display" class="menuButtons" />
+   </form><?php
+   }
+   
+}
 ?>

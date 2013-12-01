@@ -199,8 +199,9 @@ if ( isset($_GET["game_id"]) AND is_numeric($_GET["game_id"]) ) {
 	<option <?=$sel?> value="draw">Only Draw Games</option>
 </select>
    <input type="submit" class="menuButtons" value="Submit" />
-   
+   <!--
    &nbsp; &nbsp; <input type="button" value="Update Stats" class="menuButtons" onclick="location.href='<?=OS_HOME?>adm/update_stats.php'" />
+   -->
 </form>
 
 <?php
