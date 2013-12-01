@@ -567,11 +567,16 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                 if( i->first != i->second->GetName( ) )
                                     QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
+                                {
+                                        string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
+                                        if( StatsPlayerSummary->GetStreak( ) < 0 )
+                                                string Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
                                     QueueChatCommand( m_GHost->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak ), i->first, true );
+                                }
                             }
                         }
                         else
