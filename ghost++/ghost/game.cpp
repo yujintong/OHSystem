@@ -3819,7 +3819,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !RULES
         //
-        else if( Command == "r" || Command == "rules" )
+        else if( Command == "r" || Command == "rule" || Command == "rules" )
         {
                 if( Payload.empty( ) )
                 {
