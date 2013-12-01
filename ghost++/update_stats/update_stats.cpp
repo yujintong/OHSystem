@@ -230,13 +230,13 @@ int main( int argc, char **argv )
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<uint32_t> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id` FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id;" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id;" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
             while( !Row.empty( ) )
             {
-                    UnscoredGames.push( UTIL_ToUInt32( Row[0] ) );
+                    UnscoredGames.push( UTIL_ToUInt32( Row[0]+" "+Row[1]+" "+Row[2] ) );
                     Row = MySQLFetchRow( GameResult );
             }
             mysql_free_result( GameResult );
@@ -255,10 +255,17 @@ int main( int argc, char **argv )
     uint32_t SkippedGames = 0;
     while( !UnscoredGames.empty( ) )
     {
-        uint32_t GameID = UnscoredGames.front( );
+        string Data = UnscoredGames.front( );
         UnscoredGames.pop( );
-
-        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE s.month = MONTH(NOW()) AND s.year = YEAR(NOW()) AND gp.gameid = " + UTIL_ToString( GameID ) );
+        string GameID;
+        string Month;
+        string Year;
+        stringstream SS;
+        SS >> Data;
+        SS << GameID;
+        SS << Month;
+        SS << Year;
+        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+UTIL_ToString( Month )+" AND s.year="+UTIL_ToString( Year )+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + UTIL_ToString( GameID ) );
 
         if( Result )
         {
@@ -589,7 +596,7 @@ int main( int argc, char **argv )
                 if( !ignore )
                 {
                         if( num_players == 0 ) {
-                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"} has no players. Ignoring this game." );
+                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[0] == 0 ) {
@@ -615,7 +622,7 @@ int main( int argc, char **argv )
                                                 string EscName = MySQLEscapeString( Connection, names[i] );
                                                 string EscLName = MySQLEscapeString( Connection, lnames[i] );
                                                 string EscServer = MySQLEscapeString( Connection, servers[i] );
-                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points ) VALUES ( MONTH(NOW()), YEAR(NOW()), CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ")" );
+                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points ) VALUES ("+UTIL_ToString( Month )+", "+UTIL_ToString( Year )+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ")" );
                                         }
                                 }
                         }
