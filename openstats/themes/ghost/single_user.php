@@ -22,6 +22,21 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   </h1>
   
   <?php
+  if ( !empty($LastSeen["gameid"]) ) {
+  ?>
+  <div> <?=$lang["last_seen"]?>:
+  <a href="<?=OS_HOME?>?live_games&amp;gameid=<?=$LastSeen["gameid"]?>&amp;botid=<?=$LastSeen["botid"]?>">
+   <span <?=ShowToolTip("Last seen: <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
+    <?=$lang["game"]?> #<?=$LastSeen["gameid"]?>, <?=($LastSeen["time"])?>
+   </a>
+   </div>
+  <?php
+  }
+  ?>
+  
+  <?php if ($User["hide"] == 0 ) { ?>
+  
+  <?php
   if ( OS_is_banned_player( $User["banname"] ) ) {
   ?>
   <h4><span class="banned"><?=$lang["banned"]?></span> 	<?=OS_is_ban_perm($User["expiredate"], $lang["permanent_ban"])?></h4>
@@ -316,5 +331,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   <div style="width:100%; margin-top:10px;">&nbsp;</div>
   <?php }
   
+  } else {
+  ?>
+  <h4><span class="banned"><?=$lang["hide_stats_message"]?></h4>
+  <div style="width:100%; margin-top:100px;">&nbsp;</div>
+  <?php
   }
+ }
  ?>

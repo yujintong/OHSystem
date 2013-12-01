@@ -486,4 +486,5 @@ $lang["hide_stats"]          = "Do not show my stats";
 $lang["show_stats"]          = "Show my stats";
 $lang["hide_stats_info"]     = "If you hide the statistics, no one will be able to see your statistics (except for individual games).<div>You must confirm your Battle net account to change this option.</div>";
 $lang["hide_stats_message"]  = "The user does not want to show his statistics";
+$lang["last_seen"]           = "Last seen";
 ?>

@@ -217,6 +217,7 @@
 	 
 	 $row = $sth->fetch(PDO::FETCH_ASSOC);
 	     $ListPlayersData[$c]["slot"] = $c;
+		 if ( $row["hide"] == 1 )  $ListPlayersData[$c]["hide"] = 1; else $ListPlayersData[$c]["hide"] = 0;
 	     if ( !empty($row["player"]) ) { 
 		 $ListPlayersData[$c]["player"] = $row["player"]; 
 		 $ListPlayersData[$c]["ip"] = $row["ip"]; 
@@ -365,11 +366,11 @@
 		</a>
 	 <?php } ?>
 	  </td>
-	  <td width="219"><span class="won"><?=($PlayerData["wins"])?></span> / <span class="lost"><?=($PlayerData["losses"])?></span> <?=$Notice?> 
+	  <td width="219"><span class="won"><?php if ($PlayerData["hide"] == 0) { ?><?=($PlayerData["wins"])?></span> / <span class="lost"><?=($PlayerData["losses"])?></span> <?=$Notice?> <?php } else echo "hidden"; ?>
 	  <?php if (OS_is_admin()) { ?><span style="font-size:10px; float:right;"><?php if ($PlayerData["points"]>=1) { echo number_format($PlayerData["points"],0); ?>pts<?php } ?></span><?php } ?>
 	  
 	  </td>
-	  <td width="68"><b><?=$Percent?> %</b></td>
+	  <td width="68"><?php if ($PlayerData["hide"] == 0) { ?><b><?=$Percent?> %<?php } else echo "-"; ?></b></td>
 	 </tr>
 	 <?php
 	 }

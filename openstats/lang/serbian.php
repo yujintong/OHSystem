@@ -485,4 +485,5 @@ $lang["hide_stats"]          = "Ne prikazuj moju statistiku";
 $lang["show_stats"]          = "Prikaži moju statistiku";
 $lang["hide_stats_info"]     = "Ako sakriješ statistiku, niko neće moći da vidi tvoje statističke podatke (osim kod pojedinačnih igara)<div>Moraš potvrditi tvoj Battle net nalog da bi menjao ovu opciju.</div>";
 $lang["hide_stats_message"]  = "Korisnik ne želi da prikazuje svoju statistiku";
+$lang["last_seen"]           = "Poslednji put viđen";
 ?>
