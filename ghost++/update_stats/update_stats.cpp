@@ -265,11 +265,11 @@ int main( int argc, char **argv )
         SS << GameID;
         SS << Month;
         SS << Year;
-        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+UTIL_ToString( Month )+" AND s.year="+UTIL_ToString( Year )+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + UTIL_ToString( GameID ) );
+        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
 
         if( Result )
         {
-                CONSOLE_Print( "Starting update for gameid ["+UTIL_ToString( GameID )+"]" );
+                CONSOLE_Print( "Starting update for gameid ["+GameID+"]" );
 
                 int id[10];
                 bool ignore = false;
@@ -328,7 +328,7 @@ int main( int argc, char **argv )
                 {
                         if( num_players >= 10 )
                         {
-                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has more than 10 players. Ignoring this game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] has more than 10 players. Ignoring this game." );
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -338,7 +338,7 @@ int main( int argc, char **argv )
 
                         if( Winner != 1 && Winner != 2 && Winner != 0)
                         {
-                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] is not a two team map. Ignoring this game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] is not a two team map. Ignoring this game." );
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -555,7 +555,7 @@ int main( int argc, char **argv )
                         //if a player got a connection error his stats arent safed properly, there is an issue that his newcolour gets automatically set to 0
                         else if( !Row[16].empty( ) )  
                         {
-                                CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" has a player with an invalid newcolour. Ignoring this Game." );
+                                CONSOLE_Print( "GameID "+GameID+" has a player with an invalid newcolour. Ignoring this Game." );
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -596,20 +596,20 @@ int main( int argc, char **argv )
                 if( !ignore )
                 {
                         if( num_players == 0 ) {
-                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no players. Ignoring this game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] has no players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[0] == 0 ) {
-                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no Sentinel players. Ignoring this game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] has no Sentinel players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[1] == 0 ) {
-                                CONSOLE_Print( "GameID ["+UTIL_ToString( GameID )+"] has no Scourge players. Ignoring this game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] has no Scourge players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else
                         {
-                                CONSOLE_Print( "GameID "+UTIL_ToString( GameID )+" is calculating..." );
+                                CONSOLE_Print( "GameID "+GameID+" is calculating..." );
 
                                 for( int i = 0; i < num_players; i++ )
                                 {
@@ -622,7 +622,7 @@ int main( int argc, char **argv )
                                                 string EscName = MySQLEscapeString( Connection, names[i] );
                                                 string EscLName = MySQLEscapeString( Connection, lnames[i] );
                                                 string EscServer = MySQLEscapeString( Connection, servers[i] );
-                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points ) VALUES ("+UTIL_ToString( Month )+", "+UTIL_ToString( Year )+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ")" );
+                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points ) VALUES ("+Month+", "+Year+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ")" );
                                         }
                                 }
                         }
@@ -634,9 +634,9 @@ int main( int argc, char **argv )
                 return 1;
         }
 
-        MYSQL_RES *UpdateResult = QueryBuilder(Connection, "UPDATE `oh_games` SET `stats` = '1' WHERE `id` = " + UTIL_ToString( GameID ) + ";" );
+        MYSQL_RES *UpdateResult = QueryBuilder(Connection, "UPDATE `oh_games` SET `stats` = '1' WHERE `id` = " + GameID + ";" );
         if( UpdateResult )
-                CONSOLE_Print( "Successfully updated players from GameID "+UTIL_ToString( GameID ) );
+                CONSOLE_Print( "Successfully updated players from GameID "+GameID );
     }
     if(updatedstats)
             CONSOLE_Print( "Committing transaction..." );
