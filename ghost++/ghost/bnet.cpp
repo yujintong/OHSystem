@@ -564,8 +564,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             }
                             else
                             {
-                                if( i->first->GetName() != i->second->GetName( ) )
-                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                if( i->first != i->second->GetName( ) )
+                                    QueueChatCommand( "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                     QueueChatCommand( m_GHost->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
@@ -600,7 +600,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
                             } else {
                               if( i->first != i->second->GetName( ) )
-                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    QueueChatCommand( "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                 {
                                     if( m_GHost->m_RanksLoaded )
@@ -636,8 +636,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                 else
                                         QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                             } else {
-                                if( i->first->GetName() != i->second->GetName())
-                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                if( i->first != i->second->GetName())
+                                    QueueChatCommand( "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                 {
                                     if( StatsPlayerSummary->GetStreak( ) != 0 )
@@ -711,8 +711,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             {
                                 QueueChatCommand( Summary, i->first, !i->first.empty( ) );
                             } else {
-                                if( i->first->GetName() != i->second->GetName())
-                                    QueueChatCommand( player, "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                if( i->first != i->second->GetName())
+                                    QueueChatCommand( "Player [+"StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                     QueueChatCommand( Summary, i->first, true );
                             }
