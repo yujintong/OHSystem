@@ -366,13 +366,22 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 if( Player )
                                 {
                                     if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                                            SendChat( player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                            SendChat( Player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                     else
+                                    {
+                                            uint32_t sn = StatsPlayerSummary->GetStreak( );
+                                            string Streak = "";
+                                            if( sn < 0 )
+                                                    string Streak = "-" + UTIL_ToString( sn );
+                                            else
+                                                    string Streak = UTIL_ToString( sn );
+
                                             SendChat( Player, m_GHost->m_Language->HasPlayedGamesWithThisBot( Player->GetName( ),
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak ) );
+                                    }
                                 }
                             }
                                 
@@ -459,7 +468,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 if( Player )
                                 {
                                     if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                                            SendChat( player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                            SendChat( Player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                     else
                                     {
                                         uint32_t Level = 0;
@@ -525,7 +534,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 if( Player )
                                 {
                                     if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                                            SendChat( player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                            SendChat( Player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                     else
                                     {
                                         if( StatsPlayerSummary->GetStreak( ) != 0 )
@@ -615,7 +624,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 if( Player )
                                 {
                                     if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                                        SendChat( player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                        SendChat( Player, "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                     else
                                         SendChat( Player, Summary );
                                 }
