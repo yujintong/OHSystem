@@ -2115,7 +2115,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         else if( EscMonth.empty() && EscYear.empty())
             Condition= "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
         else if( EscMonth == "0" && EscYear == "0")
-            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide` WHERE `player_lower` = '" + EscName + "';";
+            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide` FROM oh_stats WHERE `player_lower` = '" + EscName + "';";
         if( Query.empty() )
             Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
         

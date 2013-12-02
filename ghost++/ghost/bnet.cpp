@@ -732,6 +732,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
+                                        UTIL_ToString( StatsPlayerSummary->GetDraw( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetKills( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetDeaths( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetCreeps( ) ),
