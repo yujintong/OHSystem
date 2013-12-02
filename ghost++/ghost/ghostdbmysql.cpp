@@ -2155,7 +2155,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
 				string realm = Row[21];
 				uint32_t leaves = UTIL_ToUInt32( Row[22] );
 				uint32_t forcedgproxy = UTIL_ToUInt32( Row[23] );
-                                bool hiddenacc = UTIL_ToUInt32( Row[245] );
+                                bool hiddenacc = UTIL_ToUInt32( Row[24] );
 				uint32_t allcount = 0;
 				uint32_t rankcount = 0;
 				if( score > 0 )
