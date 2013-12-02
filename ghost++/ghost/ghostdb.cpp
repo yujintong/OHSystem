@@ -187,7 +187,7 @@ CDBGamePlayerSummary *CGHostDB :: GamePlayerSummaryCheck( string name )
 	return NULL;
 }
 
-CDBStatsPlayerSummary *CGHostDB :: StatsPlayerSummaryCheck( string name )
+CDBStatsPlayerSummary *CGHostDB :: StatsPlayerSummaryCheck( string name, string month, string year )
 {
         return NULL;
 }
@@ -382,7 +382,7 @@ CCallableGamePlayerSummaryCheck *CGHostDB :: ThreadedGamePlayerSummaryCheck( str
 	return NULL;
 }
 
-CCallableStatsPlayerSummaryCheck *CGHostDB :: ThreadedStatsPlayerSummaryCheck( string name )
+CCallableStatsPlayerSummaryCheck *CGHostDB :: ThreadedStatsPlayerSummaryCheck( string name, string month, string year )
 {
         return NULL;
 }

@@ -539,14 +539,14 @@ CCallableGamePlayerSummaryCheck *CGHostDBMySQL :: ThreadedGamePlayerSummaryCheck
 	return Callable;
 }
 
-CCallableStatsPlayerSummaryCheck *CGHostDBMySQL :: ThreadedStatsPlayerSummaryCheck( string name )
+CCallableStatsPlayerSummaryCheck *CGHostDBMySQL :: ThreadedStatsPlayerSummaryCheck( string name, string month, string year )
 {
         void *Connection = GetIdleConnection( );
 
         if( !Connection )
                 ++m_NumConnections;
 
-        CCallableStatsPlayerSummaryCheck *Callable = new CMySQLCallableStatsPlayerSummaryCheck( name, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+        CCallableStatsPlayerSummaryCheck *Callable = new CMySQLCallableStatsPlayerSummaryCheck( name, month, year, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
         CreateThread( Callable );
         ++m_OutstandingCallables;
         return Callable;
@@ -2098,13 +2098,27 @@ CDBGamePlayerSummary *MySQLGamePlayerSummaryCheck( void *conn, string *error, ui
 	return GamePlayerSummary;
 }
 
-CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, uint32_t botid, string name )
+CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, uint32_t botid, string name, string month, string year )
 {
         transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
         string EscName = MySQLEscapeString( conn, name );
+        string EscMonth = MySQLEscapeString( conn, month);
+        string EscYear = MySQLEscapeString( conn, year );
         CDBStatsPlayerSummary *StatsPlayerSummary = NULL;
 
-	string Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide` FROM `oh_stats` WHERE `player_lower` = '" + EscName + "';";
+        string Condition = "";
+        string Query = "";
+        if( !EscMonth.empty() && EscMonth != "0" && !EscYear.empty() && EscYear != 0 )
+            Condition= "s.month='"+EscMonth+"' AND s.year='"+EscYear+"' AND";
+        else if( !EscMonth.empty() && EscMonth != "0" && EscYear.empty())
+            Condition= "s.month='"+EscMonth+"' AND s.year=YEAR(NOW()) AND";
+        else if( EscMonth.empty() && EscYear.empty())
+            Condition= "s.month=MONTH(NOW()) AND s.year=YEAR(NOW()) AND";
+        else if( EscMonth == "0" && EscYear == "0")
+            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide` WHERE `player_lower` = '" + EscName + "';";
+        if( Query.empty() )
+            Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
+        
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         else
@@ -2141,7 +2155,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
 				string realm = Row[21];
 				uint32_t leaves = UTIL_ToUInt32( Row[22] );
 				uint32_t forcedgproxy = UTIL_ToUInt32( Row[23] );
-                                bool hiddenacc = UTIL_ToUInt32( Row[24] );
+                                bool hiddenacc = UTIL_ToUInt32( Row[245] );
 				uint32_t allcount = 0;
 				uint32_t rankcount = 0;
 				if( score > 0 )
@@ -2865,7 +2879,7 @@ void CMySQLCallableStatsPlayerSummaryCheck :: operator( )( )
         Init( );
 
         if( m_Error.empty( ) )
-                m_Result = MySQLStatsPlayerSummaryCheck( m_Connection, &m_Error, m_SQLBotID, m_Name );
+                m_Result = MySQLStatsPlayerSummaryCheck( m_Connection, &m_Error, m_SQLBotID, m_Name, m_Month, m_Year );
 
         Close( );
 }

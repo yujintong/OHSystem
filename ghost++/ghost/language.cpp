@@ -475,7 +475,7 @@ string CLanguage :: KickingPlayersWithPingsGreaterThan( string total, string pin
 	return Out;
 }
 
-string CLanguage :: HasPlayedGamesWithThisBot( string user, string score, string games, string winperc, string streak )
+string CLanguage :: HasPlayedGamesWithThisBot( string user, string score, string games, string winperc, string streak, string month, string year )
 {
 	string Out = m_CFG->GetString( "lang_0061", "lang_0061" );
 	UTIL_Replace( Out, "$USER$", user );
@@ -483,13 +483,21 @@ string CLanguage :: HasPlayedGamesWithThisBot( string user, string score, string
 	UTIL_Replace( Out, "$GAMES$", games );
 	UTIL_Replace( Out, "$WINPERC$", winperc );
 	UTIL_Replace( Out, "$STREAK$", streak );
+        if( month == "0" && year == "0")
+            UTIL_Replace( Out, "$TIME$", "overall");
+        else
+            UTIL_Replace( Out, "$TIME$", month+"/"+year);
 	return Out;
 }
 
-string CLanguage :: HasntPlayedGamesWithThisBot( string user )
+string CLanguage :: HasntPlayedGamesWithThisBot( string user, string month, string year )
 {
 	string Out = m_CFG->GetString( "lang_0062", "lang_0062" );
 	UTIL_Replace( Out, "$USER$", user );
+        if( month == "0" && year == "0")
+            UTIL_Replace( Out, "$TIME$", "overall");
+        else
+            UTIL_Replace( Out, "$TIME$", month+"/"+year);
 	return Out;
 }
 
@@ -570,7 +578,7 @@ string CLanguage :: YourLoadingTimeWas( string loadingtime )
 	return Out;
 }
 
-string CLanguage :: HasPlayedDotAGamesWithThisBot( string user, string totalgames, string totalwins, string totallosses, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills )
+string CLanguage :: HasPlayedDotAGamesWithThisBot( string user, string totalgames, string totalwins, string totallosses, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string month, string year )
 {
 	string Out = m_CFG->GetString( "lang_0074", "lang_0074" );
 	UTIL_Replace( Out, "$USER$", user );
@@ -593,13 +601,21 @@ string CLanguage :: HasPlayedDotAGamesWithThisBot( string user, string totalgame
 	UTIL_Replace( Out, "$AVGNEUTRALKILLS$", avgneutralkills );
 	UTIL_Replace( Out, "$AVGTOWERKILLS$", avgtowerkills );
 	UTIL_Replace( Out, "$AVGRAXKILLS$", avgraxkills );
+        if( month == "0" && year == "0")
+            UTIL_Replace( Out, "$TIME$", "overall");
+        else
+            UTIL_Replace( Out, "$TIME$", month+"/"+year);
 	return Out;
 }
 
-string CLanguage :: HasntPlayedDotAGamesWithThisBot( string user )
+string CLanguage :: HasntPlayedDotAGamesWithThisBot( string user, string month, string year )
 {
 	string Out = m_CFG->GetString( "lang_0075", "lang_0075" );
 	UTIL_Replace( Out, "$USER$", user );
+        if( month == "0" && year == "0")
+            UTIL_Replace( Out, "$TIME$", "overall");
+        else
+            UTIL_Replace( Out, "$TIME$", month+"/"+year);
 	return Out;
 }
 

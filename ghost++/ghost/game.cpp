@@ -322,6 +322,12 @@ bool CGame :: Update( void *fd, void *send_fd )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
  
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
                             if(! StatsPlayerSummary->GetHidden() )
@@ -336,7 +342,10 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                Streak ) );
+                                                Streak,
+                                                Month,
+                                                Year
+                                                ) );
                                 }
                                 else
                                 {
@@ -355,7 +364,10 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                Streak ) );
+                                                Streak,
+                                                Month,
+                                                Year
+                                                ) );
                                         }
                                 }
                             }
@@ -380,7 +392,10 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                Streak ) );
+                                                Streak,
+                                                Month,
+                                                Year
+                                                ) );
                                     }
                                 }
                             }
@@ -389,13 +404,17 @@ bool CGame :: Update( void *fd, void *send_fd )
                         else
                         {
                                 if( i->first.empty( ) )
-                                        SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ) );
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player )
-                                                SendChat( Player, m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ) );
+                                                SendChat( Player, m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ) );
                                 }
                         }
  
@@ -412,9 +431,15 @@ bool CGame :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
- 
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
+                            string Time = Month+"/"+Year;
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( i->first.empty( ) )
@@ -431,9 +456,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 }
                                         }
                                         if(m_GHost->m_RanksLoaded)
-                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                         else {
-                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                                 CONSOLE_Print("Could not add correctly a levelname. ranks.txt wasnt loaded.");
                                         }
                                 }
@@ -455,9 +480,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                         }
                                                 }
                                                 if(m_GHost->m_RanksLoaded)
-                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                                 else {
-                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                                         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                                                 }
                                         }
@@ -483,9 +508,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 }
                                         }
                                         if(m_GHost->m_RanksLoaded)
-                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                         else {
-                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                             CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                                         }
                                     }
@@ -501,7 +526,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player )
-                                                SendChat( Player, m_GHost->m_Language->HasntPlayedGamesWithThisBot( Player->GetName( ) ) );
+                                                SendChat( Player, m_GHost->m_Language->HasntPlayedGamesWithThisBot( Player->GetName( ),
+                                                Month,
+                                                Year ) );
                                 }
                         }
  
@@ -519,15 +546,21 @@ bool CGame :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
- 
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
+                            string Time = Month+"/"+Year;
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                 else
-                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                             } else {
                                 CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
@@ -538,15 +571,17 @@ bool CGame :: Update( void *fd, void *send_fd )
                                     else
                                     {
                                         if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                         else
-                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                     }
                                 }
                             }
                         }
                         else
-                                SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ) );
+                                SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -583,7 +618,12 @@ bool CGame :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
- 
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
                                 string Summary = m_GHost->m_Language->HasPlayedDotAGamesWithThisBot(    i->second->GetName( ),
@@ -605,7 +645,10 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ) );
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ),
+                                                Month,
+                                                Year
+                                                );
  
                             if(! StatsPlayerSummary->GetHidden() )
                             {
@@ -633,13 +676,17 @@ bool CGame :: Update( void *fd, void *send_fd )
                         else
                         {
                                 if( i->first.empty( ) )
-                                        SendAllChat( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ) );
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player )
-                                                SendChat( Player, m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ) ) );
+                                                SendChat( Player, m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ) );
                                 }
                         }
  
@@ -2795,24 +2842,30 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( Command == "stats" && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
         {
                 string StatsUser = User;
- 
-                if( !Payload.empty( ) )
-                        StatsUser = Payload;
+                string Month = "";
+                string Year = "";
+                if( !Payload.empty( ) ){
+                    stringstream SS;
+                    Paylad << SS;
+                    SS >> StatsUser;
+                    SS >> Month;
+                    SS >> Year;
+                }
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                         else
-                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ) ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year ) ) );
                         else
-                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ) ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -2827,25 +2880,30 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( ( Command == "rank" || Command == "class" ) && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
         {
                 string StatsUser = User;
- 
-                if( !Payload.empty( ) )
-                        StatsUser = Payload;
- 
+                string Month = "";
+                string Year = "";
+                if( !Payload.empty( ) ){
+                    stringstream SS;
+                    Paylad << SS;
+                    SS >> StatsUser;
+                    SS >> Month;
+                    SS >> Year;
+                }
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                         else
-                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ) ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year ) ) );
                         else
-                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ) ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -2861,25 +2919,30 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else if( (Command == "statsdota" || Command == "sd") && GetTime( ) - player->GetStatsDotASentTime( ) >= 5 )
         {
                 string StatsUser = User;
- 
-                if( !Payload.empty( ) )
-                        StatsUser = Payload;
- 
+                string Month = "";
+                string Year = "";
+                if( !Payload.empty( ) ){
+                    stringstream SS;
+                    Paylad << SS;
+                    SS >> StatsUser;
+                    SS >> Month;
+                    SS >> Year;
+                }
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                         else
-                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ) ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year ) ) );
                         else
-                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ) ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -2887,6 +2950,28 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 player->SetStatsDotASentTime( GetTime( ) );
         }
  
+        //
+        // !STREAK
+        //
+        else if( Command == "streak" )
+        {
+                string StatsUser = User;
+                string Month = "";
+                string Year = "";
+                if( !Payload.empty( ) ){
+                    stringstream SS;
+                    Paylad << SS;
+                    SS >> StatsUser;
+                    SS >> Month;
+                    SS >> Year;
+                }
+ 
+                // check for potential abuse
+ 
+                if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
+                        m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
+        }
+        
         //
         // !VERSION
         //
@@ -3483,22 +3568,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 }
                 else
                         SendChat( player, "Error. This User is invalid" );
-        }
- 
-        //
-        // !STREAK
-        //
-        else if( Command == "streak" )
-        {
-                string StatsUser = User;
- 
-                if( !Payload.empty( ) )
-                        StatsUser = Payload;
- 
-                // check for potential abuse
- 
-                if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                        m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
         }
  
         //

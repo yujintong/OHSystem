@@ -547,6 +547,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
  
                         if( StatsPlayerSummary )
                         {
@@ -560,7 +566,10 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                Streak ) );
+                                                Streak,
+                                                Month,
+                                                Year
+                                                ) );
                             }
                             else
                             {
@@ -575,12 +584,17 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                Streak ), i->first, true );
+                                                Streak,
+                                                Month,
+                                                Year
+                                                ), i->first, true );
                                 }
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -595,28 +609,37 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
+                            string Time = Month+"/"+Year;
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( m_GHost->m_RanksLoaded )
-                                        QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
                                 else
-                                        QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
                             } else {
                               if( i->first != i->second->GetName( ) )
                                     QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                 {
                                     if( m_GHost->m_RanksLoaded )
-                                            QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, true );
+                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, true );
                                     else
-                                            QueueChatCommand( "["+i->second->GetName( )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, true );
+                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( ), i->first, true );
                                 }
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -631,29 +654,37 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
- 
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
+                            string Time = Month+"/"+Year;
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                 else
-                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                             } else {
                                 if( i->first != i->second->GetName())
                                     QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                 {
                                     if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
+                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
                                     else
-                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + "] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
+                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
                                 }
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -688,7 +719,13 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 if( i->second->GetReady( ) )
                 {
                         CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
- 
+                        string Month = i->second->GetMonth();
+                        string Year = i->second->GetYear();
+                        if(Month.empty())
+                            Month=m_GHost->GetTimeFunction(1);
+                        if(Year.empty())
+                            Year=m_GHost->GetTimeFunction(0);
+                        
                         if( StatsPlayerSummary )
                         {
                                 string Summary = m_GHost->m_Language->HasPlayedDotAGamesWithThisBot(    i->second->GetName( ),
@@ -710,7 +747,10 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ) );
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ),
+                                                Month,
+                                                Year
+                                        );
  
                             if(! StatsPlayerSummary->GetHidden() )
                             {
@@ -723,7 +763,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ) ), i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -3591,14 +3633,20 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( Command == "stats" )
                                 {
                                         string StatsUser = User;
- 
-                                        if( !Payload.empty( ) )
-                                                StatsUser = Payload;
+                                        string Month = "";
+                                        string Year = "";
+                                        if( !Payload.empty( ) ){
+                                            stringstream SS;
+                                            Paylad << SS;
+                                            SS >> StatsUser;
+                                            SS >> Month;
+                                            SS >> Year;
+                                        }
  
                                         // check for potential abuse
  
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedGSChecks.push_back( PairedGSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                                m_PairedGSChecks.push_back( PairedGSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                                 }
  
                                 //
@@ -3606,15 +3654,20 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 else if( Command == "rank" || Command == "class" )
                                 {
-                                        string StatsUser = User;
+                                       string StatsUser = User;
+                                       string Month = "";
+                                       string Year = "";
+                                       if( !Payload.empty( ) ){
+                                           stringstream SS;
+                                           Paylad << SS;
+                                           SS >> StatsUser;
+                                           SS >> Month;
+                                           SS >> Year;
+                                       }
+                                       // check for potential abuse
  
-                                        if( !Payload.empty( ) )
-                                                StatsUser = Payload;
- 
-                                        // check for potential abuse
- 
-                                        if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                       if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
+                                                m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                                 }
  
                                 //
@@ -3624,16 +3677,45 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( Command == "statsdota" || Command == "sd" )
                                 {
                                         string StatsUser = User;
- 
-                                        if( !Payload.empty( ) )
-                                                StatsUser = Payload;
+                                        string Month = "";
+                                        string Year = "";
+                                        if( !Payload.empty( ) ){
+                                            stringstream SS;
+                                            Paylad << SS;
+                                            SS >> StatsUser;
+                                            SS >> Month;
+                                            SS >> Year;
+                                        }
  
                                         // check for potential abuse
  
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
+                                                m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
                                 }
  
+                                //
+                                // !STREAK
+                                //
+ 
+                                else if( Command == "streak" )
+                                {
+                                        string StatsUser = User;
+ 
+                                        string Month = "";
+                                        string Year = "";
+                                        if( !Payload.empty( ) ){
+                                            stringstream SS;
+                                            Paylad << SS;
+                                            SS >> StatsUser;
+                                            SS >> Month;
+                                            SS >> Year;
+                                        }
+                                        // check for potential abuse
+ 
+                                        if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
+                                                m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year ) ) );
+                                }
+                                
                                 //
                                 // !VERSION
                                 //
@@ -3759,23 +3841,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         QueueChatCommand( "Error. Please whisper to the bot, since other players shouldn't see your password.", User, true );
                                         }
  
-                                }
- 
-                                //
-                                // !STREAK
-                                //
- 
-                                else if( Command == "streak" )
-                                {
-                                        string StatsUser = User;
- 
-                                        if( !Payload.empty( ) )
-                                                StatsUser = Payload;
- 
-                                        // check for potential abuse
- 
-                                        if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser ) ) );
                                 }
  
                                 //
