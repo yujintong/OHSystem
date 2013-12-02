@@ -2109,11 +2109,11 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         string Condition = "";
         string Query = "";
         if( !EscMonth.empty() && EscMonth != "0" && !EscYear.empty() && EscYear != "0" )
-            Condition= "s.month='"+EscMonth+"' AND s.year='"+EscYear+"' AND";
+            Condition= "month='"+EscMonth+"' AND year='"+EscYear+"' AND";
         else if( !EscMonth.empty() && EscMonth != "0" && EscYear.empty())
-            Condition= "s.month='"+EscMonth+"' AND s.year=YEAR(NOW()) AND";
+            Condition= "month='"+EscMonth+"' AND year=YEAR(NOW()) AND";
         else if( EscMonth.empty() && EscYear.empty())
-            Condition= "s.month=MONTH(NOW()) AND s.year=YEAR(NOW()) AND";
+            Condition= "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
         else if( EscMonth == "0" && EscYear == "0")
             Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide` WHERE `player_lower` = '" + EscName + "';";
         if( Query.empty() )
