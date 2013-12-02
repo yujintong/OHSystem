@@ -1946,7 +1946,7 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
     string EscGameName = MySQLEscapeString(conn, gamename);
     if(!EscGameName.empty() && gameid == 0)
     {
-        string Query = "INSERT INTO oh_games (botid, gamename, gamestatus) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0);";
+        string Query = "INSERT INTO oh_games (botid, gamename, gamestatus, datetime) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0, CURRENT_TIMESTAMP());";
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         else
