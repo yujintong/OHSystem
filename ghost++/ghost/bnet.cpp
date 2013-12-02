@@ -3637,7 +3637,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         string Year = "";
                                         if( !Payload.empty( ) ){
                                             stringstream SS;
-                                            Paylad << SS;
+                                            SS << Payload;
                                             SS >> StatsUser;
                                             SS >> Month;
                                             SS >> Year;
@@ -3659,7 +3659,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                        string Year = "";
                                        if( !Payload.empty( ) ){
                                            stringstream SS;
-                                           Paylad << SS;
+                                           SS << Payload;
                                            SS >> StatsUser;
                                            SS >> Month;
                                            SS >> Year;
@@ -3681,7 +3681,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         string Year = "";
                                         if( !Payload.empty( ) ){
                                             stringstream SS;
-                                            Paylad << SS;
+                                            SS << Payload;
                                             SS >> StatsUser;
                                             SS >> Month;
                                             SS >> Year;
@@ -3705,7 +3705,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         string Year = "";
                                         if( !Payload.empty( ) ){
                                             stringstream SS;
-                                            Paylad << SS;
+                                            SS << Payload;
                                             SS >> StatsUser;
                                             SS >> Month;
                                             SS >> Year;

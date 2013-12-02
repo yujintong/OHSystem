@@ -1963,16 +1963,17 @@ void CGHost :: LoadInsult()
         CONSOLE_Print("Error. Unable to read file [insult.txt]. User levels will not work for this session.");
 }
 
-void CGHost :: GetTimeFunction( uint32_t type )
+string CGHost :: GetTimeFunction( uint32_t type )
 {
 #if !defined(WIN32)
     time_t theTime = time(NULL);
     struct tm *aTime = localtime(&theTime);
-
+    int Time = 0;
     if( type == 1)
-        return aTime->tm_mon + 1;
-
-    return aTime->tm_year + 1900;
+        Time = aTime->tm_mon + 1;
+    if( Time == 0)
+        Time = aTime->tm_year + 1900;
+    return UTIL_ToString(Time);
 #else 
     return "";
 #endif

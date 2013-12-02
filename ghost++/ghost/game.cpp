@@ -520,7 +520,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         else
                         {
                                 if( i->first.empty( ) )
-                                        SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ), Month, Year ) );
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
@@ -2846,7 +2846,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 string Year = "";
                 if( !Payload.empty( ) ){
                     stringstream SS;
-                    Paylad << SS;
+                    SS << Payload;
                     SS >> StatsUser;
                     SS >> Month;
                     SS >> Year;
@@ -2884,7 +2884,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 string Year = "";
                 if( !Payload.empty( ) ){
                     stringstream SS;
-                    Paylad << SS;
+                    SS << Payload;
                     SS >> StatsUser;
                     SS >> Month;
                     SS >> Year;
@@ -2923,7 +2923,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 string Year = "";
                 if( !Payload.empty( ) ){
                     stringstream SS;
-                    Paylad << SS;
+                    SS << Payload;
                     SS >> StatsUser;
                     SS >> Month;
                     SS >> Year;
@@ -2960,7 +2960,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 string Year = "";
                 if( !Payload.empty( ) ){
                     stringstream SS;
-                    Paylad << SS;
+                    SS << Payload;
                     SS >> StatsUser;
                     SS >> Month;
                     SS >> Year;

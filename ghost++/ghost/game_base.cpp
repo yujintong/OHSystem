@@ -2905,7 +2905,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 m_Pairedpms.push_back( Pairedpm( joinPlayer->GetName( ), m_GHost->m_DB->Threadedpm( joinPlayer->GetName( ), string(), 0, string(), "join" ) ) );
  
         // check win perc
-         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ) ) ) );
+         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "" ) ) );
  
         // cookie for reserved players
         if( Level >= 3 && m_GHost->m_FunCommands)

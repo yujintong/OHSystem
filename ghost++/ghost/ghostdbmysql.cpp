@@ -2108,7 +2108,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
 
         string Condition = "";
         string Query = "";
-        if( !EscMonth.empty() && EscMonth != "0" && !EscYear.empty() && EscYear != 0 )
+        if( !EscMonth.empty() && EscMonth != "0" && !EscYear.empty() && EscYear != "0" )
             Condition= "s.month='"+EscMonth+"' AND s.year='"+EscYear+"' AND";
         else if( !EscMonth.empty() && EscMonth != "0" && EscYear.empty())
             Condition= "s.month='"+EscMonth+"' AND s.year=YEAR(NOW()) AND";
