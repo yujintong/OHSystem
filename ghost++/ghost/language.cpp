@@ -585,7 +585,7 @@ string CLanguage :: HasPlayedDotAGamesWithThisBot( string user, string totalgame
 	UTIL_Replace( Out, "$TOTALGAMES$", totalgames );
 	UTIL_Replace( Out, "$TOTALWINS$", totalwins );
 	UTIL_Replace( Out, "$TOTALLOSSES$", totallosses );
-	UTIL_Replace( Out, "$TOTALDRAWSS$", draws );
+	UTIL_Replace( Out, "$TOTALDRAWS$", draws );
 	UTIL_Replace( Out, "$TOTALKILLS$", totalkills );
 	UTIL_Replace( Out, "$TOTALDEATHS$", totaldeaths );
 	UTIL_Replace( Out, "$TOTALCREEPKILLS$", totalcreepkills );
