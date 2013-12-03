@@ -257,6 +257,7 @@ public:
         void LoadRanks( );
         virtual uint32_t GetNewHostCounter( );
         void LoadInsult( );
+        virtual string GetTimeFunction( uint32_t type );
 };
 
 #endif
