@@ -2045,6 +2045,7 @@ function OS_LoadCountries() {
 }
 
 function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 'top', $Value='' ) {
+   global $lang;
    $Countries = OS_LoadCountries();
    
    if ( $FullForm == 1 ) {
@@ -2056,7 +2057,7 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    }
    ?>
    <select name="<?=$field_name?>">
-   <option value="">Select country:</option>
+   <option value=""><?=$lang["select_country"]?>:</option>
    <?php foreach($Countries as $e=>$v) { 
     if ( isset( $_GET[$field_name] ) AND $_GET[$field_name] == $e ) $s='selected="selected"'; else $s='';
    ?>
