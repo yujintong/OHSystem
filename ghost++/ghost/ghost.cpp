@@ -1965,7 +1965,8 @@ void CGHost :: LoadInsult()
 
 string CGHost :: GetTimeFunction( uint32_t type )
 {
-#if !defined(WIN32)
+    //should work on windows also. This should be tested.
+    
     time_t theTime = time(NULL);
     struct tm *aTime = localtime(&theTime);
     int Time = 0;
@@ -1974,7 +1975,4 @@ string CGHost :: GetTimeFunction( uint32_t type )
     if( Time == 0)
         Time = aTime->tm_year + 1900;
     return UTIL_ToString(Time);
-#else 
-    return "";
-#endif
 }
