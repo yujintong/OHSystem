@@ -1,6 +1,9 @@
 <?php
 /* 
 Ivan Antonijević (ivan.anta [at] gmail.com), 2012
+*/<?php
+/* 
+Ivan Antonijević (ivan.anta [at] gmail.com), 2012
 */
 if (strstr($_SERVER['REQUEST_URI'],basename(__FILE__))){header('HTTP/1.1 404 Not Found');die;}
 
@@ -45,9 +48,14 @@ if ( isset($_GET["uid"]) )  $prefix.="&amp;uid=".safeEscape( (int) $_GET["uid"])
 if ( isset($_GET["h"]) )  $prefix.="&amp;h=".safeEscape( $_GET["h"]);
 if ( isset($_GET["u"]) )    { $prefix.="?u=".safeEscape( (int) $_GET["u"]).""; $end ="#game_history"; }
 
-if ( isset($_GET["m"]) )  $prefix.="&amp;m=".safeEscape( (int) $_GET["m"]);
-if ( isset($_GET["y"]) )  $prefix.="&amp;y=".safeEscape( (int) $_GET["y"]);
+//if ( isset($_GET["m"]) )  $prefix.="&amp;m=".safeEscape( (int) $_GET["m"]);
+//if ( isset($_GET["y"]) )  $prefix.="&amp;y=".safeEscape( (int) $_GET["y"]);
 if ( isset($_GET["compare"]) ) $prefix.="&amp;compare";
+
+if ( isset($_GET["country"]) ) $prefix.="&amp;country=".substr($_GET["country"],0,2);
+
+ if (isset($_GET['m']) AND is_numeric($_GET['m']))  $prefix.="&amp;m=".substr($_GET["m"],0,2);
+ if (isset($_GET['y']) AND is_numeric($_GET['y']))  $prefix.="&amp;y=".substr($_GET["y"],0,4);
 
               $rowsperpage = $result_per_page;
 

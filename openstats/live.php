@@ -214,8 +214,8 @@
 	 $sth = $db->prepare( "SELECT * FROM `".OSDB_STATS."` 
 	 WHERE player = '".$Player."' ");
      $result = $sth->execute();
-	 
 	 $row = $sth->fetch(PDO::FETCH_ASSOC);
+	 
 	     $ListPlayersData[$c]["slot"] = $c;
 		 if ( $row["hide"] == 1 )  $ListPlayersData[$c]["hide"] = 1; else $ListPlayersData[$c]["hide"] = 0;
 	     if ( !empty($row["player"]) ) { 
@@ -623,10 +623,10 @@ function HighlightKeyword($str, $search) {
     $search = EscapeStr( trim($_POST["search"]));
 
 	$sth = $db->prepare( "SELECT * FROM `".OSDB_STATS."` 
-	WHERE player LIKE ('%".$search."%') ORDER BY score DESC LIMIT 50");
+	WHERE player LIKE ('%".$search."%') GROUP BY player ORDER BY score DESC LIMIT 50");
     $result = $sth->execute();
 	?>
-	<div id="search_results_live">
+	<div style="position:absolute; top: 166px; right:10px; background-color: #fff; color:#000; border:3px solid #ccc; border-radius: 2px solid #ccc; width:210px; height: 380px; overflow: scroll; padding-left: 5px; padding-top: 4px; font-size:12px; opacity:0.9; overflow-x: hidden;">
 	<a href="javascript:;" onclick="OS_ResetSearch()" style="float: right;"><img src="<?=OS_HOME?>img/close.png" alt="close" width="16" height="16" class="imgvalign" /></a>
 	<?php
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
@@ -639,7 +639,11 @@ function HighlightKeyword($str, $search) {
 	?>
 	</div>
 	<?php
-  } 
+  } else if ( isset( $_POST["insult"] )) {
+  
+  //Nothing to do here!
+  
+  }
   else { die; }
    
 ?>

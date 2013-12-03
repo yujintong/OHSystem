@@ -2037,7 +2037,6 @@ function OS_StayRatioIcon( $ratio = 0 ) {
   }
 }
 
-
 function OS_LoadCountries() {
   if ( file_exists("inc/countries.php") ) include("inc/countries.php");
   else if ( file_exists("../inc/countries.php") ) include("../inc/countries.php");
@@ -2047,7 +2046,7 @@ function OS_LoadCountries() {
 
 function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 'top', $Value='' ) {
    $Countries = OS_LoadCountries();
-   global $lang;
+   
    if ( $FullForm == 1 ) {
    ?>
    <form action="" method="get" >
@@ -2057,7 +2056,7 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    }
    ?>
    <select name="<?=$field_name?>">
-   <option value=""><?=$lang["select_country"]?>:</option>
+   <option value="">Select country:</option>
    <?php foreach($Countries as $e=>$v) { 
     if ( isset( $_GET[$field_name] ) AND $_GET[$field_name] == $e ) $s='selected="selected"'; else $s='';
    ?>
@@ -2071,5 +2070,34 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    </form><?php
    }
    
+}
+
+function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
+
+ if ( !isset($_GET["m"]) ) $m = date("m"); else $m = (int)$_GET["m"];
+ if ( !isset($_GET["y"]) ) $y = date("Y"); else $y = (int)$_GET["y"];
+ 
+ $endYear = date("Y");
+ ?>
+ <form action="" method="get" style="display:inline">
+ <input type="hidden" name="<?=$page?>" />
+ <select name="m">
+    <?php for($i=1; $i<=12; $i++) { 
+	if ( $m == $i ) $s='selected="selected"'; else $s='';
+	?>
+	<option <?=$s?> value="<?=$i?>"><?=getMonthName($i)?></option>
+	<?php } ?>
+ </select>
+ 
+  <select name="y">
+    <?php for($i=$startYear; $i<=$endYear; $i++) { 
+	if ( $y == $i ) $s='selected="selected"'; else $s='';
+	?>
+	<option <?=$s?> value="<?=$i?>"><?=($i)?></option>
+	<?php } ?>
+ </select>
+ <input type="submit" value="Display" class="menuButtons" />
+ </form>
+ <?php
 }
 ?>

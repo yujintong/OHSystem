@@ -16,6 +16,10 @@ include($phpbb_forum .'common.php');
      $phpbb_sid = $user->data['session_id'];
 	 $phpbb_path = $phpbb_forum;
 	 $phpbb_avatar = $phpbb_forum_url."images/avatars/gallery/".$user->data['user_avatar'];
+	 
+	 if ( !file_exists($phpbb_forum."images/avatars/gallery/".$user->data['user_avatar']) ) 
+	 $phpbb_avatar = $phpbb_forum_url."download/file.php?avatar=".$user->data['user_avatar'];
+	 
 	 $phpbb_userID = $user->data['user_id'];
 	 $phpbb_userType = $user->data['user_type'];
 	 $phpbb_userEmail = $user->data['user_email'];

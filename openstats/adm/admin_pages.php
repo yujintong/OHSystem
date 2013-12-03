@@ -153,7 +153,7 @@ $TotalFiles = $c;
 	<?php if (isset($OptimizedTables ) ) { ?>
 	<h2>All tables successfully optimized <a href="<?=OS_HOME?>adm/">[OK]</a></h2>
 	<?php } ?>
-	
+
 	<?php
 	if (!$_GET) {
 	?>
@@ -175,8 +175,26 @@ $TotalFiles = $c;
 	</table>
 	<?php
 	}
+	$RealPath = realpath(dirname(__FILE__));
+	$BotPath = explode("/", $RealPath);
+	$TotalD = count($BotPath);
+	$FindPath = "";
+	for ($i=0; $i<=($TotalD-3); $i++) {
+	$FindPath.=$BotPath[$i]."/";
+	}
+	$BotPath = $FindPath."ghost++/default.cfg";
 	?>
-	
+	<div align="left" style="text-align:left; margin-left:32px;">
+	  <div><b>Real path:</b> <?=$RealPath;?></div>
+	  <div><b>Bot path:</b> <?=$BotPath;?><?php if (!file_exists(realpath($BotPath) ) ) echo " <span style='color:red;'>(not exists!)</span>"; ?>  </div>
+	  <div><b>Server OS:</b> <?php echo PHP_OS; ?>, PHP: <?php echo PHP_VERSION; ?>, <?=$_SERVER["SERVER_SOFTWARE"] ?></div>
+	  <div><b>Address:</b> <?=$_SERVER['SERVER_ADDR']?>, <b>Port:</b> <?=$_SERVER['SERVER_PORT'] ?></div>
+	  
+	  <form action="<?=OS_HOME?>adm/daemon/" method="get" autocomplete = "off" >
+	    <input type="text" name="pw" value="" required /> <input type="submit" value="Start Daemon" class="menuButtons" /> - Type cron password
+	  </form>
+	  
+	</div>
 	<?php
 	if ( isset($_SESSION["intro_message"]) ) echo $_SESSION["intro_message"];
 	?>
