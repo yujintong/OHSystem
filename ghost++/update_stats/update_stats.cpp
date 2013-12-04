@@ -230,7 +230,7 @@ int main( int argc, char **argv )
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<string> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id;" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT 50;" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
