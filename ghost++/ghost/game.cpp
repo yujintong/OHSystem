@@ -813,7 +813,10 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         // check if everyone on leaver's team left but other team has more than two players
                         char sid, team;
                         uint32_t CountAlly = 0;
-                        uint32_t CountEnemy = 0;
+                        //the current player who is leaving isnt counted yet because of this, the player gets after this trigger deleted, thats why the autoend isnt triggering correctly.
+                        //on 5v3 games nothing triggers but on 4v3, when it is triggering with spread of 2. The enemycount need to be set to 1 to fix this
+                        // the count-process is done on the next vector-check
+                        uint32_t CountEnemy = 1;
  
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++)
                         {
@@ -846,14 +849,16 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 m_EndGame = true;
                                 m_BreakAutoEndVotesNeeded = CountAlly;
                         }
-                        else if( CountAlly+CountEnemy <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
+                        // here is no spread and we actually need the full remaining players
+                        else if( CountAlly+(CountEnemy-1) <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
                         {
                                 SendAllChat("[AUTO-END] Too few players ingame, the autoend countdown has started." );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
                                 m_BreakAutoEndVotesNeeded = CountAlly;
                         }
-                        else if( CountAlly == 0 && CountEnemy >= 2 )
+                        //this can be simple done by setting the trigger to 1 instead of 2
+                        else if( CountAlly == 0 && CountEnemy >= 1 )
                         {
                                 // if less than one minute has elapsed, draw the game
                                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
