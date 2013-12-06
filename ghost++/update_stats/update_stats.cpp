@@ -173,7 +173,7 @@ void Print_Error( std::string error )
 MYSQL* StartUp( int argc, char **argv )
 {
     string CFGFile = "default.cfg";
-
+    vector<string> ErrorLog;
     if( argc > 1 && argv[1] )
             CFGFile = argv[1];
 
@@ -330,6 +330,7 @@ int main( int argc, char **argv )
                         if( num_players >= 10 )
                         {
                                 CONSOLE_Print( "GameID ["+GameID+"] has more than 10 players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has more than 10 players. Ignoring this game.");
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -340,6 +341,7 @@ int main( int argc, char **argv )
                         if( Winner != 1 && Winner != 2 && Winner != 0)
                         {
                                 CONSOLE_Print( "GameID ["+GameID+"] is not a two team map. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] is not a two team map. Ignoring this game.");
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -556,7 +558,8 @@ int main( int argc, char **argv )
                         //if a player got a connection error his stats arent safed properly, there is an issue that his newcolour gets automatically set to 0
                         else if( !Row[16].empty( ) )  
                         {
-                                CONSOLE_Print( "GameID "+GameID+" has a player with an invalid newcolour. Ignoring this Game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] has a player with an invalid newcolour. Ignoring this Game." );
+                                ErrorLog.push_back( "["+GameID+"] has a player with an invalid newcolour: ["+Row[16]+"]. Ignoring this Game.");
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -598,23 +601,26 @@ int main( int argc, char **argv )
                 {
                         if( num_players == 0 ) {
                                 CONSOLE_Print( "GameID ["+GameID+"] has no players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has no players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[0] == 0 ) {
                                 CONSOLE_Print( "GameID ["+GameID+"] has no Sentinel players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has no Sentinel players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[1] == 0 ) {
                                 CONSOLE_Print( "GameID ["+GameID+"] has no Scourge players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has no Scourge players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else
                         {
-                                CONSOLE_Print( "GameID "+GameID+" is calculating..." );
+                                //CONSOLE_Print( "GameID ["+GameID+"] is calculating..." );
 
                                 for( int i = 0; i < num_players; i++ )
                                 {
-                                        CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
+                                        //CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
 
                                         if( exists[i] )
                                                 MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, "UPDATE `oh_stats` SET last_seen=CURRENT_TIMESTAMP(), points_bet = 0, points=points" + points[i] + ", leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( id[i] ) );
@@ -637,7 +643,7 @@ int main( int argc, char **argv )
 
         MYSQL_RES *UpdateResult = QueryBuilder(Connection, "UPDATE `oh_games` SET `stats` = '1' WHERE `id` = " + GameID + ";" );
         if( UpdateResult )
-                CONSOLE_Print( "Successfully updated players from GameID "+GameID );
+                CONSOLE_Print( "Successfully updated players from GameID ["+GameID+"]" );
     }
     if(updatedstats)
             CONSOLE_Print( "Committing transaction..." );
@@ -646,6 +652,9 @@ int main( int argc, char **argv )
     CONSOLE_Print( "Transaction done. Closing connection." );
     uint32_t EndTicks = GetTicks();
     CONSOLE_Print( "Statistic: Updated ["+UTIL_ToString(GameAmount)+"], skipped ["+UTIL_ToString(SkippedGames)+"] games, in ["+UTIL_ToString(EndTicks-StartTicks)+"] ms.");
+    CONSOLE_Prints( "Unupdated games, error log:");
+    for( vector<string> :: iterator i = ErrorLog.begin( ); i != ErrorLog.end( ); ++i )
+        CONSOLE_Print( "[ErrorLog]"+*i);
  updateLock.unlock( );
     return 0;
 }
