@@ -38,7 +38,7 @@
 # vouch allow to vouch a registered&confirmed player, he is able to join then also if he plays with a banned counter or if the garena players are denied and he is a garena player etc.
 !vouch <playername>
 
-# setpermuission is a very powerful command and should be used by rootadmins only. The command set the userlevel and is a general command overall connections from the bot
+# setpermission is a very powerful command and should be used by rootadmins only. The command set the userlevel and is a general command overall connections from the bot
 # the realm is optional, without a realm the current realm where the usedplayer is online will be taken
 # this command works only if a user is registered&confirmed
 !setpermission <playername> <level> <realm>
