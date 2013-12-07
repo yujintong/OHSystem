@@ -170,8 +170,64 @@ void Print_Error( std::string error )
 	return;
 }
 
-MYSQL* StartUp( int argc, char **argv )
+//MYSQL* StartUp( int argc, char **argv )
+//{
+//    string CFGFile = "default.cfg";
+//    vector<string> ErrorLog;
+//    if( argc > 1 && argv[1] )
+//            CFGFile = argv[1];
+//
+//    CConfig CFG;
+//    CFG.Read( CFGFile );
+//    string Server = CFG.GetString( "db_mysql_server", string( ) );
+//    string Database = CFG.GetString( "db_mysql_database", "ghost" );
+//    string User = CFG.GetString( "db_mysql_user", string( ) );
+//    string Password = CFG.GetString( "db_mysql_password", string( ) );
+//    int Port = CFG.GetInt( "db_mysql_port", 0 );
+//    uint32_t ScoreStart = CFG.GetInt( "statsupdate_scorestart", 0 );
+//    int32_t ScoreWin = CFG.GetInt( "statsupdate_scorewin", 5 );
+//    int32_t ScoreLosse = CFG.GetInt( "statsupdate_scoreloose", 3 );
+//    uint32_t StreakBonus = CFG.GetInt( "statsupdate_streakbonus", 1 );
+//    
+//    CONSOLE_Print( "Connecting to database..." );
+//    MYSQL *Connection = NULL;
+//
+//    if( !( Connection = mysql_init( NULL ) ) )
+//    {
+//            Print_Error( mysql_error( Connection ) );
+//            return Connection;
+//    }
+//
+//    my_bool Reconnect = true;
+//    mysql_options( Connection, MYSQL_OPT_RECONNECT, &Reconnect );
+//
+//    if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
+//    {
+//            Print_Error( mysql_error( Connection ) );
+//            return Connection;
+//    }
+//
+//    CONSOLE_Print( "Successfully connected to the database." );
+//
+//  return Connection;
+//}
+
+MYSQL_RES *QueryBuilder( MYSQL* Connection, string Query )
 {
+	if( mysql_real_query( Connection, Query.c_str( ), Query.size( ) ) != 0 )
+	{
+		Print_Error( mysql_error( Connection ) );
+		return 0;
+	}
+	return mysql_store_result( Connection );
+}
+
+int main( int argc, char **argv )
+{
+    boost::mutex m_UpdateMutex;
+
+    boost::mutex::scoped_lock updateLock( m_UpdateMutex );
+
     string CFGFile = "default.cfg";
     vector<string> ErrorLog;
     if( argc > 1 && argv[1] )
@@ -208,27 +264,7 @@ MYSQL* StartUp( int argc, char **argv )
     }
 
     CONSOLE_Print( "Successfully connected to the database." );
-
-  return Connection;
-}
-
-MYSQL_RES *QueryBuilder( MYSQL* Connection, string Query )
-{
-	if( mysql_real_query( Connection, Query.c_str( ), Query.size( ) ) != 0 )
-	{
-		Print_Error( mysql_error( Connection ) );
-		return 0;
-	}
-	return mysql_store_result( Connection );
-}
-
-int main( int argc, char **argv )
-{
- boost::mutex m_UpdateMutex;
-
- boost::mutex::scoped_lock updateLock( m_UpdateMutex );
-
-    MYSQL* Connection = StartUp( argc, argv );
+//    MYSQL* Connection = StartUp( argc, argv );
     CONSOLE_Print( "Starting transaction..." );
 
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
