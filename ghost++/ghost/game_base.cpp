@@ -3110,6 +3110,12 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         // check leaveperc
         if( Player->GetLeavePerc( ) >= 60 )
                 SendAllChat( "User " + Player->GetName( ) + " got a huge leaver percentage of " + UTIL_ToString( Player->GetLeavePerc( ), 2 ) + "%");
+        
+        // single announce event on +3, +2, +1
+        if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
+        {
+                SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+        }
 }
  
 void CBaseGame :: EventPlayerJoinedWithScore( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer, double score )
@@ -6084,10 +6090,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 // check if enough players are present
  
                 if( GetNumHumanPlayers( ) < m_AutoStartPlayers )
-                {
-                        SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
                         return;
-                }
  
                 // check if everyone has the map
  
