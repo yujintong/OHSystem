@@ -251,7 +251,7 @@ int main( int argc, char **argv )
     if( !( Connection = mysql_init( NULL ) ) )
     {
             Print_Error( mysql_error( Connection ) );
-            return Connection;
+            return 0;
     }
 
     my_bool Reconnect = true;
@@ -260,7 +260,7 @@ int main( int argc, char **argv )
     if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
     {
             Print_Error( mysql_error( Connection ) );
-            return Connection;
+            return 0;
     }
 
     CONSOLE_Print( "Successfully connected to the database." );
@@ -491,8 +491,8 @@ int main( int argc, char **argv )
                                         draw[num_players] = 1;
                                         losses[num_players] = 0;
                                         win[num_players] = 0;
-                                        nscore[num_players] = ScoreStart:
-                                        nstreak[num_players] = ;
+                                        nscore[num_players] = ScoreStart;
+                                        nstreak[num_players] = 0;
                                         nlstreak[num_players] = 0;
                                         streak[num_players] = "";
                                         lstreak[num_players] = "";
