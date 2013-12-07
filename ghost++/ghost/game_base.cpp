@@ -2955,8 +2955,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
  
         GAME_Print( 4, "", "", joinPlayer->GetName(), "", JoinedRealm );
-        if( JoinedRealm == "Garena" &&! Player->GetRoomName().empty())
-            SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+Player->GetRoomName()+"]" );
+        if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
+            SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
         else  
             SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "]" );
  
