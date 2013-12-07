@@ -2519,9 +2519,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 // autoban the player for spoofing name
                 if( !m_GHost->m_BNETs.empty( ) )
                         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
-                else
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "Garena", joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
-
+ 
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game with an invalid name of length " + UTIL_ToString( joinPlayer->GetName( ).size( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -3112,12 +3110,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         // check leaveperc
         if( Player->GetLeavePerc( ) >= 60 )
                 SendAllChat( "User " + Player->GetName( ) + " got a huge leaver percentage of " + UTIL_ToString( Player->GetLeavePerc( ), 2 ) + "%");
-        
-        // single announce event on +3, +2, +1
-        if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
-        {
-                SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
-        }
 }
  
 void CBaseGame :: EventPlayerJoinedWithScore( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer, double score )
@@ -3742,11 +3734,8 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                player->SetDeleteMe( true );
                player->SetLeftReason( "was kicked by host" );
                player->SetLeftCode( PLAYERLEAVE_LOST );
-               if(! m_GHost->m_BNETs.empty() )
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
-               else
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "Garena", player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
-                   
+               m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
+ 
                delete action;
                return false;
             break;
@@ -6095,7 +6084,10 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 // check if enough players are present
  
                 if( GetNumHumanPlayers( ) < m_AutoStartPlayers )
+                {
+                        SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
                         return;
+                }
  
                 // check if everyone has the map
  
