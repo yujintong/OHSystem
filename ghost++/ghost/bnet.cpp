@@ -3624,7 +3624,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 else if( Command == "rconpw" && m_GHost->m_AccountProtection )
                                 {
-                                                m_PairedPassChecks.push_back( PairedPassCheck( User, m_GHost->m_DB->ThreadedPassCheck( User, Payload, 0 ) ) );
+                                    m_PairedPassChecks.push_back( PairedPassCheck( User, m_GHost->m_DB->ThreadedPassCheck( User, Payload, 0 ) ) );
                                 }
  
                                 //

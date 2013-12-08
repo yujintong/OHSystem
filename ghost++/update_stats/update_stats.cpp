@@ -691,9 +691,12 @@ int main( int argc, char **argv )
     CONSOLE_Print( "Transaction done. Closing connection." );
     uint32_t EndTicks = GetTicks();
     CONSOLE_Print( "Statistic: Updated ["+UTIL_ToString(GameAmount)+"], skipped ["+UTIL_ToString(SkippedGames)+"] games, in ["+UTIL_ToString(EndTicks-StartTicks)+"] ms.");
-    CONSOLE_Print( "Unupdated games, error log:");
-    for( vector<string> :: iterator i = ErrorLog.begin( ); i != ErrorLog.end( ); ++i )
-        CONSOLE_Print( "[ErrorLog]"+*i);
+    if(! ErrorLog.empty())
+    {
+        CONSOLE_Print( "Unupdated games, error log:");
+        for( vector<string> :: iterator i = ErrorLog.begin( ); i != ErrorLog.end( ); ++i )
+            CONSOLE_Print( "[ErrorLog]"+*i);
+    }
  updateLock.unlock( );
     return 0;
 }

@@ -1072,7 +1072,6 @@ uint32_t MySQLPassCheck( void *conn, string *error, uint32_t botid, string user,
                 	                return 3;
 
 	                        mysql_free_result( Result );
-
         	        }
         	}
 	}
