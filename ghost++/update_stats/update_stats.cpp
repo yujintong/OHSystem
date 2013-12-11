@@ -111,7 +111,7 @@ vector<string> MySQLFetchRow( MYSQL_RES *res )
 	return Result;
 }
 
-string UTIL_ToString( uint32_t i )
+string UTIL_ToString( int32_t i )
 {
 	string result;
 	stringstream SS;
@@ -186,7 +186,7 @@ void Print_Error( std::string error )
 //    int Port = CFG.GetInt( "db_mysql_port", 0 );
 //    uint32_t ScoreStart = CFG.GetInt( "statsupdate_scorestart", 0 );
 //    int32_t ScoreWin = CFG.GetInt( "statsupdate_scorewin", 5 );
-//    int32_t ScoreLosse = CFG.GetInt( "statsupdate_scoreloose", 3 );
+//    int32_t ScoreLoose = CFG.GetInt( "statsupdate_scoreloose", 3 );
 //    uint32_t StreakBonus = CFG.GetInt( "statsupdate_streakbonus", 1 );
 //    
 //    CONSOLE_Print( "Connecting to database..." );
@@ -242,8 +242,9 @@ int main( int argc, char **argv )
     int Port = CFG.GetInt( "db_mysql_port", 0 );
     uint32_t ScoreStart = CFG.GetInt( "statsupdate_scorestart", 0 );
     int32_t ScoreWin = CFG.GetInt( "statsupdate_scorewin", 5 );
-    int32_t ScoreLosse = CFG.GetInt( "statsupdate_scoreloose", 3 );
+    int32_t ScoreLoose = CFG.GetInt( "statsupdate_scoreloose", 3 );
     uint32_t StreakBonus = CFG.GetInt( "statsupdate_streakbonus", 1 );
+    uint32_t StatsUpdateLimit = CFG.GetInt( "statsupdate_limit", 1 );
     
     CONSOLE_Print( "Connecting to database..." );
     MYSQL *Connection = NULL;
@@ -270,7 +271,7 @@ int main( int argc, char **argv )
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<string> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT 50;" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT "+UTIL_ToString( StatsUpdateLimit )+";" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
@@ -459,8 +460,8 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 2 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLosse-(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
-                                        nscore[num_players] = ScoreStart-ScoreLosse;
+                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose-(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
                                         streak[num_players] = "streak = 0, ";
@@ -545,8 +546,8 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 1 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLosse-(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
-                                        nscore[num_players] = ScoreStart-ScoreLosse;
+                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose-(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
                                         streak[num_players] = "streak = 0, ";
