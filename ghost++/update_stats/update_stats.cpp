@@ -460,7 +460,7 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 2 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose-(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
                                         nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
@@ -546,7 +546,7 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 1 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose-(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
                                         nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
