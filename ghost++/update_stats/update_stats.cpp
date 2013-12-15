@@ -318,7 +318,7 @@ int main( int argc, char **argv )
                 uint32_t leaver[11];
                 uint32_t npoints[11];
                 string points[11];
-                uint32_t ingame_role[11];
+                uint32_t ingame_role[11] = 0;
 
                 vector<string> Row = MySQLFetchRow( Result );
 
