@@ -35,6 +35,7 @@ using namespace std;
 
 #include "config.h"
 #include "includes.h"
+#include "ghost++/ghost/util.h"
 
 #include <string.h>
 
@@ -264,7 +265,7 @@ int main( int argc, char **argv )
         SS >> Month;
         SS >> Year;
         CONSOLE_Print( Data + " " + GameID + " " + Month + " "+ Year);
-        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
+        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet, s.ingame_role, s.kills, s.deaths, s.assists, s.creeps, s.denies, s.neutrals, s.games FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
 
         if( Result )
         {
@@ -317,10 +318,11 @@ int main( int argc, char **argv )
                 uint32_t leaver[11];
                 uint32_t npoints[11];
                 string points[11];
+                uint32_t ingame_role[11];
 
                 vector<string> Row = MySQLFetchRow( Result );
 
-                while( Row.size( ) == 23 )
+                while( Row.size( ) == 31 )
                 {
                         if( num_players >= 11 )
                         {
@@ -587,7 +589,42 @@ int main( int argc, char **argv )
                                 leaver[num_players] = 1;
                         else
                                 leaver[num_players] = 0;
-
+                        
+                        /**
+                         * calculation of the ingame role
+                         * possible roles with their identify & calculation & ranking:
+                         * 1: Assassin (  kills/games > 15 )
+                         * 2: Jungler ( neutrals/games > 50 )
+                         * 3: Supporter ( assists/games > 15 )
+                         * 4: Observer ( observedgames/games > .5 )
+                         * 5: Feeder ( deaths/games > 8 )
+                         * 6: Enemies Assitant ( (kills/deaths) < 1 )
+                         */
+                        uint32_t currentRole = UTIL_ToUInt32( Row[23] );
+                        uint32_t kills = UTIL_ToUInt32(Row[24])+k[num_players];
+                        uint32_t deaths = UTIL_ToUInt32(Row[25])+d[num_players];
+                        uint32_t assists = UTIL_ToUInt32(Row[26])+a[num_players];
+                        uint32_t creeps = UTIL_ToUInt32(Row[27])+c[num_players];
+                        uint32_t denies = UTIL_ToUInt32(Row[28])+de[num_players];
+                        uint32_t neutrals = UTIL_ToUInt32(Row[29])+n[num_players];
+                        uint32_t games = UTIL_ToUInt32(Row[30]);
+                        
+                        if( kills / games > 15 ) {
+                            currentRole = 1; 
+                        } else if( neutrals / games > 50 ) {
+                            currentRole = 2;
+                        } else if( assists / games > 15 ) {
+                            currentRole = 3;
+                        } else if( observedGames / games > .5 ) {
+                            currentRole = 4;
+                        } else if( deaths / games > 8 ) {
+                            currentRole = 5;
+                        } else if( kills / deaths < 1 ) {
+                            currentRole = 6;
+                        }
+                        
+                        ingame_role[num_players] = currentRole;
+                        
                         num_players++;
                         Row = MySQLFetchRow( Result );
                 }
@@ -620,13 +657,13 @@ int main( int argc, char **argv )
                                         //CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
 
                                         if( exists[i] )
-                                                MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, "UPDATE `oh_stats` SET last_seen=CURRENT_TIMESTAMP(), points_bet = 0, points=points" + points[i] + ", leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( id[i] ) );
+                                                MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, "UPDATE `oh_stats` SET ingame_role='"+UTIL_ToString(ingame_role[i])+"', last_seen=CURRENT_TIMESTAMP(), points_bet = 0, points=points" + points[i] + ", leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( id[i] ) );
                                         else
                                         {
                                                 string EscName = MySQLEscapeString( Connection, names[i] );
                                                 string EscLName = MySQLEscapeString( Connection, lnames[i] );
                                                 string EscServer = MySQLEscapeString( Connection, servers[i] );
-                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points ) VALUES ("+Month+", "+Year+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ")" );
+                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points, ingame_role ) VALUES ("+Month+", "+Year+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ", '"+UTIL_ToString(ingame_role[i])+"' )" );
                                         }
                                 }
                         }

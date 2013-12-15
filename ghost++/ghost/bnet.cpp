@@ -556,6 +556,29 @@ bool CBNET :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
+                            /**
+                             * 1: Assassin (  kills/games > 15 )
+                             * 2: Jungler ( neutrals/games > 50 )
+                             * 3: Supporter ( assists/games > 15 )
+                             * 4: Observer ( observedgames/games > .5 )
+                             * 5: Feeder ( deaths/games > 8 )
+                             * 6: Enemies Assitant ( (kills/deaths) < 1 )
+                             */
+                             uint32_t role = StatsPlayerSummary->GetRole();
+                             string roleName = "Unknown";
+                             if( role == 1 ) {
+                                 roleName = "Assassin";
+                             } else if( role == 2 ) {
+                                 roleName = "Jungler";
+                             } else if( role == 3 ) {
+                                 roleName = "Supporter";
+                             } else if( role == 4 ) {
+                                 roleName = "Observer";
+                             } else if( role == 5 ) {
+                                 roleName = "Feeder";
+                             } else if( role == 6 ) {
+                                 roleName = "Enemies Assistant";
+                             }
                             if(! StatsPlayerSummary->GetHidden())
                             {
                                 string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
@@ -566,6 +589,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                roleName,
                                                 Streak,
                                                 Month,
                                                 Year
@@ -584,6 +608,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                roleName,
                                                 Streak,
                                                 Month,
                                                 Year
