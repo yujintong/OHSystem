@@ -457,6 +457,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
                                         Player->SetForcedGproxy( StatsPlayerSummary->GetForcedGproxy( ) );
                                         Player->SetScore( StatsPlayerSummary->GetScore());
+                                        Player->SetCountry( StatsPlayerSummary->GetCountry());
+                                        Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
                                 }
                         }
  
