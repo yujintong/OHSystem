@@ -1404,7 +1404,7 @@ uint32_t MySQLpenp( void *conn, string *error, uint32_t botid, string name, stri
 				banamount = 86400*14;
 			if ( RecentPP<15 && RecentPP + amount >=15)
 				banamount = 86400*30;
-			if ( RecentPP<20 && RecentPP + amount >=20)
+			if ( RecentPP<20 && RecentPP + amount >=20 || RecentPP > 20 )
 				banamount = 0;
 
 			if( banamount != 1 )
