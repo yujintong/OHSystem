@@ -200,8 +200,7 @@ if ($BanIPUpdate == 1) {
     $result = $sth->execute();
 	$total = $sth->rowCount();
 	
-	if ($total>=1) $debug = " <b>Updating Countries (found: $total entries)</b>";
-	else $debug = "";
+	$debug = "";
 
 	 while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
     $name = $row["player"];
@@ -212,7 +211,7 @@ if ($BanIPUpdate == 1) {
 	$Letter   = geoip_country_code_by_addr($GeoIPDatabase, $ip);
 	$Country  = geoip_country_name_by_addr($GeoIPDatabase, $ip);
 	
-	if ( substr($ip, 0,7) == "23.243." OR substr($ip, 0,7) == "23.242." ) {
+	if ( substr($ip, 0,7) == "23.243." OR substr($ip, 0,7) == "23.242." OR substr($ip, 0,7) == "23.241." ) {
 	 $Letter  = "US";
 	 $Country = "United States";
 	}
@@ -220,6 +219,8 @@ if ($BanIPUpdate == 1) {
 	if ( !empty($Country) ) {
 	$upd = $db->prepare("UPDATE ".OSDB_STATS." SET country='".$Country."', country_code = '".$Letter."' WHERE id = '".$row["id"]."' ");
 	$result = $upd->execute();
+	
+	if ($total>=1 AND empty($debug) )  $debug = " <b>Updating Countries (found: $total entries)</b>";
 	
 	if ( $CronReportDetails ==2 ) $debug.= "<div><b>$name</b>, $ip, $Letter, $Country</div>";
 	} else {
@@ -311,17 +312,27 @@ if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
    </div>
    <?php
     if (isset($_GET["show_logs"]) ) {
-    ?>   <div style="margin-top:40px;font-family:arial, verdana; "><h2>Recent logs:</h2></div>
-   <div style="font-family:arial, verdana;font-size:13px;">
+	$sth = $db->prepare("SELECT COUNT(*) FROM cron_logs LIMIT 1");
+	$result = $sth->execute();
+	$r = $sth->fetch(PDO::FETCH_NUM);
+	$numrows = $r[0];
+	$DisplayLogs = '100';
+	
+	if ( $DisplayLogs> $numrows ) $DisplayLogs = $numrows;
+    ?>
+	<div style="margin-left:30px; margin-top:40px; font-family:arial, verdana;">
+	<h2>Recent logs (<?=$DisplayLogs?>/<?=$numrows?>):</h2>
+   <div style="font-family:arial, verdana;font-size:13px; width:500px; height:320px; overflow:scroll; ">
    <?php 
-   	 $sth = $db->prepare("SELECT * FROM cron_logs WHERE id>=1 ORDER BY id DESC LIMIT 20 ");	
+   	 $sth = $db->prepare("SELECT * FROM cron_logs WHERE id>=1 ORDER BY id DESC LIMIT $DisplayLogs ");	
 	 $result = $sth->execute();
 	 while ( $row = $sth->fetch(PDO::FETCH_ASSOC) ) {
 	 ?>
 	 <div>&raquo; <span style="font-size:11px;"><i><?=date("d.m.Y, H:i:s", $row["cron_date"])?></i></span>, <?=$row["cron_data"]?></div>
 	 <?php
 	 }
-	 ?></div><?php
+	 ?></div>
+	 </div><?php
     }
    
    
