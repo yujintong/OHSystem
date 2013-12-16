@@ -2157,7 +2157,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                                 bool hiddenacc = UTIL_ToUInt32( Row[24] );
                                 string country = Row[25];
                                 string countryCode= Row[26];
-                                uint32_t role = UTIL_ToString(Row[27]);
+                                uint32_t role = UTIL_ToUInt32(Row[27]);
 				uint32_t allcount = 0;
 				uint32_t rankcount = 0;
 				if( score > 0 )
