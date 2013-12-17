@@ -1,4 +1,4 @@
-### [OPENHOSTING](http://ohsystem.net/)
+### [OpenHostingSystem](http://ohsystem.net/)
 
 OpenHosting is now a major modification of the official GHost++ source.
 
