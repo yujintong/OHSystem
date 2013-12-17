@@ -985,6 +985,21 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         //save admin log
                         m_AdminLog.push_back( User + " gl" + "\t" + UTIL_ToString( Level ) + "\t" + Command + "\t" + Payload );
+
+                        //
+                        // !ADMINCHAT by Zephyrix improved by Metal_Koola
+                        //
+                        if ( Command == "ac" && !Payload.empty( ) ) {
+                            for ( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i ) {
+                                if ((*i)->GetSpoofed( )) {
+                                    if( Level > 5 ) {
+                                        SendChat( player->GetPID( ), (*i)->GetPID( ), "[ACHAT]-["+LevelName+": "+ User + "]: " + Payload );
+
+                                    }
+                                }
+                            }
+                            HideCommand = true;
+                        }
                         
                         /***********************/
                         /***  FUN COMMANDS :-) */

@@ -4077,7 +4077,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
                                         // Hide password protection
                                         string LMessage = chatPlayer->GetMessage( );
-                                        if( LMessage.substr( 1, 2 ) != "pw" || LMessage.substr( 1, 4 ) != "pass" || LMessage.substr( 1, 8 ) != "password" )
+                                        if( LMessage.substr( 1, 2 ) != "pw" || LMessage.substr( 1, 4 ) != "pass" || LMessage.substr( 1, 8 ) != "password" || LMessage.substr( 1, 2 ) != "ac" )
                                         {
                                                 m_LogData = m_LogData + "1" + "\t" + "l" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + chatPlayer->GetMessage() + "\n";
                                                 GAME_Print( 9, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
