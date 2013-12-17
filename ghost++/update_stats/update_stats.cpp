@@ -138,6 +138,15 @@ string UTIL_ToString( float f, int digits )
 	return result;
 }
 
+string UTIL_ToString( double d, int digits )
+{
+        string result;
+        stringstream SS;
+        SS << std :: fixed << std :: setprecision( digits ) << d;
+        SS >> result;
+        return result;
+}
+
 uint32_t UTIL_ToUInt32( string &s )
 {
 	uint32_t result;
@@ -398,7 +407,7 @@ int main( int argc, char **argv )
                                         draw[num_players] = 0;
                                         npoints[num_players] = 10;
                                         if( Row[22] != "0" )
-                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] )*0.5 );
+                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] )*0.5, 2 );
                                         else
                                                 points[num_players] = "+10";
 
@@ -484,7 +493,7 @@ int main( int argc, char **argv )
                                         nlstreak[num_players] = 0;
                                         npoints[num_players] = 10;
                                         if( Row[22] != "0" )
-                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] ) *0.5 );
+                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] ) *0.5, 2 );
                                         else
                                                 points[num_players] = "+10";
 
@@ -608,6 +617,7 @@ int main( int argc, char **argv )
                         uint32_t denies = UTIL_ToUInt32(Row[28])+de[num_players];
                         uint32_t neutrals = UTIL_ToUInt32(Row[29])+n[num_players];
                         uint32_t games = UTIL_ToUInt32(Row[30]);
+                        uint32_t observedGames = 0;
                         
                         if( kills / games > 15 ) {
                             currentRole = 1; 
