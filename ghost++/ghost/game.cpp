@@ -2280,22 +2280,22 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 }
                         }
  
-            //
-            // !OHBALANCE
-            //
-            else if( Command == "ohbalance" && Level == 10 && !Payload.empty() )
-            {
-                    if( Payload == "on" )
-                    {
-                            SendAllChat( "Enabled autobalance" );
-                            m_GHost->m_OHBalance = true;
-                    }
-                    else if( Payload == "off" )
-                    {
-                            SendAllChat( "Disabled autobalance" );
-                            m_GHost->m_OHBalance = false;
-                    }
-            }
+                        //
+                        // !OHBALANCE
+                        //
+                        else if( Command == "ohbalance" && Level == 10 && !Payload.empty() )
+                        {
+                                if( Payload == "on" )
+                                {
+                                        SendAllChat( "Enabled autobalance" );
+                                        m_GHost->m_OHBalance = true;
+                                }
+                                else if( Payload == "off" )
+                                {
+                                        SendAllChat( "Disabled autobalance" );
+                                        m_GHost->m_OHBalance = false;
+                                }
+                        }
  
                         //
                         // !MUTE
@@ -2830,6 +2830,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 }
  
                                 HideCommand = true;
+                        }
+                        //
+                        // !WINNER
+                        //
+                        else if( Command == "winner" && m_GameLoaded && Level == 10 )
+                        {
+                            if( Payload == 1 || Payload ==  2 ) {
+                                m_Stats->SetWinner(Payload);
+                                SendAllChat("Root Admin ["+player->GetName()+"] set the Winner to ["+(Payload==1?"Sentinel":"Scourge")+"]. The game will end now.");
+                                m_GameOverTime = GetTime();
+                            } else {
+                                SendChat(player, "UNrecognized team was set to win, use 1:Sentinel, 2:Scourge.");
+                            }
                         }
                 }
                 else
