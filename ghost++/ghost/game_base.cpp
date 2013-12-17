@@ -1034,6 +1034,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         }
  
         // kick players who didn't type the password within 20 seconds
+        // or 'downloading' when they are not allowed to.
         if( !m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
         {
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
@@ -1046,6 +1047,18 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 (*i)->SetLeftReason( "was kicked for non typing the password." );
                                 (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                                 OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                        }
+                        
+                        if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
+                            SendChat( player, m_GHost->m_NonAllowedDonwloadMessage );
+                            if( GetTicks - (*i)->GetDownloadTicks( ) >= 3000) {
+                                if(m_GHost->m_AutoDenyUsers)
+                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                (*i)->SetDeleteMe( true );
+                                (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
+                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                            }
                         }
                 }
         }
@@ -4363,10 +4376,7 @@ void CBaseGame :: EventPlayerMapSize( CGamePlayer *player, CIncomingMapSize *map
                 }
                 else
                 {
-                        player->SetDeleteMe( true );
-                        player->SetLeftReason( "doesn't have the map and map downloads are disabled" );
-                        player->SetLeftCode( PLAYERLEAVE_LOBBY );
-                        OpenSlot( GetSIDFromPID( player->GetPID( ) ), false );
+                    player->SetDownloadTicks( GetTicks() );
                 }
         }
         else

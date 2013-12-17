@@ -223,6 +223,7 @@ public:
         vector<string> m_Insults;
         bool m_ChannelBotOnly;
         vector<string> m_LanRoomName;
+        string m_NonAllowedDonwloadMessage;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
