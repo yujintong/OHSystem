@@ -873,7 +873,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 SendAllChat( "[AUTO-END] The spread between the two teams is already ["+UTIL_ToString(spread)+"]" );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
-                                m_BreakAutoEndVotesNeeded = CountAlly;
+                                m_BreakAutoEndVotesNeeded = CountAlly-1;
                         }
                         // here is no spread and we actually need the full remaining players
                         else if( CountAlly+(CountEnemy-1) <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
@@ -881,7 +881,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 SendAllChat("[AUTO-END] Too few players ingame, the autoend countdown has started." );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
-                                m_BreakAutoEndVotesNeeded = CountAlly;
+                                m_BreakAutoEndVotesNeeded = CountAlly-1;
                         }
                         //this can be simple done by setting the trigger to 1 instead of 2
                         else if( CountAlly == 0 && CountEnemy >= 1 )
@@ -4139,14 +4139,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_LoosingTeam)
             {
                 m_BreakAutoEndVotes++;
-                if( m_BreakAutoEndVotesNeeded >= m_BreakAutoEndVotes)
+                if( m_BreakAutoEndVotes >= m_BreakAutoEndVotesNeeded)
                 {
                     m_EndGame = false;
                     m_EndTicks = 0;
                     m_BreakAutoEndVotes = 0;
                     m_BreakAutoEndVotesNeeded = 0;
                     m_LoosingTeam = 0;
-                    m_Stats->SetWinner( 0 );
                     SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
                 }
                 else
