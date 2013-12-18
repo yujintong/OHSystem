@@ -1050,8 +1050,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         }
                         
                         if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
-                            SendChat( player, m_GHost->m_NonAllowedDonwloadMessage );
-                            if( GetTicks - (*i)->GetDownloadTicks( ) >= 3000) {
+                            SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
+                            if( GetTicks( ) - (*i)->GetDownloadTicks( ) >= 3000) {
                                 if(m_GHost->m_AutoDenyUsers)
                                     m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                 (*i)->SetDeleteMe( true );
