@@ -337,6 +337,10 @@ $dt = new DateTime('now', $utc);
 	   <td>Date Format:</td>
 	   <td ><input style="width: 98px;" class="field" type="text" value="<?=$DateFormat?>" name="c_date" /> <?=date( $DateFormat, time() )?></td>
 	 </tr>
+	 <tr class="row">
+	   <td>Top Page Start Year:</td>
+	   <td><input style="width: 98px;" class="field" type="text" value="<?=$TopPageStartYear?>" name="TopPageStartYear" /> </td>
+	 </tr>
 	 <tr  class="row">
 	   <td>Theme:</td>
 	   <td >
