@@ -1314,7 +1314,7 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
   <?php
 }
 
-function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" ) {
+function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" ) {
    	$countAlph = strlen($letters);
 	$return = "";
 	?>
@@ -1322,17 +1322,19 @@ function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "0123456789ABCDEFG
 	<input type="hidden" name="<?=$page?>" />
 	<select name="<?=$qry?>">
 	<?php
-	for ($i = 0; $i <= $countAlph; $i++) {
+	for ($i = 0; $i <= ($countAlph-1); $i++) {
 	$abc = substr($letters,$i,1);
 	$return.="$abc";
-	if ( !empty($abc) ) {
+	//if ( !empty($abc) ) {
 	   
 	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
 	  $s = ''; else $s='selected="selected"';
+	  
+	  if ( isset($_GET[$qry]) AND $_GET[$qry] == '0' AND $abc == '0' ) $s='selected="selected"';
 	   ?>
 	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
 	   <?php
-	   }
+	//   }
 	}
 	?>
 	</select>

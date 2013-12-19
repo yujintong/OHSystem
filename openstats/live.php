@@ -383,8 +383,8 @@
 	 
 	 <?php
 	 $TOTAL = $SentinelWP+$ScourgeWP;
-	 $SentinelWinChanceFixed = ROUND(($SentinelWP/$TOTAL)*100, 1);
-	 $ScourgeWinChanceFixed = ROUND(($ScourgeWP/$TOTAL)*100, 1); 
+	 if ($TOTAL>=1) $SentinelWinChanceFixed = ROUND(($SentinelWP/$TOTAL)*100, 1); else $SentinelWinChanceFixed = 0;
+	 if ($TOTAL>=1) $ScourgeWinChanceFixed = ROUND(($ScourgeWP/$TOTAL)*100, 1);   else $ScourgeWinChanceFixed  = 0;
 	 ?>
 	 
 	 <table class="LogCompareResults">

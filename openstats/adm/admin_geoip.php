@@ -17,7 +17,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	$lines = explode("\n", $result);
 	$c=1;
-	?><textarea style="width:500px; height:150px;"><?php
+	?>
+	<div>Updating database. Please wait...</div>
+	<textarea style="width:500px; height:150px;"><?php
 	foreach( $lines as $line) {
 	  
 	  $row = explode(",", $line);
