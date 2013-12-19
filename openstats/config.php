@@ -60,6 +60,8 @@ $HeroFileExt = 'gif';
 
 $ReplayLocation = 'replays';
 
+$TopPageStartYear = '2013';
+
 $GamesPerPage = '50';
 $TopPlayersPerPage = '50';
 //Heroes AND Items per page

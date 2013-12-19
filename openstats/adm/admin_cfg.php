@@ -93,6 +93,7 @@ if ( isset( $_POST["update_config"]) AND OS_IsRoot() ) {
    write_value_of('$OSAppID', "$OSAppID", trim(strip_tags($_POST["OSAppID"])) , "../config.php");
    
    write_value_of('$SaveAdminLogs', "$SaveAdminLogs", trim(strip_tags($_POST["SaveAdminLogs"])) , "../config.php");
+   write_value_of('$TopPageStartYear', "$TopPageStartYear", trim(strip_tags($_POST["TopPageStartYear"])) , "../config.php");
    //write_value_of('$HeroVote', "$HeroVote", trim($_POST["HeroVote"]) , "../config.php");
    //$HvoteShow = trim($_POST["HeroVoteShow"]);
    

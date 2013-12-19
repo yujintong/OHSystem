@@ -7,7 +7,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <div id="main-column">
      <div class="padding">
       <div class="inner">
-	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm()?></h2>
+	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm( $TopPageStartYear )?></h2>
 	 
      <table>
 	   <tr>

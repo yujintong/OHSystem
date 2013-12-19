@@ -2120,7 +2120,8 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
  </select>
  
   <select name="y">
-    <?php for($i=$startYear; $i<=$endYear; $i++) { 
+    <?php //for($i=$startYear; $i<=$endYear; $i++) { ?>
+	<?php for($i=$endYear; $i>=$startYear; $i--) { 
 	if ( $y == $i ) $s='selected="selected"'; else $s='';
 	?>
 	<option <?=$s?> value="<?=$i?>"><?=($i)?></option>
