@@ -1314,6 +1314,33 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
   <?php
 }
 
+function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" ) {
+   	$countAlph = strlen($letters);
+	$return = "";
+	?>
+	<form action="" method="get">
+	<input type="hidden" name="<?=$page?>" />
+	<select name="<?=$qry?>">
+	<?php
+	for ($i = 0; $i <= $countAlph; $i++) {
+	$abc = substr($letters,$i,1);
+	$return.="$abc";
+	if ( !empty($abc) ) {
+	   
+	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
+	  $s = ''; else $s='selected="selected"';
+	   ?>
+	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
+	   <?php
+	   }
+	}
+	?>
+	</select>
+	<input type="submit" value="Display" class="menuButtons" />
+	</form>
+	<?php
+}
+
 function OS_TopUser($id, $player) {
 ?><a href="<?=OS_HOME?>?u=<?=$id?>"><?=$player?></a><?php
 }

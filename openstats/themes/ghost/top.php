@@ -9,9 +9,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
       <div class="inner">
 	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm()?></h2>
 	 
-     <?=OS_SortTopPlayers()?>
-	 <?=OS_ComparePlayers( 'form_start' )?>
-	 <?=OS_DisplayCountries('country', 1, 'top' )?>
+     <table>
+	   <tr>
+	    <td><?=OS_SortTopPlayers()?></td>
+	    <td><?=OS_AZ_Filter('top')?></td>
+	    <td><?=OS_ComparePlayers( 'form_start' )?></td>
+	    <td><?=OS_DisplayCountries('country', 1, 'top' )?></td>
+	   </tr>
+	 </table>
 	 
     <table>
      <tr> 
