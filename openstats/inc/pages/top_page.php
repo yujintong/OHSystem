@@ -42,15 +42,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
   $sqlCurrentDate = " AND `month` = '".$currentMonth."' AND `year` = '".$currentYear."'";
   
-  if ( isset($_GET["g"]) AND is_numeric($_GET["g"]) ) {
-    $sqlCurrentDate = " AND `year` = '".(int)$_GET["g"]."' ";
-  }  
-  if ( isset($_GET["m"]) AND is_numeric($_GET["m"]) ) {
-    $sqlCurrentDate = " AND `month` = '".(int)$_GET["m"]."' ";
-  } 
+  if ( isset($_GET["y"]) AND isset($_GET["m"]) AND is_numeric($_GET["y"]) AND is_numeric($_GET["m"]) ) {
   
+    $sqlCurrentDate = " AND `year` = '".(int)$_GET["y"]."' ";
+    $sqlCurrentDate.= " AND `month` = '".(int)$_GET["m"]."' ";
+  }
   
-   
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
   WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
   $result = $sth->execute();
