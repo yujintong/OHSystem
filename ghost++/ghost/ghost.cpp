@@ -376,7 +376,6 @@ CGHost :: CGHost( CConfig *CFG )
 	m_CallableCommandList = NULL;
         m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
-        m_GarenaHosting = false;
         m_RanksLoaded = true;
         m_ReservedHostCounter = 0;
 	string DBType = CFG->GetString( "db_type", "mysql" );
@@ -487,7 +486,7 @@ CGHost :: CGHost( CConfig *CFG )
 
 	// load the battle.net connections
 	// we're just loading the config data and creating the CBNET classes here, the connections are established later (in the Update function)
-
+        int counter = 1;
         for( uint32_t i = 1; i < 10; ++i )
 	{
 		string Prefix;
@@ -578,11 +577,15 @@ CGHost :: CGHost( CConfig *CFG )
 		}
 
 		m_BNETs.push_back( new CBNET( this, Server, ServerAlias, BNLSServer, (uint16_t)BNLSPort, (uint32_t)BNLSWardenCookie, CDKeyROC, CDKeyTFT, CountryAbbrev, Country, LocaleID, UserName, UserPassword, FirstChannel, BNETCommandTrigger[0], HoldFriends, HoldClan, PublicCommands, War3Version, EXEVersion, EXEVersionHash, PasswordHashType, PVPGNRealmName, MaxMessageLength, i ) );
+                counter++;
 	}
+        CONSOLE_Print( "[GHOST] Adding hardcoded Garena Realm & WC3Connect Realm." );
+        m_BNETs.push_back( new CBNET( this, "Garena", "Garena", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+1 ) );
+        m_BNETs.push_back( new CBNET( this, m_WC3ConnectAlias, "WC3Connect", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+2 ) );
 
-	if( m_BNETs.empty( ) )
-		CONSOLE_Print( "[GHOST] warning - no battle.net connections found in config file" );
-
+	if( m_BNETs.size( ) == 2 ) {
+		CONSOLE_Print( "[GHOST] warning - no battle.net connections found in config file. Only the hardcoded" );
+        }
 	// extract common.j and blizzard.j from War3Patch.mpq if we can
 	// these two files are necessary for calculating "map_crc" when loading maps so we make sure to do it before loading the default map
 	// see CMap :: Load for more information
@@ -1496,7 +1499,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_MaxAllowedSpread = CFG->GetInt( "autoend_maxspread", 2 );
 	m_EarlyEnd = CFG->GetInt( "autoend_earlyend", 1 ) == 0 ? false : true;
 	m_StatsUpdate = CFG->GetInt( "oh_general_updatestats", 1 ) == 0 ? false : true;
-        m_GarenaHosting = CFG->GetInt("oh_general_garenahosting", 0 ) == 0 ? false : true;
         m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
         m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
         if( m_FunCommands )

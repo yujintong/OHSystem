@@ -75,6 +75,11 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
                 m_ServerAlias = "Europe";
         else
                 m_ServerAlias = m_Server;
+        
+        m_FakeRealm = false;
+        if( m_ServerAlias == "WC3Connect" || m_ServerAlias == "Garena" ) {
+            m_FakeRealm = true;
+        }
  
         if( nPasswordHashType == "pvpgn" && !nBNLSServer.empty( ) )
         {
@@ -135,8 +140,6 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
         m_HoldClan = nHoldClan;
         m_PublicCommands = nPublicCommands;
         m_LastLogUpdateTime = GetTime();
-        m_LastXMLFileCreation = GetTime();
-        m_XMLUpdate = false;
 }
  
 CBNET :: ~CBNET( )
@@ -883,7 +886,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
         // that means it might take a few ms longer to complete a task involving multiple steps (in this case, reconnecting) due to blocking or sleeping
         // but it's not a big deal at all, maybe 100ms in the worst possible case (based on a 50ms blocking time)
  
-        if( m_Socket->HasError( ) )
+        if( m_Socket->HasError( ) &&! m_FakeRealm )
         {
                 // the socket has an error
  
@@ -905,7 +908,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 return m_Exiting;
         }
  
-        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && !m_WaitingToConnect )
+        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && !m_WaitingToConnect &&! m_FakeRealm )
         {
                 // the socket was disconnected
  
@@ -1001,7 +1004,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 return m_Exiting;
         }
  
-        if( m_Socket->GetConnecting( ) )
+        if( m_Socket->GetConnecting( ) &&! m_FakeRealm)
         {
                 // we are currently attempting to connect to battle.net
  
@@ -1036,7 +1039,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 }
         }
  
-        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && ( m_FirstConnect || GetTime( ) - m_LastDisconnectedTime >= 90 ) )
+        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && ( m_FirstConnect || GetTime( ) - m_LastDisconnectedTime >= 90 )  &&! m_FakeRealm)
         {
                 // attempt to connect to battle.net
  
@@ -1448,7 +1451,6 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         {
                 // keep track of current channel so we can rejoin it after hosting a game
                 CONSOLE_Print( "[BNET: " + m_ServerAlias + "] joined channel [" + Message + "]" );
-                //BotCommand( "!g", "XML", Whisper, true );
                 m_CurrentChannel = Message;
         }
         else if( Event == CBNETProtocol :: EID_INFO )
@@ -1536,10 +1538,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                         if( ( IsLevel( User ) >= 5 || ForceRoot ) && m_GHost->m_RanksLoaded )
                         {
-                            if( ForceRoot ) {
-                                level = 10;
-                            }
- 
                                 string level = GetLevelName( IsLevel( User ) );
                                 CONSOLE_Print( "[BNET] "+ level +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
  
@@ -1554,7 +1552,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !RCON
                                 //
  
-                                if( Command == "rcon" )
+                                if( Command == "rcon" && ForceRoot)
                                 {
                                         string RCONCommand;
                                         string RCONPayload;
@@ -2016,7 +2014,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 // !SETPERMISSION
                                 //
-                                if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && IsLevel( User ) == 10 )
+                                if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && IsLevel( User ) == 10  )
                                 {
                                         string Name;
                                         string NewLevel;
@@ -2174,32 +2172,10 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 }
                                         }
                                 }
- 
-                                else if( Command == "tosu" )
-                                {
-                                        b_StatsUpdate = true;
-                                }
- 
+  
                                 /*****************
                                 * ADMIN COMMANDS *
                                 *****************/
- 
-                                //
-                                // !TEST
-                                //
-                                else if( Command == "test" )
-                                {
-                                        for( vector<string> :: iterator i = m_GHost->m_ColoredNames.begin( ); i != m_GHost->m_ColoredNames.end( ); )
-                                        {
-                                                CONSOLE_Print( "Found colored name: "+ *i );
-                                                i++;
-                                        }
-                                        for( vector<string> :: iterator i = m_GHost->m_Modes.begin( ); i != m_GHost->m_Modes.end( ); )
-                                        {
-                                                CONSOLE_Print( "Found a mode: "+ *i );
-                                                i++;
-                                        }
-                                }
  
                                 //
                                 // !ADDBAN
@@ -3489,7 +3465,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !START
                                 //
  
-                                else if( Command == "start" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && m_GHost->m_CurrentGame->GetNumHumanPlayers( ) > 0 && IsLevel( User ) >= 8 )
+                                else if( Command == "start" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && m_GHost->m_CurrentGame->GetNumHumanPlayers( ) > 0 && ( IsLevel( User ) >= 8  || ForceRoot ) )
                                 {
                                         if( !m_GHost->m_CurrentGame->GetLocked( ) )
                                         {

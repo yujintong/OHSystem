@@ -1103,7 +1103,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         //
                         // !SETPERMISSION
                         //
-                        if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() == 10 && m_GHost->m_GarenaHosting )
+                        if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() == 10 )
                         {
                                 string Name;
                                 string NewLevel;
@@ -1403,7 +1403,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         // !ADDBAN
                         // !BAN
                         //
-                        else if( ( Command == "addban" || Command == "ban" || Command == "b" ) && !Payload.empty( ) && ( !m_GHost->m_BNETs.empty( ) || m_GHost->m_GarenaHosting ) )
+                        else if( ( Command == "addban" || Command == "ban" || Command == "b" ) && !Payload.empty( ) )
                         {
                                 if( Level >= 7 )
                                 {
@@ -1483,7 +1483,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         // !TBAN
                         //
 
-                        if( ( Command == "tempban" || Command == "tban" || Command == "tb" ) && !Payload.empty( ) && ( !m_GHost->m_BNETs.empty( ) || m_GHost->m_GarenaHosting ) )
+                        if( ( Command == "tempban" || Command == "tban" || Command == "tb" ) && !Payload.empty( ) )
                         {
                                 // extract the victim and the reason
                                 // e.g. "Varlock leaver after dying" -> victim: "Varlock", reason: "leaver after dying"
@@ -1708,7 +1708,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         // !BANLAST
                         //
  
-                        else if( Command == "banlast" && m_GameLoaded && (!m_GHost->m_BNETs.empty( ) || m_GHost->m_GarenaHosting ) && m_DBBanLast )
+                        else if( Command == "banlast" && m_GameLoaded && m_DBBanLast )
                         {
                                 if( Level >= 7 )
                                 {
@@ -1725,7 +1725,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         // !TBANLAST
                         //
 
-                        else if( ( Command == "tbanlast" || Command == "tbl" ) && m_GameLoaded && ( !m_GHost->m_BNETs.empty( ) || m_GHost->m_GarenaHosting ) && m_DBBanLast && Level >= 5 )
+                        else if( ( Command == "tbanlast" || Command == "tbl" ) && m_GameLoaded && m_DBBanLast && Level >= 5 )
                         {
                             if( Payload.empty( ) )
                                 Payload = "Leaver";
@@ -1770,12 +1770,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         //
                         // !CHECKBAN
                         //
-                        else if( Command == "checkban" && !Payload.empty( ) && ( !m_GHost->m_BNETs.empty( ) || m_GHost->m_GarenaHosting ) )
+                        else if( Command == "checkban" && !Payload.empty( ) )
                         {
                                 for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                                         m_PairedBanChecks.push_back( PairedBanCheck( User, m_GHost->m_DB->ThreadedBanCheck( (*i)->GetServer( ), Payload, string( ) ) ) );
-                                if( m_GHost->m_GarenaHosting)
-                                        m_PairedBanChecks.push_back( PairedBanCheck( User, m_GHost->m_DB->ThreadedBanCheck( "Garena", Payload, string( ) ) ) );
                         }
  
                         //
