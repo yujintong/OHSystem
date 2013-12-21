@@ -35,7 +35,7 @@ using namespace std;
 
 #include "config.h"
 #include "includes.h"
-#include "ghost++/ghost/util.h"
+#include "util.h"
 
 #include <string.h>
 
@@ -112,7 +112,7 @@ vector<string> MySQLFetchRow( MYSQL_RES *res )
 	return Result;
 }
 
-string UTIL_ToString( int32_t i )
+string UTIL_ToString( uint32_t i )
 {
 	string result;
 	stringstream SS;
@@ -396,7 +396,7 @@ int main( int argc, char **argv )
                                 team_numplayers[0]++;
                                 if( Winner == 1 )
                                 {
-                                        score[num_players] = "score = score+" + UTIL_ToString( ScoreWin+(UTIL_ToUInt32(Row[18])*StreakBonus) ) + ",";
+                                        score[num_players] = "score = score+" + Int32_ToString( ScoreWin+(UTIL_ToUInt32(Row[18])*StreakBonus) ) + ",";
                                         nscore[num_players] = ScoreStart+ScoreWin;
                                         win[num_players] = 1;
                                         streak[num_players] = "streak = streak+1, ";
@@ -428,7 +428,7 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 2 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        score[num_players] = "score = score-" + Int32_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
                                         nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
@@ -482,7 +482,7 @@ int main( int argc, char **argv )
                                 team_numplayers[1]++;
                                 if( Winner == 2 )
                                 {
-                                        score[num_players] = "score = score+" + UTIL_ToString( ScoreWin+(UTIL_ToUInt32(Row[18])*StreakBonus) ) + ",";
+                                        score[num_players] = "score = score+" + Int32_ToString( ScoreWin+(UTIL_ToUInt32(Row[18])*StreakBonus) ) + ",";
                                         nscore[num_players] = ScoreStart+ScoreWin;
                                         win[num_players] = 1;
                                         streak[num_players] = "streak = streak+1, ";
@@ -514,7 +514,7 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 1 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        score[num_players] = "score = score-" + Int32_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
                                         nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
