@@ -75,6 +75,11 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
                 m_ServerAlias = "Europe";
         else
                 m_ServerAlias = m_Server;
+        
+        m_FakeRealm = false;
+        if( m_ServerAlias == "WC3Connect" || m_ServerAlias == "Garena" ) {
+            m_FakeRealm = true;
+        }
  
         if( nPasswordHashType == "pvpgn" && !nBNLSServer.empty( ) )
         {
@@ -135,8 +140,6 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
         m_HoldClan = nHoldClan;
         m_PublicCommands = nPublicCommands;
         m_LastLogUpdateTime = GetTime();
-        m_LastXMLFileCreation = GetTime();
-        m_XMLUpdate = false;
 }
  
 CBNET :: ~CBNET( )
@@ -883,7 +886,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
         // that means it might take a few ms longer to complete a task involving multiple steps (in this case, reconnecting) due to blocking or sleeping
         // but it's not a big deal at all, maybe 100ms in the worst possible case (based on a 50ms blocking time)
  
-        if( m_Socket->HasError( ) )
+        if( m_Socket->HasError( ) &&! m_FakeRealm )
         {
                 // the socket has an error
  
@@ -905,7 +908,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 return m_Exiting;
         }
  
-        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && !m_WaitingToConnect )
+        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && !m_WaitingToConnect &&! m_FakeRealm )
         {
                 // the socket was disconnected
  
@@ -1448,7 +1451,6 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         {
                 // keep track of current channel so we can rejoin it after hosting a game
                 CONSOLE_Print( "[BNET: " + m_ServerAlias + "] joined channel [" + Message + "]" );
-                //BotCommand( "!g", "XML", Whisper, true );
                 m_CurrentChannel = Message;
         }
         else if( Event == CBNETProtocol :: EID_INFO )
