@@ -280,7 +280,7 @@ int main( int argc, char **argv )
         {
                 CONSOLE_Print( "Starting update for gameid ["+GameID+"]" );
 
-                int id[11];
+                uint32_t id[11];
                 bool ignore = false;
                 string names[11];
                 string servers[11];
@@ -288,8 +288,6 @@ int main( int argc, char **argv )
                 int num_players = 0;
                 string score[11];
                 int64_t nscore[11];
-                int player_teams[11];
-                int num_teams = 2;
                 float team_ratings[2];
                 float team_winners[2];
                 int team_numplayers[2];
