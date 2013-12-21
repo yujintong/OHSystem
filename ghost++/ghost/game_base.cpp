@@ -1599,9 +1599,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // the cooldown can be only breaked by 100% of the loosing side votes
         if( m_EndGame && GetTicks( ) - m_EndTicks >= 30000 && m_EndTicks != 0 )
         {
-            SendAllChat("[INFO] The game will end in ["+UTIL_ToString((((m_GHost->m_AutoEndTime*60)*1000)-m_EndTicks)/1000)+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
+            SendAllChat("[INFO] The game will end in ["+UTIL_ToString((((m_GHost->m_AutoEndTime)*1000)-m_EndTicks)/1000)+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
 
-            if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime * 60 ) * 1000 ) - 10000 ) )
+            if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime ) * 1000 ) - 10000 ) )
             {
                 SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
                 string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
