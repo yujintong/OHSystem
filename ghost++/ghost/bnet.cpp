@@ -1536,6 +1536,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                         if( ( IsLevel( User ) >= 5 || ForceRoot ) && m_GHost->m_RanksLoaded )
                         {
+                            if( ForceRoot ) {
+                                level = 10;
+                            }
  
                                 string level = GetLevelName( IsLevel( User ) );
                                 CONSOLE_Print( "[BNET] "+ level +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
