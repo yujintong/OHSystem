@@ -1033,50 +1033,50 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
                             if( Level == 0 && GetTime( ) - (*i)->GetJoinTime( ) >= 20 )
                             {
-                                    string CC = (*k)->GetCLetter( );
+                                    string CC = (*i)->GetCLetter( );
 
                                     transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
                                     bool unallowedcountry = false;
-                                    for( vector<string> :: iterator i = m_LimitedCountries.begin( ); i != m_LimitedCountries.end( ); )
+                                    for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); )
                                     {
-                                            if( *i == CC && m_DenieCountries )
+                                            if( *k == CC && m_DenieCountries )
                                                     unallowedcountry = true;
 
-                                            if( *i != CC && m_LimitCountries )
+                                            if( *k != CC && m_LimitCountries )
                                                     unallowedcountry = true;
-                                            i++;
+                                            k++;
                                     }
 
-                                    for( vector<string> :: iterator i = m_GHost->m_DCountries.begin( ); i != m_GHost->m_DCountries.end( ); )
+                                    for( vector<string> :: iterator k = m_GHost->m_DCountries.begin( ); k != m_GHost->m_DCountries.end( ); )
                                     {
-                                            if( *i == CC )
+                                            if( *k== CC )
                                                     unallowedcountry = true;
-                                            i++;
+                                            k++;
                                     }
 
                                     if( m_GHost->m_DenieProxy )
                                     {
                                             if( CC == "a1" || CC == "a2")
                                             {
-                                                    SendAllChat( "Autokicking ["+(*k)->GetName()+"] for joining with a Proxy." );
+                                                    SendAllChat( "Autokicking ["+(*i)->GetName()+"] for joining with a Proxy." );
                                                     if(m_GHost->m_AutoDenyUsers)
-                                                        m_Denied.push_back( (*k)->GetName( ) + " " + (*k)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                    (*k)->SetDeleteMe( true );
-                                                    (*k)->SetLeftReason( "was kicked for joining with a proxy." );
-                                                    (*k)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                    OpenSlot( GetSIDFromPID( (*k)->GetPID( ) ), false );
+                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                    (*i)->SetDeleteMe( true );
+                                                    (*i)->SetLeftReason( "was kicked for joining with a proxy." );
+                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                                             }
                                     }
 
                                     if( unallowedcountry )
                                     {
-                                            SendAllChat( "Autokicking User ["+(*k)->GetName()+"] for joining with a denied country: " + CC );
+                                            SendAllChat( "Autokicking User ["+(*i)->GetName()+"] for joining with a denied country: " + CC );
                                             if(m_GHost->m_AutoDenyUsers)
-                                                m_Denied.push_back( (*k)->GetName( ) + " " + (*k)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                            (*k)->SetDeleteMe( true );
-                                            (*k)->SetLeftReason( "was kicked for having a denied country." );
-                                            (*k)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                            OpenSlot( GetSIDFromPID( (*k)->GetPID( ) ), false );
+                                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                            (*i)->SetDeleteMe( true );
+                                            (*i)->SetLeftReason( "was kicked for having a denied country." );
+                                            (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                            OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                                     }
                             }
                             if( GetTime( ) - (*i)->GetJoinTime( ) >= 21 &&! (*i)->GetChecked( ) ) {
