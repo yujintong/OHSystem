@@ -49,6 +49,7 @@ protected:
 	string m_ErrorString;
 	CIncomingJoinPlayer *m_IncomingJoinPlayer;
 	CIncomingGarenaUser *m_IncomingGarenaUser;
+        string m_RoomName;
 
 public:
 	CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket );
@@ -64,6 +65,7 @@ public:
 	virtual CIncomingJoinPlayer *GetJoinPlayer( )	{ return m_IncomingJoinPlayer; }
 	virtual CIncomingGarenaUser *GetGarenaUser( )	{ return m_IncomingGarenaUser; }
 	virtual BYTEARRAY GetGarenaIP( );
+        string GetRoomName( )                                           { return m_RoomName; }
 
 	virtual void SetSocket( CTCPSocket *nSocket )	{ m_Socket = nSocket; }
 	virtual void SetDeleteMe( bool nDeleteMe )		{ m_DeleteMe = nDeleteMe; }
@@ -165,6 +167,7 @@ private:
         bool m_StartVoted;
         bool m_GlobalChatMuted;
         string m_InsultM;
+        uint32_t m_DownloadTicks;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -241,6 +244,7 @@ public:
         bool GetStartVote( )                                            { return m_StartVoted; }
         bool GetGlobalChatMuted( )                                      { return m_GlobalChatMuted; }
         string GetInsultM( )                                            { return m_InsultM; }
+        uint32_t GetDownloadTicks( )                                    { return m_DownloadTicks; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
@@ -302,7 +306,8 @@ public:
 	void UnIgnore( string username );
         void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
         void SetInsultM( string nInsultM )                                                                              { m_InsultM = nInsultM; }
-
+        void SetDownloadTicks( uint32_t nTicks )                                                                        { m_DownloadTicks = nTicks; }                                       
+        
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
 
 	// processing functions

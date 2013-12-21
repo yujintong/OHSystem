@@ -112,7 +112,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 	WHERE (player) = ('".$remove."')");
 	$result = $sth->execute();
   }
-   
+    $sql = "";
    //SEARCH
    if ( isset($_GET["search_users"]) AND strlen($_GET["search_users"])>=2 ) {
      $search_users = safeEscape( $_GET["search_users"]);
@@ -127,7 +127,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
      $search_country = safeEscape( trim( $_GET["country"]));
 	 $sql = " AND country_code = '".$search_country."' ";
   } else {
-   $sql = "";
+   //$sql = "";
    $search_country= "";
   }
   

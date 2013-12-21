@@ -34,7 +34,6 @@ $lang["safelist"]   = "Gesicherte Spieler";
 $lang["about_us"]   = "Über uns";  
 $lang["members"]    = "Mitglieder";  
 $lang["live_games"]      = "Live Games";
-$lang["select_country"]  = "Select Country";
     
 $lang["username"]   = "Spieler";  
 
@@ -486,9 +485,12 @@ $lang["points_info2"]        = "points";
 $lang["points_info3"]        = "for daily login";
 $lang["points_info4"]        = "Note: You must be ranked in order to get these points";
 
+
 $lang["hide_stats"]          = "Do not show my stats";
 $lang["show_stats"]          = "Show my stats";
 $lang["hide_stats_info"]     = "If you hide the statistics, no one will be able to see your statistics (except for individual games)<div>You must confirm your Battle net account to change this option.</div>";
 $lang["hide_stats_message"]  = "The user does not want to show his statistics";
 $lang["last_seen"]           = "Last seen";
+$lang["displlay_stats_for"]  = "Displaying statistics for";
+$lang["select_country"]      = "Select country";
 ?>  

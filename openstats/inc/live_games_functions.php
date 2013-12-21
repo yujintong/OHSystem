@@ -299,10 +299,10 @@
    
    function OS_GetPlayerList( $DataArray, $chatID=0, $lastID=0, $click=0 ) {
 	 global $lang;
-	 $kills = ""; $deaths = ""; $assists = "";
+	 $kills = ""; $deaths = ""; $assists = ""; $tk = ""; $td = "";
 	 //$HTML = "<h3>List of players #".$chatID."</h3>"; 
 	 
-	 $HTML="<table class='PlayerLogInfoTable'><tr><th width='230'>#".$chatID." &nbsp;&nbsp; ".$lang["gl_playerlist_sentinel_title"]."</th><th class='padLeft'>".$lang["gl_playerlist_kda"]."</th></tr>";
+	 $HTML="<table class='PlayerLogInfoTable'><tr><th width='230'>#".$chatID." &nbsp;&nbsp; ".$lang["gl_playerlist_sentinel_title"]."</th><th class='padLeft'>".$lang["gl_playerlist_kda"]."</th><th>T/D</th></tr>";
 	 
 	 $SentKills = 0; $ScourKills=0;
 	 
@@ -325,8 +325,8 @@
 		
 		if (isset($Log2[2]) ) $PlayerData[$c]["hid"] = strtoupper($Log2[2]); else $PlayerData[$c]["hid"] = "";
 		if (isset($Log2[2]) ) $PlayerData[$c]["level"] = strtoupper($Log2[4]); else $PlayerData[$c]["level"] ="";
-		if (isset($Log2[2]) ) $PlayerData[$c]["kda"] = strtoupper($Log2[5]); else $PlayerData[$c]["kda"] = "";
-		
+		if (isset($Log2[5]) ) $PlayerData[$c]["kda"] = strtoupper($Log2[5]); else $PlayerData[$c]["kda"] = "";
+		if (isset($Log2[6]) ) $PlayerData[$c]["td"] = strtoupper($Log2[6]); else $PlayerData[$c]["td"] = "";
 		
 		//Try to fix bug with player levels - currently disabled!
 		if ($PlayerData[$c]["level"]>25) {
@@ -339,16 +339,17 @@
 	 }
 
 	 //END -----> PLAYER INFO - HERO ICON and KDA
-	 
 	 foreach ($DataArray as $Data){
-	 
+
      $Log = explode("	", $Data);
 	 
-	 if (isset($Log[0]) AND $Log[0]!= '-' ) $info  = $Log[0]; else $info = "";
-     if (isset($Log[1]) AND $Log[1]!= '-' ) $event = $Log[1]; else $event = "";
+	 if (isset($Log[0]) AND $Log[0]!= '-' ) $info   = $Log[0]; else $info = "";
+     if (isset($Log[1]) AND $Log[1]!= '-' ) $event  = $Log[1]; else $event = "";
 	 
+	 
+	 //echo $Log[6]."<br>";
 	 $EmptySlot = ' - ';
-	 
+
 	 if ( $info == 2 OR $info == 4 ) $PlayerInfoData = 1; //Always update for lobby
 
 	 
@@ -360,10 +361,9 @@
 		 for ($i = 1; $i <= 10; $i++) {
 	     if (isset($Logs[$i+1]) AND $Logs[$i+1]!= '-' ) $slots[$i] = $Logs[$i+1]; else $slots[$i] = $EmptySlot;
 	     }
-		 
-	   
+
 	   $c = 1;
-        
+
 	   foreach ( $slots as $slot) {
 	   
 	   $link = OS_HOME."?live_games&c=".$slot."&id=".$chatID."&l=".$lastID."&hash=".md5($slot);
@@ -374,8 +374,11 @@
 	   $Hero = '<img src="'.OS_HOME.'img/heroes/blank.gif" width="24" height="24" class="imgvalign" alt="h" />';
 	   
 	   if ( isset($PlayerData[$c]["level"]) ) $Level = '('.$PlayerData[$c]["level"].')'; else $Level = "";
-	   if ( isset($PlayerData[$c]["kda"]) ) {  
+	   
+	   //KD
+	   if ( isset($PlayerData[$c]["kda"]) ) {
 	   $KDAData = explode("/", $PlayerData[$c]["kda"]);
+	   
 	   if (isset($KDAData[0]) ) $kills   = '<span class="won">'.$KDAData[0].'<span> / ';  else $KDAData[0] = "";
 	   if (isset($KDAData[1]) ) $deaths  = '<span class="lost">'.$KDAData[1].'<span> / '; else $KDAData[1] = "";
 	   if (isset($KDAData[2]) ) $assists = '<span class="assists">'.$KDAData[2].'<span>'; else $KDAData[2] = "";
@@ -383,6 +386,12 @@
 	   if (isset($KDAData[0]) ) $killsData = $KDAData[0]; else $killsData = "";
 	   }
 	   else { $kda = ""; $killsData = ""; }
+	   //TD
+	  if ( isset($PlayerData[$c]["td"]) ) {
+	     $TDData = explode("/", $PlayerData[$c]["td"]);
+	   if (isset($TDData[0]) ) $tk = $TDData[0]."/"; else $tk = "";
+	   if (isset($TDData[1]) ) $td = $TDData[1];     else $td = "";
+	  }
 	   
 	   $chatIcon = '<a onMouseout="hidetooltip()" onclick="hidetooltip()" onMouseover="tooltip(\'<b>'.$slot.'</b><br />'.$lang["gl_playerlist_send"].' \', \''.OS_HOME.'img/chat-icon.png\', 160, 32, 32)" href="'.$link.'" target="_blank" ><img class="PlayerListChat" src="'.OS_HOME.'img/chat-icon.png" alt="chat" width="16" height="16" class="imgvalign" /></a>';
 	   
@@ -391,25 +400,25 @@
 	   $AdminCommands = '<a href="javascript:;" onclick="showhide(\'adm'.$c.'\')"><img style="float:right; padding-right: 5px;" src="'.OS_HOME.'img/cfg.png" class="imgvalign" width="16" height="16" /></a><div id="adm'.$c.'" style="display:none; padding-left:16px;"><a href="javascript:;" onclick="if (confirm(\'Mute player ['.$slot.'] ?\') ) { OS_AdminExec(\'mute\', \''.$slot.'\') } ">mute</a> | <a href="javascript:;" onclick="if (confirm(\'Unmute player ['.$slot.'] ?\') ) { OS_AdminExec(\'unmute\', \''.$slot.'\') } ">unmute</a> | <a href="javascript:;" onclick="if (confirm(\'KICK player ['.$slot.'] ?\') ) { OS_AdminExec(\'kick\', \''.$slot.'\') } ">kick</a> | <a href="javascript:;" onclick="if (confirm(\'Ban player ['.$slot.'] ?\') ) window.open(\''.OS_HOME.'adm/?bans&add='.$slot.'&gid='.$chatID.'\', \'_blank\')">ban</a></div>'; }
 	   else $AdminCommands = "";
 	   
-	   if ($c>=6 AND !isset($scourgeTable) ) { 
+	   if ($c>=6 AND !isset($scourgeTable) ) {
 	   $scourgeTable = 1;
 	   $HTML.='</tr></table>';
-	   $HTML.="<table class='PlayerLogInfoTable'><tr><th width='230'>#".$chatID." &nbsp;&nbsp; ".$lang["gl_playerlist_scourge_title"]."</th><th class='padLeft'>".$lang["gl_playerlist_kda"]."</th></tr>";
+	   $HTML.="<table class='PlayerLogInfoTable'><tr><th width='230'>#".$chatID." &nbsp;&nbsp; ".$lang["gl_playerlist_scourge_title"]."</th><th class='padLeft'>".$lang["gl_playerlist_kda"]."</th><th>T/D</th></tr>";
 	   
 	   }
 	   
 	   if ( !isset($scourgeTable) ) $SentKills+=$killsData; else $ScourKills+=$killsData;
        
-	   if (trim($slot) == "-" ) $HTML.= '</tr><td width="230"><div class="PlayerListSingle slot'.$c.'"> &nbsp; '.$slot.' </div> </td><td></td></tr>';
+	   if (trim($slot) == "-" ) $HTML.= '</tr><td width="230"><div class="PlayerListSingle slot'.$c.'"> &nbsp; '.$slot.' </div> </td><td></td><td></td></tr>';
 	   else 
-	   $HTML.= '<tr><td  width="230"><div class="PlayerListSingle slot'.$c.'"> &nbsp;'.$Hero.'&nbsp; <a target="_blank" href="'.OS_HOME.'?u='.strtolower($slot).'"><span class="col'.$c.'">'.$slot.'</span></a> '.$Level.' '.$chatIcon.'  '.$AdminCommands.'</td><td class="PlayerListSingle">'.$kda.' </div> <div class="PLClear">&nbsp;</div></td></tr>';
+	   $HTML.= '<tr><td  width="230"><div class="PlayerListSingle slot'.$c.'"> &nbsp;'.$Hero.'&nbsp; <a target="_blank" href="'.OS_HOME.'?u='.strtolower($slot).'"><span class="col'.$c.'">'.$slot.'</span></a> '.$Level.' '.$chatIcon.'  '.$AdminCommands.'</td><td class="PlayerListSingle">'.$kda.' </div> <div class="PLClear">&nbsp;</div></td><td>'.$tk.''.$td.'</td></tr>';
 	   $c++;
 	   }
 	  }
 	}
 	 $HTML.="</table>";
 	 
-	 $TeamScores="<table class='TeamScores'><tr><td><span class='sentinelKills'><b>".$lang["gl_playerlist_sentinel"]."</b></span> $SentKills : $ScourKills <span class='scourgeKills'><b>".$lang["gl_playerlist_scourge"]."</b></span></td></tr></table>";
+	 $TeamScores="<table class='TeamScores'><tr><td><span class='sentinelKills'><b>".$lang["gl_playerlist_sentinel"]."</b></span> $SentKills : $ScourKills <span class='scourgeKills'><b>".$lang["gl_playerlist_scourge"]."</b></span></td><td></td></tr></table>";
 	 
 	 $OUTPUT = $TeamScores.$HTML;
 	 

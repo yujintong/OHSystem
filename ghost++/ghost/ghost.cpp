@@ -1459,6 +1459,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	LoadDatas();
         LoadRules();
         LoadRanks();
+        ReadRoomData();
 	if( m_VoteKickPercentage > 100 )
 	{
 		m_VoteKickPercentage = 100;
@@ -1526,6 +1527,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_AutobanAll = CFG->GetInt("oh_autobanall", 1) == 0 ? false : true;
         m_WC3ConnectAlias = CFG->GetString("wc3connect_alias", "WC3Connect");
         m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;
+        m_NonAllowedDonwloadMessage = CFG->GetString("oh_downloadmessage", string());
 	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
 }
 
@@ -1965,7 +1967,8 @@ void CGHost :: LoadInsult()
 
 string CGHost :: GetTimeFunction( uint32_t type )
 {
-#if !defined(WIN32)
+    //should work on windows also. This should be tested.
+    
     time_t theTime = time(NULL);
     struct tm *aTime = localtime(&theTime);
     int Time = 0;
@@ -1974,7 +1977,52 @@ string CGHost :: GetTimeFunction( uint32_t type )
     if( Time == 0)
         Time = aTime->tm_year + 1900;
     return UTIL_ToString(Time);
-#else 
-    return "";
-#endif
+}
+
+string CGHost :: GetRoomName (string RoomID)
+{
+	string s;
+	bool ok = false;
+	int l = RoomID.size();
+	int DPos;
+        if (m_LanRoomName.size()==0)
+		return s=string();
+        else if (l>4)
+        {
+		for (uint32_t i = 0; i<m_LanRoomName.size(); i++)
+		{
+			DPos = m_LanRoomName[i].find(RoomID);
+			if (DPos!= string ::npos){
+				return s=m_LanRoomName[i].substr(DPos+l+2);
+				ok = true;
+				break;
+			}
+		}
+	}
+	if (!ok)
+        	return s=string(); //room matching that RoomID is not found
+        return s;
+}
+
+void CGHost :: ReadRoomData()
+{
+	string file = "rooms.txt";
+	ifstream in;
+	in.open( file.c_str( ) );
+	m_LanRoomName.clear();
+	if( in.fail( ) )
+		CONSOLE_Print( "[GHOST] warning - unable to read file [" + file + "]" );
+	else
+	{
+		CONSOLE_Print( "[GHOST] loading file [" + file + "]" );
+		string Line;
+		while( !in.eof( ) )
+		{
+        		getline( in, Line );
+			if( Line.empty( ) || Line[0] == '#' )
+				continue;
+			m_LanRoomName.push_back(Line);
+		}
+	}
+	in.close( );
 }

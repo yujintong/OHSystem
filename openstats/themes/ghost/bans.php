@@ -8,6 +8,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
       <div class="inner">
   
 <div style="margin-bottom: 12px;">
+<table>
+  <tr>
+    <td width="250">
   <form action="" method="get">
   <input type="hidden" name="bans" />
    <input 
@@ -19,8 +22,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    name="search_bans"
    />
    <input type="submit" value="<?=$lang["search"]?>" class="menuButtons" />
-   <span><?=LettersLink("bans", "search_bans")?></span>
    </form>
+   </td>
+   <td><?=OS_AZ_Filter('bans', 'search_bans')?></td>
+   </tr>
+</table>
 </div>
 
 <?=os_display_custom_fields()?>

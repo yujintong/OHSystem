@@ -7,10 +7,17 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <div id="main-column">
      <div class="padding">
       <div class="inner">
+	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm( $TopPageStartYear )?></h2>
 	 
-     <?=OS_SortTopPlayers()?>
-	 <?=OS_ComparePlayers( 'form_start' )?>
-	 <!--<?=OS_DisplayCountries('country', 1, 'top' )?> will be added in next version -->
+     <table>
+	   <tr>
+	    <td><?=OS_SortTopPlayers()?></td>
+	    <td><?=OS_AZ_Filter('top')?></td>
+	    <td><?=OS_ComparePlayers( 'form_start' )?></td>
+	    <td><?=OS_DisplayCountries('country', 1, 'top' )?></td>
+	   </tr>
+	 </table>
+	 
     <table>
      <tr> 
 	   <th width="32" class="padLeft">&nbsp;</th>
@@ -26,6 +33,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   <th width="70"><?=$lang["wl_percent"]?></th>
 	   <th width="120"><?=$lang["kda"]?></th>
 	   <th><?=$lang["cdn"]?></th>
+	   <!--<th width="120"><?=$lang["tr"]?></th>-->
 	  </tr>
 <?php 
 foreach ($TopData as $Data) { ?>
@@ -69,6 +77,10 @@ foreach ($TopData as $Data) { ?>
 	  <span class="assists"><?=$Data["avg_neutrals"]?></span>
 	
 	</td>
+    <!--<td width="120" class="font12">
+	  <span class="won"><?=$Data["avg_towers"]?></span>/
+	  <span class="assists"><?=$Data["avg_rax"]?></span>
+	</td>-->
   </tr>
    
   <?php

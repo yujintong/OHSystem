@@ -418,6 +418,7 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `year` year(4) NOT NULL,
   `user_level` tinyint(4) NOT NULL,
   `forced_gproxy` tinyint(1) NOT NULL,
+  `ingame_role` tinyint(1) NOT NULL,
   `score` int(11) NOT NULL,
   `games` int(11) NOT NULL,
   `wins` int(11) NOT NULL,

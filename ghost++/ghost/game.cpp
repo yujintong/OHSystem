@@ -330,6 +330,29 @@ bool CGame :: Update( void *fd, void *send_fd )
                             Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
+                          /**
+                           * 1: Assassin (  kills/games > 15 )
+                           * 2: Jungler ( neutrals/games > 50 )
+                           * 3: Supporter ( assists/games > 15 )
+                           * 4: Observer ( observedgames/games > .5 )
+                           * 5: Feeder ( deaths/games > 8 )
+                           * 6: Enemies Assitant ( (kills/deaths) < 1 )
+                           */
+                           uint32_t role = StatsPlayerSummary->GetRole();
+                           string roleName = "Unknown";
+                           if( role == 1 ) {
+                               roleName = "Assassin";
+                           } else if( role == 2 ) {
+                               roleName = "Jungler";
+                           } else if( role == 3 ) {
+                               roleName = "Supporter";
+                           } else if( role == 4 ) {
+                               roleName = "Observer";
+                           } else if( role == 5 ) {
+                               roleName = "Feeder";
+                           } else if( role == 6 ) {
+                               roleName = "Enemies Assistant";
+                           }
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( i->first.empty( ) )
@@ -342,6 +365,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                roleName,
                                                 Streak,
                                                 Month,
                                                 Year
@@ -364,6 +388,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                roleName,
                                                 Streak,
                                                 Month,
                                                 Year
@@ -392,6 +417,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
+                                                roleName,
                                                 Streak,
                                                 Month,
                                                 Year
@@ -813,7 +839,10 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         // check if everyone on leaver's team left but other team has more than two players
                         char sid, team;
                         uint32_t CountAlly = 0;
-                        uint32_t CountEnemy = 0;
+                        //the current player who is leaving isnt counted yet because of this, the player gets after this trigger deleted, thats why the autoend isnt triggering correctly.
+                        //on 5v3 games nothing triggers but on 4v3, when it is triggering with spread of 2. The enemycount need to be set to 1 to fix this
+                        // the count-process is done on the next vector-check
+                        uint32_t CountEnemy = 1;
  
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++)
                         {
@@ -844,16 +873,18 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 SendAllChat( "[AUTO-END] The spread between the two teams is already ["+UTIL_ToString(spread)+"]" );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
-                                m_BreakAutoEndVotesNeeded = CountAlly;
+                                m_BreakAutoEndVotesNeeded = CountAlly-1;
                         }
-                        else if( CountAlly+CountEnemy <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
+                        // here is no spread and we actually need the full remaining players
+                        else if( CountAlly+(CountEnemy-1) <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
                         {
                                 SendAllChat("[AUTO-END] Too few players ingame, the autoend countdown has started." );
                                 m_LoosingTeam = Team;
                                 m_EndGame = true;
-                                m_BreakAutoEndVotesNeeded = CountAlly;
+                                m_BreakAutoEndVotesNeeded = CountAlly-1;
                         }
-                        else if( CountAlly == 0 && CountEnemy >= 2 )
+                        //this can be simple done by setting the trigger to 1 instead of 2
+                        else if( CountAlly == 0 && CountEnemy >= 1 )
                         {
                                 // if less than one minute has elapsed, draw the game
                                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
@@ -954,6 +985,21 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         //save admin log
                         m_AdminLog.push_back( User + " gl" + "\t" + UTIL_ToString( Level ) + "\t" + Command + "\t" + Payload );
+
+                        //
+                        // !ADMINCHAT by Zephyrix improved by Metal_Koola
+                        //
+                        if ( Command == "ac" && !Payload.empty( ) ) {
+                            for ( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i ) {
+                                if ((*i)->GetSpoofed( )) {
+                                    if( Level > 5 ) {
+                                        SendChat( player->GetPID( ), (*i)->GetPID( ), "[ACHAT]-["+LevelName+": "+ User + "]: " + Payload );
+
+                                    }
+                                }
+                            }
+                            HideCommand = true;
+                        }
                         
                         /***********************/
                         /***  FUN COMMANDS :-) */
@@ -2069,24 +2115,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                                 {
                                         // we reverse the byte order on the IP because it's stored in network byte order
- 
                                         Froms += (*i)->GetNameTerminated( );
                                         Froms += ": (";
-                                        Froms += (*i)->GetCLetter( );
+                                        Froms += (*i)->GetCLetter( ) + "|" + (*i)->GetCountry( );
                                         Froms += ")";
- 
                                         if( i != m_Players.end( ) - 1 )
                                                 Froms += ", ";
- 
                                         if( ( m_GameLoading || m_GameLoaded ) && Froms.size( ) > 100 )
                                         {
                                                 // cut the text into multiple lines ingame
- 
                                                 SendAllChat( Froms );
                                                 Froms.clear( );
                                         }
                                 }
- 
                                 if( !Froms.empty( ) )
                                         SendAllChat( Froms );
                         }
@@ -2234,22 +2275,22 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 }
                         }
  
-            //
-            // !OHBALANCE
-            //
-            else if( Command == "ohbalance" && Level == 10 && !Payload.empty() )
-            {
-                    if( Payload == "on" )
-                    {
-                            SendAllChat( "Enabled autobalance" );
-                            m_GHost->m_OHBalance = true;
-                    }
-                    else if( Payload == "off" )
-                    {
-                            SendAllChat( "Disabled autobalance" );
-                            m_GHost->m_OHBalance = false;
-                    }
-            }
+                        //
+                        // !OHBALANCE
+                        //
+                        else if( Command == "ohbalance" && Level == 10 && !Payload.empty() )
+                        {
+                                if( Payload == "on" )
+                                {
+                                        SendAllChat( "Enabled autobalance" );
+                                        m_GHost->m_OHBalance = true;
+                                }
+                                else if( Payload == "off" )
+                                {
+                                        SendAllChat( "Disabled autobalance" );
+                                        m_GHost->m_OHBalance = false;
+                                }
+                        }
  
                         //
                         // !MUTE
@@ -2784,6 +2825,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 }
  
                                 HideCommand = true;
+                        }
+                        //
+                        // !WINNER
+                        //
+                        else if( Command == "winner" && m_GameLoaded && Level == 10 )
+                        {
+                            if( Payload == "1" || Payload ==  "2" ) {
+                                m_Stats->SetWinner(UTIL_ToUInt32(Payload));
+                                SendAllChat("Root Admin ["+player->GetName()+"] set the Winner to ["+(Payload=="1"?"Sentinel":"Scourge")+"]. The game will end now.");
+                                m_GameOverTime = GetTime();
+                            } else {
+                                SendChat(player, "UNrecognized team was set to win, use 1:Sentinel, 2:Scourge.");
+                            }
                         }
                 }
                 else
@@ -4080,14 +4134,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_LoosingTeam)
             {
                 m_BreakAutoEndVotes++;
-                if( m_BreakAutoEndVotesNeeded >= m_BreakAutoEndVotes)
+                if( m_BreakAutoEndVotes >= m_BreakAutoEndVotesNeeded)
                 {
                     m_EndGame = false;
                     m_EndTicks = 0;
                     m_BreakAutoEndVotes = 0;
                     m_BreakAutoEndVotesNeeded = 0;
                     m_LoosingTeam = 0;
-                    m_Stats->SetWinner( 0 );
                     SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
                 }
                 else
@@ -4095,6 +4148,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
         }
 
+        //
+        // !PING
+        //
+        else if( Command == "ping" && Level < 5 )
+        {
+            SendChat( player, "Your ping today is [" + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) +"]" );
+        }
         return HideCommand;
 }
  

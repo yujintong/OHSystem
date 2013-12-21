@@ -1,10 +1,13 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
+include("daemon/cron_config.php");
+
 $error = ""; $smferror = ""; $wperror = "";
 $disp = '<img src="'.$website.'adm/del.png" class="imgvalign" width="16" height="16" alt="" />'; 
 $enap = '<img src="'.$website.'adm/check.png" class="imgvalign" width="16" height="16" alt="" />'; 
-
+//Cron config path
+$ccfg = 'daemon/cron_config.php';
 $HomeTitle = trim(get_value_of('$HomeTitle'));
 
 if ( isset( $_POST["update_config"]) AND OS_IsRoot() ) {
@@ -90,12 +93,24 @@ if ( isset( $_POST["update_config"]) AND OS_IsRoot() ) {
    write_value_of('$OSAppID', "$OSAppID", trim(strip_tags($_POST["OSAppID"])) , "../config.php");
    
    write_value_of('$SaveAdminLogs', "$SaveAdminLogs", trim(strip_tags($_POST["SaveAdminLogs"])) , "../config.php");
+   write_value_of('$TopPageStartYear', "$TopPageStartYear", trim(strip_tags($_POST["TopPageStartYear"])) , "../config.php");
    //write_value_of('$HeroVote', "$HeroVote", trim($_POST["HeroVote"]) , "../config.php");
    //$HvoteShow = trim($_POST["HeroVoteShow"]);
    
    //if ($HvoteShow<=0 OR $HvoteShow>=200) $HvoteShow = 20;
    //write_value_of('$HeroVoteShow', "$HeroVoteShow", $HvoteShow , "../config.php");
    
+   //CRON
+
+   if ( file_exists($ccfg) ) {
+   write_value_of('$CronPassword', "$CronPassword", trim(strip_tags($_POST["CronPassword"])) , "$ccfg");
+   write_value_of('$CronUpdate', "$CronUpdate", trim(strip_tags($_POST["CronUpdate"])) , "$ccfg");
+   write_value_of('$MaxQueries', "$MaxQueries", trim(strip_tags($_POST["MaxQueries"])) , "$ccfg");
+   write_value_of('$StatsCountryUpdate', "$StatsCountryUpdate", trim(strip_tags($_POST["StatsCountryUpdate"])) , $ccfg);
+   write_value_of('$BanIPUpdate', "$BanIPUpdate", trim(strip_tags($_POST["BanIPUpdate"])) , "$ccfg");
+   write_value_of('$MaxCronLogs', "$MaxCronLogs", trim(strip_tags($_POST["MaxCronLogs"])) , "$ccfg");
+   write_value_of('$CronReportDetails', "$CronReportDetails", trim(strip_tags($_POST["CronReportDetails"])) , $ccfg);
+   }
 
    $WordLimit = trim($_POST["limit_words"]);
    
@@ -198,6 +213,7 @@ else {
 <a class="menuButtons" href="<?=$website?>adm/?cfg#stats">Stats</a>
 <a class="menuButtons" href="<?=$website?>adm/?cfg#pages">Pages</a>
 <a class="menuButtons" href="<?=$website?>adm/?cfg#misc">Misc</a>
+<a class="menuButtons" href="<?=$website?>adm/?cfg#misc">Cron</a>
 
 <?php if ( isset($error) AND !empty($error) ) { ?><h2><?=$error?></h2><?php } ?>
 <?php if ( isset($smferror) AND !empty($smferror) ) { ?><h2><?=$smferror?></h2><?php } ?>
@@ -320,6 +336,10 @@ $dt = new DateTime('now', $utc);
 	 <tr  class="row">
 	   <td>Date Format:</td>
 	   <td ><input style="width: 98px;" class="field" type="text" value="<?=$DateFormat?>" name="c_date" /> <?=date( $DateFormat, time() )?></td>
+	 </tr>
+	 <tr class="row">
+	   <td>Top Page Start Year:</td>
+	   <td><input style="width: 98px;" class="field" type="text" value="<?=$TopPageStartYear?>" name="TopPageStartYear" /> </td>
 	 </tr>
 	 <tr  class="row">
 	   <td>Theme:</td>
@@ -1255,6 +1275,77 @@ if ($handle = opendir("../themes")) {
 		<div class="padTop"></div>
 	   </td>
 	 </tr>
+	 
+	<tr>
+	  <th></th>
+	  <th  class="padLeft"><a name="cron" class="anchor" href="#cron"></a>Cron</th>
+	</tr>
+<?php  if ( file_exists($ccfg) ) { ?>
+     <tr>
+	   <td width="150"><b>Cron update:</b></td>
+	   <td>
+	   <input type="text" value="<?=$CronUpdate?>" name="CronUpdate"  /> sec.
+	   </td>
+	 </tr>
+     <tr>
+	   <td width="150"><b>Max. queries:</b></td>
+	   <td>
+	   <input type="text" value="<?=$MaxQueries?>" name="MaxQueries"  />
+	   </td>
+	 </tr>
+     <tr>
+	   <td width="150"><b>Update countries:</b></td>
+	   <td>
+	   <select name="StatsCountryUpdate">
+	   <?php if ($StatsCountryUpdate == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">On</option>
+	   <?php if ($StatsCountryUpdate == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Off</option>
+	   </select>
+	   </td>
+	 </tr>
+     <tr>
+	   <td width="150"><b>Update IP (Bans):</b></td>
+	   <td>
+	   <select name="BanIPUpdate">
+	   <?php if ($BanIPUpdate == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">On</option>
+	   <?php if ($BanIPUpdate == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Off</option>
+	   </select> Update IPs on bans table
+	   </td>
+	 </tr>
+     <tr>
+	   <td width="150"><b>Max. cron logs:</b></td>
+	   <td>
+	   <input type="text" value="<?=$MaxCronLogs?>" name="MaxCronLogs" /> 0 - keep all logs
+	   </td>
+	 </tr>
+    <tr>
+	   <td width="150"><b>Report details:</b></td>
+	   <td>
+	   <select name="CronReportDetails">
+	   <?php if ($CronReportDetails == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">Basic details</option>
+	   <?php if ($CronReportDetails == 2) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="2">Full log report</option>
+	   <?php if ($CronReportDetails == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Disabled</option>
+	   </select>
+	   </td>
+	 </tr>
+	 
+     <tr>
+	   <td width="150"><b>Change cron password:</b></td>
+	   <td>
+	   <input type="text" value="<?=$CronPassword?>" name="CronPassword"  />
+	   
+	   <div style="color:red">You must restart cron after you change this options</div>
+	   <div><a href="<?=OS_HOME?>adm/daemon/?pw=<?=$CronPassword?>" target="_blank">Test it</a></div>
+	   </td>
+	 </tr>
+<?php } ?>
+	
 	 
 	<tr>
 	  <td></td>

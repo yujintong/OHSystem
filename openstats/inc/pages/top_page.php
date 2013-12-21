@@ -11,6 +11,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    
    if ( isset($_GET["sort"]) ) {
      if ( $_GET["sort"] == "score") $orderby = "`score` DESC";
+	 if ( $_GET["sort"] == "country") $orderby = "`country_code` ASC";
 	 if ( $_GET["sort"] == "player_name") $orderby = "(`player`) ASC";
 	 if ( $_GET["sort"] == "games") $orderby = "(`games`) DESC";
 	 if ( $_GET["sort"] == "wins") $orderby = "(`wins`) DESC";
@@ -30,7 +31,25 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
      $sql = " AND player LIKE ('".strtolower($_GET["L"])."%') ";
    } else $sql = "";
    
-  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE id>=1 $sql LIMIT 1");
+   
+  if ( isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) {
+    $country = strip_tags(substr($_GET["country"],0,2));
+    $sql = " AND country_code = '".$country."' ";
+ }  
+ 
+  $currentYear  = date("Y", time() );
+  $currentMonth = date("m", time() );
+  
+  $sqlCurrentDate = " AND `month` = '".$currentMonth."' AND `year` = '".$currentYear."'";
+  
+  if ( isset($_GET["y"]) AND isset($_GET["m"]) AND is_numeric($_GET["y"]) AND is_numeric($_GET["m"]) ) {
+  
+    $sqlCurrentDate = " AND `year` = '".(int)$_GET["y"]."' ";
+    $sqlCurrentDate.= " AND `month` = '".(int)$_GET["m"]."' ";
+  }
+  
+  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
+  WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
   $result = $sth->execute();
   
   $r = $sth->fetch(PDO::FETCH_NUM);
@@ -47,7 +66,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   include('inc/pagination.php');
   $draw_pagination = 1;
   
-  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE id>=1 $sql ORDER BY $orderby LIMIT $offset, $rowsperpage");
+  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+  WHERE id>=1  $sqlCurrentDate $sql AND hide=0 
+  ORDER BY $orderby 
+  LIMIT $offset, $rowsperpage");
+  
   $result = $sth->execute();
 
   if ( isset($_GET["page"]) AND is_numeric($_GET["page"]) AND $sth->rowCount()>=1 ) {

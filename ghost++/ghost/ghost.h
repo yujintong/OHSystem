@@ -222,6 +222,8 @@ public:
         uint32_t m_ReservedHostCounter;
         vector<string> m_Insults;
         bool m_ChannelBotOnly;
+        vector<string> m_LanRoomName;
+        string m_NonAllowedDonwloadMessage;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -258,6 +260,8 @@ public:
         virtual uint32_t GetNewHostCounter( );
         void LoadInsult( );
         virtual string GetTimeFunction( uint32_t type );
+        void ReadRoomData();
+        string GetRoomName(string RoomID);
 };
 
 #endif

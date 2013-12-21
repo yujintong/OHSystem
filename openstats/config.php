@@ -1,9 +1,14 @@
 <?php  
 if (strstr($_SERVER['REQUEST_URI'], basename(__FILE__) ) ) {header('HTTP/1.1 404 Not Found'); die; }
+
+//We will disable session handler when cron is active
+if ( !isset($NoSession) ) {
 $OSAppID = 'openstats_1';
 
 $SN = session_name( $OSAppID );
 if (!isset($_SESSION)) { session_start(); }
+
+}
 
 $server = 'localhost';
 $username = 'root';
@@ -54,6 +59,8 @@ $HeroVoteShow = '20';
 $HeroFileExt = 'gif';
 
 $ReplayLocation = 'replays';
+
+$TopPageStartYear = '2013';
 
 $GamesPerPage = '50';
 $TopPlayersPerPage = '50';

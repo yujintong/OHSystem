@@ -35,6 +35,7 @@ using namespace std;
 
 #include "config.h"
 #include "includes.h"
+#include "ghost++/ghost/util.h"
 
 #include <string.h>
 
@@ -111,7 +112,7 @@ vector<string> MySQLFetchRow( MYSQL_RES *res )
 	return Result;
 }
 
-string UTIL_ToString( uint32_t i )
+string UTIL_ToString( int32_t i )
 {
 	string result;
 	stringstream SS;
@@ -135,6 +136,15 @@ string UTIL_ToString( float f, int digits )
 	SS << std :: fixed << std :: setprecision( digits ) << f;
 	SS >> result;
 	return result;
+}
+
+string UTIL_ToString( double d, int digits )
+{
+        string result;
+        stringstream SS;
+        SS << std :: fixed << std :: setprecision( digits ) << d;
+        SS >> result;
+        return result;
 }
 
 uint32_t UTIL_ToUInt32( string &s )
@@ -170,44 +180,6 @@ void Print_Error( std::string error )
 	return;
 }
 
-MYSQL* StartUp( int argc, char **argv )
-{
-    string CFGFile = "default.cfg";
-
-    if( argc > 1 && argv[1] )
-            CFGFile = argv[1];
-
-    CConfig CFG;
-    CFG.Read( CFGFile );
-    string Server = CFG.GetString( "db_mysql_server", string( ) );
-    string Database = CFG.GetString( "db_mysql_database", "ghost" );
-    string User = CFG.GetString( "db_mysql_user", string( ) );
-    string Password = CFG.GetString( "db_mysql_password", string( ) );
-    int Port = CFG.GetInt( "db_mysql_port", 0 );
-
-    CONSOLE_Print( "Connecting to database..." );
-    MYSQL *Connection = NULL;
-
-    if( !( Connection = mysql_init( NULL ) ) )
-    {
-            Print_Error( mysql_error( Connection ) );
-            return Connection;
-    }
-
-    my_bool Reconnect = true;
-    mysql_options( Connection, MYSQL_OPT_RECONNECT, &Reconnect );
-
-    if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
-    {
-            Print_Error( mysql_error( Connection ) );
-            return Connection;
-    }
-
-    CONSOLE_Print( "Successfully connected to the database." );
-
-  return Connection;
-}
-
 MYSQL_RES *QueryBuilder( MYSQL* Connection, string Query )
 {
 	if( mysql_real_query( Connection, Query.c_str( ), Query.size( ) ) != 0 )
@@ -220,17 +192,53 @@ MYSQL_RES *QueryBuilder( MYSQL* Connection, string Query )
 
 int main( int argc, char **argv )
 {
- boost::mutex m_UpdateMutex;
+    boost::mutex m_UpdateMutex;
 
- boost::mutex::scoped_lock updateLock( m_UpdateMutex );
+    boost::mutex::scoped_lock updateLock( m_UpdateMutex );
 
-    MYSQL* Connection = StartUp( argc, argv );
+    string CFGFile = "default.cfg";
+    vector<string> ErrorLog;
+    if( argc > 1 && argv[1] )
+            CFGFile = argv[1];
+
+    CConfig CFG;
+    CFG.Read( CFGFile );
+    string Server = CFG.GetString( "db_mysql_server", string( ) );
+    string Database = CFG.GetString( "db_mysql_database", "ghost" );
+    string User = CFG.GetString( "db_mysql_user", string( ) );
+    string Password = CFG.GetString( "db_mysql_password", string( ) );
+    int Port = CFG.GetInt( "db_mysql_port", 0 );
+    uint32_t ScoreStart = CFG.GetInt( "statsupdate_scorestart", 0 );
+    int32_t ScoreWin = CFG.GetInt( "statsupdate_scorewin", 5 );
+    int32_t ScoreLoose = CFG.GetInt( "statsupdate_scoreloose", 3 );
+    uint32_t StreakBonus = CFG.GetInt( "statsupdate_streakbonus", 1 );
+    uint32_t StatsUpdateLimit = CFG.GetInt( "statsupdate_limit", 1 );
+    
+    CONSOLE_Print( "Connecting to database..." );
+    MYSQL *Connection = NULL;
+
+    if( !( Connection = mysql_init( NULL ) ) )
+    {
+            Print_Error( mysql_error( Connection ) );
+            return 0;
+    }
+
+    my_bool Reconnect = true;
+    mysql_options( Connection, MYSQL_OPT_RECONNECT, &Reconnect );
+
+    if( !( mysql_real_connect( Connection, Server.c_str( ), User.c_str( ), Password.c_str( ), Database.c_str( ), Port, NULL, 0 ) ) )
+    {
+            Print_Error( mysql_error( Connection ) );
+            return 0;
+    }
+
+    CONSOLE_Print( "Successfully connected to the database." );
     CONSOLE_Print( "Starting transaction..." );
 
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<string> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE `stats` = '0' AND `gamestatus` = '1' ORDER BY id;" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE map LIKE `dota` AND `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT "+UTIL_ToString( StatsUpdateLimit )+";" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
@@ -266,21 +274,21 @@ int main( int argc, char **argv )
         SS >> Month;
         SS >> Year;
         CONSOLE_Print( Data + " " + GameID + " " + Month + " "+ Year);
-        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
+        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet, s.ingame_role, s.kills, s.deaths, s.assists, s.creeps, s.denies, s.neutrals, s.games FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
 
         if( Result )
         {
                 CONSOLE_Print( "Starting update for gameid ["+GameID+"]" );
 
-                int id[10];
+                int id[11];
                 bool ignore = false;
-                string names[10];
-                string servers[10];
-                bool exists[10];
+                string names[11];
+                string servers[11];
+                bool exists[11];
                 int num_players = 0;
-                string score[10];
-                int64_t nscore[10];
-                int player_teams[10];
+                string score[11];
+                int64_t nscore[11];
+                int player_teams[11];
                 int num_teams = 2;
                 float team_ratings[2];
                 float team_winners[2];
@@ -289,47 +297,46 @@ int main( int argc, char **argv )
                 team_ratings[1] = 0.0;
                 team_numplayers[0] = 0;
                 team_numplayers[1] = 0;
-                string lnames[10];
-                string ips[10];
-                uint32_t reserved[10];
-                uint32_t lt[10];
-                uint32_t left[10];
-                uint32_t team[10];
-                uint32_t colour[10];
-                uint32_t k[10];
-                uint32_t d[10];
-                uint32_t a[10];
-                uint32_t c[10];
-                uint32_t de[10];
-                uint32_t n[10];
-                uint32_t t[10];
-                uint32_t r[10];
-                uint32_t ScoreStart = 0;
-                int32_t ScoreWin = 5;
-                int32_t ScoreLosse = 3;
-                string streak[10];
-                uint32_t maxstreak[10];
-                string lstreak[10];
-                uint32_t maxlstreak[10];
-                uint32_t zd[10];
+                string lnames[11];
+                string ips[11];
+                uint32_t reserved[11];
+                uint32_t lt[11];
+                uint32_t left[11];
+                uint32_t team[11];
+                uint32_t colour[11];
+                uint32_t k[11];
+                uint32_t d[11];
+                uint32_t a[11];
+                uint32_t c[11];
+                uint32_t de[11];
+                uint32_t n[11];
+                uint32_t t[11];
+                uint32_t r[11];
+                string streak[11];
+                uint32_t maxstreak[11];
+                string lstreak[11];
+                uint32_t maxlstreak[11];
+                uint32_t zd[11];
                 uint32_t bp[1];
-                int win[10];
-                int losses[10];
-                int draw[10];
-                int nstreak[10];
-                int nlstreak[10];
-                uint32_t banned[10];
-                uint32_t leaver[10];
-                uint32_t npoints[10];
-                string points[10];
+                int win[11];
+                int losses[11];
+                int draw[11];
+                int nstreak[11];
+                int nlstreak[11];
+                uint32_t banned[11];
+                uint32_t leaver[11];
+                uint32_t npoints[11];
+                string points[11];
+                uint32_t ingame_role[11];
 
                 vector<string> Row = MySQLFetchRow( Result );
 
-                while( Row.size( ) == 23 )
+                while( Row.size( ) == 31 )
                 {
-                        if( num_players >= 10 )
+                        if( num_players >= 11 )
                         {
                                 CONSOLE_Print( "GameID ["+GameID+"] has more than 10 players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has more than 10 players. Ignoring this game.");
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -340,6 +347,7 @@ int main( int argc, char **argv )
                         if( Winner != 1 && Winner != 2 && Winner != 0)
                         {
                                 CONSOLE_Print( "GameID ["+GameID+"] is not a two team map. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] is not a two team map. Ignoring this game.");
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -388,8 +396,8 @@ int main( int argc, char **argv )
                                 team_numplayers[0]++;
                                 if( Winner == 1 )
                                 {
-                                        score[num_players] = "score = score+" + UTIL_ToString( ScoreWin ) + ",";
-                                        nscore[num_players] = ScoreWin;
+                                        score[num_players] = "score = score+" + UTIL_ToString( ScoreWin+(UTIL_ToUInt32(Row[18])*StreakBonus) ) + ",";
+                                        nscore[num_players] = ScoreStart+ScoreWin;
                                         win[num_players] = 1;
                                         streak[num_players] = "streak = streak+1, ";
                                         lstreak[num_players] = "losingstreak = 0, ";
@@ -399,7 +407,7 @@ int main( int argc, char **argv )
                                         draw[num_players] = 0;
                                         npoints[num_players] = 10;
                                         if( Row[22] != "0" )
-                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] )*0.5 );
+                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] )*0.5, 2 );
                                         else
                                                 points[num_players] = "+10";
 
@@ -420,8 +428,8 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 2 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLosse ) + ",";
-                                        nscore[num_players] = -ScoreLosse;
+                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
                                         streak[num_players] = "streak = 0, ";
@@ -452,6 +460,7 @@ int main( int argc, char **argv )
                                         draw[num_players] = 1;
                                         losses[num_players] = 0;
                                         win[num_players] = 0;
+                                        nscore[num_players] = ScoreStart;
                                         nstreak[num_players] = 0;
                                         nlstreak[num_players] = 0;
                                         streak[num_players] = "";
@@ -473,8 +482,8 @@ int main( int argc, char **argv )
                                 team_numplayers[1]++;
                                 if( Winner == 2 )
                                 {
-                                        score[num_players] = "score = score+" + UTIL_ToString( ScoreWin ) + ",";
-                                        nscore[num_players] = ScoreWin;
+                                        score[num_players] = "score = score+" + UTIL_ToString( ScoreWin+(UTIL_ToUInt32(Row[18])*StreakBonus) ) + ",";
+                                        nscore[num_players] = ScoreStart+ScoreWin;
                                         win[num_players] = 1;
                                         streak[num_players] = "streak = streak+1, ";
                                         lstreak[num_players] = "losingstreak = 0, ";
@@ -484,7 +493,7 @@ int main( int argc, char **argv )
                                         nlstreak[num_players] = 0;
                                         npoints[num_players] = 10;
                                         if( Row[22] != "0" )
-                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] ) *0.5 );
+                                                points[num_players] = "+" + UTIL_ToString( UTIL_ToInt32( Row[22] ) *0.5, 2 );
                                         else
                                                 points[num_players] = "+10";
 
@@ -505,8 +514,8 @@ int main( int argc, char **argv )
                                 }
                                 else if( Winner == 1 )
                                 {
-                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLosse ) + ",";
-                                        nscore[num_players] = -ScoreLosse;
+                                        score[num_players] = "score = score-" + UTIL_ToString( ScoreLoose+(UTIL_ToUInt32(Row[20])*StreakBonus) ) + ",";
+                                        nscore[num_players] = ScoreStart-ScoreLoose;
                                         losses[num_players] = 1;
                                         lstreak[num_players] = "losingstreak = losingstreak+1, ";
                                         streak[num_players] = "streak = 0, ";
@@ -537,6 +546,7 @@ int main( int argc, char **argv )
                                         draw[num_players] = 1;
                                         losses[num_players] = 0;
                                         win[num_players] = 0;
+                                        nscore[num_players] = ScoreStart;
                                         nstreak[num_players] = 0;
                                         nlstreak[num_players] = 0;
                                         streak[num_players] = "";
@@ -556,7 +566,8 @@ int main( int argc, char **argv )
                         //if a player got a connection error his stats arent safed properly, there is an issue that his newcolour gets automatically set to 0
                         else if( !Row[16].empty( ) )  
                         {
-                                CONSOLE_Print( "GameID "+GameID+" has a player with an invalid newcolour. Ignoring this Game." );
+                                CONSOLE_Print( "GameID ["+GameID+"] has a player with an invalid newcolour. Ignoring this Game." );
+                                ErrorLog.push_back( "["+GameID+"] has a player with an invalid newcolour: ["+Row[16]+"]. Ignoring this Game.");
                                 SkippedGames++;
                                 ignore = true;
                                 break;
@@ -587,7 +598,43 @@ int main( int argc, char **argv )
                                 leaver[num_players] = 1;
                         else
                                 leaver[num_players] = 0;
-
+                        
+                        /**
+                         * calculation of the ingame role
+                         * possible roles with their identify & calculation & ranking:
+                         * 1: Assassin (  kills/games > 15 )
+                         * 2: Jungler ( neutrals/games > 50 )
+                         * 3: Supporter ( assists/games > 15 )
+                         * 4: Observer ( observedgames/games > .5 )
+                         * 5: Feeder ( deaths/games > 8 )
+                         * 6: Enemies Assitant ( (kills/deaths) < 1 )
+                         */
+                        uint32_t currentRole = UTIL_ToUInt32( Row[23] );
+                        uint32_t kills = UTIL_ToUInt32(Row[24])+k[num_players];
+                        uint32_t deaths = UTIL_ToUInt32(Row[25])+d[num_players];
+                        uint32_t assists = UTIL_ToUInt32(Row[26])+a[num_players];
+                        uint32_t creeps = UTIL_ToUInt32(Row[27])+c[num_players];
+                        uint32_t denies = UTIL_ToUInt32(Row[28])+de[num_players];
+                        uint32_t neutrals = UTIL_ToUInt32(Row[29])+n[num_players];
+                        uint32_t games = UTIL_ToUInt32(Row[30]);
+                        uint32_t observedGames = 0;
+                        
+                        if( kills / games > 15 ) {
+                            currentRole = 1; 
+                        } else if( neutrals / games > 50 ) {
+                            currentRole = 2;
+                        } else if( assists / games > 15 ) {
+                            currentRole = 3;
+                        } else if( observedGames / games > .5 ) {
+                            currentRole = 4;
+                        } else if( deaths / games > 8 ) {
+                            currentRole = 5;
+                        } else if( kills / deaths < 1 ) {
+                            currentRole = 6;
+                        }
+                        
+                        ingame_role[num_players] = currentRole;
+                        
                         num_players++;
                         Row = MySQLFetchRow( Result );
                 }
@@ -598,32 +645,35 @@ int main( int argc, char **argv )
                 {
                         if( num_players == 0 ) {
                                 CONSOLE_Print( "GameID ["+GameID+"] has no players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has no players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[0] == 0 ) {
                                 CONSOLE_Print( "GameID ["+GameID+"] has no Sentinel players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has no Sentinel players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else if( team_numplayers[1] == 0 ) {
                                 CONSOLE_Print( "GameID ["+GameID+"] has no Scourge players. Ignoring this game." );
+                                ErrorLog.push_back( "["+GameID+"] has no Scourge players. Ignoring this game." );
                                 SkippedGames++;
                         }
                         else
                         {
-                                CONSOLE_Print( "GameID "+GameID+" is calculating..." );
+                                //CONSOLE_Print( "GameID ["+GameID+"] is calculating..." );
 
                                 for( int i = 0; i < num_players; i++ )
                                 {
-                                        CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
+                                        //CONSOLE_Print( "Player ["+names[i]+"] New score: "+Int32_ToString( nscore[i] ) );
 
                                         if( exists[i] )
-                                                MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, "UPDATE `oh_stats` SET last_seen=CURRENT_TIMESTAMP(), points_bet = 0, points=points" + points[i] + ", leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( id[i] ) );
+                                                MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, "UPDATE `oh_stats` SET ingame_role='"+UTIL_ToString(ingame_role[i])+"', last_seen=CURRENT_TIMESTAMP(), points_bet = 0, points=points" + points[i] + ", leaver = leaver+"+UTIL_ToString(leaver[i])+", banned = "+ UTIL_ToString( banned[i] ) +", zerodeaths = zerodeaths+ "+ UTIL_ToString( zd[i] ) +", maxlosingstreak = " + UTIL_ToString( maxlstreak[i] ) + ", maxstreak = " + UTIL_ToString( maxstreak[i] ) + ", "+ lstreak[i] + streak[i] +" wins = wins+" + UTIL_ToString( win[i] ) + ", losses = losses+" + UTIL_ToString( losses[i] ) + ", draw = draw+" + UTIL_ToString( draw[i] ) + ", "+ score[i] +" games= games+1, kills=kills+" + UTIL_ToString( k[i] ) + ", deaths=deaths+" + UTIL_ToString( d[i] ) + ", assists=assists+" + UTIL_ToString( a[i] ) + ", creeps=creeps+" + UTIL_ToString( c[i] ) + ", denies=denies+" + UTIL_ToString( de[i] ) + ", neutrals=neutrals+" + UTIL_ToString( n[i] ) + ", towers=towers+" + UTIL_ToString( t[i] ) + ", rax=rax+" + UTIL_ToString( r[i] ) + ",  ip= '" + ips[i] + "' WHERE id=" + UTIL_ToString( id[i] ) );
                                         else
                                         {
                                                 string EscName = MySQLEscapeString( Connection, names[i] );
                                                 string EscLName = MySQLEscapeString( Connection, lnames[i] );
                                                 string EscServer = MySQLEscapeString( Connection, servers[i] );
-                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points ) VALUES ("+Month+", "+Year+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ")" );
+                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points, ingame_role ) VALUES ("+Month+", "+Year+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ", '"+UTIL_ToString(ingame_role[i])+"' )" );
                                         }
                                 }
                         }
@@ -637,7 +687,7 @@ int main( int argc, char **argv )
 
         MYSQL_RES *UpdateResult = QueryBuilder(Connection, "UPDATE `oh_games` SET `stats` = '1' WHERE `id` = " + GameID + ";" );
         if( UpdateResult )
-                CONSOLE_Print( "Successfully updated players from GameID "+GameID );
+                CONSOLE_Print( "Successfully updated players from GameID ["+GameID+"]" );
     }
     if(updatedstats)
             CONSOLE_Print( "Committing transaction..." );
@@ -646,6 +696,12 @@ int main( int argc, char **argv )
     CONSOLE_Print( "Transaction done. Closing connection." );
     uint32_t EndTicks = GetTicks();
     CONSOLE_Print( "Statistic: Updated ["+UTIL_ToString(GameAmount)+"], skipped ["+UTIL_ToString(SkippedGames)+"] games, in ["+UTIL_ToString(EndTicks-StartTicks)+"] ms.");
+    if(! ErrorLog.empty())
+    {
+        CONSOLE_Print( "Unupdated games, error log:");
+        for( vector<string> :: iterator i = ErrorLog.begin( ); i != ErrorLog.end( ); ++i )
+            CONSOLE_Print( "[ErrorLog]"+*i);
+    }
  updateLock.unlock( );
     return 0;
 }

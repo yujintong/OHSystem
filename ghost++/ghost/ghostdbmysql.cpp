@@ -1072,7 +1072,6 @@ uint32_t MySQLPassCheck( void *conn, string *error, uint32_t botid, string user,
                 	                return 3;
 
 	                        mysql_free_result( Result );
-
         	        }
         	}
 	}
@@ -1405,7 +1404,7 @@ uint32_t MySQLpenp( void *conn, string *error, uint32_t botid, string name, stri
 				banamount = 86400*14;
 			if ( RecentPP<15 && RecentPP + amount >=15)
 				banamount = 86400*30;
-			if ( RecentPP<20 && RecentPP + amount >=20)
+			if ( RecentPP<20 && RecentPP + amount >=20 || RecentPP > 20 )
 				banamount = 0;
 
 			if( banamount != 1 )
@@ -2115,9 +2114,9 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         else if( EscMonth.empty() && EscYear.empty())
             Condition= "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
         else if( EscMonth == "0" && EscYear == "0")
-            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide` FROM oh_stats WHERE `player_lower` = '" + EscName + "';";
+            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide`, `country`, `country_code`, `ingame_role` FROM oh_stats WHERE `player_lower` = '" + EscName + "';";
         if( Query.empty() )
-            Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
+            Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide`, `country`, `country_code`, `ingame_role` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
         
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
@@ -2129,7 +2128,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 {
                         vector<string> Row = MySQLFetchRow( Result );
 
-                        if( Row.size( ) == 25 )
+                        if( Row.size( ) == 28 )
                         {
                                 uint32_t id = UTIL_ToUInt32( Row[0] );
                                 string player = Row[1];
@@ -2156,6 +2155,9 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
 				uint32_t leaves = UTIL_ToUInt32( Row[22] );
 				uint32_t forcedgproxy = UTIL_ToUInt32( Row[23] );
                                 bool hiddenacc = UTIL_ToUInt32( Row[24] );
+                                string country = Row[25];
+                                string countryCode= Row[26];
+                                uint32_t role = UTIL_ToUInt32(Row[27]);
 				uint32_t allcount = 0;
 				uint32_t rankcount = 0;
 				if( score > 0 )
@@ -2187,10 +2189,10 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                                                 }
                                         }
 				}
-                                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, forcedgproxy, hiddenacc );
+                                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, forcedgproxy, hiddenacc, country, countryCode, role );
                         }
                         else
-                                *error = "error checking statsplayersummary [" + name + "] - row doesn't have 25 columns";
+                                *error = "error checking statsplayersummary [" + name + "] - row doesn't have 27 columns";
 
                         mysql_free_result( Result );
                 }

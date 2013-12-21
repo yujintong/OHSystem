@@ -457,6 +457,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
                                         Player->SetForcedGproxy( StatsPlayerSummary->GetForcedGproxy( ) );
                                         Player->SetScore( StatsPlayerSummary->GetScore());
+                                        Player->SetCountry( StatsPlayerSummary->GetCountry());
+                                        Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
                                 }
                         }
  
@@ -1032,6 +1034,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         }
  
         // kick players who didn't type the password within 20 seconds
+        // or 'downloading' when they are not allowed to.
         if( !m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
         {
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
@@ -1044,6 +1047,18 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 (*i)->SetLeftReason( "was kicked for non typing the password." );
                                 (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                                 OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                        }
+                        
+                        if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
+                            SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
+                            if( GetTicks( ) - (*i)->GetDownloadTicks( ) >= 3000) {
+                                if(m_GHost->m_AutoDenyUsers)
+                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                (*i)->SetDeleteMe( true );
+                                (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
+                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                            }
                         }
                 }
         }
@@ -1612,6 +1627,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             if( GetTicks() - m_EndTicks >= (((m_GHost->m_AutoEndTime*60)*1000)-10000))
             {
                 SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
+                string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
+                SendAllChat("[Info] The winner has been set to the ["+WinnerTeam+"]");
                 m_GameOverTime = GetTime();
             }
         }
@@ -2519,7 +2536,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 // autoban the player for spoofing name
                 if( !m_GHost->m_BNETs.empty( ) )
                         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
- 
+                else
+                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "Garena", joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
+                    
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game with an invalid name of length " + UTIL_ToString( joinPlayer->GetName( ).size( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -2953,8 +2972,10 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
  
         GAME_Print( 4, "", "", joinPlayer->GetName(), "", JoinedRealm );
- 
-        SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "]" );
+        if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
+            SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
+        else  
+            SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "]" );
  
         Player->SetWhoisShouldBeSent( m_GHost->m_SpoofChecks == 1 || ( m_GHost->m_SpoofChecks == 2 && ( Level >= 5 ) ) );
         m_Players.push_back( Player );
@@ -3110,6 +3131,12 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         // check leaveperc
         if( Player->GetLeavePerc( ) >= 60 )
                 SendAllChat( "User " + Player->GetName( ) + " got a huge leaver percentage of " + UTIL_ToString( Player->GetLeavePerc( ), 2 ) + "%");
+        
+        // single announce event on +3, +2, +1
+        if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
+        {
+                SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+        }
 }
  
 void CBaseGame :: EventPlayerJoinedWithScore( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer, double score )
@@ -3734,8 +3761,11 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                player->SetDeleteMe( true );
                player->SetLeftReason( "was kicked by host" );
                player->SetLeftCode( PLAYERLEAVE_LOST );
-               m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
- 
+               if(! m_GHost->m_BNETs.empty() )
+                       m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
+               else
+                       m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "Garena", player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
+                   
                delete action;
                return false;
             break;
@@ -4062,7 +4092,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
                                         // Hide password protection
                                         string LMessage = chatPlayer->GetMessage( );
-                                        if( LMessage.substr( 1, 2 ) != "pw" || LMessage.substr( 1, 4 ) != "pass" || LMessage.substr( 1, 8 ) != "password" )
+                                        if( LMessage.substr( 1, 2 ) != "pw" || LMessage.substr( 1, 4 ) != "pass" || LMessage.substr( 1, 8 ) != "password" || LMessage.substr( 1, 2 ) != "ac" )
                                         {
                                                 m_LogData = m_LogData + "1" + "\t" + "l" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + chatPlayer->GetMessage() + "\n";
                                                 GAME_Print( 9, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
@@ -4348,10 +4378,7 @@ void CBaseGame :: EventPlayerMapSize( CGamePlayer *player, CIncomingMapSize *map
                 }
                 else
                 {
-                        player->SetDeleteMe( true );
-                        player->SetLeftReason( "doesn't have the map and map downloads are disabled" );
-                        player->SetLeftCode( PLAYERLEAVE_LOBBY );
-                        OpenSlot( GetSIDFromPID( player->GetPID( ) ), false );
+                    player->SetDownloadTicks( GetTicks() );
                 }
         }
         else
@@ -6084,10 +6111,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 // check if enough players are present
  
                 if( GetNumHumanPlayers( ) < m_AutoStartPlayers )
-                {
-                        SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
                         return;
-                }
  
                 // check if everyone has the map
  

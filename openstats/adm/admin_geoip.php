@@ -17,7 +17,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	$lines = explode("\n", $result);
 	$c=1;
-	?><textarea style="width:500px; height:150px;"><?php
+	?>
+	<div>Updating database. Please wait...</div>
+	<textarea style="width:500px; height:150px;"><?php
 	foreach( $lines as $line) {
 	  
 	  $row = explode(",", $line);
@@ -54,7 +56,17 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   //list
   if ( isset($_GET["list"]) ) {
     
-	  $sth = $db->prepare("SELECT ip_start FROM oh_geoip WHERE code = 'A1' AND ip_start LIKE('%.0') AND ip_end LIKE('%.255') GROUP BY ip_start LIMIT 500");
+	 $code = "A1";
+	 $filter = "AND ip_start LIKE('%.0') AND ip_end LIKE('%.255')";
+	 $filter = "";
+	 
+	 if ( isset($_GET["letter"]) AND strlen($_GET["letter"]) == 2 ) {
+	   $code =$_GET["letter"];
+	 }
+	
+	  $sth = $db->prepare("SELECT ip_start FROM oh_geoip 
+	  WHERE code = '".$code."' $filter 
+	  GROUP BY ip_start LIMIT 500");
 	  $result = $sth->execute();
 
       $AllIP = array();
@@ -65,6 +77,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   }
 	   
 	   $IPAddr = array_unique($AllIP);
+	   
+	 if ( empty($_GET["list"]) OR $_GET["list"] == "htaccess" ) {
 	   ?>
 	   <textarea style="width:400px; height: 150px;">
 order allow,deny
@@ -77,7 +91,30 @@ order allow,deny
 	   <div><b>Total:</b> <?=count($IPAddr)?> IP Address</div>
 	   <?php
 	
+  } else {
+  $time = date("Y-m-d H:i:s", time() );
+  $sql="INSERT INTO ".OSDB_BANS."(name, server, reason, ip, ip_part, admin, gamename, date, expiredate, country) VALUES";
+  $sql="INSERT INTO oh_bans_2(name, server, reason, ip, ip_part, admin, gamename, date, expiredate, country) VALUES";
+  $counter = 0;
+   foreach($IPAddr as $ip) { ?>
+  <?php 
+  $sql.=" ('iprange [".strtoupper($code)."]', 'europe.battle.net', '".strtoupper($code)."',  ':$ip', '$ip', 'Server', 'All', '$time', '0000-00-00 00:00:00', '".strtoupper($code)."'),";
+  $counter++;
   } 
+    $sql = substr($sql,0, -1);
+  ?>
+  <textarea style="width:800px; height: 150px;"><?=$sql?></textarea>
+  <?php if (isset($_GET["execute"])) {
+  $sth = $db->prepare($sql);
+  $result = $sth->execute();
+  echo "<div>Added ".$counter." bans</div>";
+  } else { ?>
+  <div><a href="javascript:;" onclick="if(confirm('Execute SQL command?')) { location.href='<?=OS_HOME?>adm/?geoip&amp;letter=<?=$code?>&amp;list=sql&amp;execute' }">Execute SQL</a> (make sure to avoid duplicated inserts)</div>
+  <div>Total: <?=$counter?> bans</div>
+  <?php } ?>
+  <?php
+  }
+  }
   
   $letter = "";
   $sqlLetter = "";
@@ -137,27 +174,27 @@ order allow,deny
   <?php
   
     if (isset($_GET["sort"]) AND $_GET["sort"] == "proxyfull") {
+	?><a class="menuButtons" href="<?=OS_HOME?>adm/?geoip&amp;sort=proxyfull&amp;list">.htaccess</a><?php }
+    if (isset($_GET["letter"]) AND strlen($_GET["letter"])==2 ) {
 	?>
-	<a class="menuButtons" href="<?=OS_HOME?>adm/?geoip&amp;sort=proxyfull&amp;list">.htaccess</a>
-	<?php
-	}
-  
+	<a class="menuButtons" href="<?=OS_HOME?>adm/?geoip&amp;letter=<?=$_GET["letter"]?>&amp;list=sql">SQL</a> 
+	<a class="menuButtons" href="<?=OS_HOME?>adm/?geoip&amp;letter=<?=$_GET["letter"]?>&amp;list=htaccess">.htaccess</a><?php }
   $sql ="";
   $proxy = "";
   
   if (!empty($letter) ) {
-    $sqlLetter = " WHERE code = '".$letter."' ";
+    $sqlLetter = " AND code = '".$letter."' ";
   }
   
   if ( isset($_GET["sort"]) ) {
     
 	if ($_GET["sort"] == "code")    $sql.=" ORDER BY code ASC";
 	if ($_GET["sort"] == "country") $sql.=" ORDER BY country ASC";
-	if ($_GET["sort"] == "proxy")       $proxy =" WHERE code = 'A1' ";
-	if ($_GET["sort"] == "proxyfull")   $proxy =" WHERE code = 'A1' AND ip_start LIKE('%.0') AND ip_end LIKE('%.255') ";
+	if ($_GET["sort"] == "proxy")       $proxy =" AND code = 'A1' ";
+	if ($_GET["sort"] == "proxyfull")   $proxy =" AND code = 'A1' AND ip_start LIKE('%.0') AND ip_end LIKE('%.255') ";
   }
   
-  $sth = $db->prepare("SELECT COUNT(*) FROM oh_geoip $proxy $sqlLetter LIMIT 1");
+  $sth = $db->prepare("SELECT COUNT(*) FROM oh_geoip WHERE code!='' $proxy $sqlLetter LIMIT 1");
   $result = $sth->execute();
   $r = $sth->fetch(PDO::FETCH_NUM);
   $numrows = $r[0];
@@ -166,7 +203,7 @@ order allow,deny
   $SHOW_TOTALS = 1;
   include('pagination.php');
   
-  $sth = $db->prepare("SELECT * FROM oh_geoip $sqlLetter $proxy $sql LIMIT $offset, $rowsperpage");
+  $sth = $db->prepare("SELECT * FROM oh_geoip WHERE code!='' $sqlLetter $proxy $sql LIMIT $offset, $rowsperpage");
   $result = $sth->execute();
   ?>
     

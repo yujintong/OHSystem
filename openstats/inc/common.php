@@ -1314,6 +1314,35 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
   <?php
 }
 
+function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" ) {
+   	$countAlph = strlen($letters);
+	$return = "";
+	?>
+	<form action="" method="get">
+	<input type="hidden" name="<?=$page?>" />
+	<select name="<?=$qry?>">
+	<?php
+	for ($i = 0; $i <= ($countAlph-1); $i++) {
+	$abc = substr($letters,$i,1);
+	$return.="$abc";
+	//if ( !empty($abc) ) {
+	   
+	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
+	  $s = ''; else $s='selected="selected"';
+	  
+	  if ( isset($_GET[$qry]) AND $_GET[$qry] == '0' AND $abc == '0' ) $s='selected="selected"';
+	   ?>
+	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
+	   <?php
+	//   }
+	}
+	?>
+	</select>
+	<input type="submit" value="Display" class="menuButtons" />
+	</form>
+	<?php
+}
+
 function OS_TopUser($id, $player) {
 ?><a href="<?=OS_HOME?>?u=<?=$id?>"><?=$player?></a><?php
 }
@@ -2037,7 +2066,6 @@ function OS_StayRatioIcon( $ratio = 0 ) {
   }
 }
 
-
 function OS_LoadCountries() {
   if ( file_exists("inc/countries.php") ) include("inc/countries.php");
   else if ( file_exists("../inc/countries.php") ) include("../inc/countries.php");
@@ -2046,8 +2074,9 @@ function OS_LoadCountries() {
 }
 
 function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 'top', $Value='' ) {
-   $Countries = OS_LoadCountries();
    global $lang;
+   $Countries = OS_LoadCountries();
+   
    if ( $FullForm == 1 ) {
    ?>
    <form action="" method="get" >
@@ -2071,5 +2100,35 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    </form><?php
    }
    
+}
+
+function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
+
+ if ( !isset($_GET["m"]) ) $m = date("m"); else $m = (int)$_GET["m"];
+ if ( !isset($_GET["y"]) ) $y = date("Y"); else $y = (int)$_GET["y"];
+ 
+ $endYear = date("Y");
+ ?>
+ <form action="" method="get" style="display:inline">
+ <input type="hidden" name="<?=$page?>" />
+ <select name="m">
+    <?php for($i=1; $i<=12; $i++) { 
+	if ( $m == $i ) $s='selected="selected"'; else $s='';
+	?>
+	<option <?=$s?> value="<?=$i?>"><?=getMonthName($i)?></option>
+	<?php } ?>
+ </select>
+ 
+  <select name="y">
+    <?php //for($i=$startYear; $i<=$endYear; $i++) { ?>
+	<?php for($i=$endYear; $i>=$startYear; $i--) { 
+	if ( $y == $i ) $s='selected="selected"'; else $s='';
+	?>
+	<option <?=$s?> value="<?=$i?>"><?=($i)?></option>
+	<?php } ?>
+ </select>
+ <input type="submit" value="Display" class="menuButtons" />
+ </form>
+ <?php
 }
 ?>

@@ -97,6 +97,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$BansData[$c]["reason_full"]  = ($row["reason"]);
 	$BansData[$c]["expiredate"]   = ($row["expiredate"]);
 	$BansData[$c]["warn"]  = ($row["warn"]);
+	
+	if ( !empty( $BansData[$c]["gamename"] ) AND strstr($BansData[$c]["gamename"], "#") ) {
+	
+	  $gn = explode("#", $BansData[$c]["gamename"]);
+	  if ( isset($gn[1]) AND is_numeric($gn[1]) )
+	  $BansData[$c]["gamename"] = $gn[0].' <a href="'.OS_HOME.'?game='. $gn[1].'#'.$row["name"].'">#'.$gn[1].'</a>';
+	}
+	
 	if ( empty($BansData[$c]["reason"]) )   $BansData[$c]["reason"] = '&nbsp;';
 	if ( empty($BansData[$c]["gamename"]) ) $BansData[$c]["gamename"] = '&nbsp;';
 	//$BansData[$c]["expiredate"]  = ($row["expiredate"]);
