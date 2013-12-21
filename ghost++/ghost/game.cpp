@@ -912,6 +912,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                             SendAllChat("The ["+LTeam+"] has now the chance to vote against automatically ending the game.");
                             SendAllChat("The command for the voting is a simple '!a'. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
                             m_EndTicks = GetTicks();
+                            m_StartEndTicks = GetTicks();
                         }
                 }
  
@@ -4136,6 +4137,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                     m_EndGame = false;
                     m_EndTicks = 0;
+                    m_StartEndTicks = 0;
                     m_BreakAutoEndVotes = 0;
                     m_BreakAutoEndVotesNeeded = 0;
                     m_LoosingTeam = 0;

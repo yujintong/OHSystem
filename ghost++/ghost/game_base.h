@@ -187,6 +187,7 @@ protected:
         uint32_t m_BreakAutoEndVotesNeeded;
         uint32_t m_BreakAutoEndVotes;
         uint32_t m_EndTicks;
+        uint32_t m_StartEndTicks;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
