@@ -1597,7 +1597,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // end countdown, default value 120 seconds (autoend function)
         // the idea is to give the loosing side the option to break the autoend cooldown that they can continue playing
         // the cooldown can be only breaked by 100% of the loosing side votes
-        if( m_EndGame && GetTicks( ) - m_EndTicks >= 30 && m_EndTicks != 0 )
+        if( m_EndGame && GetTicks( ) - m_EndTicks >= 30000 && m_EndTicks != 0 )
         {
             SendAllChat("[INFO] The game will end in ["+UTIL_ToString((((m_GHost->m_AutoEndTime*60)*1000)-m_EndTicks)/1000)+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
 
