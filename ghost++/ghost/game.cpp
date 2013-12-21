@@ -2115,24 +2115,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                                 {
                                         // we reverse the byte order on the IP because it's stored in network byte order
- 
                                         Froms += (*i)->GetNameTerminated( );
                                         Froms += ": (";
-                                        Froms += (*i)->GetCLetter( );
+                                        Froms += (*i)->GetCLetter( ) + "|" + (*i)->GetCountry( );
                                         Froms += ")";
- 
                                         if( i != m_Players.end( ) - 1 )
                                                 Froms += ", ";
- 
                                         if( ( m_GameLoading || m_GameLoaded ) && Froms.size( ) > 100 )
                                         {
                                                 // cut the text into multiple lines ingame
- 
                                                 SendAllChat( Froms );
                                                 Froms.clear( );
                                         }
                                 }
- 
                                 if( !Froms.empty( ) )
                                         SendAllChat( Froms );
                         }
@@ -4153,6 +4148,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
         }
 
+        //
+        // !PING
+        //
+        else if( Command == "ping" && Level < 5 )
+        {
+            SendChat( player, "Your ping today is [" + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) +"]" );
+        }
         return HideCommand;
 }
  
