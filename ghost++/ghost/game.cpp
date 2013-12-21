@@ -999,7 +999,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                     }
                                 }
                             }
-                            HideCommand = true;
+                            return true;
                         }
                         
                         /***********************/
