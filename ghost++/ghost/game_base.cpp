@@ -1604,11 +1604,11 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime ) * 1000 ) - 10000 ) )
             {
                 SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
-                string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
+                string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Scourge" : "Sentinel";
                 SendAllChat("[Info] The winner has been set to the ["+WinnerTeam+"]");
                 m_GameOverTime = GetTime();
-            } else
-                    m_EndTicks = GetTicks( );
+            }
+            m_EndTicks = GetTicks( );
 
         }
         
