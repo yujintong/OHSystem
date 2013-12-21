@@ -1004,7 +1004,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 return m_Exiting;
         }
  
-        if( m_Socket->GetConnecting( ) )
+        if( m_Socket->GetConnecting( ) &&! m_FakeRealm)
         {
                 // we are currently attempting to connect to battle.net
  
@@ -1039,7 +1039,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 }
         }
  
-        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && ( m_FirstConnect || GetTime( ) - m_LastDisconnectedTime >= 90 ) )
+        if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && ( m_FirstConnect || GetTime( ) - m_LastDisconnectedTime >= 90 )  &&! m_FakeRealm)
         {
                 // attempt to connect to battle.net
  
