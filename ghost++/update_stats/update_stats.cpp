@@ -318,11 +318,11 @@ int main( int argc, char **argv )
                 uint32_t maxlstreak[11];
                 uint32_t zd[11];
                 uint32_t bp[1];
-                int win[11];
-                int losses[11];
-                int draw[11];
-                int nstreak[11];
-                int nlstreak[11];
+                uint32_t win[11];
+                uint32_t losses[11];
+                uint32_t draw[11];
+                uint32_t nstreak[11];
+                uint32_t nlstreak[11];
                 uint32_t banned[11];
                 uint32_t leaver[11];
                 uint32_t npoints[11];
