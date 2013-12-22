@@ -28,7 +28,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   ?>
   <div> <?=$lang["last_seen"]?>:
   <a href="<?=OS_HOME?>?live_games&amp;gameid=<?=$LastSeen["gameid"]?>&amp;botid=<?=$LastSeen["botid"]?>">
-   <span <?=ShowToolTip("Last seen: <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
+   <span <?=ShowToolTip($lang["last_seen"]." <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
     <?=$lang["game"]?> #<?=$LastSeen["gameid"]?>, <?=($LastSeen["time"])?>
    </a>
    </div>
