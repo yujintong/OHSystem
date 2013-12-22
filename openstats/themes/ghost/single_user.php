@@ -21,12 +21,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?>
   </h1>
   
+  <?php if (isset($User["OtherStats"]) ) { ?><a class="menuButtons" href="<?=OS_HOME?>?u=<?=$User["OtherStats"]?>"><?=$lang["most_recent_stats"]?></a><?php } ?>
+  
   <?php
   if ( !empty($LastSeen["gameid"]) ) {
   ?>
   <div> <?=$lang["last_seen"]?>:
   <a href="<?=OS_HOME?>?live_games&amp;gameid=<?=$LastSeen["gameid"]?>&amp;botid=<?=$LastSeen["botid"]?>">
-   <span <?=ShowToolTip($lang["last_seen"].": <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
+   <span <?=ShowToolTip("Last seen: <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
     <?=$lang["game"]?> #<?=$LastSeen["gameid"]?>, <?=($LastSeen["time"])?>
    </a>
    </div>
@@ -67,7 +69,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   <div class="padTop">
   <table class="Table500px">
       <tr class="row">
-	  <th class="padLeft" width="140"><?=$lang["stats"] ?></th>
+	  <th class="padLeft" width="140"><?=$lang["stats"] ?>: <?=$User["month"]?> / <?=$User["year"]?></th>
 	  <th width="160"></th>
 	  <th width="60"></th>
 	  <th width="175"></th>
@@ -76,65 +78,65 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	</tr>
     <tr class="row">
 	  <td class="padLeft" width="140"><b><?=$lang["score"]?>:</b></td>
-	  <td width="160"><?=$User["score"]?></td>
+	  <td width="160"><?=$User["score"]?> </td>
 	  <td class="padLeft" width="60"><b><?=$lang["win_percent"] ?>:</b></td>
-	  <td width="160"><?=$User["winslosses"]?> %</td>
+	  <td width="160"><?=$User["winslosses"]?> % (<?=$User["totalwinslosses"]?> %)</td>
 	  <td class="padLeft" width="140"><b><?=$lang["ck"] ?>:</b></td>
-	  <td width="160"><?=$User["creeps"]?></td>
+	  <td width="160"><?=$User["creeps"]?> (<?=$User["totalcreeps"]?>)</td>
 	</tr>
 	
     <tr class="row">
 	  <td class="padLeft" width="140"><b><?=$lang["kills"]?>:</b></td>
-	  <td width="160"><?=$User["kills"]?></td>
+	  <td width="160"><?=$User["kills"]?> (<?=$User["totalkills"]?>)</td>
 	  <td class="padLeft" width="60"><b><?=$lang["assists"]?>:</b></td>
-	  <td width="160"><?=$User["assists"]?></td>
+	  <td width="160"><?=$User["assists"]?> (<?=$User["totalassists"]?>)</td>
 	  <td class="padLeft" width="140"><b><?=$lang["cd"]?>:</b></td>
-	  <td width="180"><?=$User["denies"]?></td>
+	  <td width="180"><?=$User["denies"]?> (<?=$User["totaldenies"]?>)</td>
 	</tr>
 	
     <tr class="row">
 	  <td class="padLeft" width="140"><b><?=$lang["deaths"]?>:</b></td>
-	  <td width="160"><?=$User["deaths"]?></td>
+	  <td width="160"><?=$User["deaths"]?>  (<?=$User["totaldeaths"]?>)</td>
 	  <td class="padLeft" width="90"><b><?=$lang["kd_ratio"]?>:</b></td>
-	  <td width="160"><?=($User["kd"])?></td>
+	  <td width="160"><?=($User["kd"])?> (<?=$User["totalkd"]?>)</td>
 	  <td class="padLeft" width="140"><b><?=$lang["neutrals"]?>:</b></td>
-	  <td width="160"><?=$User["neutrals"]?></td>
+	  <td width="160"><?=$User["neutrals"]?> (<?=$User["totalneutrals"]?>)</td>
 	</tr>
 	
     <tr class="row">
 	  <td class="padLeft" width="140"><b><?=$lang["games"]?>:</b></td>
-	  <td width="160"><a href="<?=OS_HOME?>?games&amp;uid=<?=$User["id"]?>"><?=$User["games"]?></a></td>
+	  <td width="160"><a href="<?=OS_HOME?>?games&amp;uid=<?=$User["id"]?>"><?=$User["games"]?></a> (<?=$User["totalgames"]?>)</td>
 	  <td class="padLeft" width="60"><b><?=$lang["wl"] ?>:</b></td>
-	  <td width="160"><?=($User["wins"])?> / <?=($User["losses"])?></td>
+	  <td width="160"><?=($User["wins"])?> / <?=($User["losses"])?> (<?=$User["totallosses"]?>)</td>
 	  <td class="padLeft" width="60"><b><?=$lang["towers"]?>:</b></td>
-	  <td width="160"><?=($User["towers"])?></td>
+	  <td width="160"><?=($User["towers"])?> (<?=$User["totaltowers"]?>)</td>
 	</tr>
 	
     <tr class="row">
-	  <td class="padLeft" width="140"><span <?=ShowToolTip($lang["kills_per_game"], OS_HOME.'img/winner.png', 130, 32, 32)?>><b><?=$lang["kpg"]?>:</b></span></td>
-	  <td width="160"><?=$User["kpg"]?></td>
+	  <td class="padLeft" width="140"><span <?=ShowToolTip($lang["kills_per_game"], OS_HOME.'img/winner.png', 130, 32, 32)?>><b><?=$lang["kpg"]?>:</b></span> </td>
+	  <td width="160"><?=$User["kpg"]?> (<?=$User["totalkpg"]?>)</td>
 	  <td class="padLeft" width="60"><span <?=ShowToolTip($lang["deaths_per_game"], OS_HOME.'img/skull.png', 160, 32, 32)?>><b><?=$lang["dpg"]?>:</b></span></td>
-	  <td width="160"><?=($User["dpg"])?></td>
+	  <td width="160"><?=($User["dpg"])?> (<?=$User["totaldpg"]?>)</td>
 	  <td class="padLeft" width="60"><b><?=$lang["rax"]?>:</b></td>
-	  <td width="160"><?=($User["rax"])?></td>
+	  <td width="160"><?=($User["rax"])?> (<?=$User["totalrax"]?>)</td>
 	</tr>
 	
     <tr class="row">
 	  <td class="padLeft" width="140"><span <?=ShowToolTip($lang["assists_per_game"], OS_HOME.'img/winner.png', 180, 32, 32)?>><b><?=$lang["apg"]?>:</b></span></td>
-	  <td width="160"><?=$User["apg"]?></td>
+	  <td width="160"><?=$User["apg"]?> (<?=$User["totalapg"]?>)</td>
 	  <td class="padLeft" width="60"><span <?=ShowToolTip($lang["creeps_per_game"], OS_HOME.'img/winner.png', 190, 32, 32)?>><b><?=$lang["ckpg"]?>:</b></span></td>
-	  <td width="160"><?=($User["ckpg"])?></td>
+	  <td width="160"><?=($User["ckpg"])?> (<?=$User["totalckpg"]?>)</td>
 	  <td class="padLeft" width="60"><span <?=ShowToolTip($lang["denies_per_game"], OS_HOME.'img/winner.png', 190, 32, 32)?>><b><?=$lang["cdpg"]?>:</b></span></td>
-	  <td width="160"><?=($User["cdpg"])?></td>
+	  <td width="160"><?=($User["cdpg"])?> (<?=$User["totalcdpg"]?>)</td>
 	</tr>
 	
     <tr class="row">
 	  <td class="padLeft" width="140"><span <?=ShowToolTip($lang["left_info"], OS_HOME.'img/disc.png', 250, 32, 32)?>><b><?=$lang["left"]?>:</b></span></td>
-	  <td width="160"><?=$User["leaver"]?> x</td>
+	  <td width="160"><?=$User["leaver"]?> x (<?=$User["totalleaver"]?>)</td>
 	  <td class="padLeft" width="60"><span <?=ShowToolTip($lang["stayratio"], OS_HOME.'img/winner.png', 120, 32, 32)?>><b><?=$lang["stayratio"]?>:</b></span></td>
-	  <td width="160"><?=($User["stayratio"])?> % <?=OS_StayRatioIcon( $User["stayratio"] )?></td>
+	  <td width="160"><?=($User["stayratio"])?> % <?=OS_StayRatioIcon( $User["stayratio"] )?> (<?=$User["totalstayratio"]?> %)</td>
 	  <td class="padLeft" width="60"><span <?=ShowToolTip($lang["longest_streak"], OS_HOME.'img/streak.gif', 190, 24, 24)?>><b><?=$lang["streak"]?>:</b></span></td>
-	  <td width="160"><?=($User["maxstreak"])?></td>
+	  <td width="160"><?=($User["maxstreak"])?> (<?=$User["totalmaxstreak"]?>)</td>
 	</tr>
 	
   </table>

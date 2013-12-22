@@ -493,4 +493,6 @@ $lang["hide_stats_message"]  = "The user does not want to show his statistics";
 $lang["last_seen"]           = "Last seen";
 $lang["displlay_stats_for"]  = "Displaying statistics for";
 $lang["select_country"]      = "Select country";
+
+$lang["most_recent_stats"]  = "Show most recent statistics";
 ?>  

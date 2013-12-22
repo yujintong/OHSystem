@@ -2,6 +2,10 @@
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
     $uid = safeEscape( (int) $_GET["u"] );
+	
+	$year  = date("Y");
+	$month = date("m");
+	
 	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  WHERE id = :user_id LIMIT 1");
 	$sth->bindValue(':user_id', (int)$uid, PDO::PARAM_INT);  
 	$result = $sth->execute();
@@ -95,6 +99,18 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["rax"]  = ($row["rax"]);
 	$UserData[$c]["banned"]  = ($row["banned"]);
 	
+	$UserData[$c]["month"]  = ($row["month"]);
+	$UserData[$c]["year"]  = ($row["year"]);
+	
+	if ( $row["month"] != date("m") OR $row["year"]!= date("Y") ) {
+	
+	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE player = '".$row["player"]."' ORDER BY id DESC LIMIT 1");
+	 $result3 = $sth3->execute();
+	 $row3 = $sth3->fetch(PDO::FETCH_ASSOC);
+	 
+	 $UserData[$c]["OtherStats"]  = ($row3["id"]);
+	}
+	
 	$UserData[$c]["hide"]  = ($row["hide"]);
 	
 	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
@@ -180,6 +196,89 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$c++;
 	}
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($gi);
+	
+	$sth = $db->prepare("SELECT 
+	SUM(score) as totalscore,
+	SUM(games) as totalgames,
+	SUM(wins)  as totalwins,
+	SUM(losses) as totallosses,
+	SUM(draw) as totaldraw,
+	SUM(kills) as totalkills,
+	SUM(deaths) as totaldeaths,
+	SUM(assists) as totalassists,
+	SUM(creeps) as totalcreeps,
+	SUM(denies) as totaldenies,
+	SUM(neutrals) as totalneutrals,
+	SUM(towers) as totaltowers,
+	SUM(rax) as totalrax,
+	SUM(leaver) as totalleaver,
+	SUM(zerodeaths) as totalzerodeaths,
+	SUM(maxstreak) as totalmaxstreak
+	FROM ".OSDB_STATS." 
+	WHERE LOWER(player) = '".strtolower($PlayerName)."'  ");
+	
+	$result = $sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	$UserData[0]["totalscore"] = $row["totalscore"];
+	$UserData[0]["totalgames"] = $row["totalgames"];
+	$UserData[0]["totalwins"] = $row["totalwins"];
+	$UserData[0]["totallosses"] = $row["totallosses"];
+	$UserData[0]["totaldraw"] = $row["totaldraw"];
+	$UserData[0]["totalkills"] = $row["totalkills"];
+	$UserData[0]["totaldeaths"] = $row["totaldeaths"];
+	$UserData[0]["totalassists"] = $row["totalassists"];
+	$UserData[0]["totalcreeps"] = $row["totalcreeps"];
+	$UserData[0]["totaldenies"] = $row["totaldenies"];
+	$UserData[0]["totalneutrals"] = $row["totalneutrals"];
+	$UserData[0]["totaltowers"] = $row["totaltowers"];
+	$UserData[0]["totalrax"] = $row["totalrax"];
+	$UserData[0]["totalleaver"] = $row["totalleaver"];
+	$UserData[0]["totalzerodeaths"] = $row["totalzerodeaths"];
+	$UserData[0]["totalmaxstreak"] = $row["totalmaxstreak"];
+	
+	if ($row["totalwins"] >0 )
+	$UserData[0]["totalwinslosses"] = round($row["totalwins"]/($row["totalwins"]+$row["totallosses"]), 3)*100;
+	else $UserData[0]["totalwinslosses"] = 0;
+	
+	if ($row["totaldeaths"]>=1) $UserData[0]["totalkd"]  = round($row["totalkills"] / $row["totaldeaths"],2);
+    else $UserData[0]["totalkd"] = $row["totalkills"];
+	
+	if ($row["totalgames"]>=1 AND $row["totalkills"]>=1) {
+	$UserData[0]["totalkpg"] = round($row["totalkills"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalkpg"] = 0;
+	
+	if ($row["totalgames"]>=1 AND $row["totaldeaths"]>=1) {
+	$UserData[0]["totaldpg"] = round($row["totaldeaths"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totaldpg"] = 0;
+	
+	//AVG assists
+	if ($row["totalgames"]>=1 AND $row["totalassists"]>=1) {
+	$UserData[0]["totalapg"] = round($row["totalassists"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalapg"] = 0;
+	
+	//AVG creeps per game
+	if ($row["totalgames"]>=1 AND $row["totalcreeps"]>=1) {
+	$UserData[0]["totalckpg"] = ROUND($row["totalcreeps"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalckpg"] = 0;
+
+	//AVG denies per game
+	if ($row["totalgames"]>=1 AND $row["totaldenies"]>=1) {
+	$UserData[0]["totalcdpg"] = ROUND($row["totaldenies"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalcdpg"] = 0;
+	
+	if ($row["totalgames"] >0 ) {
+	$left2 = $row["totalgames"] - $row["totalleaver"];
+	$StayR2 = round(($left2/$row["totalgames"])*100, 1);
+	$UserData[0]["totalstayratio"] = $StayR2;
+	}
+	else $UserData[0]["totalstayratio"] = 0;
+	
+	
 	
 	//CHECK BNET USERNAME
 	

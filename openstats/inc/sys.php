@@ -27,7 +27,7 @@ include(OS_PAGE_PATH."add_comment_page.php");
 	    $uid = OS_StrToUTF8( trim($_GET["u"]) );
 	  
 		$sth = $db->prepare("SELECT *
-	    FROM ".OSDB_STATS." as s WHERE s.player = :player LIMIT 1");
+	    FROM ".OSDB_STATS." as s WHERE s.player = :player ORDER BY id DESC LIMIT 1");
 		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
 		$result = $sth->execute();
 	  
