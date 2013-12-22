@@ -172,10 +172,7 @@ protected:
 	bool m_ModeVoted;
 	uint32_t m_LatestSlot;
 	uint32_t m_Leavers;
-        uint32_t m_LastPermissionRefresh;
-        vector<string> m_GarenaPermissions;
         uint32_t m_StartedVoteStartTime;
-        uint32_t m_LastBanRefreshTime;
         uint32_t m_VoteMuteEventTime;
         string m_VoteMutePlayer;
         uint32_t m_VoteMuteTargetTeam;
@@ -350,8 +347,6 @@ public:
 	virtual void CreateFakePlayer( );
 	virtual void DeleteFakePlayer( );
 	virtual bool is_digits( const std::string &str );
-        CDBBan *IsBannedName( string name );
-	CDBBan *IsBannedIP( string ip );
 	double m_ScourgeWinPoints;						 // scourge value to calculate the winperc
 	double m_SentinelWinPoints;						 // sentinel value to calculate the winperc
 	double m_TotalWinPoints;						 // total value to calculate the winperc

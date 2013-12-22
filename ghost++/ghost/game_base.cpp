@@ -1580,7 +1580,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // the cooldown can be only breaked by 100% of the loosing side votes
         if( m_EndGame && GetTicks( ) - m_EndTicks >= 30000 && m_EndTicks != 0 )
         {
-            SendAllChat("[INFO] The game will end in ["+UTIL_ToString((((m_GHost->m_AutoEndTime)*1000)-m_EndTicks)/1000)+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
+            SendAllChat("[INFO] The game will end in ["+UTIL_ToString( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 )+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
 
             if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime ) * 1000 ) - 10000 ) )
             {
@@ -2501,57 +2501,60 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
  
         if( m_GHost->m_BanMethod != 0 && !Reserved )
         {
-            CDBBan *Ban = IsBannedName( joinPlayer->GetName( ) );
-
-            if( Ban )
+            for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
             {
-                    if( m_GHost->m_BanMethod == 1 || m_GHost->m_BanMethod == 3 )
-                    {
-                            CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by name" );
-                            if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
-                            {
-                                    SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
-                                    SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
-                                    m_IgnoredNames.insert( joinPlayer->GetName( ) );
-                            }
-                            // let banned players "join" the game with an arbitrary PID then immediately close the connection
-                            // this causes them to be kicked back to the chat channel on battle.net
-                            if(m_GHost->m_AutoDenyUsers)
+                CDBBan *Ban = (*i)->IsBannedName( joinPlayer->GetName( ) );
+
+                if( Ban )
+                {
+                        if( m_GHost->m_BanMethod == 1 || m_GHost->m_BanMethod == 3 )
+                        {
+                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by name" );
+                                if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
+                                {
+                                        SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
+                                        m_IgnoredNames.insert( joinPlayer->GetName( ) );
+                                }
+                                // let banned players "join" the game with an arbitrary PID then immediately close the connection
+                                // this causes them to be kicked back to the chat channel on battle.net
+                                if(m_GHost->m_AutoDenyUsers)
+                                        m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                vector<CGameSlot> Slots = m_Map->GetSlots( );
+                                potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                                potential->SetDeleteMe( true );
+                                return;
+                        }
+                }
+
+                CDBBan *IPBan = (*i)->IsBannedIP( potential->GetExternalIPString( ) );
+                // Disabled, created laags if a player join
+                //if( !IPBan && !potential->GetSocket( )->GetHostName( ).empty( ) )
+                //        IPBan = (*i)->IsBannedIP( "h" + potential->GetSocket( )->GetHostName( ) );
+
+                if( IPBan )
+                {
+                        if( m_GHost->m_BanMethod == 2 || m_GHost->m_BanMethod == 3 )
+                        {
+                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by IP address" );
+
+                                if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
+                                {
+                                        SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
+                                        m_IgnoredNames.insert( joinPlayer->GetName( ) );
+                                }
+
+                                // let banned players "join" the game with an arbitrary PID then immediately close the connection
+                                // this causes them to be kicked back to the chat channel on battle.net
+                                if(m_GHost->m_AutoDenyUsers)
                                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                            vector<CGameSlot> Slots = m_Map->GetSlots( );
-                            potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
-                            potential->SetDeleteMe( true );
-                            return;
-                    }
-            }
-
-            CDBBan *IPBan = IsBannedIP( potential->GetExternalIPString( ) );
-            // Disabled, created laags if a player join
-            //if( !IPBan && !potential->GetSocket( )->GetHostName( ).empty( ) )
-            //        IPBan = (*i)->IsBannedIP( "h" + potential->GetSocket( )->GetHostName( ) );
-
-            if( IPBan )
-            {
-                    if( m_GHost->m_BanMethod == 2 || m_GHost->m_BanMethod == 3 )
-                    {
-                            CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by IP address" );
-
-                            if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
-                            {
-                                    SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
-                                    SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
-                                    m_IgnoredNames.insert( joinPlayer->GetName( ) );
-                            }
-
-                            // let banned players "join" the game with an arbitrary PID then immediately close the connection
-                            // this causes them to be kicked back to the chat channel on battle.net
-                            if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                            vector<CGameSlot> Slots = m_Map->GetSlots( );
-                            potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
-                            potential->SetDeleteMe( true );
-                            return;
-                    }
+                                vector<CGameSlot> Slots = m_Map->GetSlots( );
+                                potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                                potential->SetDeleteMe( true );
+                                return;
+                        }
+                }
             }
         }
  
@@ -6405,50 +6408,6 @@ string CBaseGame :: GetColoredName( string defaultname )
         }
  
         return "";
-}
-
-CDBBan *CBaseGame :: IsBannedName( string name )
-{
-        transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
- 
-        // todotodo: optimize this - maybe use a map?
- 
-        for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
-        {
-                if( (*i)->GetName( ) == name )
-                        return *i;
-        }
- 
-        return NULL;
-}
- 
-CDBBan *CBaseGame :: IsBannedIP( string ip )
-{
-        transform( ip.begin( ), ip.end( ), ip.begin( ), ::tolower ); //transform in case it's a hostname
-        for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
-        {
-                if( (*i)->GetIP( )[0] == ':' )
-                {
-                        string BanIP = (*i)->GetIP( ).substr( 1 );
-                        int len = BanIP.length( );
- 
-                        if( ip.length( ) >= len && ip.substr( 0, len ) == BanIP )
-                        {
-                                return *i;
-                        }
-                        else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && ip.length( ) >= 3 && ip[0] == 'h' && ip.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
-                        {
-                                return *i;
-                        }
-                }
- 
-                if( (*i)->GetIP( ) == ip )
-                {
-                        return *i;
-                }
-        }
- 
-        return NULL;
 }
 
 string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
