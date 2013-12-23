@@ -1014,7 +1014,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                             }
                                     }
                             }
-                            if( Level == 0 && GetTime( ) - (*i)->GetJoinTime( ) >= 15 (*i)->GetChecked( ) == 1 )
+                            if( Level == 0 && GetTime( ) - (*i)->GetJoinTime( ) >= 15 && (*i)->GetChecked( ) == 1 )
                             {
                                     string CC = (*i)->GetCLetter( );
 

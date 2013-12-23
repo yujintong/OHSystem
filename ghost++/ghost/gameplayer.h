@@ -168,7 +168,7 @@ private:
         bool m_GlobalChatMuted;
         string m_InsultM;
         uint32_t m_DownloadTicks;
-        uint32 m_Checked;
+        uint32_t m_Checked;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -246,7 +246,7 @@ public:
         bool GetGlobalChatMuted( )                                      { return m_GlobalChatMuted; }
         string GetInsultM( )                                            { return m_InsultM; }
         uint32_t GetDownloadTicks( )                                    { return m_DownloadTicks; }
-        bool GetChecked( )                                              { return m_Checked; }
+        uint32_t GetChecked( )                                              { return m_Checked; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
