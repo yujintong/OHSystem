@@ -238,7 +238,7 @@ int main( int argc, char **argv )
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<string> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE map LIKE `dota` AND `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT "+UTIL_ToString( StatsUpdateLimit )+";" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE map LIKE '%dota%' AND `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT "+UTIL_ToString( StatsUpdateLimit )+";" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
