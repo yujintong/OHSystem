@@ -2426,7 +2426,15 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 potential->SetDeleteMe( true );
                 return;
         }
- 
+        
+        // check if player has a denied word pharse
+        if( Level == 0 && HasDeniedWordPharse( joinPlayer->GetName( ) ) && m_GHost->m_DeniedNamePartials.size( ) != 0 ) {
+            CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but has a forbidden word parse." );
+            potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
+            potential->SetDeleteMe( true );
+            return;
+        }
+        
         // check if the new player's name is empty or too long
  
         string LowerName = joinPlayer->GetName( );
@@ -6178,6 +6186,25 @@ bool CBaseGame :: IsDenied( string username, string ip )
         return false;
 }
  
+bool CBaseGame :: HasDeniedWordPharse( string username ) {
+    UTIL_Replace(username, "13", "B");
+    UTIL_Replace(username, "1", "i");
+    UTIL_Replace(username, "3", "e");
+    UTIL_Replace(username, "4", "a");
+    transform( username.begin( ), username.end( ), username.begin( ), ::tolower );
+    bool kick = false;
+    for( vector<string> :: iterator i = m_GHost->m_DeniedNamePartials.begin( ); i != m_GHost->m_DeniedNamePartials.end( ); i++ ) {
+        string pharse = *i;
+        if( !Payload.find_first_not_of( pharse ) == string :: npos )
+            continue;
+        else {
+            kick = true;
+            break;
+        }
+    }
+    return kick;
+}
+
 bool CBaseGame :: is_digits( const std::string &str )
 {
         return str.find_first_not_of("0123456789") == std::string::npos;

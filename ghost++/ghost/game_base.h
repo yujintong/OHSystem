@@ -358,6 +358,7 @@ public:
         bool m_PlayerUpdate;
         uint32_t m_ChatID;
 	virtual bool IsDenied( string username, string ip );
+        virtual bool HasDeniedWordPharse( string username );
         bool m_PauseReq;
         uint32_t m_PauseIntroTime;
         bool m_Paused;

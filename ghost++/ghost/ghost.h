@@ -49,6 +49,7 @@ class CCallableFlameList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableGameDBInit;
+class m_CallableDeniedNamesList;
 
 class CGHost
 {
@@ -106,6 +107,7 @@ public:
 	vector<string> m_Modes;
 	CCallableFlameList *m_CallableFlameList;
 	uint32_t m_LastFlameListUpdate;
+        uint32_t m_LastDNListUpdate;
 	vector<string> m_Flames;
         CCallableAnnounceList *m_CallableAnnounceList;
         uint32_t m_LastAnnounceListUpdate;
@@ -118,6 +120,8 @@ public:
 	uint32_t m_LastGameUpdateTime;			// GetTime when the gamelist was last updated
 	CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
         CCallableGameDBInit *m_CallableHC;
+        CCallableDeniedNamesList *m_CallableDeniedNamesList;
+        vector<string> m_DeniedNamePartials;
 	double m_AutoHostMinimumScore;
 	double m_AutoHostMaximumScore;
 	bool m_AllGamesFinished;				// if all games finished (used when exiting nicely)

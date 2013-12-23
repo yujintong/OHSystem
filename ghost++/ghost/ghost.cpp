@@ -374,6 +374,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
+        m_CallableDeniedNamesList = Null;
         m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
         m_RanksLoaded = true;
@@ -459,6 +460,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastGameUpdateTime  = GetTime( );
 	m_LastFlameListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
+        m_LastDNListUpdate = 0;
 	m_LastDCountryUpdate = 0;
         m_LastHCUpdate = GetTime();
 	m_AutoHostMatchMaking = false;
@@ -1166,10 +1168,9 @@ bool CGHost :: Update( long usecBlock )
         	delete m_CallableGameUpdate;
         	m_CallableGameUpdate = NULL;
     	}
-
-
-	// refresh flamelist all 5 minutes
-	if( !m_CallableFlameList && GetTime( ) - m_LastFlameListUpdate >= 300 && m_FlameCheck)
+        
+        // refresh flamelist all 60 minutes
+	if( !m_CallableFlameList && GetTime( ) - m_LastFlameListUpdate >= 1200 && m_FlameCheck)
 	{
 		m_CallableFlameList = m_DB->ThreadedFlameList( );
 		m_LastFlameListUpdate = GetTime( );
@@ -1183,8 +1184,23 @@ bool CGHost :: Update( long usecBlock )
                 m_CallableFlameList = NULL;
         }
 
-	// refresh announce list all 5 minutes
-        if( !m_CallableAnnounceList && GetTime( ) - m_LastAnnounceListUpdate >= 300 )
+        // refresh flamelist all 60 minutes
+	if( !m_CallableDeniedNamesList && GetTime( ) - m_LastDNListUpdate >= 1200 )
+	{
+		m_CallableDeniedNamesList = m_DB->ThreadedFlameList( );
+		m_LastDNListUpdate = GetTime( );
+	}
+
+        if( m_CallableDeniedNamesList && m_CallableDeniedNamesList->GetReady( ) )
+        {
+                m_DeniedNamePartials = m_CallableDeniedNamesList->GetResult( );
+                m_DB->RecoverCallable( m_CallableDeniedNamesList );
+                delete m_CallableDeniedNamesList;
+                m_CallableDeniedNamesList = NULL;
+        }
+
+	// refresh announce list all 60 minutes
+        if( !m_CallableAnnounceList && GetTime( ) - m_LastAnnounceListUpdate >= 1200 )
         {
                 m_CallableAnnounceList = m_DB->ThreadedAnnounceList( );
                 m_LastAnnounceListUpdate = GetTime( );
@@ -1200,8 +1216,8 @@ bool CGHost :: Update( long usecBlock )
 		m_AnnounceLines = m_Announces.size();
         }
 
-        // refresh denied country list all 5 minutes
-        if( !m_CallableDCountryList && GetTime( ) - m_LastDCountryUpdate >= 300 )
+        // refresh denied country list all 60 minutes
+        if( !m_CallableDCountryList && GetTime( ) - m_LastDCountryUpdate >= 1200 )
         {
                 m_CallableDCountryList = m_DB->ThreadedDCountryList( );
                 m_LastDCountryUpdate = GetTime( );

@@ -30,6 +30,7 @@ class CCallableRegAdd;
 class CCallableStatsSystem;
 class CCallablePList;
 class CCallableFlameList;
+class CCallableDeniedNamesList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableBanCount;
@@ -99,6 +100,7 @@ public:
         virtual uint32_t penp( string name, string reason, string admin, uint32_t amount, string type );
         virtual vector<string> PList( string server );
         virtual vector<string> FlameList( );
+        virtual vector<string> DeniedNamesList( );
 	 virtual vector<string> AnnounceList( );
         virtual vector<string> DCountryList( );
 	virtual uint32_t BanCount( string server );
@@ -142,6 +144,7 @@ public:
         virtual CCallablepm *Threadedpm( string user, string listener, uint32_t status, string message, string type );
 	virtual CCallablePList *ThreadedPList( string server );
         virtual CCallableFlameList *ThreadedFlameList( );
+        virtual CCallableDeniedNamesList *ThreadedDeniedNamesList( );
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
         virtual CCallableDCountryList *ThreadedDCountryList( );
         virtual CCallableStoreLog *ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin );
@@ -331,6 +334,19 @@ protected:
 public:
         CCallableFlameList( ) : CBaseCallable( ) { }
         virtual ~CCallableFlameList( );
+
+        virtual vector<string> GetResult( )                                     { return m_Result; }
+        virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }
+};
+
+class CCallableDeniedNamesList : virtual public CBaseCallable
+{
+protected:
+        vector<string> m_Result;
+
+public:
+        CCallableDeniedNamesList( ) : CBaseCallable( ) { }
+        virtual ~CCallableDeniedNamesList( );
 
         virtual vector<string> GetResult( )                                     { return m_Result; }
         virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }

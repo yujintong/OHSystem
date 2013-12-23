@@ -273,6 +273,20 @@ CCallableFlameList *CGHostDBMySQL :: ThreadedFlameList( )
         return Callable;
 }
 
+CCallableDeniedNamesList *CGHostDBMySQL :: ThreadedDeniedNamesList( )
+{
+        void *Connection = GetIdleConnection( );
+
+        if( !Connection )
+                ++m_NumConnections;
+
+        CCallableDeniedNamesList *Callable = new CMySQLCallableDeniedNamesList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+        CreateThread( Callable );
+        ++m_OutstandingCallables;
+        m_Name.push_back( "deniednames" );
+        return Callable;
+}
+
 CCallableAnnounceList *CGHostDBMySQL :: ThreadedAnnounceList( )
 {
         void *Connection = GetIdleConnection( );
@@ -1204,6 +1218,41 @@ vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid )
         }
 
         return FlameList;
+}
+
+vector<string> MySQLDeniedNamesList( void *conn, string *error, uint32_t botid )
+{
+        vector<string> DeniedNamesList;
+        string Query = "SELECT `field_value` FROM `oh_custom_fields` WHERE `field_id` = '1' AND	`field_name` = 'oh_bannednamepartials'";
+
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+        else
+        {
+                MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+                if( Result )
+                {
+                        vector<string> Row = MySQLFetchRow( Result );
+
+                        if( !Row.empty( ) )
+                        {
+				string Word;
+				stringstream SS;
+				SS << Row[0];
+				while( SS >> Word )
+				{
+        	                        DeniedNamesList.push_back( Word );
+				}
+                        }
+
+                        mysql_free_result( Result );
+                }
+                else
+                        *error = mysql_error( (MYSQL *)conn );
+        }
+
+        return DeniedNamesList;
 }
 
 vector<string> MySQLAnnounceList( void *conn, string *error, uint32_t botid )
@@ -2677,6 +2726,16 @@ void CMySQLCallableFlameList :: operator( )( )
 
         if( m_Error.empty( ) )
                 m_Result = MySQLFlameList( m_Connection, &m_Error, m_SQLBotID );
+
+        Close( );
+}
+
+void CMySQLCallableDeniedNamesList :: operator( )( )
+{
+        Init( );
+
+        if( m_Error.empty( ) )
+                m_Result = MySQLDeniedNamesList( m_Connection, &m_Error, m_SQLBotID );
 
         Close( );
 }
