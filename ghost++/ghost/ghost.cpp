@@ -1837,7 +1837,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         m_CallableGameUpdate = m_DB->ThreadedGameUpdate(m_CurrentGame->GetMapName( ), m_CurrentGame->GetGameName(), m_CurrentGame->GetOwnerName(), m_CurrentGame->GetCreatorName(), m_CurrentGame->GetSlotsOccupied(), m_CurrentGame->GetPlayerList( ), m_CurrentGame->GetSlotsOccupied() + m_CurrentGame->GetSlotsOpen(), TotalGames, TotalPlayers, true);
         m_LastGameUpdateTime = GetTime();
     }
-    m_CurrentGame->GAME_Print( 11, "", "", "System", "", "Game Created ["+m_CurrentGame->GetMapName( )+"|"+m_CurrentGame->GetGameName()+"] game created by ["+m_CurrentGame->GetCreatorName()+"]" );
 }
 
 bool CGHost :: FlameCheck( string message )

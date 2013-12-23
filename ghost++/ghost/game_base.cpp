@@ -1778,7 +1778,8 @@ void CBaseGame :: SendAllChat( unsigned char fromPID, string message )
                 if( m_GameLoading || m_GameLoaded )
                 {
                         m_LogData = m_LogData + "3" + "\t" +  "bgm" + "\t" +  "Bot" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + message + "\n";
-                        GAME_Print( 1, MinString, SecString, "Bot", "", message );
+                        if(! message.find("left the game")==string::npos ||! message.find("dropped")==string::npos||! message.find("disconnected")==string::npos||! message.find("has lost")==string::npos )
+                                GAME_Print( 1, MinString, SecString, "Bot", "", message );
                 }
                 else
                 {

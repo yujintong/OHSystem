@@ -743,11 +743,11 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 								m_Sec = ValueInt;
 
                                                         if( m_Winner == 1 )
-	                                                        m_Game->GAME_Print( 11, MinString, SecString, "", "", "Winner detected: [Sentinel]" );
+	                                                        m_Game->GAME_Print( 1, MinString, SecString, "", "", "Winner detected: [Sentinel]" );
 							else if( m_Winner == 2 )
-								m_Game->GAME_Print( 11, MinString, SecString, "", "", "Winner detected: [Scourge]" );
+								m_Game->GAME_Print( 1, MinString, SecString, "", "", "Winner detected: [Scourge]" );
 							else
-								m_Game->GAME_Print( 11, MinString, SecString, "", "", "No winner detected, game ended in a draw" );
+								m_Game->GAME_Print( 1, MinString, SecString, "", "", "No winner detected, game ended in a draw" );
 
 
 						}
