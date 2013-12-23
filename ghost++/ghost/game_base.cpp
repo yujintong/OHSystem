@@ -938,9 +938,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         break;
                                 }
                         }
-                        if(! (*i)->GetChecked( ) ) {
+                        if( (*i)->GetChecked( ) < 3 ) {
 
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 5 && Level == 0 && GetTime( ) - (*i)->GetAnnounceTime( ) >= 1 )
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 5 && Level == 0 && GetTime( ) - (*i)->GetAnnounceTime( ) >= 1 && (*i)->GetChecked( ) == 0 )
                             {
                                     if( m_GameType == 3 )
                                     {
@@ -957,7 +957,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                     }
                             }
  
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 15 && Level == 0 )
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 15 && Level == 0 && (*i)->GetChecked( ) == 0 )
                             {
                                     if( m_GameType == 4 )
                                     {
@@ -982,6 +982,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                                     (*i)->SetLeftReason( "got kicked because he does not have enough games." );
                                                     (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                                                     OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            } else {
+                                                (*i)->SetChecked( );
                                             }
                                     }
                                     else if( m_GameType == 3 )
@@ -1007,33 +1009,12 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                                     (*i)->SetLeftReason( "got kicked because he does not have enough score points." );
                                                     (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                                                     OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            } else {
+                                                (*i)->SetChecked( );
                                             }
                                     }
                             }
-                        
-                            if( (*i)->GetPasswordProt( ) && GetTime( ) - (*i)->GetJoinTime( ) >= 20 )
-                            {
-                                    if(m_GHost->m_AutoDenyUsers)
-                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                    (*i)->SetDeleteMe( true );
-                                    (*i)->SetLeftReason( "was kicked for non typing the password." );
-                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                            }
-
-                            if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
-                                SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
-                                if( GetTime( ) - (*i)->GetJoinTime( ) >= 10 ) {
-                                    if(m_GHost->m_AutoDenyUsers)
-                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                    (*i)->SetDeleteMe( true );
-                                    (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
-                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                }
-                            }
-
-                            if( Level == 0 && GetTime( ) - (*i)->GetJoinTime( ) >= 20 )
+                            if( Level == 0 && GetTime( ) - (*i)->GetJoinTime( ) >= 15 (*i)->GetChecked( ) == 1 )
                             {
                                     string CC = (*i)->GetCLetter( );
 
@@ -1079,10 +1060,35 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                             (*i)->SetLeftReason( "was kicked for having a denied country." );
                                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                                             OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                    } else {
+                                        (*i)->SetChecked( );
                                     }
                             }
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 21 &&! (*i)->GetChecked( ) ) {
-                                    (*i)->SetChecked( );
+                            
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 20 && (*i)->GetChecked( ) == 2 ) {
+                                if( (*i)->GetPasswordProt( ) )
+                                {
+                                        if(m_GHost->m_AutoDenyUsers)
+                                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                        (*i)->SetDeleteMe( true );
+                                        (*i)->SetLeftReason( "was kicked for non typing the password." );
+                                        (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                        OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                } else {
+                                        (*i)->SetChecked( );
+                                }
+                            }
+                            
+                            if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
+                                SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
+                                if( GetTime( ) - (*i)->GetJoinTime( ) >= 10 ) {
+                                    if(m_GHost->m_AutoDenyUsers)
+                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                    (*i)->SetDeleteMe( true );
+                                    (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
+                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                }
                             }
                        }
                 }

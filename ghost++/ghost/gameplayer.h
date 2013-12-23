@@ -168,7 +168,7 @@ private:
         bool m_GlobalChatMuted;
         string m_InsultM;
         uint32_t m_DownloadTicks;
-        bool m_Checked;
+        uint32 m_Checked;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -309,7 +309,7 @@ public:
         void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
         void SetInsultM( string nInsultM )                                                                              { m_InsultM = nInsultM; }
         void SetDownloadTicks( uint32_t nTicks )                                                                        { m_DownloadTicks = nTicks; }                                       
-        void SetChecked( )                                                                                              { m_Checked = true; }
+        void SetChecked( )                                                                                              { m_Checked++; }
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
 
 	// processing functions
