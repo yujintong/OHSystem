@@ -2191,8 +2191,8 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
 				}
                                 StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, forcedgproxy, hiddenacc, country, countryCode, role );
                         }
-                        else
-                                *error = "error checking statsplayersummary [" + name + "] - row doesn't have 27 columns";
+                        //else
+                        //        *error = "error checking statsplayersummary [" + name + "] - row doesn't have 27 columns";
 
                         mysql_free_result( Result );
                 }

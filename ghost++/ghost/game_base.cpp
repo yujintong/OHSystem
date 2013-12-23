@@ -2072,7 +2072,8 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
  
                 in.close( );
         }
- 
+        if( m_GHost->m_OHBalance)
+            SendChat(player, "This is a balanced game, the slots will be balanced before the game will start.");
  
 }
  
