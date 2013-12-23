@@ -1891,6 +1891,7 @@ void CGHost :: LoadRules( )
     string File = "rules.txt";
     string line;
     ifstream myfile(File.c_str());
+    m_Rules.clear();
     if (myfile.is_open())
     {
 	while ( getline (myfile,line) )
@@ -1921,6 +1922,7 @@ void CGHost :: LoadRanks( )
     string File = "ranks.txt";
     ifstream in;
     in.open( File.c_str() );
+    m_Ranks.clear();
     if( !in.fail( ) )
     {
             // don't print more than 8 lines
@@ -1953,6 +1955,7 @@ void CGHost :: LoadInsult()
     string File = "insult.txt";
     ifstream in;
     in.open( File.c_str() );
+    m_Insults.clear();
     if( !in.fail( ) )
     {
             string Line;
