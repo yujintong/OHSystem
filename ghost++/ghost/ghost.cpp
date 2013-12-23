@@ -374,7 +374,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
-        m_CallableDeniedNamesList = Null;
+        m_CallableDeniedNamesList = NULL;
         m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
         m_RanksLoaded = true;
@@ -1187,7 +1187,7 @@ bool CGHost :: Update( long usecBlock )
         // refresh flamelist all 60 minutes
 	if( !m_CallableDeniedNamesList && GetTime( ) - m_LastDNListUpdate >= 1200 )
 	{
-		m_CallableDeniedNamesList = m_DB->ThreadedFlameList( );
+		m_CallableDeniedNamesList = m_DB->ThreadedDeniedNamesList( );
 		m_LastDNListUpdate = GetTime( );
 	}
 
