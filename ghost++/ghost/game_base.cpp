@@ -6233,6 +6233,9 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 if( Player )
                         PSiD = UTIL_ToString( GetSIDFromPID( Player->GetPID( ) ) );
  
+                if( PSiD > 5 )
+                    PSiD++;
+                
                 if( type == 1 )
                          StorePacket = "<div class=\"gamechat\"><span class=\"bot\">Bot</span> "+message+"</div>";
                 else if( type == 2 )
@@ -6263,8 +6266,13 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 if( Player )
                         PSiD = UTIL_ToString( GetSIDFromPID( Player->GetPID( ) ) );
                 if( VPlayer )
-                        PSiD = UTIL_ToString( GetSIDFromPID( VPlayer->GetPID( ) ) );
+                        VSiD = UTIL_ToString( GetSIDFromPID( VPlayer->GetPID( ) ) );
  
+                if( PSiD > 5 )
+                    PSiD++;
+                if( VSiD > 5 )
+                    VSiD++;
+                
                 if( type == 12 )
                         StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 13 )
