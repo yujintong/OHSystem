@@ -140,7 +140,7 @@ do{
 if ($BanIPUpdate == 1) {  
 
    $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." 
-   WHERE id>=1 AND country='' AND (ip='0.0.0.0') AND ip NOT LIKE (':%')
+   WHERE id>=1 AND country='' AND ip NOT LIKE (':%')
    ORDER BY RAND()
    LIMIT $MaxQueries");
    
