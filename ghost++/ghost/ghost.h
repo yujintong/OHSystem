@@ -49,7 +49,7 @@ class CCallableFlameList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableGameDBInit;
-class m_CallableDeniedNamesList;
+class CCallableDeniedNamesList;
 
 class CGHost
 {
