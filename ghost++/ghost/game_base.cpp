@@ -1593,7 +1593,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 SendAllChat("[Info] The winner has been set to the ["+WinnerTeam+"]");
                 m_GameOverTime = GetTime();
             } else 
-                SendAllChat("[INFO] The game will end in ["+UTIL_ToString( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 )+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more votes needed to interrupt the autoend." );
+                SendAllChat("[INFO] The game will end in ["+UTIL_ToString( ( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 ) +1 )+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more votes needed to interrupt the autoend." );
 
             m_EndTicks = GetTicks( );
 
@@ -6397,9 +6397,9 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                                 CONSOLE_Print( "Bad Input for RuneType: "+message );
  
                         if( type == 30 )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> stored a <span=\"rune\">"+Rune+"</span> Rune.</div>";
+                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> stored a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
                         else if( type == 31 )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> used a <span=\"rune\">"+Rune+"</span> Rune.</div>";
+                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> used a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
                 }
                 else
                         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
