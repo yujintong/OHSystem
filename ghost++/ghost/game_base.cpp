@@ -6235,7 +6235,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                     int pid = GetSIDFromPID( Player->GetPID( ) );
                     if( pid > 5 )
                         pid++;
-                    PSiD = UTIL_ToString(  );
+                    PSiD = UTIL_ToString( pid );
                 }
  
                 if( type == 1 )
