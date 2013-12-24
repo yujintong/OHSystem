@@ -4132,19 +4132,28 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
             if(m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( ) == m_LoosingTeam)
             {
-                m_BreakAutoEndVotes++;
-                if( m_BreakAutoEndVotes >= m_BreakAutoEndVotesNeeded)
-                {
-                    m_EndGame = false;
-                    m_EndTicks = 0;
-                    m_StartEndTicks = 0;
-                    m_BreakAutoEndVotes = 0;
-                    m_BreakAutoEndVotesNeeded = 0;
-                    m_LoosingTeam = 0;
-                    SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
+                if( player->GetVotedForInterruption() == false ) {
+                    player->SetVotedForInterruption(true);
+                    m_BreakAutoEndVotes++;
+                    if( m_BreakAutoEndVotes >= m_BreakAutoEndVotesNeeded)
+                    {
+                        m_EndGame = false;
+                        m_EndTicks = 0;
+                        m_StartEndTicks = 0;
+                        m_BreakAutoEndVotes = 0;
+                        m_BreakAutoEndVotesNeeded = 0;
+                        m_LoosingTeam = 0;
+                        SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
+                        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                        {
+                            (*i)->SetVotedForInterruption( false );
+                        }
+                    }
+                    else
+                        SendAllChat("[INFO] Player ["+player->GetName()+"] voted to interrupt the autoend. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to interrupt the autoend." );
+                } else {
+                    SendChat( player, "[INFO] You already voted to interrupt the autoending.");
                 }
-                else
-                    SendAllChat("[INFO] Player ["+player->GetName()+"] voted to interrupt the autoend. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to interrupt the autoend." );
             }
         }
 

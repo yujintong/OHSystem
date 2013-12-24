@@ -169,6 +169,7 @@ private:
         string m_InsultM;
         uint32_t m_DownloadTicks;
         uint32_t m_Checked;
+        bool m_VotedForInterruption;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -247,6 +248,7 @@ public:
         string GetInsultM( )                                            { return m_InsultM; }
         uint32_t GetDownloadTicks( )                                    { return m_DownloadTicks; }
         uint32_t GetChecked( )                                              { return m_Checked; }
+        bool GetVotedForInterruption( )                                        { return m_VotedForInterruption; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
@@ -311,6 +313,7 @@ public:
         void SetDownloadTicks( uint32_t nTicks )                                                                        { m_DownloadTicks = nTicks; }                                       
         void SetChecked( )                                                                                              { m_Checked++; }
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
+        void SetVotedForInterruption ( bool nVoted )                                                                    { m_VotedForInterruption = nVoted; }
 
 	// processing functions
 
