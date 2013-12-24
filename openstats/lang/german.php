@@ -495,4 +495,7 @@ $lang["displlay_stats_for"]  = "Displaying statistics for";
 $lang["select_country"]      = "Select country";
 
 $lang["most_recent_stats"]  = "Show most recent statistics";
+
+$lang["game_log_lobby"]  = "Lobby Log";
+$lang["game_log_game"]   = "Game Log";
 ?>  

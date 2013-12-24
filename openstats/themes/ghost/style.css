@@ -1107,3 +1107,33 @@ vertical-align:bottom;
 	visibility: hidden;
 	z-index: 101;
 }
+
+
+#LobbyGameLog { width:100%; font-size:12px; }
+
+#LobbyGameLog div { border-bottom: 1px solid #eaeaea; }
+
+#LobbyGameLog .slot0 { padding-left:8px; color:#2E2E2E; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot1 { padding-left:8px; color:#0044FB; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot2 { padding-left:8px; color:#08E4B6; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot3 { padding-left:8px; color:#640388; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot4 { padding-left:8px; color:#FEFD0D; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot5 { padding-left:8px; color:#FC890A; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot6 { padding-left:8px; color:#E655B0; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot7 { padding-left:8px; color:#969696; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot8 { padding-left:8px; color:#74C0F4; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot9 { padding-left:8px; color:#036242; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .slot10 { padding-left:8px; color:#512905;text-shadow:1px 1px #c2c2c2; }
+
+#LobbyGameLog .lobbyplayer { color:#0044FB; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .bot { color:#ab0900; text-shadow:1px 1px #c2c2c2; }
+#LobbyGameLog .player { color:#036242; text-shadow:1px 1px #c2c2c2; }
+
+#LobbyGameLog .lobbychat { color: #7A9397; }
+#LobbyGameLog .gamechat { color: #7A9397; }
+#LobbyGameLog .lobbyleave { color: #C70000; }
+#LobbyGameLog .lobbyjoin { color: #1E7E00; }
+#LobbyGameLog .rune { color: #118D92; }
+
+.LobbyGameLogWrapper { width:49%; float:left; } 
+.LobbyGameLogInner { height:300px; overflow:scroll; padding:4px; } 

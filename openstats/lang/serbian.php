@@ -490,4 +490,7 @@ $lang["displlay_stats_for"]  = "Prikaz statistike za";
 $lang["select_country"]      = "Izaberi zemlju";
 
 $lang["most_recent_stats"]  = "Prikaži najnoviju statistiku";
+
+$lang["game_log_lobby"]  = "Izveštaj";
+$lang["game_log_game"]   = "Izveštaj iz igre";
 ?>

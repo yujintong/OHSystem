@@ -211,3 +211,15 @@ include("inc/show_gamelog2.php");
    </div>
   </div>
 </div>
+
+<div class="s-c-x">
+  <div class="wrapper">   
+    <div id="main-column">
+     <div class="padding">
+      <div class="inner" style="height:390px;">
+<?php include("inc/show_gamelog3.php"); ?>
+      </div>
+    </div>
+   </div>
+  </div>
+</div>
