@@ -6264,16 +6264,20 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 string VSiD = "0";
                 CGamePlayer *Player = GetPlayerFromName( Player1, true );
                 CGamePlayer *VPlayer = GetPlayerFromName( Player2, true );
-                if( Player )
-                        PSiD = UTIL_ToString( GetSIDFromPID( Player->GetPID( ) ) );
-                if( VPlayer )
-                        VSiD = UTIL_ToString( GetSIDFromPID( VPlayer->GetPID( ) ) );
- 
-                if( PSiD > 5 )
-                    PSiD++;
-                if( VSiD > 5 )
-                    VSiD++;
+                if( Player ) {
+                    int pid = GetSIDFromPID( Player->GetPID( ) );
+                    if( pid > 5 )
+                        pid++;
+                    PSiD = UTIL_ToString( pid );
+                }
                 
+                if( VPlayer ) {
+                    int pid = GetSIDFromPID( VPlayer->GetPID( ) );
+                    if( pid > 5 )
+                        pid++;
+                    VSiD = UTIL_ToString( pid );
+                }
+ 
                 if( type == 12 )
                         StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 13 )
