@@ -257,4 +257,19 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
+	
+	 
+	 //Lobby/game log
+	 $sth2 = $db->prepare("SELECT * FROM oh_lobby_game_logs WHERE gameid = '".(int)$gameid ."' ");
+	 $result = $sth2->execute();
+	 $GameLogData = array();
+	 $i = 0;
+	 while ($row2 = $sth2->fetch(PDO::FETCH_ASSOC)) {
+	   $GameLogData[$i]["gameid"]  = ($row2["gameid"]);
+	   $GameLogData[$i]["botid"]  = ($row2["botid"]);
+	   $GameLogData[$i]["gametype"]  = ($row2["gametype"]);
+	   $GameLogData[$i]["lobbylog"]  = ($row2["lobbylog"]);
+	   $GameLogData[$i]["gamelog"]  = ($row2["gamelog"]);
+	   $i++;
+	 } 
 ?>
