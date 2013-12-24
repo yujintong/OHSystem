@@ -1309,7 +1309,6 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
 	</select>
 	<input class="menuButtons" type="submit" value="<?=$lang["submit"]?>" />
 	 <?=OS_ComparePlayers( 'link' )?>
-	 <?=LettersLink("top", "L")?>
   </form>
   <?php
 }
@@ -1318,8 +1317,19 @@ function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQ
    	$countAlph = strlen($letters);
 	$return = "";
 	?>
-	<form action="" method="get">
 	<input type="hidden" name="<?=$page?>" />
+	<?php if (isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) { ?>
+	<input type="hidden" name="country" value="<?=substr($_GET["country"],0,2)?>" />
+	<?php } ?>
+	
+	<?php if (isset($_GET["m"]) AND is_numeric($_GET["m"]) ) { ?>
+	<input type="hidden" name="m" value="<?=(int)$_GET["m"]?>" />
+	<?php } ?>
+	
+	<?php if (isset($_GET["y"]) AND is_numeric($_GET["y"]) ) { ?>
+	<input type="hidden" name="y" value="<?=(int)$_GET["y"]?>" />
+	<?php } ?>
+	
 	<select name="<?=$qry?>">
 	<?php
 	for ($i = 0; $i <= ($countAlph-1); $i++) {
@@ -1339,7 +1349,6 @@ function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQ
 	?>
 	</select>
 	<input type="submit" value="Display" class="menuButtons" />
-	</form>
 	<?php
 }
 
@@ -2079,8 +2088,6 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    
    if ( $FullForm == 1 ) {
    ?>
-   <form action="" method="get" >
-   
    <input type="hidden" <?php if ( !empty($Value) ) echo 'value="'.$Value.'"'; ?> name="<?=$Page?>" />
    <?php
    }
@@ -2097,7 +2104,7 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    if ( $FullForm == 1 ) {
    ?>
    <input type="submit" value="Display" class="menuButtons" />
-   </form><?php
+   <?php
    }
    
 }

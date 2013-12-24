@@ -8,7 +8,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
      <div class="padding">
       <div class="inner">
 	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm( $TopPageStartYear )?></h2>
-	 
+	  
+	 <form action="" method="get">
      <table>
 	   <tr>
 	    <td><?=OS_SortTopPlayers()?></td>
@@ -17,6 +18,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	    <td><?=OS_DisplayCountries('country', 1, 'top' )?></td>
 	   </tr>
 	 </table>
+	 </form>
 	 
     <table>
      <tr> 

@@ -27,16 +27,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 if ( $_GET["sort"] == "streak") $orderby = "(`maxstreak`) DESC";
    }
    
-   if ( isset($_GET["L"]) AND strlen($_GET["L"]) == 1 ) {
-     $sql = " AND player LIKE ('".strtolower($_GET["L"])."%') ";
-   } else $sql = "";
-   
-   
-  if ( isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) {
-    $country = strip_tags(substr($_GET["country"],0,2));
-    $sql = " AND country_code = '".$country."' ";
- }  
- 
+
   $currentYear  = date("Y", time() );
   $currentMonth = date("m", time() );
   
@@ -46,8 +37,26 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
     $sqlCurrentDate = " AND `year` = '".(int)$_GET["y"]."' ";
     $sqlCurrentDate.= " AND `month` = '".(int)$_GET["m"]."' ";
+	
+	$HomeTitle.=" | ".(int)$_GET["m"]."/".(int)$_GET["y"];
   }
   
+   $sql = "";
+	  
+   if ( isset($_GET["L"]) AND strlen($_GET["L"]) == 1 ) {
+     $sql = " AND player LIKE ('".strtolower($_GET["L"])."%') ";
+	 
+	 $HomeTitle.=" | ".strip_tags($_GET["L"])."";
+   }
+   
+   
+  if ( isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) {
+    $country = strip_tags(substr($_GET["country"],0,2));
+    $sql.= " AND country_code = '".$country."' ";
+	
+	$HomeTitle.=" | $country";
+ }  
+ 
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
   WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
   $result = $sth->execute();
