@@ -6231,12 +6231,13 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
         {
                 string PSiD = "0";
                 CGamePlayer *Player = GetPlayerFromName( Player1, true );
-                if( Player )
-                        PSiD = UTIL_ToString( GetSIDFromPID( Player->GetPID( ) ) );
+                if( Player ) {
+                    int pid = GetSIDFromPID( Player->GetPID( ) );
+                    if( pid > 5 )
+                        pid++;
+                    PSiD = UTIL_ToString(  );
+                }
  
-                if( PSiD > 5 )
-                    PSiD++;
-                
                 if( type == 1 )
                          StorePacket = "<div class=\"gamechat\"><span class=\"bot\">Bot</span> "+message+"</div>";
                 else if( type == 2 )
