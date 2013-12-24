@@ -6196,7 +6196,7 @@ bool CBaseGame :: HasDeniedWordPharse( string username ) {
     bool kick = false;
     for( vector<string> :: iterator i = m_GHost->m_DeniedNamePartials.begin( ); i != m_GHost->m_DeniedNamePartials.end( ); i++ ) {
         string pharse = *i;
-        if( !username.find_first_not_of( pharse ) == string :: npos )
+        if( !username.find( pharse ) != string :: npos )
             continue;
         else {
             kick = true;
