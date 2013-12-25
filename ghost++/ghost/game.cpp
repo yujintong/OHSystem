@@ -4193,7 +4193,7 @@ bool CGame :: IsGameDataSaved( )
 void CGame :: SaveGameData( )
 {
         CONSOLE_Print( "[GAME: " + m_GameName + "] saving game data to database" );
-        if( m_LoosingTeam && m_EndGame )
+        if( m_LoosingTeam != 0 )
             m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
         m_CallableGameAdd = m_GHost->m_DB->ThreadedGameAdd( m_GHost->m_BNETs.size( ) == 1 ? m_GHost->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog,m_DatabaseID );
         m_GHost->m_FinishedGames++;
