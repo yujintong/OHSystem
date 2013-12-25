@@ -199,6 +199,7 @@ public:
         vector<string> m_Rules;
         vector<string> m_Ranks;
         bool m_Announce;
+        bool m_AnnounceHidden;
         bool m_FountainFarmWarning;
         string m_FountainFarmMessage;
         bool m_AutoDenyUsers;

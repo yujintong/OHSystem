@@ -1522,6 +1522,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
         m_AccountProtection = CFG->GetInt("oh_general_accountprotection", 1 ) == 0 ? false : true;
         m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
+        m_AnnounceHidden = CFG->GetInt("oh_hiddenAnnounce", 0 ) == 0 ? false : true;
         m_FountainFarmWarning = CFG->GetInt("oh_fountainfarm_warning", 0 ) == 0 ? false : true;
         m_FountainFarmMessage = CFG->GetString("oh_fountainfarm_message", "Remind: Any kind or at least an attempt of fountainfarm is banable." );
         m_AutoDenyUsers = CFG->GetInt("oh_general_autodeny", 0) == 0 ? false : true;

@@ -6418,6 +6418,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
  
 void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
 {
+    if( m_GHosr->m_AnnounceHidden ) {
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         {
                
@@ -6434,7 +6435,8 @@ void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
                 if( Level <= 1 )
                         SendChat( (*i)->GetPID( ), "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
         }
-//      SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+    } else
+      SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
 }
  
 string CBaseGame :: GetColoredName( string defaultname )
