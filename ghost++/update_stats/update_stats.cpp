@@ -627,8 +627,9 @@ int main( int argc, char **argv )
                             currentRole = 4;
                         } else if( deaths / games > 8 ) {
                             currentRole = 5;
-                        } else if( kills / deaths < 1 ) {
-                            currentRole = 6;
+                        } else if( deaths != 0 ) {
+                            if( kills / deaths < 1  )
+                                    currentRole = 6;
                         }
                         
                         ingame_role[num_players] = currentRole;
