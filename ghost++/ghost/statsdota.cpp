@@ -706,7 +706,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                                         }
                                                         else if(KeyString.size( ) >= 11 && KeyString.substr( 0, 11 ) == "GameStarted")
                                                         {
-                                                                m_Game->GAME_Print( 11, MinString, SecString, "System", "", "Game started, Creeps spwaned" );
+                                                                m_Game->GAME_Print( 1, MinString, SecString, "System", "", "Game started, Creeps spwaned" );
 								//CONSOLE_Print( "Game Started, creeps spawned" );
                                                                 m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "creep_spawn" + "\t" + "" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "" + "\n";
 							}
@@ -714,7 +714,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 							{
 								string ModeString = KeyString.substr( 4 );
 								//CONSOLE_Print( "Mode Set: " + ModeString );
-                                                                m_Game->GAME_Print( 11, MinString, SecString, "System", "", ModeString );
+                                                                m_Game->GAME_Print( 1, MinString, SecString, "System", "", ModeString );
 								m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "mode" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + ModeString + "\n";
 							}
 						}
