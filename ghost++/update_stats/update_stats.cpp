@@ -616,7 +616,8 @@ int main( int argc, char **argv )
                         uint32_t neutrals = UTIL_ToUInt32(Row[29])+n[num_players];
                         uint32_t games = UTIL_ToUInt32(Row[30]);
                         uint32_t observedGames = 0;
-                        
+                        if(Row[30].empty())
+                            games = 1;
                         if( kills / games > 15 ) {
                             currentRole = 1; 
                         } else if( neutrals / games > 50 ) {
