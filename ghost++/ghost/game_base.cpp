@@ -1778,7 +1778,8 @@ void CBaseGame :: SendAllChat( unsigned char fromPID, string message )
                 if( m_GameLoading || m_GameLoaded )
                 {
                         m_LogData = m_LogData + "3" + "\t" +  "bgm" + "\t" +  "Bot" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + message + "\n";
-                        if(! message.find("left the game")==string::npos ||! message.find("dropped")==string::npos||! message.find("disconnected")==string::npos||! message.find("has lost")==string::npos )
+                        //sort out these message because the left process already display a message which is relating to the player (with player color)
+                        if(! message.find("left the game")!=string::npos ||! message.find("dropped")!=string::npos||! message.find("disconnected")!=string::npos||! message.find("has lost")!=string::npos )
                                 GAME_Print( 1, MinString, SecString, "Bot", "", message );
                 }
                 else
@@ -3931,7 +3932,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
                                         // Hide password protection
                                         string LMessage = chatPlayer->GetMessage( );
-                                        if( LMessage.substr( 1, 2 ) != "pw" || LMessage.substr( 1, 4 ) != "pass" || LMessage.substr( 1, 8 ) != "password" || LMessage.substr( 1, 2 ) != "ac" )
+                                        if( ( LMessage.substr( 0, 2 ) != "!p" && LMessage.substr( 1, 4) != "ping" ) || LMessage.substr( 0, 3 ) != "!ac" )
                                         {
                                                 m_LogData = m_LogData + "1" + "\t" + "l" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + chatPlayer->GetMessage() + "\n";
                                                 GAME_Print( 9, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
