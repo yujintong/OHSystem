@@ -381,7 +381,7 @@ bool CGamePlayer :: Update( void *fd )
 	{
 		uint32_t downloadingTime = GetTicks( ) - m_StartedDownloadingTicks;
 
-		if( downloadingTime > 5000 )
+		if( downloadingTime > 5000 && m_Level < 1)
 		{
 			if( GetLastMapPartAcked( ) / downloadingTime < 500 && m_Game->GetSlotsOccupied( ) <= 1 )
 			{
@@ -580,7 +580,7 @@ void CGamePlayer :: ProcessPackets( )
 					// determine if we should auto-mute this player
 					if( ChatPlayer->GetType( ) == CIncomingChatPlayer :: CTH_MESSAGE || ChatPlayer->GetType( ) == CIncomingChatPlayer :: CTH_MESSAGEEXTRA )
 					{
-						if( m_Level <= 1 )
+						if( m_Level <= 1 &&! GetMuted( ) )
 						{
 							m_MuteMessages.push_back( GetTicks( ) );
 
