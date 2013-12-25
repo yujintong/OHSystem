@@ -6234,8 +6234,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 CGamePlayer *Player = GetPlayerFromName( Player1, true );
                 if( Player ) {
                     int pid = GetSIDFromPID( Player->GetPID( ) );
-                    if( pid > 5 )
-                        pid++;
+                    pid++;
                     PSiD = UTIL_ToString( pid );
                 }
  
@@ -6268,15 +6267,13 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 CGamePlayer *VPlayer = GetPlayerFromName( Player2, true );
                 if( Player ) {
                     int pid = GetSIDFromPID( Player->GetPID( ) );
-                    if( pid > 5 )
-                        pid++;
+                    pid++;
                     PSiD = UTIL_ToString( pid );
                 }
                 
                 if( VPlayer ) {
                     int pid = GetSIDFromPID( VPlayer->GetPID( ) );
-                    if( pid > 5 )
-                        pid++;
+                    pid++;
                     VSiD = UTIL_ToString( pid );
                 }
  
