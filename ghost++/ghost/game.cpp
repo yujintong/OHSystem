@@ -788,9 +788,27 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                 SendAllChat( "The [" + ForfeitTeamString + "] players have been removed from the game." );
                 SendAllChat( "Please wait five seconds before leaving so that stats can be properly saved." );
- 
                 m_ForfeitTime = 0;
                 m_GameOverTime = GetTime( );
+        }
+
+        // end countdown, default value 120 seconds (autoend function)
+        // the idea is to give the loosing side the option to break the autoend cooldown that they can continue playing
+        // the cooldown can be only breaked by 100% of the loosing side votes
+        if( m_EndGame && GetTicks( ) - m_EndTicks >= 30000 && m_EndTicks != 0 )
+        {
+            if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime ) * 1000 ) - 10000 ) )
+            {
+                SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
+                string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Scourge" : "Sentinel";
+                SendAllChat("[Info] The winner has been set to the ["+WinnerTeam+"]");
+                m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+                m_GameOverTime = GetTime();
+            } else 
+                SendAllChat("[INFO] The game will end in ["+UTIL_ToString( ( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 ) +1 )+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more votes needed to interrupt the autoend." );
+
+            m_EndTicks = GetTicks( );
+
         }
  
         return CBaseGame :: Update( fd, send_fd );
@@ -843,7 +861,21 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         //on 5v3 games nothing triggers but on 4v3, when it is triggering with spread of 2. The enemycount need to be set to 1 to fix this
                         // the count-process is done on the next vector-check
                         uint32_t CountEnemy = 1;
- 
+                        
+                        // in case a new player is leaving
+                        if( m_EndGame ) {
+                            m_EndGame = false;
+                            m_EndTicks = 0;
+                            m_StartEndTicks = 0;
+                            m_BreakAutoEndVotes = 0;
+                            m_BreakAutoEndVotesNeeded = 0;
+                            m_LoosingTeam = 0;
+                            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                            {
+                                (*i)->SetVotedForInterruption( false );
+                            }
+                        }
+                        
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++)
                         {
                                 if( *i && !(*i)->GetLeftMessageSent( ) )
@@ -4193,8 +4225,6 @@ bool CGame :: IsGameDataSaved( )
 void CGame :: SaveGameData( )
 {
         CONSOLE_Print( "[GAME: " + m_GameName + "] saving game data to database" );
-        if( m_LoosingTeam != 0 )
-            m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
         m_CallableGameAdd = m_GHost->m_DB->ThreadedGameAdd( m_GHost->m_BNETs.size( ) == 1 ? m_GHost->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog,m_DatabaseID );
         m_GHost->m_FinishedGames++;
         m_GHost->m_CheckForFinishedGames = GetTime();

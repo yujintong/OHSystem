@@ -1581,24 +1581,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
         }
 
-        // end countdown, default value 120 seconds (autoend function)
-        // the idea is to give the loosing side the option to break the autoend cooldown that they can continue playing
-        // the cooldown can be only breaked by 100% of the loosing side votes
-        if( m_EndGame && GetTicks( ) - m_EndTicks >= 30000 && m_EndTicks != 0 )
-        {
-            if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime ) * 1000 ) - 10000 ) )
-            {
-                SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
-                string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Scourge" : "Sentinel";
-                SendAllChat("[Info] The winner has been set to the ["+WinnerTeam+"]");
-                m_GameOverTime = GetTime();
-            } else 
-                SendAllChat("[INFO] The game will end in ["+UTIL_ToString( ( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 ) +1 )+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more votes needed to interrupt the autoend." );
-
-            m_EndTicks = GetTicks( );
-
-        }
-        
         if( GetTime( ) - m_LastLogDataUpdate >= 10 && m_GHost->m_LiveGames )
         {
  
@@ -3932,7 +3914,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
                                         // Hide password protection
                                         string LMessage = chatPlayer->GetMessage( );
-                                        if( ( LMessage.substr( 0, 2 ) != "!p" && LMessage.substr( 1, 4) != "ping" ) || LMessage.substr( 0, 3 ) != "!ac" )
+                                        if( (! LMessage.substr( 0, 2 ) != "!p" &&! LMessage.substr( 1, 4) != "ping" ) ||! LMessage.substr( 0, 3 ) != "!ac" )
                                         {
                                                 m_LogData = m_LogData + "1" + "\t" + "l" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + chatPlayer->GetMessage() + "\n";
                                                 GAME_Print( 9, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
