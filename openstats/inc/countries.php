@@ -35,6 +35,7 @@ $Countries["IE"] = "Ireland";
 $Countries["IL"] = "Israel";
 $Countries["IT"] = "Italy";
 $Countries["JP"] = "Japan";
+$Countries["JE"] = "Jersey";
 $Countries["KR"] = "Korea, Republic of";
 $Countries["LV"] = "Latvia";
 $Countries["LT"] = "Lithuania";
