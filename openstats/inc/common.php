@@ -2,6 +2,10 @@
 /*********************************************
 <!-- 
 *   	DOTA OPENSTATS
+*   <?php
+/*********************************************
+<!-- 
+*   	DOTA OPENSTATS
 *   
 *	Developers: Ivan.
 *	Contact: ivan.anta@gmail.com - Ivan
@@ -1313,45 +1317,6 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
   <?php
 }
 
-function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" ) {
-   	$countAlph = strlen($letters);
-	$return = "";
-	?>
-	<input type="hidden" name="<?=$page?>" />
-	<?php if (isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) { ?>
-	<input type="hidden" name="country" value="<?=substr($_GET["country"],0,2)?>" />
-	<?php } ?>
-	
-	<?php if (isset($_GET["m"]) AND is_numeric($_GET["m"]) ) { ?>
-	<input type="hidden" name="m" value="<?=(int)$_GET["m"]?>" />
-	<?php } ?>
-	
-	<?php if (isset($_GET["y"]) AND is_numeric($_GET["y"]) ) { ?>
-	<input type="hidden" name="y" value="<?=(int)$_GET["y"]?>" />
-	<?php } ?>
-	
-	<select name="<?=$qry?>">
-	<?php
-	for ($i = 0; $i <= ($countAlph-1); $i++) {
-	$abc = substr($letters,$i,1);
-	$return.="$abc";
-	//if ( !empty($abc) ) {
-	   
-	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
-	  $s = ''; else $s='selected="selected"';
-	  
-	  if ( isset($_GET[$qry]) AND $_GET[$qry] == '0' AND $abc == '0' ) $s='selected="selected"';
-	   ?>
-	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
-	   <?php
-	//   }
-	}
-	?>
-	</select>
-	<input type="submit" value="Display" class="menuButtons" />
-	<?php
-}
-
 function OS_TopUser($id, $player) {
 ?><a href="<?=OS_HOME?>?u=<?=$id?>"><?=$player?></a><?php
 }
@@ -1570,7 +1535,7 @@ function OS_protected_icon( $protected = 0, $bnet = 0, $text = "Protected Accoun
   <?php
   }
 
-  if ( strlen($protected)>=1 ) {
+  if ( strlen($protected)>=1 AND $bnet>=1) {
   ?>
   <img <?php if ($tooltip==1) { ShowToolTip($text, OS_HOME.'img/protected.png', 170, 32, 32); } ?> src="<?=OS_HOME?>img/protected.png" class="<?=$class?>" width="<?=$w?>" height="<?=$h?>" alt="protected" />
   <?php
@@ -2109,6 +2074,46 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    
 }
 
+function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" ) {
+   	$countAlph = strlen($letters);
+	$return = "";
+	?>
+	<input type="hidden" name="<?=$page?>" />
+	<?php if (isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) { ?>
+	<input type="hidden" name="country" value="<?=substr($_GET["country"],0,2)?>" />
+	<?php } ?>
+	
+	<?php if (isset($_GET["m"]) AND is_numeric($_GET["m"]) AND isset($mmm) ) { ?>
+	<input type="hidden" name="m" value="<?=(int)$_GET["m"]?>" />
+	<?php } ?>
+	
+	<?php if (isset($_GET["y"]) AND is_numeric($_GET["y"]) AND isset($mmm) ) { ?>
+	<input type="hidden" name="y" value="<?=(int)$_GET["y"]?>" />
+	<?php } ?>
+	
+	<select name="<?=$qry?>">
+	 <option value=""> &nbsp; </option>
+	<?php
+	for ($i = 0; $i <= ($countAlph-1); $i++) {
+	$abc = substr($letters,$i,1);
+	$return.="$abc";
+	//if ( !empty($abc) ) {
+	   
+	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
+	  $s = ''; else $s='selected="selected"';
+	  
+	  if ( isset($_GET[$qry]) AND $_GET[$qry] == '0' AND $abc == '0' ) $s='selected="selected"';
+	   ?>
+	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
+	   <?php
+	//   }
+	}
+	?>
+	</select>
+	<input type="submit" value="Display" class="menuButtons" />
+	<?php
+}
+
 function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
 
  if ( !isset($_GET["m"]) ) $m = date("m"); else $m = (int)$_GET["m"];
@@ -2116,7 +2121,6 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
  
  $endYear = date("Y");
  ?>
- <form action="" method="get" style="display:inline">
  <input type="hidden" name="<?=$page?>" />
  <select name="m">
     <?php for($i=1; $i<=12; $i++) { 
@@ -2135,7 +2139,6 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
 	<?php } ?>
  </select>
  <input type="submit" value="Display" class="menuButtons" />
- </form>
  <?php
 }
 ?>
