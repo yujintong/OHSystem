@@ -782,6 +782,9 @@ iframe.avatar-hovercard-iframe{  border:0 none;  padding:0;  width:25em;  height
 #comment-editor{  margin: 5px 5px 5px 40px;  }
 .CommentWrapper img { vertical-align: middle; }
 
+.staff { background: none repeat scroll 0 0 #DAF3FF !important; }
+.staff_header {background: none repeat scroll 0 0 #A3D6D8 !important; }
+
 .padTop {padding-top:12px;}
 .padBottom {padding-bottom:12px;}
 .padLeft{padding-left:12px;}

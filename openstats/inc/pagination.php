@@ -1,9 +1,6 @@
 <?php
 /* 
 Ivan Antonijević (ivan.anta [at] gmail.com), 2012
-*/<?php
-/* 
-Ivan Antonijević (ivan.anta [at] gmail.com), 2012
 */
 if (strstr($_SERVER['REQUEST_URI'],basename(__FILE__))){header('HTTP/1.1 404 Not Found');die;}
 
