@@ -417,10 +417,10 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
 		$from = $_SESSION["email"]; $fromName = $_SESSION["username"];
 		}
 		
-	      $message = "You have just received a message from ".$_SESSION["username"]."<br />Message: <br />";
-		  $message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />";
+	      $message = "You have just received a message from ".$_SESSION["username"]."<br />";
+		  //$message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />";
 		  $message.= ($text);
-		  $message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />".OS_HOME."";
+		  $message.= "<br />___________________<br />".OS_HOME."";
 	      $mail  = new PHPMailer();
 	      $mail->CharSet = 'UTF-8';
 	      $mail->SetFrom($from, $fromName);
@@ -438,7 +438,7 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
     ?>
 	<div class="padBottom padTop" align="left" style="margin-left: 64px; border: 4px solid #ccc; padding: 10px;">
 	 <h2>Send Email</h2> <?=$errors?>
-	  <?php if (isset($MailSend) ) { ?><h2>Message was successfully sent</h2><?php } ?>
+	  <?php if (isset($MailSend) ) { ?><h2>Message was successfully sent</h2><?php } else { ?>
 	  <form action="" method="post">
 	  <div>Send to: <input size="35" type="text" name="name" disabled value="<?=$row["user_name"]?>" /> <?=$email?></div>
 	  <div>From: 
@@ -462,6 +462,7 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
 	  <a href="<?=OS_HOME?>adm/?users">&laquo; cancel</a>
 	  </div>
 	  </form>
+	  <?php } ?>
 	</div>
 	<?php
    } else echo "<h2>Wrong username</h2>";
