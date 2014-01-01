@@ -29,7 +29,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    
 
   $currentYear  = date("Y", time() );
-  $currentMonth = date("m", time() );
+  $currentMonth = date("n", time() );
   
   $sqlCurrentDate = " AND `month` = '".$currentMonth."' AND `year` = '".$currentYear."'";
   
