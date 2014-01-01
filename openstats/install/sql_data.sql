@@ -21,6 +21,13 @@ CREATE TABLE IF NOT EXISTS `oh_adminlog` (
   KEY `gameid` (`gameid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `oh_aliases`;
+CREATE TABLE IF NOT EXISTS `oh_aliases` (
+  `alias_id` int(11) NOT NULL,
+  `alias_name` varchar(255) CHARACTER SET utf8 NOT NULL,
+  PRIMARY KEY (`alias_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `oh_bans`;
 CREATE TABLE IF NOT EXISTS `oh_bans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -180,6 +187,18 @@ CREATE TABLE IF NOT EXISTS `oh_downloads` (
   `downloadtime` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `oh_goals` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `goal` tinyint(4) NOT NULL,
+  `min_games` smallint(6) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
+  `reward` smallint(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `start` (`start_date`),
+  KEY `end` (`end_date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_gamelist`;
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (

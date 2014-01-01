@@ -260,7 +260,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	 
 	 //Lobby/game log
-	 $sth2 = $db->prepare("SELECT * FROM oh_lobby_game_logs WHERE gameid = '".(int)$gameid ."' ");
+	 $sth2 = $db->prepare("SELECT * FROM ".OSDB_LG_LOGS." WHERE gameid = '".(int)$gameid ."' ");
 	 $result = $sth2->execute();
 	 $GameLogData = array();
 	 $i = 0;

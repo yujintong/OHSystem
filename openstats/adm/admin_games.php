@@ -17,6 +17,12 @@ if ( isset($_GET["del"]) AND is_numeric($_GET["del"]) AND OS_IsRoot() ) {
    $result = $del3->execute();
    $del4 = $db->prepare("DELETE FROM ".OSDB_GAMES." WHERE id = '".$id."' ");  //games
    $result = $del4->execute();
+   $del5 = $db->prepare("DELETE FROM ".OSDB_LG_LOGS." WHERE gameid = '".$id."' ");  //lobby & game logs
+   $result = $del5->execute();
+   $del6 = $db->prepare("DELETE FROM ".OSDB_GAMELOG." WHERE gameid = '".$id."' ");  //game logs
+   $result = $del6->execute();
+   $del7 = $db->prepare("DELETE FROM ".OSDB_GAME_INFO." WHERE gameid = '".$id."' ");  //game info
+   $result = $del7->execute();
    $deleted = 1;
    if ($deleted ) { ?>
    <div align="center">

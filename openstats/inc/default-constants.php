@@ -85,6 +85,12 @@ define('OSDB_SCORES',      'oh_scores');
 define('OSDB_W3PL',        'oh_w3mmdplayers'); //do not change
 define('OSDB_W3VARS',      'oh_w3mmdvars'); //do not change
 
+//new
+define('OSDB_ALIASES',    'oh_aliases');
+define('OSDB_GOALS',      'oh_goals');
+define('OSDB_GOALS_LOG',  'oh_goals_log');
+define('OSDB_LG_LOGS',    'oh_lobby_game_logs');
+
 
 //DATABASE
 define('OSDB_SERVER',      $server); 
