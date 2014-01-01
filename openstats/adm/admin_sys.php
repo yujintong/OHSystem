@@ -47,7 +47,8 @@ if ( isset($_GET["optimize_tables"]) ) {
   `".OSDB_GAMES."`,     `".OSDB_HEROES."`,        `".OSDB_ITEMS."`,    `".OSDB_NEWS."`, 
   `".OSDB_NOTES."`,     `".OSDB_STATS."`,         `".OSDB_USERS."`,    `".OSDB_CUSTOM_FIELDS."`,
   `".OSDB_GUIDES."`,    `".OSDB_GAMELOG."`,       `".OSDB_COMMANDS."`. `".OSDB_GAMESTATUS."`,
-  `".OSDB_GAME_INFO."`, `".OSDB_BNET_PM."`,       `".OSDB_ADMIN_LOG."`, `".OSDB_GO."` ");
+  `".OSDB_GAME_INFO."`, `".OSDB_BNET_PM."`,       `".OSDB_ADMIN_LOG."`, `".OSDB_GO."`,
+  `".OSDB_ALIASES."`,   `".OSDB_GOALS."`,         `".OSDB_LG_LOGS."`                  ");
    $result = $opt->execute();
    $ok = 1;
   if ($ok ) $OptimizedTables = 1;
@@ -135,14 +136,14 @@ if ( !isset( $_SESSION["v_check"]) ) {
    
    $_SESSION["v_check"] = OS_VERSION;
    
-    $v = OS_Curl('http://openstats.iz.rs/version_check.php?check='.OS_VERSION);
-	$os_check = OS_Curl('http://openstats.iz.rs/version.php');
+    $v = OS_Curl('http://ohsystem.net/stats/version_check.php?check='.OS_VERSION);
+	$os_check = OS_Curl('http://ohsystem.net/stats/version.php');
 	
 	if ( $os_check != OS_VERSION AND !empty($os_check) ) {
 	   $IntroMessage = '<b>An updated version of Dota OpenStats is available.</b><br />';
 	   $IntroMessage.= 'You can update to OpenStats <b>'.$os_check."</b><br />";
 	   $IntroMessage.= 'Download the package and install it: <br />';
-	   $IntroMessage.= '<a target="_blank" class="menuButtons" href="https://sourceforge.net/projects/dotaopenstats/files/OpenStats%204.x/">Download '.$os_check.'</a> <br />';
+	   $IntroMessage.= '<a target="_blank" class="menuButtons" href="https://github.com/OHSystem/ohsystem/">Download '.$os_check.'</a> <br />';
 	   $_SESSION["intro_message"] = $IntroMessage;
 	}
 	
