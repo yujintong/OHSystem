@@ -2866,8 +2866,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 m_Stats->SetWinner(UTIL_ToUInt32(Payload));
                                 SendAllChat("Root Admin ["+player->GetName()+"] set the Winner to ["+(Payload=="1"?"Sentinel":"Scourge")+"]. The game will end now.");
                                 m_GameOverTime = GetTime();
+                                m_EndGame = false;
                             } else {
-                                SendChat(player, "UNrecognized team was set to win, use 1:Sentinel, 2:Scourge.");
+                                SendChat(player, "Unrecognized team was set to win, use 1:Sentinel, 2:Scourge.");
                             }
                         }
                 }
