@@ -2065,7 +2065,7 @@ void CGHost :: ReadRoomData()
 	in.close( );
 }
 
-void CGHost :: GetAliasName( uint32_t alias ) {
+string CGHost :: GetAliasName( uint32_t alias ) {
     if( m_Aliases.size( ) >= alias-1 ) {
         return m_Aliases[alias-1];
     }

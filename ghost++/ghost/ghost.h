@@ -269,7 +269,7 @@ public:
         void LoadInsult( );
         virtual string GetTimeFunction( uint32_t type );
         void ReadRoomData();
-        void GetAliasName( uint32_t alias );
+        string GetAliasName( uint32_t alias );
         string GetRoomName(string RoomID);
 };
 
