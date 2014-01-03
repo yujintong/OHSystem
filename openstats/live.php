@@ -72,7 +72,7 @@
 <span id="gamerefresher" class="h32"><img src="<?=OS_HOME?>/img/blank.gif" width="16" height="16" class="imgvalign" /></span>
 <?php	
   foreach($IDS as $cID) {
-  if ( $cID["chatid"] == $selectedGameID) $dis = 'style="color:#FFE0B8 !important; font-weight:bold;"'; else $dis = '';
+  if ( $cID["chatid"] == $selectedGameID) $dis = 'style="color:#975D11 !important; font-weight:bold;"'; else $dis = '';
   ?>
 <input <?=$dis?> id="b<?=$cID["chatid"]?>" type="button" class="menuButtons<?=$cID["button"]?>" onclick="clearLiveGamesTimer('<?=$cID["botid"]?>', '<?=$cID["chatid"]?>', '<?=$cID["gn"]?>');" value="<?=$cID["status"]?>#<?=$cID["chatid"]?>" />
   <?php
@@ -221,6 +221,7 @@
 	     if ( !empty($row["player"]) ) { 
 		 $ListPlayersData[$c]["player"] = $row["player"]; 
 		 $ListPlayersData[$c]["ip"] = $row["ip"]; 
+		 $ListPlayersData[$c]["realm"] = $row["realm"]; 
 		 $ListPlayersData[$c]["letter"]   = geoip_country_code_by_addr($GeoIPDatabase, $row["ip"]);
 		 $ListPlayersData[$c]["country"]  = geoip_country_name_by_addr($GeoIPDatabase, $row["ip"]);
 		 if ($GeoIP == 1 AND empty($ListPlayersData[$c]["letter"]) ) {
@@ -365,6 +366,7 @@
 	    <?=OS_IsUserGameAdmin( $PlayerData["level"] )?>
 		</a>
 	 <?php } ?>
+	  <?php if (!empty($PlayerData["realm"])) { ?><div style="font-size:11px;"><?=$PlayerData["realm"]?></div><?php  } ?>
 	  </td>
 	  <td width="219"><span class="won"><?php if ($PlayerData["hide"] == 0) { ?><?=($PlayerData["wins"])?></span> / <span class="lost"><?=($PlayerData["losses"])?></span> <?=$Notice?> <?php } else echo "hidden"; ?>
 	  <?php if (OS_is_admin()) { ?><span style="font-size:10px; float:right;"><?php if ($PlayerData["points"]>=1) { echo number_format($PlayerData["points"],0); ?>pts<?php } ?></span><?php } ?>
@@ -432,6 +434,9 @@
      $com = safeEscape( trim($_POST["command"]) );
 	 $user = strip_tags(trim($_POST["user"]));
 	 $botID = (int) $_POST["botID"];
+	 $gameID = (int) $_POST["gameID"];
+	 
+	 $type = (int) $_POST["rcon"];
 	 
 	 if ( $botID <0)  $botID = 1; 
 	 $command = "";
@@ -439,7 +444,7 @@
 	 if ( $com == "unmute" ) $command = "!rcon unmute ".$_SESSION["username"]." $user";
 	 if ( $com == "kick" )   $command = "!rcon kick ".$_SESSION["username"]." $user";
 	 if ( $com == "from" )   $command = "!rcon from";
-    
+
 	$InsertID = -1;
 	
 	if (!empty($command) ) { $db->insert( OSDB_COMMANDS, array(
@@ -466,17 +471,23 @@
 	$gameID = (int) $_POST["gameID"];
 	$botID = (int) $_POST["botID"];
 	
+	 if ( $rcon == 1 ) $command = "!rcon saylobby ".$_SESSION["username"]." $gameID $com";
+	 if ( $rcon == 2 ) $command =  "!rcon saygame ".$_SESSION["username"]." $gameID $com";
+     if ( $rcon == 3 ) $command =  "!rcon sayteam ".$_SESSION["username"]." $gameID 1 $com";
+	 if ( $rcon == 4 ) $command =  "!rcon sayteam ".$_SESSION["username"]." $gameID 2 $com";
+	 if ( $rcon == 5 ) $command =  "!rcon from";
+	
 	$InsertID = -1;
 	
 	if (!empty($com) ) { $db->insert( OSDB_COMMANDS, array(
 	"botid" => $botID,
-	"command" => $com 
+	"command" => $command 
      )); 
 	 $InsertID = $db->lastInsertId();
 	 }
 	?>
 	 <div style="background-color: #000; border: 1px solid #ccc; color: #fff; width: 900px;"> 
-	 [BOT] (<?=date(OS_DATE_FORMAT, time() )?>) <?=$com?><br />
+	 [BOT] (<?=date(OS_DATE_FORMAT, time() )?>) <?=$command?><br />
 	 [BOT] (<?=date(OS_DATE_FORMAT, time() )?>) executed command #<?=$InsertID?>, gameID: <?=$gameID?>
 	  [<a href="javascript:;" onclick="CloseRcon()">close</a>]
 	 </div>	
@@ -623,7 +634,7 @@ function HighlightKeyword($str, $search) {
     $search = EscapeStr( trim($_POST["search"]));
 
 	$sth = $db->prepare( "SELECT * FROM `".OSDB_STATS."` 
-	WHERE player LIKE ('%".$search."%') GROUP BY player ORDER BY score DESC LIMIT 50");
+	WHERE player LIKE ('%".$search."%') GROUP BY player ORDER BY id DESC, score DESC LIMIT 50");
     $result = $sth->execute();
 	?>
 	<div style="position:absolute; top: 166px; right:10px; background-color: #fff; color:#000; border:3px solid #ccc; border-radius: 2px solid #ccc; width:210px; height: 380px; overflow: scroll; padding-left: 5px; padding-top: 4px; font-size:12px; opacity:0.9; overflow-x: hidden;">
@@ -641,7 +652,7 @@ function HighlightKeyword($str, $search) {
 	<?php
   } else if ( isset( $_POST["insult"] )) {
   
-  //Nothing to do here!
+    // Nothing do to here!
   
   }
   else { die; }

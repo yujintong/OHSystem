@@ -109,7 +109,7 @@ $( document ).ready(function() {
 	$jq("#b"+PrevGameId).css("font-weight","");
 	
 	//$jq("#b"+chatID).css("color","FFE0B8 !important");
-	$jq('#b'+chatID).attr('style', 'color:#FFE0B8 !important');
+	$jq('#b'+chatID).attr('style', 'color:#8D1D1D !important');
 	$jq("#b"+chatID).css("font-weight","bold");
 	}
 	
@@ -203,7 +203,10 @@ $( document ).ready(function() {
     var botID  = document.getElementById("selectedBot").value;
     var gameID = document.getElementById("selectedGameID").value;
     var com   = document.getElementById("botCommand").value;
-   
+	var type   = document.getElementById("command_type").value;
+    
+	//alert(botID+":"+gameID+":"+com+":"+type);
+
 	var $js = jQuery;
    $js.ajax({
                     type: "POST",
