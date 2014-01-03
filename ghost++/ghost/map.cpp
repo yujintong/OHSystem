@@ -969,10 +969,6 @@ void CMap :: CheckValid( )
 		m_Valid = false;
 		//CONSOLE_Print( "[MAP] invalid map_slot<x> detected" );
 	}
-        
-        if( m_Alias.empty( ) ) {
-            
-        }
 }
 
 uint32_t CMap :: XORRotateLeft( unsigned char *data, uint32_t length )
