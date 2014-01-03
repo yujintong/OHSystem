@@ -6193,16 +6193,30 @@ bool CBaseGame :: is_digits( const std::string &str )
 void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString, string Player1, string Player2, string message )
 {
         string StorePacket;
+        string MinString = "";
+        string SecString = "";
+        string LTime = "";
+        string GTime = "";
+        if(! m_GameLoaded || ! m_GameLoading ) {
+            SecString = UTIL_ToString( ( m_CreationTime ) % 60 );
+            MinString = UTIL_ToString( ( m_CreationTime ) / 60 );
+            LTime = MinString + ":" + SecString;
+        } else {
+            SecString = UTIL_ToString( ( m_GameTicks / 1000 ) % 60 );
+            MinString = UTIL_ToString( ( m_GameTicks / 1000 ) / 60 );
+            GTime = MinString+":"+SecString;
+        }
+        
         if( type == 0 || type == 3 || type == 4 || type == 9 )
         {
                 if( type == 0 )
-                        StorePacket = "<div class=\"lobbychat\"><span class=\"bot\">Bot</span> "+message+"</div>";
+                        StorePacket = "<div class=\"lobbychat\"><span class=\"time\">"+LTime+"</span><span class=\"bot\">Bot</span> "+message+"</div>";
                 if( type == 3 )
-                        StorePacket = "<div class=\"lobbyleave\"><span class=\"lobbyplayer\">"+Player1+"</span> "+message+"</div>";
+                        StorePacket = "<div class=\"lobbyleave\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span> "+message+"</div>";
                 if( type == 4 )
-                        StorePacket = "<div class=\"lobbyjoin\"><span class=\"lobbyplayer\">"+Player1+"</span> joined the game from "+message+"</div>";
+                        StorePacket = "<div class=\"lobbyjoin\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span> joined the game from "+message+"</div>";
                 if( type == 9 )
-                        StorePacket = "<div class=\"lobbychat\"><span class=\"player\">"+Player1+" </span>"+message+"</div>";
+                        StorePacket = "<div class=\"lobbychat\"><span class=\"time\">"+LTime+"</span><span class=\"player\">"+Player1+" </span>"+message+"</div>";
  
                 m_LobbyLog.push_back( StorePacket );
         }
@@ -6217,21 +6231,21 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 }
  
                 if( type == 1 )
-                         StorePacket = "<div class=\"gamechat\"><span class=\"bot\">Bot</span> "+message+"</div>";
+                         StorePacket = "<div class=\"gamechat\"><span class=\"time\">"+GTime+"</span><span class=\"bot\">Bot</span> "+message+"</div>";
                 else if( type == 2 )
-                        StorePacket = "<div class=\"gameleave\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"gameleave\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 5 )
-                        StorePacket = "<div class=\"sentinelchat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"sentinelchat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 6 )
-                        StorePacket = "<div class=\"scourgechat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"scourgechat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 7 )
-                        StorePacket = "<div class=\"gamechat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"gamechat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 8 )
-                        StorePacket = "<div class=\"obschat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"obschat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 10 )
-                        StorePacket = "<div class=\"systemchat\"><span class=\"system\">System</span> "+message+"</div>";
+                        StorePacket = "<div class=\"systemchat\"><span class=\"time\">"+GTime+"</span><span class=\"system\">System</span> "+message+"</div>";
                 else if( type == 11 )
-                        StorePacket = "<div class=\"lagevent\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"ed lagging</div>";
+                        StorePacket = "<div class=\"lagevent\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"ed lagging</div>";
                 else
                         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
  
@@ -6256,27 +6270,27 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 }
  
                 if( type == 12 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 13 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> drew a first blood on <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> drew a first blood on <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 131 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a double kill.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a double kill.</div>";
                 else if( type == 132 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a tripple kill.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a tripple kill.</div>";
                 else if( type == 133 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got an ultra kill.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got an ultra kill.</div>";
                 else if( type == 134 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a rampage.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a rampage.</div>";
                 else if( type == 14 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 15 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> was killed by the creeps or suicided.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> was killed by the creeps or suicided.</div>";
                 else if( type == 16 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"sentinel\">Sentinel</span></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"sentinel\">Sentinel</span></div>";
                 else if( type == 17 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"scourge\">Scourge</span></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"scourge\">Scourge</span></div>";
                 else if( type == 18 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> assisted to kill <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> assisted to kill <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 19 )
                 {
                         string Type;
@@ -6285,7 +6299,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> level "+Level+" Tower.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> level "+Level+" Tower.</div>";
                 }
                 else if( type == 20 )
                 {
@@ -6295,7 +6309,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Tower.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Tower.</div>";
                 }
                 else if( type == 21 )
                 {
@@ -6305,7 +6319,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Tower.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Tower.</div>";
                 }
                 else if( type == 22 )
                 {
@@ -6315,7 +6329,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket ="<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> "+Level+" Rax.</div>";
+                        StorePacket ="<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> "+Level+" Rax.</div>";
                 }
                 else if( type == 23 )
                 {
@@ -6325,7 +6339,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Rax.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Rax.</div>";
                 }
                 else if( type == 24 )
                 {
@@ -6335,29 +6349,29 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Rax.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Rax.</div>";
                 }
                 else if( type == 25 )
                 {
                         if( message == "req" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> requested a swap with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> requested a swap with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                         else if( message == "succ" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> successfully swapped with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> successfully swapped with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                         else
                                 CONSOLE_Print( "Unknown Swap Packet was send: " + message );
                 }
                 else if( type == 26 )
-                        StorePacket = "<div class=\"system\"><span class=\"scourge\">Scourge's</span> Throne is now on "+message+"%.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"scourge\">Scourge's</span> Throne is now on "+message+"%.</div>";
                 else if( type == 27 )
-                        StorePacket = "<div class=\"system\"><span class=\"sentinel\">Sentinel's</span> Tree of Life is now on "+message+"%.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"sentinel\">Sentinel's</span> Tree of Life is now on "+message+"%.</div>";
                 else if( type == 28 )
-                        StorePacket = "<div class=\"system\"><span class=\""+Player1+"\">"+Player1+"</span> killed Roshan.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\""+Player1+"\">"+Player1+"</span> killed Roshan.</div>";
                 else if( type == 29 )
                 {
                         if( message == "pick" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> picked up Aegis.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> picked up Aegis.</div>";
                         else if( message == "drop" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> dropped Aegis.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> dropped Aegis.</div>";
                         else
                                 CONSOLE_Print( "Unknown Aegis Packet was send: " + message );
                 }
@@ -6378,9 +6392,9 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                                 CONSOLE_Print( "Bad Input for RuneType: "+message );
  
                         if( type == 30 )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> stored a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> stored a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
                         else if( type == 31 )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> used a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> used a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
                 }
                 else
                         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
