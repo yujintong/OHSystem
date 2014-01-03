@@ -102,6 +102,11 @@ vector<string> CGHostDB :: FlameList( )
         return vector<string>( );
 }
 
+vector<string> CGHostDB :: AliasList( )
+{
+        return vector<string>( );
+}
+
 vector<string> CGHostDB :: DeniedNamesList( )
 {
         return vector<string>( );
@@ -283,6 +288,11 @@ CCallablePList *CGHostDB :: ThreadedPList( string server )
 }
 
 CCallableFlameList *CGHostDB :: ThreadedFlameList( )
+{
+        return NULL;
+}
+
+CCallableAliasList *CGHostDB :: ThreadedAliasList( )
 {
         return NULL;
 }
@@ -498,6 +508,11 @@ CCallablePList :: ~CCallablePList( )
 }
 
 CCallableFlameList :: ~CCallableFlameList( )
+{
+
+}
+
+CCallableAliasList :: ~CCallableAliasList( )
 {
 
 }

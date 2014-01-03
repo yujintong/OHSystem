@@ -190,6 +190,7 @@ public:
 	virtual CCallablepm *Threadedpm( string user, string listener, uint32_t status, string message, string type );
         virtual CCallablePList *ThreadedPList( string server );
         virtual CCallableFlameList *ThreadedFlameList( );
+        virtual CCallableAliasList *ThreadedAliasList( );
         virtual CCallableDeniedNamesList *ThreadedDeniedNamesList( );
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
         virtual CCallableDCountryList *ThreadedDCountryList( );
@@ -240,6 +241,7 @@ uint32_t MySQLPassCheck( void *conn, string *error, uint32_t botid, string user,
 uint32_t MySQLpm( void *conn, string *error, uint32_t botid, string user, string listener, uint32_t status, string message, string type );
 vector<string> MySQLPList( void *conn, string *error, uint32_t botid, string server );
 vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid );
+vector<string> MySQLAliasList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLDeniedNamesList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLAnnounceList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLDCountryList( void *conn, string *error, uint32_t botid );
@@ -371,6 +373,17 @@ class CMySQLCallableFlameList : public CCallableFlameList, public CMySQLCallable
 public:
         CMySQLCallableFlameList( void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableFlameList( ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
         virtual ~CMySQLCallableFlameList( ) { }
+
+        virtual void operator( )( );
+        virtual void Init( ) { CMySQLCallable :: Init( ); }
+        virtual void Close( ) { CMySQLCallable :: Close( ); }
+};
+
+class CMySQLCallableAliasList : public CCallableAliasList, public CMySQLCallable
+{
+public:
+        CMySQLCallableAliasList( void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableAliasList( ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
+        virtual ~CMySQLCallableAliasList( ) { }
 
         virtual void operator( )( );
         virtual void Init( ) { CMySQLCallable :: Init( ); }

@@ -371,6 +371,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_FinishedGames = 0;
 	m_CallableGameUpdate = NULL;
 	m_CallableFlameList = NULL;
+        m_CallableAliasList = NULL;
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
@@ -459,6 +460,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastCommandListTime = GetTime( );
 	m_LastGameUpdateTime  = GetTime( );
 	m_LastFlameListUpdate = 0;
+        m_LastAliasListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
         m_LastDNListUpdate = 0;
 	m_LastDCountryUpdate = 0;
@@ -1184,7 +1186,22 @@ bool CGHost :: Update( long usecBlock )
                 m_CallableFlameList = NULL;
         }
 
-        // refresh flamelist all 60 minutes
+        // refresh alias list all 24 hours
+	if( !m_CallableAliasList && GetTime( ) - m_LastAliasListUpdate >= 86400 )
+	{
+		m_CallableAliasList = m_DB->ThreadedAliasList( );
+		m_LastAliasListUpdate = GetTime( );
+	}
+
+        if( m_CallableAliasList && m_CallableAliasList->GetReady( ))
+        {
+                m_Aliases = m_CallableAliasList->GetResult( );
+                m_DB->RecoverCallable( m_CallableAliasList );
+                delete m_CallableAliasList;
+                m_CallableAliasList = NULL;
+        }
+
+        // refresh denied names list all 60 minutes
 	if( !m_CallableDeniedNamesList && GetTime( ) - m_LastDNListUpdate >= 1200 )
 	{
 		m_CallableDeniedNamesList = m_DB->ThreadedDeniedNamesList( );
@@ -2046,4 +2063,11 @@ void CGHost :: ReadRoomData()
 		}
 	}
 	in.close( );
+}
+
+void CGHost :: GetAliasName( uint32_t alias ) {
+    if( m_Aliases.size( ) >= alias-1 ) {
+        return m_Aliases[alias-1];
+    }
+    return "failed";
 }

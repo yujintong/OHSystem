@@ -30,6 +30,7 @@ class CCallableRegAdd;
 class CCallableStatsSystem;
 class CCallablePList;
 class CCallableFlameList;
+class CCallableAliasList;
 class CCallableDeniedNamesList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
@@ -100,6 +101,7 @@ public:
         virtual uint32_t penp( string name, string reason, string admin, uint32_t amount, string type );
         virtual vector<string> PList( string server );
         virtual vector<string> FlameList( );
+        virtual vector<string> AliasList( );
         virtual vector<string> DeniedNamesList( );
 	 virtual vector<string> AnnounceList( );
         virtual vector<string> DCountryList( );
@@ -144,6 +146,7 @@ public:
         virtual CCallablepm *Threadedpm( string user, string listener, uint32_t status, string message, string type );
 	virtual CCallablePList *ThreadedPList( string server );
         virtual CCallableFlameList *ThreadedFlameList( );
+        virtual CCallableAliasList *ThreadedAliasList( );
         virtual CCallableDeniedNamesList *ThreadedDeniedNamesList( );
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
         virtual CCallableDCountryList *ThreadedDCountryList( );
@@ -334,6 +337,19 @@ protected:
 public:
         CCallableFlameList( ) : CBaseCallable( ) { }
         virtual ~CCallableFlameList( );
+
+        virtual vector<string> GetResult( )                                     { return m_Result; }
+        virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }
+};
+
+class CCallableAliasList : virtual public CBaseCallable
+{
+protected:
+        vector<string> m_Result;
+
+public:
+        CCallableAliasList( ) : CBaseCallable( ) { }
+        virtual ~CCallableAliasList( );
 
         virtual vector<string> GetResult( )                                     { return m_Result; }
         virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }

@@ -273,6 +273,20 @@ CCallableFlameList *CGHostDBMySQL :: ThreadedFlameList( )
         return Callable;
 }
 
+CCallableAliasList *CGHostDBMySQL :: ThreadedAliasList( )
+{
+        void *Connection = GetIdleConnection( );
+
+        if( !Connection )
+                ++m_NumConnections;
+
+        CCallableAliasList *Callable = new CMySQLCallableAliasList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+        CreateThread( Callable );
+        ++m_OutstandingCallables;
+        m_Name.push_back( "Alias" );
+        return Callable;
+}
+
 CCallableDeniedNamesList *CGHostDBMySQL :: ThreadedDeniedNamesList( )
 {
         void *Connection = GetIdleConnection( );
@@ -1134,7 +1148,7 @@ uint32_t MySQLpm( void *conn, string *error, uint32_t botid, string user, string
 	                {
 	                        vector<string> Row = MySQLFetchRow( Result );
 
-                        	while( !Row.empty( ) )
+                        	if( !Row.empty( ) )
                         	{
                                 	 return UTIL_ToUInt32( Row[0] );
                         	}
@@ -1218,6 +1232,37 @@ vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid )
         }
 
         return FlameList;
+}
+
+vector<string> MySQLAliasList( void *conn, string *error, uint32_t botid )
+{
+        vector<string> AliasList;
+        string Query = "SELECT `alias_name` FROM `oh_aliases` ORDER BY alias_id DESC;";
+
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+        else
+        {
+                MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+                if( Result )
+                {
+                        vector<string> Row = MySQLFetchRow( Result );
+
+                        while( Row.size( ) == 1 )
+                        {
+                                AliasList.push_back(Row[0]);
+                                Row = MySQLFetchRow( Result );
+                        }
+
+                        mysql_free_result( Result );
+
+                }
+                else
+                        *error = mysql_error( (MYSQL *)conn );
+        }
+
+        return AliasList;
 }
 
 vector<string> MySQLDeniedNamesList( void *conn, string *error, uint32_t botid )
@@ -2721,6 +2766,16 @@ void CMySQLCallablePList :: operator( )( )
 }
 
 void CMySQLCallableFlameList :: operator( )( )
+{
+        Init( );
+
+        if( m_Error.empty( ) )
+                m_Result = MySQLFlameList( m_Connection, &m_Error, m_SQLBotID );
+
+        Close( );
+}
+
+void CMySQLCallableAliasList :: operator( )( )
 {
         Init( );
 

@@ -50,6 +50,7 @@ class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableGameDBInit;
 class CCallableDeniedNamesList;
+class CCallableAliasList;
 
 class CGHost
 {
@@ -107,6 +108,8 @@ public:
 	vector<string> m_Modes;
 	CCallableFlameList *m_CallableFlameList;
 	uint32_t m_LastFlameListUpdate;
+	CCallableAliasList *m_CallableAliasList;
+	uint32_t m_LastAliasListUpdate;
         uint32_t m_LastDNListUpdate;
 	vector<string> m_Flames;
         CCallableAnnounceList *m_CallableAnnounceList;
@@ -228,6 +231,7 @@ public:
         bool m_ChannelBotOnly;
         vector<string> m_LanRoomName;
         string m_NonAllowedDonwloadMessage;
+        vector<string> m_Aliases;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -265,6 +269,7 @@ public:
         void LoadInsult( );
         virtual string GetTimeFunction( uint32_t type );
         void ReadRoomData();
+        void GetAliasName( uint32_t alias );
         string GetRoomName(string RoomID);
 };
 

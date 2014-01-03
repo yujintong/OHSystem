@@ -792,7 +792,14 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
 	m_MapDefaultHCL = CFG->GetString( "map_defaulthcl", string( ) );
 	m_MapDefaultPlayerScore = CFG->GetInt( "map_defaultplayerscore", 1000 );
 	m_MapLoadInGame = CFG->GetInt( "map_loadingame", 0 ) == 0 ? false : true;
-
+        m_Alias = CFG->GetInt( "game_alias", 0 );
+        m_AliasType = m_GHost->GetAliasName( m_Alias );
+        
+        if( m_AliasType == "failed" ) {
+            CONSOLE_Print( "Unrecognized AliasType, make sure you have set it correctly.");
+        } else {
+            CONSOLE_Print( "Successfully encoded AliasType, set Alias to ["+m_AliasType+"].");
+        }
 	if( MapNumPlayers == 0 )
 		MapNumPlayers = CFG->GetInt( "map_numplayers", 0 );
 	else if( CFG->Exists( "map_numplayers" ) )
@@ -962,6 +969,10 @@ void CMap :: CheckValid( )
 		m_Valid = false;
 		//CONSOLE_Print( "[MAP] invalid map_slot<x> detected" );
 	}
+        
+        if( m_Alias.empty( ) ) {
+            
+        }
 }
 
 uint32_t CMap :: XORRotateLeft( unsigned char *data, uint32_t length )

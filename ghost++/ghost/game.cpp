@@ -72,9 +72,10 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
 {
         m_DBGame = new CDBGame( 0, string( ), m_Map->GetMapPath( ), string( ), string( ), string( ), 0 );
  
-        if( m_Map->GetMapType( ) == "w3mmd" )
-                m_Stats = new CStatsW3MMD( this, m_Map->GetMapStatsW3MMDCategory( ) );
-        else if( m_Map->GetMapType( ) == "dota" )
+//        if( m_Map->GetMapType( ) == "w3mmd" )
+//                m_Stats = new CStatsW3MMD( this, m_Map->GetMapStatsW3MMDCategory( ) );
+//        else if( m_Map->GetMapType( ) == "dota" )
+        if( m_Map->GetAlias() == 1 || m_Map->GetAlias() == 2)
                 m_Stats = new CStatsDOTA( this );
  
         // Memory leak *FIX !!!!
