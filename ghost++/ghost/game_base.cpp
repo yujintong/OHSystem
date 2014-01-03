@@ -6194,18 +6194,32 @@ bool CBaseGame :: is_digits( const std::string &str )
 void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString, string Player1, string Player2, string message )
 {
         string StorePacket;
+        time_t Now = time( NULL );
+        char Time[17];
+        memset( Time, 0, sizeof( char ) * 17 );
+        strftime( Time, sizeof( char ) * 17, "%Y-%m-%d %H-%M", localtime( &Now ) );
         string MinString = UTIL_ToString( ( m_CreationTime ) % 60 );
         string SecString = UTIL_ToString( ( m_CreationTime ) / 60 );
         string LTime = "";
         string GTime = "";
         if(! m_GameLoaded || ! m_GameLoading ) {
+            if( MinString.size( ) == 1 )
+                    MinString.insert( 0, "0" );
+
+            if( SecString.size( ) == 1 )
+                    SecString.insert( 0, "0" );
             LTime = MinString + ":" + SecString;
         } else {
             SecString = UTIL_ToString( ( m_GameTicks / 1000 ) % 60 );
             MinString = UTIL_ToString( ( m_GameTicks / 1000 ) / 60 );
+            if( MinString.size( ) == 1 )
+                    MinString.insert( 0, "0" );
+
+            if( SecString.size( ) == 1 )
+                    SecString.insert( 0, "0" );
             GTime = MinString + ":" + SecString;
         }
-        
+ 
         if( type == 0 || type == 3 || type == 4 || type == 9 )
         {
                 if( type == 0 )
