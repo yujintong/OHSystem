@@ -122,6 +122,7 @@ do{
    file_put_contents($CronTempFile, $counter );
    $counter++;
    $debug = "";
+   $fn = time();
    
    //TRUNCATE TABLE - clean up
    	$sth = $db->prepare("SELECT COUNT(*) FROM cron_logs LIMIT 1");
@@ -190,18 +191,18 @@ if ($BanIPUpdate == 1) {
 
 
 
-
    //COUNTRY UPDATE FROM "stats" table
  if ($StatsCountryUpdate == 1) {
    
     $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." 
     WHERE country = ''
+	ORDER BY RAND()
     LIMIT $MaxQueries");
     $result = $sth->execute();
 	$total = $sth->rowCount();
 	
 	$debug = "";
-
+	$count = 0;
 	 while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
     $name = $row["player"];
 	$Letter = ""; $Country = "";
@@ -211,16 +212,18 @@ if ($BanIPUpdate == 1) {
 	$Letter   = geoip_country_code_by_addr($GeoIPDatabase, $ip);
 	$Country  = geoip_country_name_by_addr($GeoIPDatabase, $ip);
 	
-	if ( substr($ip, 0,7) == "23.243." OR substr($ip, 0,7) == "23.242." OR substr($ip, 0,7) == "23.241." ) {
-	 $Letter  = "US";
-	 $Country = "United States";
-	}
+	// if ( substr($ip, 0,7) == "23.243." OR substr($ip, 0,7) == "23.242." OR substr($ip, 0,7) == "23.241." ) {
+	///   $Letter  = "US";
+	//   $Country = "United States";
+	//}
 	
+
 	if ( !empty($Country) ) {
-	$upd = $db->prepare("UPDATE ".OSDB_STATS." SET country='".$Country."', country_code = '".$Letter."' WHERE id = '".$row["id"]."' ");
+
+	$upd = $db->prepare("UPDATE ".OSDB_STATS." SET country='".convEnt2($Country)."', country_code = '".$Letter."' WHERE id = '".$row["id"]."' ");
 	$result = $upd->execute();
-	
-	if ($total>=1 AND empty($debug) )  $debug = " <b>Updating Countries (found: $total entries)</b>";
+	$count++;
+	if ($total>=1 AND empty($debug) AND $count>=1 )  $debug = " <b>Updating Countries (found: $total entries)</b>";
 	
 	if ( $CronReportDetails ==2 ) $debug.= "<div><b>$name</b>, $ip, $Letter, $Country</div>";
 	} else {
@@ -240,10 +243,6 @@ if ($BanIPUpdate == 1) {
 	$debug = "";
 	
  }
- 
- 
-  
-   
    
    
    //END WORK HERE
