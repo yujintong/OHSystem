@@ -114,7 +114,6 @@ protected:
 	uint32_t m_Latency;								// the number of ms to wait between sending action packets (we queue any received during this time)
 	uint32_t m_SyncLimit;							// the maximum number of packets a player can fall out of sync before starting the lag screen
 	uint32_t m_SyncCounter;							// the number of actions sent so far (for determining if anyone is lagging)
-	uint32_t m_CreationTime;						// GetTime when the game was created
 	uint32_t m_LastPingTime;						// GetTime when the last ping was sent
 	uint32_t m_LastRefreshTime;						// GetTime when the last game refresh was sent
 	uint32_t m_LastDownloadTicks;					// GetTicks when the last map download cycle was performed
@@ -203,6 +202,7 @@ public:
         vector<PairedBanAdd> m_PairedBanAdds;           // vector of paired threaded database ban adds in progress
         vector<CGameSlot> m_Slots;                                              // vector of slots
 	vector<CGamePlayer *> m_Players;                        // vector of players
+        uint32_t m_CreationTime;						// GetTime when the game was created
 	virtual vector<CGameSlot> GetEnforceSlots( )	{ return m_EnforceSlots; }
 	virtual vector<PIDPlayer> GetEnforcePlayers( )	{ return m_EnforcePlayers; }
 	virtual CSaveGame *GetSaveGame( )				{ return m_SaveGame; }
@@ -225,6 +225,7 @@ public:
 	virtual bool GetGameLoading( )					{ return m_GameLoading; }
 	virtual bool GetGameLoaded( )					{ return m_GameLoaded; }
 	virtual bool GetLagging( )						{ return m_Lagging; }
+        virtual uint32_t GetCreationTime( )                                     { return m_CreationTime; }
 
 	virtual void SetEnforceSlots( vector<CGameSlot> nEnforceSlots )		{ m_EnforceSlots = nEnforceSlots; }
 	virtual void SetEnforcePlayers( vector<PIDPlayer> nEnforcePlayers )	{ m_EnforcePlayers = nEnforcePlayers; }
@@ -234,6 +235,7 @@ public:
 	virtual void SetMaximumScore( double nMaximumScore )				{ m_MaximumScore = nMaximumScore; }
 	virtual void SetRefreshError( bool nRefreshError )					{ m_RefreshError = nRefreshError; }
 	virtual void SetMatchMaking( bool nMatchMaking )					{ m_MatchMaking = nMatchMaking; }
+        virtual void SetCreationTime( uint32_t nCreationTime )                                                         { m_CreationTime = nCreationTime; }
 
 	virtual uint32_t GetNextTimedActionTicks( );
 	virtual uint32_t GetSlotsOccupied( );
