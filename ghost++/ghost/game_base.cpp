@@ -6195,26 +6195,26 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
 {
         string StorePacket;
         uint32_t CreateTime = GetCreationTime( );
-        string MinString = UTIL_ToString( CreateTime % 60 );
-        string SecString = UTIL_ToString( CreateTime / 60 );
+        string MiString = UTIL_ToString( CreateTime % 60 );
+        string SeString = UTIL_ToString( CreateTime / 60 );
         string LTime = "";
         string GTime = "";
         if(! m_GameLoaded || ! m_GameLoading ) {
-            if( MinString.size( ) == 1 )
-                    MinString.insert( 0, "0" );
+            if( MiString.size( ) == 1 )
+                    MiString.insert( 0, "0" );
 
-            if( SecString.size( ) == 1 )
-                    SecString.insert( 0, "0" );
-            LTime = MinString + ":" + SecString;
+            if( SeString.size( ) == 1 )
+                    SeString.insert( 0, "0" );
+            LTime = MiString + ":" + SeString;
         } else {
-            SecString = UTIL_ToString( ( m_GameTicks / 1000 ) % 60 );
-            MinString = UTIL_ToString( ( m_GameTicks / 1000 ) / 60 );
-            if( MinString.size( ) == 1 )
-                    MinString.insert( 0, "0" );
+            SeString = UTIL_ToString( ( m_GameTicks / 1000 ) % 60 );
+            MiString = UTIL_ToString( ( m_GameTicks / 1000 ) / 60 );
+            if( MiString.size( ) == 1 )
+                    MiString.insert( 0, "0" );
 
-            if( SecString.size( ) == 1 )
-                    SecString.insert( 0, "0" );
-            GTime = MinString + ":" + SecString;
+            if( SeString.size( ) == 1 )
+                    SeString.insert( 0, "0" );
+            GTime = MiString + ":" + SeString;
         }
  
         if( type == 0 || type == 3 || type == 4 || type == 9 )
