@@ -3526,7 +3526,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !OB
         //
-        else if( Command == "ob" || Command == "obs" || Command == "observe" )
+        else if( ( Command == "ob" || Command == "obs" || Command == "observe" ) &&! m_CountDownStarted )
         {
                 if( Level > 2 )
                 {
