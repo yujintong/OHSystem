@@ -2789,7 +2789,7 @@ void CMySQLCallableAliasList :: operator( )( )
         Init( );
 
         if( m_Error.empty( ) )
-                m_Result = MySQLFlameList( m_Connection, &m_Error, m_SQLBotID );
+                m_Result = MySQLAliasList( m_Connection, &m_Error, m_SQLBotID );
 
         Close( );
 }
