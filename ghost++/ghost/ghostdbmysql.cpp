@@ -1238,7 +1238,7 @@ vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid )
 vector<string> MySQLAliasList( void *conn, string *error, uint32_t botid )
 {
         vector<string> AliasList;
-        string Query = "SELECT `alias_name` FROM `oh_aliases` ORDER BY alias_id DESC;";
+        string Query = "SELECT `alias_name` FROM `oh_aliases` ORDER BY alias_id ASC;";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
