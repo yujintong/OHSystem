@@ -619,7 +619,7 @@ void CGamePlayer :: ProcessPackets( )
                                                                 }
                                                                 if( m_Count == 3 )
                                                                 {
-									m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Spam", m_Game->m_GHost->m_SpamBanTime, "" ) ) );
+									m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Spam", m_Game->m_GHost->m_SpamBanTime, "", m_Game->m_GameAlias ) ) );
                                                                         SetMuted( true );
                                                                         m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Name + " has been automatically permanently muted for spamming." );
 
@@ -669,7 +669,7 @@ void CGamePlayer :: ProcessPackets( )
 
                                                                     if( RecentCount == 4 )
                                                                     {
-                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_FirstFlameBanTime, "" ) ) );
+                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_FirstFlameBanTime, "", m_Game->m_GameAlias ) ) );
                                                                             SetMuted( true );
                                                                             m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Name + " has been automatically permanently muted for flaming." );
 
@@ -677,7 +677,7 @@ void CGamePlayer :: ProcessPackets( )
                                                                     if( RecentCount == 5 )
                                                                     {
                                                                         //some people simple dont understand the ban policy.
-                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_SecondFlameBanTime, "" ) ) );
+                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_SecondFlameBanTime, "", m_Game->m_GameAlias ) ) );
                                                                             SetMuted( true );
                                                                             m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Name + " has been automatically permanently muted for flaming." );
 
