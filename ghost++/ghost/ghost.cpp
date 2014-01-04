@@ -2075,12 +2075,15 @@ string CGHost :: GetAliasName( uint32_t alias ) {
 
 uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
     uint32_t m_StatsAlias = 0;
+    uint32_t c = 1;
     transform( alias.begin( ), alias.end( ), alias.begin( ), ::tolower );
     for( vector<string> :: iterator i = m_GHost->m_Aliases.begin( ); i != m_GHost->m_Aliases.end( ); ++i ) {
-        transform( *i.begin( ), *i.end( ), *i.begin( ), ::tolower );
-        if( *i.size( ) > alias.size ? *i.substr(0, alias.size( ) ) == alias : *i == alias ) {
-            m_StatsAlias = i+1;
+        string Alias = *i;
+        transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
+        if( Alias.size( ) > alias.size ? Alias.substr(0, alias.size( ) ) == alias : Alias == alias ) {
+            m_StatsAlias = c;
         }
+        c++;
     }
     return m_StatsAlias;
 }
