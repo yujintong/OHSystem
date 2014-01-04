@@ -759,7 +759,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         
                         if( StatsPlayerSummary )
                         {
-                                string Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot2(    i->second->GetName( ),
+                                string Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot2( i->second->GetName( ),
                                         UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),

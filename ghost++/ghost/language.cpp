@@ -609,7 +609,7 @@ string CLanguage :: HasPlayedAliasGamesWithThisBot( string totalgames, string to
 /**
  * for bnet only
 */ 
-string CLanguage :: HasPlayedAliasGamesWithThisBot2( string user, string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string alias)
+string CLanguage :: HasPlayedAliasGamesWithThisBot2( string user, string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string month, string year, string alias)
 {
 	string Out = m_CFG->GetString( "lang_0074a", "lang_0074a" );
 	UTIL_Replace( Out, "$USER$", user );
@@ -635,6 +635,10 @@ string CLanguage :: HasPlayedAliasGamesWithThisBot2( string user, string totalga
 	UTIL_Replace( Out, "$AVGNEUTRALKILLS$", avgneutralkills );
 	UTIL_Replace( Out, "$AVGTOWERKILLS$", avgtowerkills );
 	UTIL_Replace( Out, "$AVGRAXKILLS$", avgraxkills );
+        if( month == "0" && year == "0")
+            UTIL_Replace( Out, "$TIME$", "overall");
+        else
+            UTIL_Replace( Out, "$TIME$", month+"/"+year);
 	return Out;
 }
 
