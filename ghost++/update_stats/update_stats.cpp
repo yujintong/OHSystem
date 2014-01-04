@@ -246,13 +246,13 @@ int main( int argc, char **argv )
     MYSQL_RES *BeginResult = QueryBuilder(Connection, "BEGIN" );
 
     queue<string> UnscoredGames;
-    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`) FROM `oh_games` WHERE map LIKE '%dota%' AND `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT "+UTIL_ToString( StatsUpdateLimit )+";" );
+    MYSQL_RES *GameResult = QueryBuilder(Connection, "SELECT `id`, MONTH(`datetime`), YEAR(`datetime`), alias_id FROM `oh_games` WHERE map LIKE '%dota%' AND `stats` = '0' AND `gamestatus` = '1' ORDER BY id LIMIT "+UTIL_ToString( StatsUpdateLimit )+";" );
     if( GameResult )
     {
             vector<string> Row = MySQLFetchRow( GameResult );
             while( !Row.empty( ) )
             {
-                    UnscoredGames.push( Row[0]+" "+Row[1]+" "+Row[2] );
+                    UnscoredGames.push( Row[0]+" "+Row[3]+" "+Row[1]+" "+Row[2] );
                     Row = MySQLFetchRow( GameResult );
             }
             mysql_free_result( GameResult );
@@ -276,13 +276,15 @@ int main( int argc, char **argv )
         string GameID;
         string Month;
         string Year;
+        string Alias;
         stringstream SS;
         SS << Data;
         SS >> GameID;
+        SS >> Alias;
         SS >> Month;
         SS >> Year;
-        CONSOLE_Print( Data + " " + GameID + " " + Month + " "+ Year);
-        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet, s.ingame_role, s.kills, s.deaths, s.assists, s.creeps, s.denies, s.neutrals, s.games FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
+//        CONSOLE_Print( Data + " " + GameID + " " + Month + " "+ Year);
+        MYSQL_RES *Result = QueryBuilder(Connection, "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.points_bet, s.ingame_role, s.kills, s.deaths, s.assists, s.creeps, s.denies, s.neutrals, s.games FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" AND s.alias_id="+Alias+" LEFT JOIN oh_dotagames as dg ON dg.gameid=gp.gameid WHERE gp.gameid = " + GameID );
 
         if( Result )
         {
@@ -680,7 +682,7 @@ int main( int argc, char **argv )
                                                 string EscName = MySQLEscapeString( Connection, names[i] );
                                                 string EscLName = MySQLEscapeString( Connection, lnames[i] );
                                                 string EscServer = MySQLEscapeString( Connection, servers[i] );
-                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points, ingame_role ) VALUES ("+Month+", "+Year+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ", '"+UTIL_ToString(ingame_role[i])+"' )" );
+                                                MYSQL_RES *PlayrInsertResult = QueryBuilder(Connection, "INSERT INTO `oh_stats` ( month, year, alias_id, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver, points, ingame_role ) VALUES ("+Month+", "+Year+", "+Alias+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + UTIL_ToString( banned[i] ) + "', '" + EscServer + "', '" + ips[i] + "', "+ Int32_ToString( nscore[i] ) +", 1, " + UTIL_ToString( k[i]) + ", " + UTIL_ToString( d[i]) + ", " + UTIL_ToString( a[i]) + ", " + UTIL_ToString( c[i]) + ", " + UTIL_ToString( de[i]) + ", " + UTIL_ToString( n[i]) + ", " + UTIL_ToString( t[i]) + ", " + UTIL_ToString( r[i]) + ", " + UTIL_ToString( win[i]) + ", " + UTIL_ToString( losses[i]) + ", " + UTIL_ToString( draw[i]) + ", " + UTIL_ToString( nstreak[i]) + ", " + UTIL_ToString( maxstreak[i]) + ", " + UTIL_ToString( nlstreak[i]) + ", " + UTIL_ToString( maxlstreak[i]) + ", " + UTIL_ToString( zd[i]) + ", " + UTIL_ToString( leaver[i]) + ", " + UTIL_ToString( npoints[i]) + ", '"+UTIL_ToString(ingame_role[i])+"' )" );
                                         }
                                 }
                         }
