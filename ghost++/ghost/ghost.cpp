@@ -2076,20 +2076,21 @@ string CGHost :: GetAliasName( uint32_t alias ) {
 uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
     uint32_t m_StatsAlias = 0;
     uint32_t c = 1;
-    transform( alias.begin( ), alias.end( ), alias.begin( ), ::tolower );
-    for( vector<string> :: iterator i = m_Aliases.begin( ); i != m_Aliases.end( ); ++i ) {
-        string Alias = *i;
-        transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
-        if( Alias.substr(0, alias.size( ) ) == alias || Alias == alias ) {
-            m_StatsAlias = c;
-            break;
+    if(! alias.empty() ) {
+        transform( alias.begin( ), alias.end( ), alias.begin( ), ::tolower );
+        for( vector<string> :: iterator i = m_Aliases.begin( ); i != m_Aliases.end( ); ++i ) {
+            string Alias = *i;
+            transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
+            if( Alias.substr(0, alias.size( ) ) == alias || Alias == alias ) {
+                m_StatsAlias = c;
+                break;
+            }
+            c++;
         }
-        c++;
+
+        if( m_StatsAlias == 0 ) {
+            CONSOLE_Print( "Did not found any alias for ["+alias+"]" );
+        }
     }
-    
-    if( m_StatsAlias == 0 ) {
-        CONSOLE_Print( "Did not found any alias for ["+alias+"]" );
-    }
-    
     return m_StatsAlias;
 }
