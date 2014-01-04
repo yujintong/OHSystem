@@ -167,8 +167,7 @@ padding-right: 8px;
 margin: 0;
 border-radius: 4px;
 -webkit-box-shadow: 0 0px 0 #ccc, 0 0px #fff inset;
-background: #E9E9E9 no-repeat right, -moz-linear-gradient(top, #FBFBFB 0%, #E9E9E9 100%);
-background: #E9E9E9 no-repeat right, -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FBFBFB), color-stop(100%,#E9E9E9));
+background: #E9E9E9;
 color: black;
 border: none;
 outline: none;
@@ -1024,8 +1023,8 @@ overflow: scroll; overflow-y: scroll; overflow-x: hidden; font-size:13px; }
 .chatMessage { width:560px; height:26px; }
 .chatSubmitMessage { margin-top:12px; margin-bottom:12px; }
 .chatAttention { padding: 16px; border:10px solid #ccc; margin-top: 40px; }
-.GameButton { background-color: #D7FFFD  !important; padding-top: 3px; padding-bottom: 3px; }
-.LobbyButton { padding-top: 5px; padding-bottom: 5px; }
+.GameButton { background-color: #D7FFFD  !important; padding-top: 3px; padding-bottom: 3px; margin-bottom: 8px; }
+.LobbyButton { padding-top: 5px; padding-bottom: 5px; margin-bottom: 8px; }
 .GameButton:hover { background-color:#C7EDF1 !important; }
 .GameButton:disabled { background-color: #C2C2C2 !important; }
 

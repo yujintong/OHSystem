@@ -269,6 +269,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   $GameLogData[$i]["botid"]  = ($row2["botid"]);
 	   $GameLogData[$i]["gametype"]  = ($row2["gametype"]);
 	   $GameLogData[$i]["lobbylog"]  = ($row2["lobbylog"]);
+	   $GameLogData[$i]["lobbylog"] = preg_replace('~\!pw (.+?)<\/div>~is' , '</div>', $GameLogData[$i]["lobbylog"]);
 	   $GameLogData[$i]["gamelog"]  = ($row2["gamelog"]);
 	   $i++;
 	 } 

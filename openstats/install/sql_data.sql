@@ -32,6 +32,7 @@ DROP TABLE IF EXISTS `oh_bans`;
 CREATE TABLE IF NOT EXISTS `oh_bans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `server` varchar(100) NOT NULL,
   `name` varchar(15) NOT NULL,
   `ip` varchar(16) NOT NULL,
@@ -241,6 +242,7 @@ DROP TABLE IF EXISTS `oh_games`;
 CREATE TABLE IF NOT EXISTS `oh_games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `server` varchar(100) NOT NULL,
   `map` varchar(100) NOT NULL,
   `datetime` datetime NOT NULL,
@@ -428,6 +430,7 @@ DROP TABLE IF EXISTS `oh_stats`;
 CREATE TABLE IF NOT EXISTS `oh_stats` (
   `botid` int(11) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `alias_id` smallint(11) NOT NULL,
   `player` varchar(30) NOT NULL,
   `player_lower` varchar(30) NOT NULL,
   `last_seen` datetime NOT NULL,

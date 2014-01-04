@@ -217,7 +217,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$RecentGamesData[$c]["duration"]  = ($row["duration"]);
 	$RecentGamesData[$c]["creatorname"]  = ($row["creatorname"]);
 	$RecentGamesData[$c]["winner"]  = ($row["winner"]);
-	$RecentGamesData[$c]["type"]  = ($row["type"]);
+	$RecentGamesData[$c]["type"]  = OS_GetGameState($row["type"], $lang["gamestate_pub"] , $lang["gamestate_priv"]);
 	
 	//REPLAY
 	 $duration = secondsToTime($row["duration"]);
