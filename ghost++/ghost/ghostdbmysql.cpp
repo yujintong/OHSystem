@@ -2053,9 +2053,11 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
         
         return RowID;
     }
-    string UQuery = "UPDATE oh_games SET alias_id='"+UTIL_ToString(gamealias)+"' WHERE id ='"+UTIL_ToString(gameid)+"';";
-    if( mysql_real_query( (MYSQL *)conn, UQuery.c_str( ), UQuery.size( ) ) != 0 )
-            *error = mysql_error( (MYSQL *)conn );
+    if(! gameid == 0 ) {
+        string UQuery = "UPDATE oh_games SET alias_id='"+UTIL_ToString(gamealias)+"' WHERE id ='"+UTIL_ToString(gameid)+"';";
+        if( mysql_real_query( (MYSQL *)conn, UQuery.c_str( ), UQuery.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+    }
     
     uint32_t c=0;
     for( vector<CDBBan *> :: iterator i = players.begin( ); i != players.end( ); i++ )
