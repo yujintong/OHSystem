@@ -21,7 +21,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    />
    
    <input type="submit" value="<?=$lang["search"]?>" class="menuButtons" />
-   <span><?=LettersLink("members", "search_members")?></span>
+   <span><?=OS_AZ_Filter('members', 'search_members')?></span>
    </form>
 	 
   <table>

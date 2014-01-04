@@ -475,7 +475,7 @@
 	 if ( $rcon == 2 ) $command =  "!rcon saygame ".$_SESSION["username"]." $gameID $com";
      if ( $rcon == 3 ) $command =  "!rcon sayteam ".$_SESSION["username"]." $gameID 1 $com";
 	 if ( $rcon == 4 ) $command =  "!rcon sayteam ".$_SESSION["username"]." $gameID 2 $com";
-	 if ( $rcon == 5 ) $command =  "!rcon from";
+	 if ( $rcon == 5 ) $command =  "!rcon from $gameID";
 	
 	$InsertID = -1;
 	

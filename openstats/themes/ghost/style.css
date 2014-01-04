@@ -1150,6 +1150,7 @@ vertical-align:bottom;
 #LobbyGameLog .lobbyleave { color: #C70000; }
 #LobbyGameLog .lobbyjoin { color: #1E7E00; }
 #LobbyGameLog .rune { color: #118D92; }
+#LobbyGameLog .time { color: #7E7E7E; padding-right:5px; }
 
 .LobbyGameLogWrapper { width:49%; float:left; } 
 .LobbyGameLogInner { height:300px; overflow:scroll; padding:4px; } 
