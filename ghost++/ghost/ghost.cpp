@@ -1252,7 +1252,7 @@ bool CGHost :: Update( long usecBlock )
         // load a new m_ReservedHostCounter
         if( m_ReservedHostCounter == 0 && m_LastHCUpdate != 0 && GetTime( ) - m_LastHCUpdate >= 5 )
         {
-                m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0 );
+                m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0, 0 );
                 m_LastHCUpdate = 0;
         }
 
