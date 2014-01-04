@@ -2980,12 +2980,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         
         else if( ( Command.substr(0, 4) == "rank" || ( Command == "rd" || Command == "rl" || Command == "ri") ) && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
         {
-                uint32_t m_StatsAlias = m_GameAlias;
+                uint32_t m_StatsAlias = 0;
+                string alias = "";
                 if( Command.size( ) > 4 )
-                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 4, Command.size( ) - 4 ) );
+                    alias = Command.substr( 4, Command.size( ) - 4 );
                 else if( Command.size( ) < 4 )
-                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
+                    alias = Command.substr( 1, Command.size( ) - 1 );
                 
+                m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
+                
+                if( m_StatsAlias == 0 ) {
+                    SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
+                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
+                    m_StatsAlias = m_GameAlias;
+                }
                 string StatsUser = User;
                 string Month = "";
                 string Year = "";
@@ -3029,12 +3037,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
  
         else if( ( ( Command.substr( 0, 5 ) == "stats" && Command.size( ) > 5 ) || ( Command == "sl" || Command == "sd" || Command == "si" ) ) && GetTime( ) - player->GetStatsDotASentTime( ) >= 5 )
         {
-                uint32_t m_StatsAlias = m_GameAlias;
+                uint32_t m_StatsAlias = 0;
+                string alias = "";
                 if( Command.size( ) > 5 )
-                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
+                    alias = Command.substr( 5, Command.size( ) - 5 );
                 else if( Command.size( ) < 5 )
-                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
+                    alias = Command.substr( 1, Command.size( ) - 1 );
                 
+                m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
+                
+                if( m_StatsAlias == 0 ) {
+                    SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
+                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
+                    m_StatsAlias = m_GameAlias;
+                }
                 string StatsUser = User;
                 string Month = "";
                 string Year = "";
@@ -3077,11 +3093,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( Command.substr(0, 5) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
         {
-                uint32_t m_StatsAlias = m_GameAlias;
+                uint32_t m_StatsAlias = 0;
+                string alias = "";
                 if( Command.size( ) > 5 )
-                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
+                    alias = Command.substr( 5, Command.size( ) - 5 );
                 else if( Command.size( ) < 5 )
-                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
+                    alias = Command.substr( 2, Command.size( ) - 2 );
+                
+                m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
+                
+                if( m_StatsAlias == 0 ) {
+                    SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
+                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
+                    m_StatsAlias = m_GameAlias;
+                }
                 
                 string StatsUser = User;
                 string Month = "";
@@ -3101,6 +3126,27 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         }
         
         //
+        // !STATSALIASES
+        //
+        else if( Command == "statsaliases") {
+            string Aliases = "";
+            uint32_t c = 1;
+            for( vector<string> :: iterator i = m_GHost->m_Aliases.begin( ); i != m_GHost->m_Aliases.end( ); ++i ) {
+                if( c == 1 )
+                    Aliases += *i;
+                else
+                    Aliases += ", "+*i;
+                
+                if( Aliases > 100 ) {
+                    SendChat( player, "[StatsAliases] "+Aliases );
+                    Aliases.clear();
+                }
+                c++;
+            }
+            SendChat( player, "[StatsAliases] "+Aliases );
+        }
+        
+        //
         // !VERSION
         //
  
@@ -3111,7 +3157,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else
                         SendAllChat( m_GHost->m_Language->VersionNotAdmin( m_GHost->m_Version ) );
         }
- 
+        
         //
         // !WHOVOTEKICKED
         //

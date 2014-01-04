@@ -2082,8 +2082,14 @@ uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
         transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
         if( Alias.substr(0, alias.size( ) ) == alias || Alias == alias ) {
             m_StatsAlias = c;
+            break;
         }
         c++;
     }
+    
+    if( m_StatsAlias == 0 ) {
+        CONSOLE_Print( "Did not found any alias for ["+alias+"]" );
+    }
+    
     return m_StatsAlias;
 }

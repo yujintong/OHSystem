@@ -3648,7 +3648,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                             SS >> Month;
                                             SS >> Year;
                                         }
- 
                                         // check for potential abuse
  
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
@@ -3665,12 +3664,15 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 else if( Command.substr(0, 4) == "rank" || ( Command == "rd" || Command == "rl" || Command == "ri") )
                                 {
-                                       uint32_t m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+                                       uint32_t m_StatsAlias = 0;
                                        if( Command.size( ) > 4 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 4, Command.size( ) - 4 ) );
                                        else if( Command.size( ) < 4 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
                                            
+                                       if( m_StatsAlias == 0 )
+                                            m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+                                       
                                        string StatsUser = User;
                                        string Month = "";
                                        string Year = "";
@@ -3681,9 +3683,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                            SS >> Month;
                                            SS >> Year;
                                        }
-                                       uint32_t m_GameAlias = 1;
                                        // check for potential abuse
- 
                                        if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
                                                 m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                                 }
@@ -3698,12 +3698,15 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 else if( ( Command.substr( 0, 5 ) == "stats" && Command.size( ) > 5 ) || ( Command == "sl" || Command == "sd" || Command == "si" ) )
                                 {
-                                       uint32_t m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+                                       uint32_t m_StatsAlias = 0;
                                        if( Command.size( ) > 5 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
                                        else if( Command.size( ) < 5 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
-                                    
+ 
+                                        if( m_StatsAlias == 0 )
+                                            m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+                                       
                                         string StatsUser = User;
                                         string Month = "";
                                         string Year = "";
@@ -3714,10 +3717,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                             SS >> Month;
                                             SS >> Year;
                                         }
-                                        uint32_t m_GameAlias = 1;
- 
                                         // check for potential abuse
- 
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
                                                 m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                                 }
@@ -3733,11 +3733,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                 else if( Command.substr(0, 5) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
                                 {
-                                       uint32_t m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
-                                       if( Command.size( ) > 5 )
+                                        uint32_t m_StatsAlias = 0;
+                                        if( Command.size( ) > 5 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
-                                       else if( Command.size( ) < 5 )
+                                        else if( Command.size( ) < 5 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
+                                        
+                                        if( m_StatsAlias == 0 )
+                                            m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
                                        
                                         string StatsUser = User;
  
@@ -3750,10 +3753,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                             SS >> Month;
                                             SS >> Year;
                                         }
-                                        uint32_t m_GameAlias = 1;
-                                        
                                         // check for potential abuse
- 
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
                                                 m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                                 }
