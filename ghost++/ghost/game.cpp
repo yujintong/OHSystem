@@ -688,13 +688,13 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 )
                                     );
  
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( i->first.empty( ) ) {
-                                        SendChat( Player, "["+i->second->GetName( )+"] Month: "+Month+", Year: "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
+                                        SendAllChat( "["+i->second->GetName( )+"] Month: "+Month+", Year: "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
                                         SendAllChat( Summary );
                                 }
                                 else
@@ -3208,7 +3208,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
                 player->SetVKTimes( );
                 if( player->GetVKTimes( ) == 8 )
-                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "", m_GameAlias, m_GameAlias ) ) );
+                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "", m_GameAlias ) ) );
                 else if( player->GetVKTimes( ) == 5 )
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( player->GetName( ), "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
                 else if( player->GetVKTimes( ) >= 2 )
