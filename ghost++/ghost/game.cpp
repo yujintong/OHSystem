@@ -3137,7 +3137,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else
                     Aliases += ", "+*i;
                 
-                if( Aliases > 100 ) {
+                if( Aliases.size( ) > 100 ) {
                     SendChat( player, "[StatsAliases] "+Aliases );
                     Aliases.clear();
                 }
