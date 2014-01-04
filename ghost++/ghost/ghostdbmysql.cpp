@@ -892,7 +892,7 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
         }
 	else if( type == "betcheck" || type == "bet" )
 	{
-		string CheckQuery = "SELECT `points`, `points_bet` FROM `oh_stats` WHERE `player_lower` = '" + EscUser + "';";
+		string CheckQuery = "SELECT `points`, `points_bet` FROM `oh_stats` WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
 		uint32_t currentpoints = 0;
 		uint32_t betpoints = 0;
         	if( mysql_real_query( (MYSQL *)conn, CheckQuery.c_str( ), CheckQuery.size( ) ) != 0 )
@@ -925,7 +925,7 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 			return UTIL_ToString( currentpoints  );
 		else if( type == "bet" )
 		{
-			string BetQuery = "UPDATE `oh_stats` SET `points_bet` = '" + UTIL_ToString( one ) + "' WHERE `player_lower` = '" + EscUser + "';";
+			string BetQuery = "UPDATE `oh_stats` SET `points_bet` = '" + UTIL_ToString( one ) + "' WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
 	        	if( mysql_real_query( (MYSQL *)conn, BetQuery.c_str( ), BetQuery.size( ) ) != 0 )
 	                	*error = mysql_error( (MYSQL *)conn );
 	        	else
