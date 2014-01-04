@@ -108,8 +108,9 @@ public:
 	string ShortestLoadByPlayer( string user, string loadingtime );
 	string LongestLoadByPlayer( string user, string loadingtime );
 	string YourLoadingTimeWas( string loadingtime );
-	string HasPlayedDotAGamesWithThisBot( string user, string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string month, string year );
-	string HasntPlayedDotAGamesWithThisBot( string user, string month, string year );
+	string HasPlayedAliasGamesWithThisBot( string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills );
+	string HasPlayedAliasGamesWithThisBot2( string name, string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string alias );
+	string HasntPlayedAliasGamesWithThisBot( string user, string month, string year, string gamealias );
 	string WasKickedForReservedPlayer( string reserved );
 	string WasKickedForOwnerPlayer( string owner );
 	string WasKickedByPlayer( string user );

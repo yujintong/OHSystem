@@ -650,25 +650,26 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( m_GHost->m_RanksLoaded )
-                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
                                 else
-                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
                             } else {
                               if( i->first != i->second->GetName( ) )
                                     QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                 {
                                     if( m_GHost->m_RanksLoaded )
-                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, true );
+                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, true );
                                     else
-                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] Rank: "+StatsPlayerSummary->GetRank( ), i->first, true );
+                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, true );
                                 }
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
                                                 Month,
-                                                Year ), i->first, !i->first.empty( ) );
+                                                Year,
+                                        m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -695,25 +696,26 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                 else
-                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                             } else {
                                 if( i->first != i->second->GetName())
                                     QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
                                 else
                                 {
                                     if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
+                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
                                     else
-                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
+                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
                                 }
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
                                                 Month,
-                                                Year ), i->first, !i->first.empty( ) );
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -757,7 +759,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         
                         if( StatsPlayerSummary )
                         {
-                                string Summary = m_GHost->m_Language->HasPlayedDotAGamesWithThisBot(    i->second->GetName( ),
+                                string Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot2(    i->second->GetName( ),
                                         UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
@@ -779,7 +781,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ),
                                                 Month,
-                                                Year
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) )
                                         );
  
                             if(! StatsPlayerSummary->GetHidden() )
@@ -793,9 +796,10 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             }
                         }
                         else
-                                QueueChatCommand( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ),
+                                QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
                                                 Month,
-                                                Year ), i->first, !i->first.empty( ) );
+                                                Year,
+                                        m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;

@@ -434,17 +434,21 @@ bool CGame :: Update( void *fd, void *send_fd )
                         else
                         {
                                 if( i->first.empty( ) )
-                                        SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                        SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
                                                 Month,
-                                                Year ) );
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                            ) );
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player )
-                                                SendChat( Player, m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
-                                                Month,
-                                                Year ) );
+                                                SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
+                                                    Month,
+                                                    Year,
+                                                    m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                                ) );
                                 }
                         }
  
@@ -550,15 +554,21 @@ bool CGame :: Update( void *fd, void *send_fd )
                         else
                         {
                                 if( i->first.empty( ) )
-                                        SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ), Month, Year ) );
+                                        SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                                Month,
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                            ) );
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player )
-                                                SendChat( Player, m_GHost->m_Language->HasntPlayedGamesWithThisBot( Player->GetName( ),
-                                                Month,
-                                                Year ) );
+                                                SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
+                                                    Month,
+                                                    Year,
+                                                    m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                                ) );
                                 }
                         }
  
@@ -609,9 +619,11 @@ bool CGame :: Update( void *fd, void *send_fd )
                             }
                         }
                         else
-                                SendAllChat( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
                                                 Month,
-                                                Year ) );
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                            ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -656,7 +668,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                             Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
-                                string Summary = m_GHost->m_Language->HasPlayedDotAGamesWithThisBot(    i->second->GetName( ),
+                                string Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot(
                                         UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
@@ -677,20 +689,22 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 ),
-                                                Month,
-                                                Year
-                                                );
+                                    );
  
                             if(! StatsPlayerSummary->GetHidden() )
                             {
-                                if( i->first.empty( ) )
+                                if( i->first.empty( ) ) {
+                                        SendChat( Player, "["+i->second->GetName( )+"] Month: "+Month+", Year: "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
                                         SendAllChat( Summary );
+                                }
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
-                                        if( Player )
+                                        if( Player ) {
+                                            SendChat( Player, "["+Player->GetName()+"] Month: "+Month+", Year: "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
                                                 SendChat( Player, Summary );
+                                        }
                                 }
                             } else {
                                 CGamePlayer *Player = GetPlayerFromName( i->first, true );
@@ -707,17 +721,21 @@ bool CGame :: Update( void *fd, void *send_fd )
                         else
                         {
                                 if( i->first.empty( ) )
-                                        SendAllChat( m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ),
+                                        SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
                                                 Month,
-                                                Year ) );
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                            ) );
                                 else
                                 {
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player )
-                                                SendChat( Player, m_GHost->m_Language->HasntPlayedDotAGamesWithThisBot( i->second->GetName( ),
+                                                SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
                                                 Month,
-                                                Year ) );
+                                                Year,
+                                                m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                            ) );
                                 }
                         }
  
