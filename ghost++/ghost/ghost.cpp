@@ -2080,7 +2080,7 @@ uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
     for( vector<string> :: iterator i = m_Aliases.begin( ); i != m_Aliases.end( ); ++i ) {
         string Alias = *i;
         transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
-        if( Alias.size( ) > alias.size( ) ? Alias.substr(0, alias.size( ) ) == alias : Alias == alias ) {
+        if( Alias.substr(0, alias.size( ) ) == alias || Alias == alias ) {
             m_StatsAlias = c;
         }
         c++;
