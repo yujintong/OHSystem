@@ -369,8 +369,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                roleName,
                                                 Streak,
+                                                roleName,
                                                 Month,
                                                 Year
                                                 ) );
@@ -392,8 +392,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                roleName,
                                                 Streak,
+                                                roleName,
                                                 Month,
                                                 Year
                                                 ) );
@@ -421,8 +421,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
-                                                roleName,
                                                 Streak,
+                                                roleName,
                                                 Month,
                                                 Year
                                                 ) );
@@ -681,14 +681,14 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetNeutrals( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetTowers( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetRax( ) ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgKills( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgDeaths( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 2 ),
-                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 2 )
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgKills( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgDeaths( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 1 ),
+                                        UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 1 )
                                     );
  
                             if(! StatsPlayerSummary->GetHidden() )

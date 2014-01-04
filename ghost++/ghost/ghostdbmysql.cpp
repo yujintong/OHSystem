@@ -2040,19 +2040,23 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
     string EscGameName = MySQLEscapeString(conn, gamename);
     if(!EscGameName.empty() && gameid == 0)
     {
-        string Query = "INSERT INTO oh_games (botid, gamename, gamestatus, datetime, alias_id) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0, CURRENT_TIMESTAMP(), "+UTIL_ToString(gamealias)+");";
+        string Query = "INSERT INTO oh_games (botid, gamename, gamestatus, datetime) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0, CURRENT_TIMESTAMP());";
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         else
                  RowID = mysql_insert_id( (MYSQL *)conn );
         
         string newgamename = gamename+" #"+UTIL_ToString(RowID);
-        string UpdateQuery = "UPDATE oh_games SET gamename='"+newgamename+"' WHERE id ='"+UTIL_ToString(RowID)+"';";
+        string UpdateQuery = "UPDATE oh_games SET gamename='"+newgamename+"', alias_id='"+UTIL_ToString(gamealias)+"' WHERE id ='"+UTIL_ToString(RowID)+"';";
         if( mysql_real_query( (MYSQL *)conn, UpdateQuery.c_str( ), UpdateQuery.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         
         return RowID;
     }
+    string UQuery = "UPDATE oh_games SET alias_id='"+UTIL_ToString(gamealias)+"' WHERE id ='"+UTIL_ToString(gameid)+"';";
+    if( mysql_real_query( (MYSQL *)conn, UQuery.c_str( ), UQuery.size( ) ) != 0 )
+            *error = mysql_error( (MYSQL *)conn );
+    
     uint32_t c=0;
     for( vector<CDBBan *> :: iterator i = players.begin( ); i != players.end( ); i++ )
     {
