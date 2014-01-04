@@ -373,6 +373,7 @@ public:
 	virtual void AnnounceEvent( uint32_t randomnumber );
 	string GetColoredName( string defaultname );
         virtual string GetJoinedRealm( uint32_t hostcounter );
+        uint32_t m_GameAlias;
 };
 
 #endif
