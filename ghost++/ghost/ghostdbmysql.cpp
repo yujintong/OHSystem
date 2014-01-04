@@ -410,14 +410,14 @@ CCallableBanCheck2 *CGHostDBMySQL :: ThreadedBanCheck2( string server, string us
         return Callable;
 }
 
-CCallableBanAdd *CGHostDBMySQL :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
+CCallableBanAdd *CGHostDBMySQL :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias )
 {
 	void *Connection = GetIdleConnection( );
 
 	if( !Connection )
                 ++m_NumConnections;
 
-	CCallableBanAdd *Callable = new CMySQLCallableBanAdd( server, user, ip, gamename, admin, reason, bantime, country, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+	CCallableBanAdd *Callable = new CMySQLCallableBanAdd( server, user, ip, gamename, admin, reason, bantime, country, gamealias, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
 	CreateThread( Callable );
         ++m_OutstandingCallables;
 	return Callable;
@@ -516,14 +516,14 @@ CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, s
 	return Callable;
 }
 
-CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid )
+CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias )
 {
 	void *Connection = GetIdleConnection( );
 
 	if( !Connection )
                 ++m_NumConnections;
 
-	CCallableGameDBInit *Callable = new CMySQLCallableGameDBInit( players, gamename, gameid, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+	CCallableGameDBInit *Callable = new CMySQLCallableGameDBInit( players, gamename, gameid, gamealias, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
 	CreateThread( Callable );
         ++m_OutstandingCallables;
 	return Callable;
@@ -1504,7 +1504,7 @@ uint32_t MySQLpenp( void *conn, string *error, uint32_t botid, string name, stri
 
 			if( banamount != 1 )
 			{
-				uint32_t AddBan = MySQLBanAdd( (MYSQL *)conn, error, botid, "", EscName, "", "", EscAdmin, "Too many penalty points", banamount, "" );
+				uint32_t AddBan = MySQLBanAdd( (MYSQL *)conn, error, botid, "", EscName, "", "", EscAdmin, "Too many penalty points", banamount, "", 0 );
 				return 2;
 			}
 			else
@@ -1643,7 +1643,7 @@ string MySQLBanCheck2( void *conn, string *error, uint32_t botid, string server,
 	return "fail";
 }
 
-uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
+uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias )
 {
 	string EscServer = MySQLEscapeString( conn, server );
 	string EscUser = MySQLEscapeString( conn, user );
@@ -1750,12 +1750,12 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
 		string OffenseQuery = "";
 		if( bantime == 0 )
 		{
-			Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part, date, gamename, admin, reason, country ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', '" + EscCountry + "' )";
+			Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part, date, gamename, admin, reason, country, alias_id ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', '" + EscCountry + "', "+UTIL_ToStrng(gamealias)+" )";
 			OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "' );";
 		}
 		else
 		{
-			Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part,date, gamename, admin, reason, expiredate, country ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), '" + EscCountry + "' );";
+			Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part,date, gamename, admin, reason, expiredate, country alias_id ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), '" + EscCountry + "', "+UTIL_ToString(gamealias)+" );";
                 	OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin, offence_expire ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + ") );";
 		}
 
@@ -2034,13 +2034,13 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
 	return databaseid;
 }
 
-uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBBan *> players, string gamename, uint32_t gameid )
+uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias )
 {
     uint32_t RowID = 0;
     string EscGameName = MySQLEscapeString(conn, gamename);
     if(!EscGameName.empty() && gameid == 0)
     {
-        string Query = "INSERT INTO oh_games (botid, gamename, gamestatus, datetime) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0, CURRENT_TIMESTAMP());";
+        string Query = "INSERT INTO oh_games (botid, gamename, gamestatus, datetime, alias_id) VALUES ("+UTIL_ToString(botid)+", '"+gamename+"', 0, CURRENT_TIMESTAMP(), "+UTIL_ToString(gamealias)+");";
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         else
@@ -2889,7 +2889,7 @@ void CMySQLCallableBanAdd :: operator( )( )
 	Init( );
 
 	if( m_Error.empty( ) )
-		m_Result = MySQLBanAdd( m_Connection, &m_Error, m_SQLBotID, m_Server, m_User, m_IP, m_GameName, m_Admin, m_Reason, m_BanTime, m_Country );
+		m_Result = MySQLBanAdd( m_Connection, &m_Error, m_SQLBotID, m_Server, m_User, m_IP, m_GameName, m_Admin, m_Reason, m_BanTime, m_Country, m_GameAlias );
 
 	Close( );
 }
@@ -2964,7 +2964,7 @@ void CMySQLCallableGameDBInit :: operator( )( )
 	Init( );
 
 	if( m_Error.empty( ) )
-		m_Result = MySQLGameDBInit( m_Connection, &m_Error, m_SQLBotID, m_Players, m_GameName, m_GameID );
+		m_Result = MySQLGameDBInit( m_Connection, &m_Error, m_SQLBotID, m_Players, m_GameName, m_GameID, m_GameAlias );
 
 	Close( );
 }

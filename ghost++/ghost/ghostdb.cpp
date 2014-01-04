@@ -138,7 +138,7 @@ string CGHostDB :: BanCheck2( string server, string user, string type )
         return "";
 }
 
-uint32_t CGHostDB :: BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
+uint32_t CGHostDB :: BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias )
 {
 	return false;
 }
@@ -343,7 +343,7 @@ CCallableBanCheck2 *CGHostDB :: ThreadedBanCheck2( string server, string user, s
         return NULL;
 }
 
-CCallableBanAdd *CGHostDB :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
+CCallableBanAdd *CGHostDB :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias )
 {
 	return NULL;
 }
@@ -383,7 +383,7 @@ CCallableGameAdd *CGHostDB :: ThreadedGameAdd( string server, string map, string
 	return NULL;
 }
 
-CCallableGameDBInit *CGHostDB :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid )
+CCallableGameDBInit *CGHostDB :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias )
 {
         return NULL;
 }
