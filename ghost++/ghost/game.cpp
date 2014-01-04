@@ -2991,7 +2991,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 
                 if( m_StatsAlias == 0 ) {
                     SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
-                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias]+"]");
+                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
                     m_StatsAlias = m_GameAlias;
                 }
                 string StatsUser = User;
@@ -3048,7 +3048,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 
                 if( m_StatsAlias == 0 ) {
                     SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
-                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias]+"]");
+                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
                     m_StatsAlias = m_GameAlias;
                 }
                 string StatsUser = User;
@@ -3104,7 +3104,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 
                 if( m_StatsAlias == 0 ) {
                     SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
-                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias]+"]");
+                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
                     m_StatsAlias = m_GameAlias;
                 }
                 
