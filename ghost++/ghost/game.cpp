@@ -1071,7 +1071,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             //
                             // !SETINSULT
                             //
-                            else if( Command=="setinsult" || Command=="si" )
+                            else if( Command=="setinsult" )
                             {
                                 if(Payload.empty())
                                     SendChat(player, "Error you must specify a player.");
@@ -2935,7 +2935,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
          * All over statistics, games isnt relating to any of the gamealiases, only detailed statistics should be shown
          * in relation to the gamealias.
          */
-        if( Command == "stats" && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
+        else if( Command == "stats" && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
         {
                 string StatsUser = User;
                 string Month = "";
@@ -2970,11 +2970,22 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         }
  
         //
-        // !RANK
+        // !RANKDOTA
+        // !RANKLOD
+        // !RANKIMBA
+        // !RD
+        // !RL
+        // !RI
         //
- 
-        if( ( Command == "rank" || Command == "class" ) && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
+        
+        else if( ( Command.substr(0, 4) == "rank" || ( Command == "rd" || Command == "rl" || Command = "ri") ) && GetTime( ) - player->GetStatsSentTime( ) >= 5 )
         {
+                uint32_t m_StatsAlias = m_GameAlias;
+                if( Command.size( ) > 4 )
+                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 4, Command.Size( ) - 4 ) );
+                else if( Command.size( ) < 4 )
+                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.Size( ) - 1 ) );
+                
                 string StatsUser = User;
                 string Month = "";
                 string Year = "";
@@ -2990,16 +3001,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_GameAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                         else
-                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_GameAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_GameAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
                         else
-                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_GameAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -3009,11 +3020,21 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
  
         //
         // !STATSDOTA
+        // !STATSLOD
+        // !STATSIMBA
         // !SD
+        // !SL
+        // !SI
         //
  
-        else if( (Command == "statsdota" || Command == "sd") && GetTime( ) - player->GetStatsDotASentTime( ) >= 5 )
+        else if( ( ( Command.substr( 0, 5 ) == "stats" && Command.size( ) > 5 ) || ( Command == "sl" || Command == "sd" || Command == "si" ) ) && GetTime( ) - player->GetStatsDotASentTime( ) >= 5 )
         {
+                uint32_t m_StatsAlias = m_GameAlias;
+                if( Command.size( ) > 5 )
+                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.Size( ) - 5 ) );
+                else if( Command.size( ) < 5 )
+                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.Size( ) - 1 ) );
+                
                 string StatsUser = User;
                 string Month = "";
                 string Year = "";
@@ -3029,16 +3050,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_GameAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                         else
-                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_GameAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_GameAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
                         else
-                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_GameAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -3047,10 +3068,21 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         }
  
         //
-        // !STREAK
+        // !STREAKDOTA
+        // !STREAKLOD
+        // !STRAKIMBA
+        // !STD
+        // !STL
+        // !STI
         //
-        else if( Command == "streak" )
+        else if( Command.substr(0, 5) == "streak" || ( Command == "std" || Command == "stl" || Command = "sti" ) )
         {
+                uint32_t m_StatsAlias = m_GameAlias;
+                if( Command.size( ) > 5 )
+                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.Size( ) - 5 ) );
+                else if( Command.size( ) < 5 )
+                    m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.Size( ) - 2 ) );
+                
                 string StatsUser = User;
                 string Month = "";
                 string Year = "";
@@ -3065,7 +3097,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 // check for potential abuse
  
                 if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                        m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_GameAlias ) ) );
+                        m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
         }
         
         //

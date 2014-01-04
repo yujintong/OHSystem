@@ -272,6 +272,7 @@ public:
         void ReadRoomData();
         string GetAliasName( uint32_t alias );
         string GetRoomName(string RoomID);
+        uint32_t GetStatsAliasNumber( string alias );
 };
 
 #endif
