@@ -3735,12 +3735,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !STI
                                 //
  
-                                else if( Command.substr(0, 5) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
+                                else if( Command.substr(0, 6) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
                                 {
                                         uint32_t m_StatsAlias = 0;
-                                        if( Command.size( ) > 5 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
-                                        else if( Command.size( ) < 5 )
+                                        if( Command.size( ) > 6 )
+                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 6, Command.size( ) - 6 ) );
+                                        else if( Command.size( ) < 6 )
                                            m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
                                         
                                         if( m_StatsAlias == 0 )

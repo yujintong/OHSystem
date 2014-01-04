@@ -490,9 +490,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 }
                                         }
                                         if(m_GHost->m_RanksLoaded)
-                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                         else {
-                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                                SendAllChat( "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                                 CONSOLE_Print("Could not add correctly a levelname. ranks.txt wasnt loaded.");
                                         }
                                 }
@@ -514,9 +514,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                         }
                                                 }
                                                 if(m_GHost->m_RanksLoaded)
-                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                                 else {
-                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                                        SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                                         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                                                 }
                                         }
@@ -542,9 +542,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 }
                                         }
                                         if(m_GHost->m_RanksLoaded)
-                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
+                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(Level)+" Class: "+LevelName );
                                         else {
-                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] Rank: "+StatsPlayerSummary->GetRank( ));
+                                            SendChat( Player, "["+StatsPlayerSummary->GetPlayer( )+": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ));
                                             CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
                                         }
                                     }
@@ -598,9 +598,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                 else
-                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                        SendAllChat( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                             } else {
                                 CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
@@ -611,9 +611,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                     else
                                     {
                                         if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                         else
-                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
+                                                SendChat( Player, "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+"] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                                     }
                                 }
                             }
@@ -3109,13 +3109,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         // !STL
         // !STI
         //
-        else if( Command.substr(0, 5) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
+        else if( Command.substr(0, 6) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
         {
                 uint32_t m_StatsAlias = 0;
                 string alias = "";
-                if( Command.size( ) > 5 )
-                    alias = Command.substr( 5, Command.size( ) - 5 );
-                else if( Command.size( ) < 5 )
+                if( Command.size( ) > 6 )
+                    alias = Command.substr( 6, Command.size( ) - 6 );
+                else if( Command.size( ) < 6 )
                     alias = Command.substr( 2, Command.size( ) - 2 );
                 
                 m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
