@@ -1438,7 +1438,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         // !ADDBAN
                         // !BAN
                         //
-                        else if( ( Command == "addban" || Command == "ban" || Command == "b" ) && !Payload.empty( ) )
+                        else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) )
                         {
                                 if( Level >= 7 )
                                 {
