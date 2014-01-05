@@ -2178,7 +2178,6 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
         else
         {
                 // tell everyone about the player leaving
- 
                 SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( player->GetPID( ), player->GetLeftCode( ) ) );
         }
  
@@ -2221,8 +2220,18 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
                         m_CountDownStarted = false;
                         m_Balanced = false;
                 }
+                if( m_GHost->m_VoteMode && m_VotedTimeStart != 0 ) {
+                    for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                    {
+                        (*i)->SetVotedMode( 0 );
+                    }
+                    m_VotedTimeStart = 0;
+                    m_Voted = false;
+                }
+                
                 if(m_GHost->m_AutoDenyUsers)
                         m_Denied.push_back( player->GetName( ) + " " + player->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                
         }
         
         m_KickVotePlayer.clear( );
@@ -2957,6 +2966,21 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
         {
                 SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+        }
+        // abort the countdown if there was one in progress
+        if( m_CountDownStarted )
+        {
+                SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
+                m_CountDownStarted = false;
+                m_Balanced = false;
+        }
+        if( m_GHost->m_VoteMode && m_VotedTimeStart != 0 ) {
+            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+            {
+                (*i)->SetVotedMode( 0 );
+            }
+            m_VotedTimeStart = 0;
+            m_Voted = false;
         }
 }
  
