@@ -6038,19 +6038,18 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                             SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. Vote with '!vote NUMBER'.");
                             SendChat( (*i)->GetPID( ), "Possible votes to mode:");
                             string Modes;
-                            uitn32_t c = 1;
-                            for( vector<CBNET *> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+                            uint32_t c = 1;
+                            for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
                                 if( 1==c)
-                                    Modes += UTIL_ToString(c)+": "+*i;
+                                    Modes += UTIL_ToString(c)+": "+*k;
                                 else 
-                                    Modes += ", "+UTIL_ToString(c)+": "+*i;
+                                    Modes += ", "+UTIL_ToString(c)+": "+*k;
                                 c++;
 
                                 if( Modes.size() > 100 )
                                     SendChat((*i)->GetPID( ), Modes);
                             }
                             SendChat((*i)->GetPID( ), Modes);
-                            
                             if( NotVoted.empty( ) )
                                     NotVoted = (*i)->GetName( );
                              else
@@ -6094,7 +6093,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                                 SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
                             }
                         } else {
-                            StartedVoteMode( );
+                            StartVoteMode( );
                         }
                         return;
                     } else {
