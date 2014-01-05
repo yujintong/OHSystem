@@ -4401,7 +4401,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if( GetTime( ) >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && m_VotedTimeStart != 0 ) {
                 SendChat(player, "Error. Its alreay to late to vote.");
             } else if( m_VotedTimeStart == 0 ) {
-                SendChat(player, "Error. You can't vote currently. Vote will start when all needed slots are oocupied.");
+                SendChat(player, "Error. You can't vote currently. Vote will start when all needed slots are occupied.");
             } else if( player->GetVotedMode() != 0 ) {
                 SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
             } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos ) {
@@ -4441,7 +4441,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( Command == "voteoptions" && m_GHost->m_VoteMode ) {
             SendChat( player, "Possible options to vote as mode:");
-            SendChat( player, "=================================");
+            SendChat( player, "==============================");
             string Modes;
             uint32_t c = 1;
             for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
@@ -4515,6 +4515,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
             if( mode7 != 0 ) {
                 Return += "["+m_ModesToVote[6]+": "+UTIL_ToString(mode7)+"] ";
+            }
+            SendChat( player, Return );
+            if( notvoted != 0 ) {
+                SendChat(player, "Totally ["+UTIL_ToString(notvoted)+"] player(s) didn't vote for a mode.");
             }
         }
         return HideCommand;

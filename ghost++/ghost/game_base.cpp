@@ -5886,7 +5886,7 @@ void CBaseGame :: StartCountDown( bool force )
                                                NotPassword += ", " + (*i)->GetName( );
                                 }
                                 
-                                if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 ) {
+                                if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
                                     SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
                                     if( NotVoted.empty( ) )
                                             NotVoted = (*i)->GetName( );
@@ -6020,8 +6020,8 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                                  else
                                         NotPassword += ", " + (*i)->GetName( );
                         }
-                        if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 ) {
-                            SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote.");
+                        if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
+                            SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
                             if( NotVoted.empty( ) )
                                     NotVoted = (*i)->GetName( );
                              else

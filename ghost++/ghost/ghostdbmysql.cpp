@@ -1755,7 +1755,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
 		}
 		else
 		{
-			Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part,date, gamename, admin, reason, expiredate, country alias_id ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), '" + EscCountry + "', "+UTIL_ToString(gamealias)+" );";
+			Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part,date, gamename, admin, reason, expiredate, country, alias_id ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), '" + EscCountry + "', "+UTIL_ToString(gamealias)+" );";
                 	OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin, offence_expire ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + ") );";
 		}
 
