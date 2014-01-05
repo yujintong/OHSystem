@@ -75,11 +75,11 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
         m_DBGame = new CDBGame( 0, string( ), m_Map->GetMapPath( ), string( ), string( ), string( ), 0 );
         m_GameAlias = m_Map->GetAlias();
         m_GameAliasName = m_GHost->GetAliasName( m_GameAlias );
-        string lAliasName = m_GameAliasName;
-        transform( lAliasName.begin( ), lAliasName.end( ), lAliasName.begin( ), ::tolower );
+        m_lGameAliasName = m_GameAliasName;
+        transform( m_lGameAliasName.begin( ), m_lGameAliasName.end( ), m_lGameAliasName.begin( ), ::tolower );
 //        if( m_Map->GetMapType( ) == "w3mmd" )
 //                m_Stats = new CStatsW3MMD( this, m_Map->GetMapStatsW3MMDCategory( ) );
-        if( lAliasName.find("lod") != string :: npos || lAliasName.find("dota") != string :: npos || lAliasName.find("imba") != string :: npos ) {
+        if( m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) {
             m_Stats = new CStatsDOTA( this );
         } else if( m_Map->GetAlias() == 0 ) {
             CONSOLE_Print( "Missing definition of MapAlias, game won't be recorded with extended map statistics (DotA/W3mmD).");

@@ -378,6 +378,7 @@ public:
         virtual string GetJoinedRealm( uint32_t hostcounter );
         uint32_t m_GameAlias;
         string m_GameAliasName;
+        string m_lGameAliasName;
         virtual void StartVoteMode( );
         void GetVotingModes( string allmodes );
 };
