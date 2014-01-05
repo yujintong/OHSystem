@@ -5951,7 +5951,7 @@ void CBaseGame :: StartCountDown( bool force )
                                     if( m_GHost->m_RandomMode ) {
                                         SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
                                     } else {
-                                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the top voted mode will be taken." );
                                     }
                                 } else {
                                     StartVoteMode( );
@@ -6085,7 +6085,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                             if( m_GHost->m_RandomMode ) {
                                 SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
                             } else {
-                                SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                                SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the top voted mode will be taken." );
                             }
                         } else {
                             StartVoteMode( );
