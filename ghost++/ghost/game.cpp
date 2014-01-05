@@ -4494,21 +4494,27 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SendChat( player, "============");
             string Return = "";
             if( mode1 != 0 ) {
-                Return += "["+m_ModesToVote[0]+": "+UTIL_ToString(mode1)"] ";
+                Return += "["+m_ModesToVote[0]+": "+UTIL_ToString(mode1)+"] ";
+            }
             if( mode2 != 0 ) {
-                Return += "["+m_ModesToVote[1]+": "+UTIL_ToString(mode2)"] ";
+                Return += "["+m_ModesToVote[1]+": "+UTIL_ToString(mode2)+"] ";
+            }
             if( mode3 != 0 ) {
-                Return += "["+m_ModesToVote[2]+": "+UTIL_ToString(mode3)"] ";
+                Return += "["+m_ModesToVote[2]+": "+UTIL_ToString(mode3)+"] ";
+            }
             if( mode4 != 0 ) {
-                Return += "["+m_ModesToVote[3]+": "+UTIL_ToString(mode4)"] ";
+                Return += "["+m_ModesToVote[3]+": "+UTIL_ToString(mode4)+"] ";
+            }
             SendChat(player, Return );
-            Retrun.clear();
+            Return.clear();
             if( mode5 != 0 ) {
-                Return += "["+m_ModesToVote[4]+": "+UTIL_ToString(mode5)"] ";
+                Return += "["+m_ModesToVote[4]+": "+UTIL_ToString(mode5)+"] ";
+            }
             if( mode6 != 0 ) {
-                Return += "["+m_ModesToVote[5]+": "+UTIL_ToString(mode6)"] ";
+                Return += "["+m_ModesToVote[5]+": "+UTIL_ToString(mode6)+"] ";
+            }
             if( mode7 != 0 ) {
-                Return += "["+m_ModesToVote[6]+": "+UTIL_ToString(mode7)"] ";
+                Return += "["+m_ModesToVote[6]+": "+UTIL_ToString(mode7)+"] ";
             }
         }
         return HideCommand;
