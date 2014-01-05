@@ -277,7 +277,7 @@ public:
         string GetRoomName(string RoomID);
         uint32_t GetStatsAliasNumber( string alias );
         string GetLODMode( string fullmode );
-        string GetMonthInWords( uint32_t month);
+        string GetMonthInWords( string month);
 };
 
 #endif
