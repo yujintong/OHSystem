@@ -1384,7 +1384,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 if( (*i)->GetLagging( ) && m_SyncCounter - (*i)->GetSyncCounter( ) < m_SyncLimit / 2 )
                                 {
                                         // stop the lag screen for this player
-                                        GAME_Print( 11, "", "", (*j)->GetName(), "", "stop" );
+                                        GAME_Print( 11, "", "", (*i)->GetName(), "", "stop" );
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] stopped lagging on [" + (*i)->GetName( ) + "]" );
                                         SendAll( m_Protocol->SEND_W3GS_STOP_LAG( *i ) );
                                         (*i)->SetLagging( false );
@@ -2790,7 +2790,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
  
-        GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." ) );
+        GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
         if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
             SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
         else  
