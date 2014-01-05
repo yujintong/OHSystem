@@ -4398,10 +4398,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         // !VOTE
         //
         else if( Command == "vote" && m_GHost->m_VoteMode &&(! m_GameLoaded ||! m_GameLoading) ) {
-            if( GetTime( ) < m_VotedTimeStart + m_GHost->m_MaxVotingTime ) {
+            if( GetTime( ) >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && m_VotedTimeStart != 0 ) {
                 SendChat(player, "Error. Its alreay to late to vote.");
             } else if( m_VotedTimeStart == 0 ) {
-                SendChat(player, "Error. You can vote currently. Vote will start when all slots are oocupied.");
+                SendChat(player, "Error. You can't vote currently. Vote will start when all needed slots are oocupied.");
             } else if( player->GetVotedMode() != 0 ) {
                 SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
             } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos ) {
@@ -4433,6 +4433,83 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 } else {
                        SendAllChat("The mode has already ["+UTIL_ToString(c)+"] votes. There ["+UTIL_ToString( GetNumHumanPlayers( ) / 2 - c ) +"] more needed for an absolute voting of the mode.");
                 }
+            }
+        }
+        
+        //
+        // !VOTEOPTIONS
+        //
+        else if( Command == "voteoptions" && m_GHost->m_VoteMode ) {
+            SendChat( player, "Possible options to vote as mode:");
+            SendChat( player, "=================================");
+            SendChat
+            string Modes;
+            uint32_t c = 1;
+            for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
+                if( 1==c)
+                    Modes += UTIL_ToString(c)+": "+*k;
+                else 
+                    Modes += ", "+UTIL_ToString(c)+": "+*k;
+                c++;
+
+                if( Modes.size() > 100 )
+                    SendChat(player, Modes);
+            }
+            SendChat(player, Modes);
+        }
+        
+        //
+        // !VOTERESULT
+        //
+        else if( Command == "voteresult"&& m_GHost->m_VoteMode && m_Voted ) {
+            uint32_t c = 0;
+            uint32_t mode1 = 0;
+            uint32_t mode2 = 0;
+            uint32_t mode3 = 0;
+            uint32_t mode4 = 0;
+            uint32_t mode5 = 0;
+            uint32_t mode6 = 0;
+            uitn32_t mode7 = 0;
+            uint32_t notvoted = 0;
+            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+            {
+                if( (*i)->GetVotedMode( ) != 0 ) {
+                    if( (*i)->GetVotedMode( ) == 1 )
+                        mode1++;
+                    else if( (*i)->GetVotedMode( ) == 2 )
+                        mode2++;
+                    else if( (*i)->GetVotedMode( ) == 3 )
+                        mode3++;
+                    else if( (*i)->GetVotedMode( ) == 4 )
+                        mode4++;
+                    else if( (*i)->GetVotedMode( ) == 5 )
+                        mode5++;
+                    else if( (*i)->GetVotedMode( ) == 6 )
+                        mode6++;
+                    else if( (*i)->GetVotedMode( ) == 7 )
+                        mode7++;
+                } else
+                    notvoted++;
+            }
+            SendChat( player, "Vote Result:");
+            SendChat( player, "============");
+            string Return = "";
+            if( mode1 != 0 ) {
+                Return += "["+m_ModesToVote[0]+": "+UTIL_ToString(mode1)"] ";
+            if( mode2 != 0 ) {
+                Return += "["+m_ModesToVote[1]+": "+UTIL_ToString(mode2)"] ";
+            if( mode3 != 0 ) {
+                Return += "["+m_ModesToVote[2]+": "+UTIL_ToString(mode3)"] ";
+            if( mode4 != 0 ) {
+                Return += "["+m_ModesToVote[3]+": "+UTIL_ToString(mode4)"] ";
+            SendChat(player, Return );
+            Retrun.clear();
+            if( mode5 != 0 ) {
+                Return += "["+m_ModesToVote[4]+": "+UTIL_ToString(mode5)"] ";
+            if( mode6 != 0 ) {
+                Return += "["+m_ModesToVote[5]+": "+UTIL_ToString(mode6)"] ";
+            if( mode7 != 0 ) {
+                Return += "["+m_ModesToVote[6]+": "+UTIL_ToString(mode7)"] ";
             }
         }
         return HideCommand;

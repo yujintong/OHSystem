@@ -5887,21 +5887,7 @@ void CBaseGame :: StartCountDown( bool force )
                                 }
                                 
                                 if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 ) {
-                                    SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. Vote with '!vote NUMBER'.");
-                                    SendChat( (*i)->GetPID( ), "Possible votes to mode:");
-                                    string Modes;
-                                    uint32_t c = 1;
-                                    for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
-                                        if( 1==c)
-                                            Modes += UTIL_ToString(c)+": "+*k;
-                                        else 
-                                            Modes += ", "+UTIL_ToString(c)+": "+*k;
-                                        c++;
-
-                                        if( Modes.size() > 100 )
-                                            SendChat((*i)->GetPID( ), Modes);
-                                    }
-                                    SendChat((*i)->GetPID( ), Modes);
+                                    SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
                                     if( NotVoted.empty( ) )
                                             NotVoted = (*i)->GetName( );
                                      else
@@ -6035,21 +6021,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                                         NotPassword += ", " + (*i)->GetName( );
                         }
                         if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 ) {
-                            SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. Vote with '!vote NUMBER'.");
-                            SendChat( (*i)->GetPID( ), "Possible votes to mode:");
-                            string Modes;
-                            uint32_t c = 1;
-                            for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
-                                if( 1==c)
-                                    Modes += UTIL_ToString(c)+": "+*k;
-                                else 
-                                    Modes += ", "+UTIL_ToString(c)+": "+*k;
-                                c++;
-
-                                if( Modes.size() > 100 )
-                                    SendChat((*i)->GetPID( ), Modes);
-                            }
-                            SendChat((*i)->GetPID( ), Modes);
+                            SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote.");
                             if( NotVoted.empty( ) )
                                     NotVoted = (*i)->GetName( );
                              else
@@ -6597,7 +6569,7 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
         for( vector<string> :: iterator i = m_AllModes.begin( ); i != m_AllModes.end( ); ++i ) {
             m_ModesToVote.push_back( *i );
         }
-        m_ModesToVote.push_back( "Random" );
+        m_ModesToVote.push_back( "random" );
     } else {
         //get unique random numbers to pick for the diffrent modes
         string Numbers;
@@ -6615,6 +6587,6 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
         {
                 m_ModesToVote.push_back( SingleNumber );
         }
-        m_ModesToVote.push_back( "Random" );
+        m_ModesToVote.push_back( "random" );
     }
 }
