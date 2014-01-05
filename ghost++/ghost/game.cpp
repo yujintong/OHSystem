@@ -902,14 +902,14 @@ bool CGame :: Update( void *fd, void *send_fd )
             if( Same.size() == 1 ){
                 if( HighestVote != g ) {
                     SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
-                    m_Map->SetDefaultHCL( m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[HighestVote-1]) : m_ModesToVote[HighestVote-1] );
+                    m_HCLCommandString =  m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[HighestVote-1]) : m_ModesToVote[HighestVote-1];
                     m_Voted = true;
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 } else {
                     uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
                     SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode-1]+"] has been randomed. The game will start now.");
-                    m_Map->SetDefaultHCL( m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1] );
+                    m_HCLCommandString = m_GameAliasName.find("lod")!=string::npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
                     m_Voted = true;
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
@@ -918,7 +918,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 SendAllChat("There ["+UTIL_ToString(c)+"] modes with the same highest vote amount.");
                 uint32_t RandomMode = rand( ) % Same.size();
                 SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode-1]]+"]. The game will start now." );
-                m_Map->SetDefaultHCL( m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode-1]]) : m_ModesToVote[Same[RandomMode-1]] );
+                m_HCLCommandString = m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode-1]]) : m_ModesToVote[Same[RandomMode-1]];
                 m_Voted = true;
                 StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
@@ -4418,14 +4418,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( GetNumHumanPlayers( ) / 2  <= c ) {
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         SendAllChat( "The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]. The game will start now.");
-                        m_Map->SetDefaultHCL( m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1] );
+                        m_HCLCommandString = m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );
                     } else {
                         uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
                         SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode-1]+"] has been randomed.");
-                        m_Map->SetDefaultHCL( m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1] );
+                        m_HCLCommandString = m_GameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );
@@ -4451,8 +4451,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     Modes += ", "+UTIL_ToString(c)+": "+*k;
                 c++;
 
-                if( Modes.size() > 100 )
+                if( Modes.size() > 100 ) {
                     SendChat(player, Modes);
+                    Modes.clear( );
+                }
             }
             SendChat(player, Modes);
         }

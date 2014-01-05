@@ -164,7 +164,6 @@ public:
 	vector<CGameSlot> GetSlots( )			{ return m_Slots; }
         uint32_t GetAlias( )                            { return m_Alias; }
         string GetPossibleModesToVote( )                { return m_PossibleModesToHost; }
-        void SetDefaultHCL( string nDefaultHCL )        { m_MapDefaultHCL = nDefaultHCL; }
 
 	void Load( CConfig *CFG, string nCFGFile );
 	void CheckValid( );

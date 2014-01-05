@@ -2135,29 +2135,29 @@ string CGHost :: GetLODMode( string fullmode ) {
 }
 
 string CGHost :: GetMonthInWords( string month ) {
-    if("1"==month)
+    if(month=="1")
         return "January";
-    else if("2"==month)
+    else if(month=="2")
         return "February";
-    else if("3"==month)
+    else if(month=="3")
         return "March";
-    else if("4"==month)
+    else if(month=="4")
         return "April";
-    else if("5"==month)
+    else if(month=="5")
         return "May";
-    else if("6"==month)
+    else if(month=="6")
         return "June";
-    else if("7"==month)
+    else if(month=="7")
         return "July";
-    else if("8"==month)
+    else if(month=="8")
         return "August";
-    else if("9"==month)
+    else if(month=="9")
         return "September";
-    else if("10"==month)
+    else if(month=="10")
         return "Ocotober";
-    else if("11"==month)
+    else if(month=="11")
         return "November";
-    else if("12"==month)
+    else if(month=="12")
         return "December";
     else
         return "unknown";

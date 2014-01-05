@@ -88,7 +88,6 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_CallableGameDBInit = NULL;
         m_VotedTimeStart = 0;
         m_Voted = false;
-        
         if( m_GHost->m_SaveReplays && !m_SaveGame )
                 m_Replay = new CReplay( );
  
@@ -6570,8 +6569,10 @@ void CBaseGame :: StartVoteMode( ) {
             Modes += ", "+UTIL_ToString(c)+": "+*i;
         c++;
         
-        if( Modes.size() > 100 )
+        if( Modes.size() > 100 ) {
             SendAllChat(Modes);
+            Modes.clear();
+        }
     }
     SendAllChat(Modes);
     SendAllChat("=========================================================================");
