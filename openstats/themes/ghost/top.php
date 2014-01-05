@@ -7,17 +7,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <div id="main-column">
      <div class="padding">
       <div class="inner">
-	  <!--
-	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm( $TopPageStartYear )?></h2>
-	  -->
 	  
 	 <form action="" method="get">
      <table>
 	   <tr>
 	    <td><?=MonthYearForm( $TopPageStartYear )?></td>
+		<td><?=DisplayGameTypesTop( $GameAliases)?></td>
 	    <td valign="middle" style="vertical-align:middle;"><?=OS_SortTopPlayers()?></td>
 	    <td><?=OS_AZ_Filter('top')?></td>
-	    <td><?=OS_ComparePlayers( 'form_start' )?></td>
 	    <td><?=OS_DisplayCountries('country', 1, 'top' )?></td>
 	   </tr>
 	 </table>

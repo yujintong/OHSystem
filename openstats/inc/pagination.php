@@ -25,7 +25,7 @@ if ( isset($_GET["game"]) AND is_numeric($_GET["game"]) )   $prefix.="?game=".sa
 if ( isset($_GET["fame"]) )     $prefix.="?fame";
 if ( isset($_GET["shame"]) )     $prefix.="?shame";
 if ( isset($_GET["livegames"]) )     $prefix.="?livegames";
-
+if ( isset($_GET["game_type"]) )     $prefix.="&game_type=".(int)$_GET["game_type"];
 
 if ( isset($_GET["post_id"]) ) {
   $strana = "&amp;page=";

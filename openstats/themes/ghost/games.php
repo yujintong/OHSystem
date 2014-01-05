@@ -9,6 +9,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
       <div class="inner">
   
 <?php
+
   if ( isset($_GET["uid"]) AND is_numeric($_GET["uid"]) AND isset($GamesData[0]["player"]) ) {
    ?>
    <div class="padTop padBottom">
@@ -17,7 +18,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    <?php
   }
 ?>
-<?=DisplayGameFilter($StartYear) ?>
+<table>
+  <tr>
+    <td width="200"><?=DisplayGameFilter($StartYear) ?></td>
+    <td><?=DisplayGameTypes( $GameAliases)?></td>
+  </tr>
+</table>
+
   <table>
     <tr>
 	 <th width="240" class="padLeft"><?=$lang["game"]?></th>

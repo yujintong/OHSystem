@@ -493,4 +493,6 @@ $lang["most_recent_stats"]  = "Prikaži najnoviju statistiku";
 
 $lang["game_log_lobby"]  = "Izveštaj";
 $lang["game_log_game"]   = "Izveštaj iz igre";
+$lang["show_all"]        = "Prikaži sve";
+$lang["choose_game_type"]        = "Izaberi tip igre";
 ?>

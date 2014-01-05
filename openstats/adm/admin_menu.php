@@ -11,6 +11,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  <li><a href="<?=OS_HOME?>adm/?cfg">Configuration</a></li>
 	  <li><a href="<?=OS_HOME?>adm/?geoip">GeoIP</a></li>
 	  <?php if (OS_IsRoot() ) { ?>
+	  <li><a href="<?=OS_HOME?>adm/?aliases">BOT: Game Types</a> </li>
 	  <li><a href="<?=OS_HOME?>adm/?admin_logs">BOT: Admin Logs</a></li>
 	  <?php } ?>
 	  <li><a href="<?=OS_HOME?>adm/?announcements">BOT: Announcements</a></li>

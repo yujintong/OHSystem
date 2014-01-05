@@ -494,4 +494,6 @@ $lang["most_recent_stats"]  = "Show most recent statistics";
 
 $lang["game_log_lobby"]  = "Lobby Log";
 $lang["game_log_game"]   = "Game Log";
+$lang["show_all"]        = "Show All";
+$lang["choose_game_type"]        = "Choose game type";
 ?>

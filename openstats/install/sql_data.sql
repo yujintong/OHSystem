@@ -25,8 +25,11 @@ DROP TABLE IF EXISTS `oh_aliases`;
 CREATE TABLE IF NOT EXISTS `oh_aliases` (
   `alias_id` int(11) NOT NULL,
   `alias_name` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `default_alias` tinyint(1) NOT NULL,
   PRIMARY KEY (`alias_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO `oh_aliases` (`alias_id`, `alias_name`, `default_alias`) VALUES (1, 'DotA', 1);
 
 DROP TABLE IF EXISTS `oh_bans`;
 CREATE TABLE IF NOT EXISTS `oh_bans` (

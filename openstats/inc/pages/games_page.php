@@ -10,8 +10,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$HomeKeywords = strtolower( os_strip_quotes($lang["game_archive"])).','.$HomeKeywords;
 	$MenuClass["games"] = "active";
 	
+	$sql = "";
+	
+	if ( OS_DEFAULT_MAP!='') $sqlQ = "AND (map) LIKE ('%".OS_DEFAULT_MAP."%') ";
+	else $sqlQ = '';
+
 	//Get date of first game
-	$sth = $db->prepare("SELECT * FROM ".OSDB_GAMES." WHERE id>=1 AND (map) LIKE ('%".OS_DEFAULT_MAP."%') 
+	$sth = $db->prepare("SELECT * FROM ".OSDB_GAMES." WHERE id>=1 $sqlQ
 	ORDER BY datetime ASC LIMIT 1");
 	
 	$result = $sth->execute();
@@ -97,6 +102,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   {
   //FILTER
   $filter  = "";
+
   unset($sth);
   if ( isset($_GET["m"]) AND is_numeric($_GET["m"]) AND $_GET["m"]<=12 AND $_GET["m"]>=1 ) {
   $m = safeEscape( (int) $_GET["m"] );
@@ -107,6 +113,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   $y = safeEscape( (int) $_GET["y"] );
   $filter.= "AND YEAR(datetime) = '".(int)$y."'";
   }
+  
+  if ( isset($_GET["game_type"]) AND is_numeric($_GET["game_type"]) )
+  $filter.=" AND alias_id = '".(int) $_GET["game_type"]."' ";
   
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." 
   WHERE (map) LIKE ('%".OS_DEFAULT_MAP."%') AND duration>='".$MinDuration."' ".$filter." LIMIT 1");
@@ -219,6 +228,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	header("location:".OS_HOME."?404&player");
 	die;
     }	
-	//$db->free($result);	
+	
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 $c++;
+	}
+	
   }
 ?>

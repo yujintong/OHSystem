@@ -55,7 +55,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     $sql.= " AND country_code = '".$country."' ";
 	
 	$HomeTitle.=" | $country";
- }  
+ } 
+ 
+  if ( isset($_GET["game_type"]) AND is_numeric($_GET["game_type"]) ) {
+    
+	$sql.=" AND alias_id='". ( int ) $_GET["game_type"]."' ";
+   
+  }
  
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
   WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
@@ -113,6 +119,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$TopData[$c]["counter"]        = $counter;
 	$TopData[$c]["id"]        = (int)($row["id"]);
 	$TopData[$c]["player"]  = ($row["player"]);
+	
+	$TopData[$c]["realm"] = ($row["realm"]);
 
 	$TopData[$c]["score"]  = number_format($row["score"],0);
 	$TopData[$c]["games"]  = number_format($row["games"],0);
@@ -238,5 +246,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$c++;
 	}	
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
-
+	
+	
+	
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 $c++;
+	}
 ?>

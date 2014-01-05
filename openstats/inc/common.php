@@ -792,6 +792,9 @@ function DisplayGameFilter($year = "", $query = "games" ) {
 ?>
 <form action="" method="get">
 <input type="hidden" name="<?=$query?>" />
+<?php
+if ( isset($_GET["game_type"]) ) { ?><input type="hidden" name="game_type" value="<?=(int) $_GET["game_type"]?>" /><?php }
+?>
 <select name="m">
 
  <option value=""></option>
@@ -825,6 +828,60 @@ function DisplayGameFilter($year = "", $query = "games" ) {
 </select>
 <input type="submit" value="Submit" class="menuButtons" />
 </form>
+<?php
+}
+
+function DisplayGameTypes( $GameAliases, $query = 'games', $ShowEmpty = 1) {
+
+$qry = '';
+
+if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
+global $lang;
+?>
+	<select name="alias" onchange="location.href=this.value">
+	<?php if ($ShowEmpty == 1) { ?>
+	<option value="<?=OS_HOME?>?<?=$query?><?=$qry?>"><?=$lang["choose_game_type"]?></option>
+	<?php } ?>
+	<?php 
+	if ( !empty($GameAliases) ) {
+	foreach ($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="<?=OS_HOME?>?<?=$query?>&game_type=<?=$Alias["alias_id"]?><?=$qry?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+	}
+	?>
+	</select>
+	<?php if ($ShowEmpty == 1) { ?>
+	<input type="button" class="menuButtons" onclick="location.href='<?=OS_HOME?>?<?=$query?>'" value="<?=$lang["show_all"]?>" />
+	<?php } ?>
+<?php
+}
+
+function DisplayGameTypesTop( $GameAliases) {
+
+$qry = '';
+
+if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
+
+if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
+if ( isset($_GET["sort"]) ) $qry.= '&sort='.$_GET["sort"];
+if ( isset($_GET["L"]) ) $qry.= '&L='.substr($_GET["L"],0,1);
+if ( isset($_GET["country"]) ) $qry.= '&country='.substr($_GET["country"],0,2);
+global $lang;
+?>
+	<select name="game_type">
+	<?php 
+	if ( !empty($GameAliases) ) {
+	foreach ($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="<?=$Alias["alias_id"]?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+	}
+	?>
+	</select>
+	<input type="submit" value="Display" class="menuButtons" />
 <?php
 }
 
@@ -1295,7 +1352,6 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
 <?php if (isset($_GET["sort"]) AND $_GET["sort"] == "streak" ) $sel = 'selected="selected"'; else $sel = ''; ?>
 	  <option <?=$sel?> value="streak"><?=$lang["streak"]?></option>
 	</select>
-	<input class="menuButtons" type="submit" value="<?=$lang["submit"]?>" />
 	 <?=OS_ComparePlayers( 'link' )?>
   </form>
   <?php
@@ -1854,21 +1910,29 @@ function OS_OpenChat() {
   if ( os_is_logged() AND $_SESSION["level"]>=9 ) {
   ?>
 <div id="chat_" style="display:none; margin-bottom:22px;">
-
-	<input type="text" value="" name="chattext" id="botCommand" size="80" style="height:26px;" /> 
-	<input id="l" type="button" value="Send chat message" class="menuButtons" onclick="OS_AdminRconExec('l')" />
 		
 <div>
-<a href="javascript:;" onclick="CommandHelp('!rcon saylobby <?=$_SESSION["username"]?> ')">[CHAT]</a>
-<a href="javascript:;" onclick="CommandHelp('!rcon lobbyteam <?=$_SESSION["username"]?> 0 ')">[LobbySentinel]</a>
-<a href="javascript:;" onclick="CommandHelp('!rcon lobbyteam <?=$_SESSION["username"]?> 1 ')">[LobbyScourge]</a>
-<a href="javascript:;" onclick="CommandHelp('!rcon from <?=$_SESSION["username"]?>')">[FROM]</a>
+<select name="" id="command_type" onchange="document.getElementById('display_command').value=this.value">
+   <option value="1">All Chat (Lobby)</option>
+   <option value="2">All Chat (Game)</option>
+   <option value="3">Chat:Sentinel</option>
+   <option value="4">Chat:Scourge</option>
+   <option value="5">From</option>
+</select>
+<input type="text" value="" name="chattext" id="botCommand" size="50" style="height:26px;" /> 
+	<input id="l" style="padding:6px;" type="button" value="Send" class="menuButtons" onclick="OS_AdminRconExec('l')" />
 <!--
+<a href="javascript:;" onclick="CommandHelp('Chat: All')">[ALL CHAT]</a>
+<a href="javascript:;" onclick="CommandHelp('Chat: Sentinel')">[Chat:Sentinel]</a>
+<a href="javascript:;" onclick="CommandHelp('Chat: Scourge')">[Chat:Scourge]</a>
+<a href="javascript:;" onclick="CommandHelp('From')">[FROM]</a>
 <a href="javascript:;" onclick="OS_GetGameIDRcon('<?=$_SESSION["username"]?>')">[Game]</a>
 <a href="javascript:;" onclick="CommandHelp('!rcon gameteam <?=$_SESSION["username"]?> 0 ')">[GameSentinel]</a>
 <a href="javascript:;" onclick="CommandHelp('!rcon gameteam <?=$_SESSION["username"]?> 1 ')">[GameScourge]</a>
 -->
 </div>
+
+<div><input type="hidden" disabled="disabled" value="" id="display_command" size="50" /></div>
 		
 </div>
   <?php
@@ -2094,7 +2158,6 @@ function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQ
 	}
 	?>
 	</select>
-	<input type="submit" value="Display" class="menuButtons" />
 	<?php
 }
 
@@ -2122,7 +2185,6 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
 	<option <?=$s?> value="<?=$i?>"><?=($i)?></option>
 	<?php } ?>
  </select>
- <input type="submit" value="Display" class="menuButtons" />
  <?php
 }
 ?>
