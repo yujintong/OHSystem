@@ -185,7 +185,6 @@ protected:
         uint32_t m_BreakAutoEndVotes;
         uint32_t m_EndTicks;
         uint32_t m_StartEndTicks;
-        vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
         bool m_Voted;                                                           // define if the vote process is already done when this option is enabled
         uint32_t m_VotedTimeStart;                                              // when the voting has started, a timer function
         
@@ -193,6 +192,7 @@ public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
 	virtual ~CBaseGame( );
 
+        vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
         CMap *m_Map;
         uint16_t m_HostPort;                                                    // the port to host games on
         uint32_t m_EntryKey;                                                    // random entry key for LAN, used to prove that a player is actually joining from LAN
