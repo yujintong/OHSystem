@@ -6566,8 +6566,8 @@ void CBaseGame :: StartVoteMode( ) {
     SendAllChat( "The voteing for a mode has started now. You can vote with '!vote NUMBER'.");
     SendAllChat( "Possible votes to mode:");
     string Modes;
-    uitn32_t c = 1;
-    for( vector<CBNET *> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+    uint32_t c = 1;
+    for( vector<string> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
         if( 1==c)
             Modes += UTIL_ToString(c)+": "+*i;
         else 
