@@ -6599,17 +6599,17 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
         string Numbers;
         for( int i = 0; i < 6; ++i ) {
             uint32_t newNumber = rand( ) % ModeAmount;
-            while( Numbers.find( newNumber ) != string :: npos ) {
+            while( Numbers.find( UTIL_ToString(newNumber) ) != string :: npos ) {
                      newNumber = rand( ) % ModeAmount;
             }
-            Numbers += newNumber;
+            Numbers += UTIL_ToString(newNumber)+" ";
         }
         string SingleNumber;
         stringstream SS;
         SS << Numbers;
         while( SS >> SingleNumber )
         {
-                m_ModesToVote.push_back( SingleNumber );
+                m_ModesToVote.push_back( m_AllModes[SingleNumber] );
         }
         m_ModesToVote.push_back( "random" );
     }
