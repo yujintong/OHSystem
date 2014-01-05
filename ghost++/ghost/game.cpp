@@ -4397,7 +4397,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTE
         //
-        else if( Command == "vote" && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) ) {
+        else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) ) {
             if( GetTime( ) >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && m_VotedTimeStart != 0 ) {
                 SendChat(player, "Error. Its alreay to late to vote.");
             } else if( m_VotedTimeStart == 0 ) {
@@ -4439,16 +4439,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTEOPTIONS
         //
-        else if( Command == "voteoptions" && m_GHost->m_VoteMode ) {
+        else if( ( Command == "voteoptions" || Command == "votelist" || Command == "vo" ) && m_GHost->m_VoteMode ) {
             SendChat( player, "Possible options to vote as mode:");
             SendChat( player, "==============================");
             string Modes;
             uint32_t c = 1;
             for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
-                if( 1==c)
-                    Modes += UTIL_ToString(c)+": "+*k;
-                else 
-                    Modes += ", "+UTIL_ToString(c)+": "+*k;
+                Modes += "["+UTIL_ToString(c)+": "+*k+"] ";
                 c++;
 
                 if( Modes.size() > 100 ) {
@@ -4462,7 +4459,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTERESULT
         //
-        else if( Command == "voteresult" && m_GHost->m_VoteMode && m_Voted ) {
+        else if( ( Command == "voteresult" || Command == "vr" ) && m_GHost->m_VoteMode && m_Voted ) {
             uint32_t c = 0;
             uint32_t mode1 = 0;
             uint32_t mode2 = 0;

@@ -6563,10 +6563,7 @@ void CBaseGame :: StartVoteMode( ) {
     string Modes;
     uint32_t c = 1;
     for( vector<string> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
-        if( 1==c)
-            Modes += UTIL_ToString(c)+": "+*i;
-        else 
-            Modes += ", "+UTIL_ToString(c)+": "+*i;
+        Modes += "["+UTIL_ToString(c)+": "+*i+"] ";
         c++;
         
         if( Modes.size() > 100 ) {
