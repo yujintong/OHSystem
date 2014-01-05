@@ -1331,10 +1331,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
                                         {
                                                 if( (*j)->GetLagging( ) )
-                                                {
-                                                        GAME_Print( 11, "", "", (*j)->GetName(), "", "stop" );
                                                         Send( *i, m_Protocol->SEND_W3GS_STOP_LAG( *j ) );
-                                                }
                                         }
  
                                         // send an empty update
@@ -1387,7 +1384,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 if( (*i)->GetLagging( ) && m_SyncCounter - (*i)->GetSyncCounter( ) < m_SyncLimit / 2 )
                                 {
                                         // stop the lag screen for this player
- 
+                                        GAME_Print( 11, "", "", (*j)->GetName(), "", "stop" );
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] stopped lagging on [" + (*i)->GetName( ) + "]" );
                                         SendAll( m_Protocol->SEND_W3GS_STOP_LAG( *i ) );
                                         (*i)->SetLagging( false );
@@ -2793,7 +2790,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
  
-        GAME_Print( 4, "", "", joinPlayer->GetName(), "", JoinedRealm );
+        GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." ) );
         if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
             SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
         else  
@@ -6224,7 +6221,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 if( type == 3 )
                         StorePacket = "<div class=\"lobbyleave\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span> "+message+"</div>";
                 if( type == 4 )
-                        StorePacket = "<div class=\"lobbyjoin\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span> joined the game from "+message+"</div>";
+                        StorePacket = "<div class=\"lobbyjoin\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span>"+message+"</div>";
                 if( type == 9 )
                         StorePacket = "<div class=\"lobbychat\"><span class=\"time\">"+LTime+"</span><span class=\"player\">"+Player1+" </span>"+message+"</div>";
  
