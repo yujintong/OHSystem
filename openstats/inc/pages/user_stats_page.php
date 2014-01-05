@@ -1,10 +1,16 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
+   	//GAME TYPES/ALIASES (dota, lod)
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+
     $uid = safeEscape( (int) $_GET["u"] );
 	
 	$year  = date("Y");
-	$month = date("m");
+	$month = date("n");
 	
 	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  WHERE id = :user_id LIMIT 1");
 	$sth->bindValue(':user_id', (int)$uid, PDO::PARAM_INT);  
@@ -67,6 +73,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	$UserData[$c]["id"]        = (int)($row["id"]);
 	$UserData[$c]["player"]   = ($row["player"]);
+	$UserData[$c]["alias_id"]  = ($row["alias_id"]);
+	$UserAliasID = ($row["alias_id"]);
+	
 	$PlayerName = $UserData[$c]["player"];
 	$UserData[$c]["banname"]  = ($rowban["name"]);
 	$UserData[$c]["bandate"]  = date($DateFormat, strtotime($rowban["date"]));
@@ -104,7 +113,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	if ( $row["month"] != date("m") OR $row["year"]!= date("Y") ) {
 	
-	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE player = '".$row["player"]."' ORDER BY id DESC LIMIT 1");
+	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+	 WHERE player = '".$row["player"]."' AND alias_id = '".$UserAliasID."' 
+	 ORDER BY id DESC LIMIT 1");
 	 $result3 = $sth3->execute();
 	 $row3 = $sth3->fetch(PDO::FETCH_ASSOC);
 	 
@@ -132,7 +143,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["maxlosingstreak"]  = ($row["maxlosingstreak"]);
 	$UserData[$c]["zerodeaths"]  = ($row["zerodeaths"]);
 	
-        if( strlen($row["realm"]) <= 2 ) {
+    if( strlen($row["realm"]) <= 2 ) {
 		$UserData[$c]["realm"] = "Garena";
 	} else {
 		$UserData[$c]["realm"]  = ($row["realm"]);
@@ -445,6 +456,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		$PenaltyData[$c]["reason"] = $row["reason"];
 		$PenaltyData[$c]["offence_time"] = $row["offence_time"];
 		$PenaltyData[$c]["date"] = date(OS_DATE_FORMAT, strtotime($row["offence_time"]));
+		
+		$ExpireDate = (strtotime($row["offence_time"])) + ($PPExpireDays*3600*24);
+		$PenaltyData[$c]["expire_date_int"] = $ExpireDate;
+		$PenaltyData[$c]["expire_date"] = date(OS_DATE_FORMAT, $ExpireDate);
+		
 		$PenaltyData[$c]["offence_expire"] = $row["offence_expire"];
 		$PenaltyData[$c]["pp"] = $row["pp"];
 		$PenaltyData[$c]["admin"] = $row["admin"];
@@ -499,8 +515,44 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$LastSeen["time"] = date( $DateFormat, strtotime($row["log_time"]));  
 	$LastSeen["log_data"] = $row["log_data"]; 
 	}
-	   //Hook js
-	     AddEvent("os_js", "OS_UserMap");
+	
+	//This will be added later
+	include("inc/pages/player_role.php");
+	
+	
+	//Check other game types
+	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  
+	WHERE player = :player AND `month` = '".$month."' AND year = '".$year."' AND alias_id != '".$UserAliasID."' LIMIT 1");
+	$sth->bindValue(':player', $PlayerName, PDO::PARAM_STR);  
+	$result = $sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	
+	$UserOtherGames["id"] = $row["id"];
+	
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($UserAliasID) AND $UserAliasID == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($UserAliasID) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+	
+	
+	//Hook js
+	AddEvent("os_js", "OS_UserMap");
   
   function OS_UserMap() {
 ?>
