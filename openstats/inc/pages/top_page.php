@@ -8,6 +8,28 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 //$HomeKeywords = strtolower($row["gamename"]).','.$HomeKeywords;
      $MenuClass["top"] = "active";
      $orderby = "`score` DESC";
+	 
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+	 
    
    if ( isset($_GET["sort"]) ) {
      if ( $_GET["sort"] == "score") $orderby = "`score` DESC";
@@ -61,7 +83,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     
 	$sql.=" AND alias_id='". ( int ) $_GET["game_type"]."' ";
    
+  } else {
+    //DefaultGameType
+  $sql.=" AND alias_id='". $DefaultGameType."' ";
   }
+  
+
  
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
   WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
@@ -247,21 +274,4 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}	
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
 	
-	
-	
-	//GAME TYPES/ALIASES (dota, lod)
-	
-    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
-	$result = $sth->execute();
-	$GameAliases = array();
-	$c = 0;
-	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
-	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
-	 
-	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
-	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
-	 
-	 $c++;
-	}
 ?>
