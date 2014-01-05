@@ -916,8 +916,8 @@ bool CGame :: Update( void *fd, void *send_fd )
             } else {
                 SendAllChat("There ["+UTIL_ToString(Same.size())+"] modes with the same highest vote amount.");
                 uint32_t RandomMode = rand( ) % Same.size();
-                SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode]-1]+"]. The game will start now." );
-                m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode]-1]) : m_ModesToVote[Same[RandomMode]-1];
+                SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode-1]-1]+"]. The game will start now." );
+                m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode-1]-1]) : m_ModesToVote[Same[RandomMode-1]-1];
                 m_Voted = true;
                 StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
