@@ -1009,7 +1009,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll)
                         {
                                 m_AutoBans.push_back( player->GetName( ) );
-                                SendAllChat( "User ["+player->GetName( ) +"] will may autobanned after the game." );
+                                SendAllChat( "The player ["+player->GetName( ) +"] may be banned." );
                         }
  
                         if( m_GHost->m_MaxAllowedSpread <= spread && m_Stats )
