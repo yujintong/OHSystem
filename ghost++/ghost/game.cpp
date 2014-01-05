@@ -4397,7 +4397,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTE
         //
-        else if( Command == "vote" && m_GHost->m_VoteMode &&(! m_GameLoaded ||! m_GameLoading) ) {
+        else if( Command == "vote" && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) ) {
             if( GetTime( ) >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && m_VotedTimeStart != 0 ) {
                 SendChat(player, "Error. Its alreay to late to vote.");
             } else if( m_VotedTimeStart == 0 ) {
