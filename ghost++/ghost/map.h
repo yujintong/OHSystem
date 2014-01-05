@@ -127,6 +127,7 @@ private:
 	vector<CGameSlot> m_Slots;
         uint32_t m_Alias;
         string m_AliasType;
+        string m_PossibleModesToHost;
 
 public:
 	CMap( CGHost *nGHost );
@@ -162,6 +163,8 @@ public:
 	uint32_t GetMapNumTeams( )				{ return m_MapNumTeams; }
 	vector<CGameSlot> GetSlots( )			{ return m_Slots; }
         uint32_t GetAlias( )                            { return m_Alias; }
+        string GetPossibleModesToVote( )                { return m_PossibleModesToHost; }
+        void SetDefaultHCL( string nDefaultHCL )        { m_MapDefaultHCL = nDefaultHCL; }
 
 	void Load( CConfig *CFG, string nCFGFile );
 	void CheckValid( );

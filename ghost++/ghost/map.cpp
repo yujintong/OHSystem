@@ -794,6 +794,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
 	m_MapDefaultPlayerScore = CFG->GetInt( "map_defaultplayerscore", 1000 );
 	m_MapLoadInGame = CFG->GetInt( "map_loadingame", 0 ) == 0 ? false : true;
         m_Alias = CFG->GetInt( "game_alias", 0 );
+        m_PossibleModesToHost = CFG->GetString( "game_modes", string( ) );
         m_AliasType = m_GHost->GetAliasName( m_Alias );
         
         if( m_AliasType == "failed" ) {

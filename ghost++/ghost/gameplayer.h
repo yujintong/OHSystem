@@ -171,6 +171,7 @@ private:
         uint32_t m_DownloadTicks;
         uint32_t m_Checked;
         bool m_VotedForInterruption;
+        uint32_t m_VotedMode;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -250,6 +251,7 @@ public:
         uint32_t GetDownloadTicks( )                                    { return m_DownloadTicks; }
         uint32_t GetChecked( )                                              { return m_Checked; }
         bool GetVotedForInterruption( )                                        { return m_VotedForInterruption; }
+        uint32_t GetVotedMode( )                                                { return m_VotedMode; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
@@ -315,7 +317,8 @@ public:
         void SetChecked( )                                                                                              { m_Checked++; }
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
         void SetVotedForInterruption ( bool nVoted )                                                                    { m_VotedForInterruption = nVoted; }
-
+        void SetVotedMode( uint32_t nVotedMode )                                                                        { m_VotedMode = nVotedmode;} 
+        
 	// processing functions
 
 	// AFK detection

@@ -233,6 +233,9 @@ public:
         vector<string> m_LanRoomName;
         string m_NonAllowedDonwloadMessage;
         vector<string> m_Aliases;
+        bool m_VoteMode;
+        uint32_t m_MaxVotingTime;
+        bool m_RandomMode;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -273,6 +276,7 @@ public:
         string GetAliasName( uint32_t alias );
         string GetRoomName(string RoomID);
         uint32_t GetStatsAliasNumber( string alias );
+        void GetVotingModes( string allmodes );
 };
 
 #endif

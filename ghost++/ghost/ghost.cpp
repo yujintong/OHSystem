@@ -1565,7 +1565,9 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_WC3ConnectAlias = CFG->GetString("wc3connect_alias", "WC3Connect");
         m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;
         m_NonAllowedDonwloadMessage = CFG->GetString("oh_downloadmessage", string());
-	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
+	m_VoteMode = CFG->GetInt( "oh_votemode", 0 ) == 0 ? false : true;
+        m_MaxVotingTime = CFG->GetInt( "oh_votemode_time", 120 );
+        m_RandomMode = CFG->GetInt( "oh_votemode_random", 1 ) == 0 ? false : true;
 }
 
 void CGHost :: ExtractScripts( )
@@ -2001,7 +2003,7 @@ void CGHost :: LoadInsult()
             in.close( );
     }
     else
-        CONSOLE_Print("Error. Unable to read file [insult.txt]. User levels will not work for this session.");
+        CONSOLE_Print("Error. Unable to read file [insult.txt].");
 }
 
 string CGHost :: GetTimeFunction( uint32_t type )
@@ -2095,4 +2097,42 @@ uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
         m_StatsAlias = m_CurrentGame->m_GameAlias;
     }
     return m_StatsAlias;
+}
+
+void CGHost :: GetVotingModes( string allmodes ) {
+    vector<string> m_AllModes;
+    transform( allmodes.begin( ), allmodes.end( ), allmodes.begin( ), ::tolower );
+    string SingleMode;
+    stringstream SS;
+    SS << allmodes;
+    while( SS >> SingleMode )
+    {
+            m_AllModes.push_back( SingleMode );
+    }
+    uint32_t ModeAmount = m_AllModes.size( );
+    
+    if( ModeAmount < 6) {
+        for( vector<string> :: iterator i = m_AllModes.begin( ); i != m_AllModes.end( ); ++i ) {
+            m_CurrentGame->m_ModesToVote.push_back( *i );
+        }
+        m_CurrentGame->m_ModesToVote.push_back( "Random" );
+    } else {
+        //get unique random numbers to pick for the diffrent modes
+        string Numbers;
+        for( int i = 0; i < 6; ++i ) {
+            uint32_t newNumber = rand( ) % ModeAmount;
+            while( Numbers.find( newNumber ) ) {
+                     newNumber = rand( ) % ModeAmount;
+            }
+            Numbers += newNumber;
+        }
+        string SingleNumber;
+        stringstream SS;
+        SS << Numbers;
+        while( SS >> SingleNumber )
+        {
+                m_CurrentGame->m_ModesToVote.push_back( SingleNumber );
+        }
+        m_CurrentGame->m_ModesToVote.push_back( "Random" );
+    }
 }

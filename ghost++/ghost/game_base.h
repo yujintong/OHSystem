@@ -185,6 +185,9 @@ protected:
         uint32_t m_BreakAutoEndVotes;
         uint32_t m_EndTicks;
         uint32_t m_StartEndTicks;
+        vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
+        bool m_Voted;                                                           // define if the vote process is already done when this option is enabled
+        uint32_t m_VotedTimeStart;                                              // when the voting has started, a timer function
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
@@ -374,6 +377,7 @@ public:
 	string GetColoredName( string defaultname );
         virtual string GetJoinedRealm( uint32_t hostcounter );
         uint32_t m_GameAlias;
+        virtual void StartVoteMode( );
 };
 
 #endif

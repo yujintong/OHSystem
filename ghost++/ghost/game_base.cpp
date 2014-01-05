@@ -86,6 +86,8 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_EndTicks = 0;
         m_StartEndTicks = 0;
         m_CallableGameDBInit = NULL;
+        m_VotedTimeStart = 0;
+        m_Voted = false;
         
         if( m_GHost->m_SaveReplays && !m_SaveGame )
                 m_Replay = new CReplay( );
@@ -5853,7 +5855,8 @@ void CBaseGame :: StartCountDown( bool force )
                         string NotPinged;
                         string NotSpoofChecked;
                         string NotPassword;
- 
+                        string NotVoted;
+                        
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                         {
                                 if( !(*i)->GetReserved( ) && (*i)->GetNumPings( ) < 3 )
@@ -5882,6 +5885,28 @@ void CBaseGame :: StartCountDown( bool force )
                                         else
                                                NotPassword += ", " + (*i)->GetName( );
                                 }
+                                
+                                if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 ) {
+                                    SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. Vote with '!vote NUMBER'.");
+                                    SendChat( (*i)->GetPID( ), "Possible votes to mode:");
+                                    string Modes;
+                                    uitn32_t c = 1;
+                                    for( vector<CBNET *> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+                                        if( 1==c)
+                                            Modes += UTIL_ToString(c)+": "+*i;
+                                        else 
+                                            Modes += ", "+UTIL_ToString(c)+": "+*i;
+                                        c++;
+
+                                        if( Modes.size() > 100 )
+                                            SendChat((*i)->GetPID( ), Modes);
+                                    }
+                                    SendChat((*i)->GetPID( ), Modes);
+                                    if( NotVoted.empty( ) )
+                                            NotVoted = (*i)->GetName( );
+                                     else
+                                            NotVoted += ", " + (*i)->GetName( );
+                                }
  
                         }
  
@@ -5908,7 +5933,21 @@ void CBaseGame :: StartCountDown( bool force )
                                 OHFixedBalance( );
                                 m_Balanced = true;
                         }
- 
+                        
+                        if( m_GHost->m_VoteMode &&! m_Voted ) {
+                            if(! NotVoted.empty())
+                                SendAllChat( "Players who not voted yet: " + NotVoted );
+                            if( m_VotedTimeStart != 0) {
+                                if( m_GHost->m_RandomMode ) {
+                                    SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                                } else {
+                                    SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                                }
+                            } else {
+                                StartedVoteMode( );
+                            }
+                            return;
+                        }
                         // if no problems found start the game
  
                         if( StillDownloading.empty( ) && NotSpoofChecked.empty( ) && NotPinged.empty( ) && NotPassword.empty( ) && ( m_Balanced || ( !m_Balanced && !m_GHost->m_OHBalance ) ) )
@@ -5962,6 +6001,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 string NotPinged;
                 string NotSpoofChecked;
                 string NotPassword;
+                string NotVoted;
  
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                 {
@@ -5990,6 +6030,28 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                                  else
                                         NotPassword += ", " + (*i)->GetName( );
                         }
+                        if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 ) {
+                            SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. Vote with '!vote NUMBER'.");
+                            SendChat( (*i)->GetPID( ), "Possible votes to mode:");
+                            string Modes;
+                            uitn32_t c = 1;
+                            for( vector<CBNET *> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+                                if( 1==c)
+                                    Modes += UTIL_ToString(c)+": "+*i;
+                                else 
+                                    Modes += ", "+UTIL_ToString(c)+": "+*i;
+                                c++;
+
+                                if( Modes.size() > 100 )
+                                    SendChat((*i)->GetPID( ), Modes);
+                            }
+                            SendChat((*i)->GetPID( ), Modes);
+                            
+                            if( NotVoted.empty( ) )
+                                    NotVoted = (*i)->GetName( );
+                             else
+                                    NotVoted += ", " + (*i)->GetName( );
+                        }
                 }
  
                 if( !NotPinged.empty( ) )
@@ -6015,6 +6077,21 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 {
                         OHFixedBalance( );
                         m_Balanced = true;
+                }
+                
+                if( m_GHost->m_VoteMode &&! m_Voted ) {
+                    if(! NotVoted.empty())
+                        SendAllChat( "Players who not voted yet: " + NotVoted );
+                    if( m_VotedTimeStart != 0) {
+                        if( m_GHost->m_RandomMode ) {
+                            SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                        } else {
+                            SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                        }
+                    } else {
+                        StartedVoteMode( );
+                    }
+                    return;
                 }
  
                 // if no problems found start the game
@@ -6475,4 +6552,24 @@ string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
             JoinedRealm = "Garena";
         
         return JoinedRealm;
+}
+
+void CBaseGame :: StartVoteMode( ) {
+    m_VotedTimeStart = GetTime( );
+    SendAllChat( "The voteing for a mode has started now. You can vote with '!vote NUMBER'.");
+    SendAllChat( "Possible votes to mode:");
+    string Modes;
+    uitn32_t c = 1;
+    for( vector<CBNET *> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+        if( 1==c)
+            Modes += UTIL_ToString(c)+": "+*i;
+        else 
+            Modes += ", "+UTIL_ToString(c)+": "+*i;
+        c++;
+        
+        if( Modes.size() > 100 )
+            SendAllChat(Modes);
+    }
+    SendAllChat(Modes);
+    SendAllChat("=========================================================================");
 }
