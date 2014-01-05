@@ -1970,7 +1970,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         else if( RCONCommand == "from" && m_GHost->m_CurrentGame )
                                         {
                                             uint32_t GameID = UTIL_ToUInt32(RCONPayload);
-                                            for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i ) {
+                                            for( vector<CBaseGame *> :: iterator k = m_GHost->m_Games.begin( ); k != m_GHost->m_Games.end( ); ++k ) {
                                                 if( (*k)->m_HostCounter == GameID ) {
                                                     string Froms;
 
