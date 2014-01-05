@@ -1567,7 +1567,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_NonAllowedDonwloadMessage = CFG->GetString("oh_downloadmessage", string());
 	m_VoteMode = CFG->GetInt( "oh_votemode", 0 ) == 0 ? false : true;
         m_MaxVotingTime = CFG->GetInt( "oh_votemode_time", 120 );
-        m_RandomMode = CFG->GetInt( "oh_votemode_random", 1 ) == 0 ? false : true;
+        m_RandomMode = CFG->GetInt( "oh_votemode_random", 0 ) == 0 ? false : true;
 }
 
 void CGHost :: ExtractScripts( )
