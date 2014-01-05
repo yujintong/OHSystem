@@ -18,8 +18,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<!--<?=OS_IsUserGameSafe( $User["safelist"], $lang["safelist"] )?>
 	<?=OS_IsUserGameLeaver( $User["leaver"], $lang["leaves"].": ".$User["leaver"]."<div>".$lang["stayratio"].": ".$User["stayratio"]."%</div>",1 )?>-->
 	<?=OS_bnet_icon($User["user_bnet"], 14, 14, "imgvalign")?>
-	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?>
+	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?> 
   </h1>
+  
+  <div>
+  <?=$User["realm"]?>
+  <?=DisplayGameTypePlayer($GameAliases, $UserOtherGames, $User["player"])?>
+  </div>
   
   <?php if (isset($User["OtherStats"]) ) { ?><a class="menuButtons" href="<?=OS_HOME?>?u=<?=$User["OtherStats"]?>"><?=$lang["most_recent_stats"]?></a><?php } ?>
   
@@ -28,7 +33,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   ?>
   <div> <?=$lang["last_seen"]?>:
   <a href="<?=OS_HOME?>?live_games&amp;gameid=<?=$LastSeen["gameid"]?>&amp;botid=<?=$LastSeen["botid"]?>">
-   <span <?=ShowToolTip($lang["last_seen"]." <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
+   <span <?=ShowToolTip("Last seen: <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
     <?=$lang["game"]?> #<?=$LastSeen["gameid"]?>, <?=($LastSeen["time"])?>
    </a>
    </div>
@@ -177,7 +182,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  <th width="60"><?=$lang["pp"]?></th>
 	  <th width="230"><?=$lang["reason"]?></th>
 	  <th width="160"><?=$lang["admin"]?></th>
-	  <th><?=$lang["date"]?></th>
+	  <th width="160"><?=$lang["date"]?></th>
+	  <th><?=$lang["expire"]?></th>
 	</tr>
 	<?php
 	  foreach ( $PenaltyData as $PP ) {
@@ -187,6 +193,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  <td width="190"><?=$PP["reason"]?></td>
 	  <td><?=$PP["admin"]?></td>
 	  <td><?=$PP["date"]?></td>
+	  <td><?=$PP["expire_date"]?></td>
 	</tr>
 	<?php
 	  }

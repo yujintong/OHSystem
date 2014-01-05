@@ -885,6 +885,20 @@ global $lang;
 <?php
 }
 
+function DisplayGameTypePlayer($GameAliases, $UserOtherGames, $Player){
+
+  if ( !empty($UserOtherGames) ) {
+  ?><select onchange="location.href='<?=OS_HOME?>'+this.value"><?php
+    foreach($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="?u=<?=$Player?>&game_type=<?=$Alias["alias_id"]?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+   ?></select><?php
+  }
+
+}
+
 function AutoLinkShort($text, $target = "" )
 {
    $pattern  = '#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#';
