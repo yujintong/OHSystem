@@ -1038,7 +1038,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                                 {
                                         m_Stats->SetWinner( ( Team + 1 ) % 2 );
                                         if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
-                                            SendAllChat( "[AUTO-END] Only one team is remaining, this game will end in fifteen seconds and be recorded as a draw." );
+                                            SendAllChat( "[AUTO-END] Only one team is left. The game will be over in 15 seconds as a draw." );
                                         m_GameOverTime = GetTime();
                                 }
  
