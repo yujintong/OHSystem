@@ -6587,7 +6587,7 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
     {
             m_AllModes.push_back( SingleMode );
     }
-    uint32_t ModeAmount = m_AllModes.size( );
+    uint32_t ModeAmount = m_AllModes.size( )-1;
     
     if( ModeAmount < 6) {
         for( vector<string> :: iterator i = m_AllModes.begin( ); i != m_AllModes.end( ); ++i ) {
@@ -6609,7 +6609,7 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
         SS << Numbers;
         while( SS >> SingleNumber )
         {
-                m_ModesToVote.push_back( m_AllModes[SingleNumber] );
+                m_ModesToVote.push_back( m_AllModes[UTIL_ToUInt32(SingleNumber)] );
         }
         m_ModesToVote.push_back( "random" );
     }
