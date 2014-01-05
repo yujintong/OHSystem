@@ -479,7 +479,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                                                         	m_Players[ValueInt] = new CDBDotAPlayer( );
 
                                                                         m_Players[ValueInt]->SetLevel(Level);
-                                                                        CONSOLE_Print( "[OBSERVER: " + m_Game->GetGameName( ) + "] "+ Player->GetName() + " is now level " + UTIL_ToString(m_Players[ValueInt]->GetLevel()) );
+                                                                        CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] "+ Player->GetName() + " is now level " + UTIL_ToString(m_Players[ValueInt]->GetLevel()) );
 									m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "lu" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + UTIL_ToString(m_Players[ValueInt]->GetLevel()) + "\n";
                                                                 }
                                                         }
