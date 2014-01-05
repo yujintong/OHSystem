@@ -377,7 +377,9 @@ public:
 	string GetColoredName( string defaultname );
         virtual string GetJoinedRealm( uint32_t hostcounter );
         uint32_t m_GameAlias;
+        string m_GameAliasName;
         virtual void StartVoteMode( );
+        void GetVotingModes( string allmodes );
 };
 
 #endif

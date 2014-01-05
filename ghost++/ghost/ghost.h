@@ -276,7 +276,7 @@ public:
         string GetAliasName( uint32_t alias );
         string GetRoomName(string RoomID);
         uint32_t GetStatsAliasNumber( string alias );
-        void GetVotingModes( string allmodes );
+        string GetLODMode( string fullmode );
 };
 
 #endif

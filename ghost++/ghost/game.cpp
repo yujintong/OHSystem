@@ -74,16 +74,19 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
 {
         m_DBGame = new CDBGame( 0, string( ), m_Map->GetMapPath( ), string( ), string( ), string( ), 0 );
         m_GameAlias = m_Map->GetAlias();
+        m_GameAliasName = m_GHost->GetAliasName( m_GameAlias );
+        string lAliasName = m_GameAliasName;
+        transform( lAliasName.begin( ), lAliasName.end( ), lAliasName.begin( ), ::tolower );
 //        if( m_Map->GetMapType( ) == "w3mmd" )
 //                m_Stats = new CStatsW3MMD( this, m_Map->GetMapStatsW3MMDCategory( ) );
-        if( m_Map->GetAlias() == 1 || m_Map->GetAlias() == 2 || m_Map->GetAlias() == 3 ) {
+        if( lAliasName.find("lod") || lAliasName.find("dota") || lAliasName.find("imba") ) {
             m_Stats = new CStatsDOTA( this );
         } else if( m_Map->GetAlias() == 0 ) {
             CONSOLE_Print( "Missing definition of MapAlias, game won't be recorded with extended map statistics (DotA/W3mmD).");
         }
  
         if( m_GHost->m_VoteMode &&! m_Map->GetPossibleModesToVote( ).empty( ) )
-            m_GHost->GetVotingModes( m_Map->GetPossibleModesToVote( ) );
+            GetVotingModes( m_Map->GetPossibleModesToVote( ) );
         
         m_LobbyLog.clear();
         m_GameLog.clear();
@@ -899,14 +902,14 @@ bool CGame :: Update( void *fd, void *send_fd )
             if( Same.size() == 1 ){
                 if( HighestVote != g ) {
                     SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
-                    m_Map->SetDefaultHCL( m_ModesToVote[HighestVote-1] );
+                    m_Map->SetDefaultHCL( m_GameAliasName.find("lod") ? m_GHost->GetLODMode(m_ModesToVote[HighestVote-1]) : m_ModesToVote[HighestVote-1] );
                     m_Voted = true;
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 } else {
                     uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
                     SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode-1]+"] has been randomed. The game will start now.");
-                    m_Map->SetDefaultHCL( m_ModesToVote[RandomMode-1] );
+                    m_Map->SetDefaultHCL( m_GameAliasName.find("lod") ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1] );
                     m_Voted = true;
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
@@ -915,7 +918,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 SendAllChat("There ["+UTIL_ToString(c)+"] modes with the same highest vote amount.");
                 uint32_t RandomMode = rand( ) % Same.size();
                 SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode-1]]+"]. The game will start now." );
-                m_Map->SetDefaultHCL( m_ModesToVote[Same[RandomMode-1]] );
+                m_Map->SetDefaultHCL( m_GameAliasName.find("lod") ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode-1]]) : m_ModesToVote[Same[RandomMode-1]] );
                 m_Voted = true;
                 StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
@@ -4414,14 +4417,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( m_AutoStartPlayers/2 <= c ) {
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         SendAllChat( "The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]. The game will start now.");
-                        m_Map->SetDefaultHCL( m_ModesToVote[UTIL_ToUInt32(Payload)-1] );
+                        m_Map->SetDefaultHCL( m_GameAliasName.find("lod") ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1] );
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );
                     } else {
                         uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
                         SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode-1]+"] has been randomed.");
-                        m_Map->SetDefaultHCL( m_ModesToVote[RandomMode-1] );
+                        m_Map->SetDefaultHCL( m_GameAliasName.find("lod") ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1] );
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );

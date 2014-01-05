@@ -1864,7 +1864,7 @@ bool CGHost :: FlameCheck( string message )
 {
 	transform( message.begin( ), message.end( ), message.begin( ), ::tolower );
 
-	char forbidden[] = {",.!�$%&/()={[]}*'+#-_.:,;?|"};
+	char forbidden[] = {",.!ï¿½$%&/()={[]}*'+#-_.:,;?|"};
 	char *check;
 	int len = message.length();
 	int c = 1;
@@ -2099,40 +2099,37 @@ uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
     return m_StatsAlias;
 }
 
-void CGHost :: GetVotingModes( string allmodes ) {
-    vector<string> m_AllModes;
-    transform( allmodes.begin( ), allmodes.end( ), allmodes.begin( ), ::tolower );
-    string SingleMode;
-    stringstream SS;
-    SS << allmodes;
-    while( SS >> SingleMode )
-    {
-            m_AllModes.push_back( SingleMode );
-    }
-    uint32_t ModeAmount = m_AllModes.size( );
-    
-    if( ModeAmount < 6) {
-        for( vector<string> :: iterator i = m_AllModes.begin( ); i != m_AllModes.end( ); ++i ) {
-            m_CurrentGame->m_ModesToVote.push_back( *i );
-        }
-        m_CurrentGame->m_ModesToVote.push_back( "Random" );
-    } else {
-        //get unique random numbers to pick for the diffrent modes
-        string Numbers;
-        for( int i = 0; i < 6; ++i ) {
-            uint32_t newNumber = rand( ) % ModeAmount;
-            while( Numbers.find( newNumber ) ) {
-                     newNumber = rand( ) % ModeAmount;
-            }
-            Numbers += newNumber;
-        }
-        string SingleNumber;
-        stringstream SS;
-        SS << Numbers;
-        while( SS >> SingleNumber )
-        {
-                m_CurrentGame->m_ModesToVote.push_back( SingleNumber );
-        }
-        m_CurrentGame->m_ModesToVote.push_back( "Random" );
-    }
+/**
+ * 
+ * This function does switch a long mode into a saved shorten mode which is avaible for lod.
+ * Modes which contain more than 10 caracters cant be encoded on LoD, so the map owners added shorten modes
+ * The modes can be found here: http://legendsofdota.com/index.php?/page/index.html
+ * 
+ * @param fullmode
+ * @return shorten mode
+ */
+string CGHost :: GetLODMode( string fullmode ) {
+    string shortenmode = fullmode;
+    if(fullmode == "sdzm3lseb")
+        shortenmode = "rgc";
+    else if(fullmode == "sds5ebzm")
+        shortenmode = "rgc2";
+    else if(fullmode == "sds6d2oseb")
+        shortenmode = "rgc3";
+    else if(fullmode == "mds6d5ulabosfnzm")
+        shortenmode = "md";
+    else if(fullmode == "sds6d5ulabosfnzm")
+        shortenmode = "sd";
+    else if(fullmode == "aps6ulabosfnzm")
+        shortenmode = "ap";
+    else if(fullmode == "ardms6omfrulabzm")
+        shortenmode = "ar";
+    else if(fullmode == "sds6sofnulboabd3")
+        shortenmode = "chev1";
+    else if(fullmode == "ardms6sofnulboab")
+        shortenmode = "chev2";
+    else if(fullmode == "aps6fnulboabssosls")
+        shortenmode = "chev3";
+
+    return shortenmode;
 }

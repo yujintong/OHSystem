@@ -6580,3 +6580,41 @@ void CBaseGame :: StartVoteMode( ) {
     SendAllChat(Modes);
     SendAllChat("=========================================================================");
 }
+
+void CBaseGame :: GetVotingModes( string allmodes ) {
+    vector<string> m_AllModes;
+    transform( allmodes.begin( ), allmodes.end( ), allmodes.begin( ), ::tolower );
+    string SingleMode;
+    stringstream SS;
+    SS << allmodes;
+    while( SS >> SingleMode )
+    {
+            m_AllModes.push_back( SingleMode );
+    }
+    uint32_t ModeAmount = m_AllModes.size( );
+    
+    if( ModeAmount < 6) {
+        for( vector<string> :: iterator i = m_AllModes.begin( ); i != m_AllModes.end( ); ++i ) {
+            m_ModesToVote.push_back( *i );
+        }
+        m_ModesToVote.push_back( "Random" );
+    } else {
+        //get unique random numbers to pick for the diffrent modes
+        string Numbers;
+        for( int i = 0; i < 6; ++i ) {
+            uint32_t newNumber = rand( ) % ModeAmount;
+            while( Numbers.find( newNumber ) ) {
+                     newNumber = rand( ) % ModeAmount;
+            }
+            Numbers += newNumber;
+        }
+        string SingleNumber;
+        stringstream SS;
+        SS << Numbers;
+        while( SS >> SingleNumber )
+        {
+                m_ModesToVote.push_back( SingleNumber );
+        }
+        m_ModesToVote.push_back( "Random" );
+    }
+}
