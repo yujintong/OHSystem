@@ -595,7 +595,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
                                                 roleName,
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
                             }
@@ -614,7 +614,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
                                                 roleName,
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ), i->first, true );
                                 }
@@ -622,7 +622,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
@@ -667,7 +667,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                         m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
  
@@ -713,7 +713,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
  
@@ -780,7 +780,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 1 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 1 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 1 ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
                                         );
@@ -797,7 +797,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         }
                         else
                                 QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                         m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
  
@@ -1775,10 +1775,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                                 bool Success = false;
                                                 string User;
+                                                string GameID;
                                                 string Message;
                                                 stringstream SS;
                                                 SS << RCONPayload;
                                                 SS >> User;
+                                                SS >> GameID;
                                                 if( SS.fail( ) )
                                                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-saylobby command" );
                                                 else
@@ -1856,10 +1858,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 bool Success = false;
                                                 uint32_t Team;
                                                 string User;
+                                                string GameID;
                                                 string Message;
                                                 stringstream SS;
                                                 SS << RCONPayload;
                                                 SS >> User;
+                                                SS >> GameID;
                                                 if( SS.fail( ) )
                                                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-lobbyteam command" );
                                                 else
@@ -1965,33 +1969,37 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         //
                                         else if( RCONCommand == "from" && m_GHost->m_CurrentGame )
                                         {
-                                                string Froms;
- 
-                                                for( vector<CGamePlayer *> :: iterator i = m_GHost->m_CurrentGame->m_Players.begin( ); i != m_GHost->m_CurrentGame->m_Players.end( ); ++i )
-                                                {
-                                                        // we reverse the byte order on the IP because it's stored in network byte order
- 
-                                                        Froms += (*i)->GetNameTerminated( );
-                                                        Froms += ": (";
-                                                        Froms += (*i)->GetCLetter( );
-                                                        Froms += ")";
- 
-                                                        if( i != m_GHost->m_CurrentGame->m_Players.end( ) - 1 )
-                                                                Froms += ", ";
- 
-                                                        if( ( m_GHost->m_CurrentGame->m_GameLoading || m_GHost->m_CurrentGame->m_GameLoaded ) && Froms.size( ) > 100 )
-                                                        {
-                                                                // cut the text into multiple lines ingame
- 
-                                                                m_GHost->m_CurrentGame->SendAllChat( Froms );
-                                                                Froms.clear( );
-                                                        }
+                                            uint32_t GameID = UTIL_ToUInt32(RCONPayload);
+                                            for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i ) {
+                                                if( (*k)->m_HostCounter == GameID ) {
+                                                    string Froms;
+
+                                                    for( vector<CGamePlayer *> :: iterator i = (*k)->m_Players.begin( ); i != (*k)->m_Players.end( ); ++i ) {
+                                                            // we reverse the byte order on the IP because it's stored in network byte order
+
+                                                            Froms += (*i)->GetNameTerminated( );
+                                                            Froms += ": (";
+                                                            Froms += (*i)->GetCLetter( );
+                                                            Froms += ")";
+
+                                                            if( i != (*k)->m_Players.end( ) - 1 )
+                                                                    Froms += ", ";
+
+                                                            if( ( (*k)->m_GameLoading || (*k)->m_GameLoaded ) && Froms.size( ) > 100 )
+                                                            {
+                                                                    // cut the text into multiple lines ingame
+
+                                                                    (*k)->SendAllChat( Froms );
+                                                                    Froms.clear( );
+                                                            }
+                                                    }
+
+                                                    if( !Froms.empty( ) )
+                                                            (*k)->SendAllChat( Froms );
+                                                
                                                 }
- 
-                                                if( !Froms.empty( ) )
-                                                        m_GHost->m_CurrentGame->SendAllChat( Froms );
+                                            }
                                         }
- 
                                 }
  
                                 //
@@ -3655,7 +3663,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         // check for potential abuse
  
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedGSChecks.push_back( PairedGSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
+                                                m_PairedGSChecks.push_back( PairedGSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, 0 ) ) );
                                 }
  
                                 //
@@ -3689,7 +3697,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                        }
                                        // check for potential abuse
                                        if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                                m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                                 }
  
                                 //
@@ -3723,7 +3731,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         }
                                         // check for potential abuse
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                                m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                                 }
  
                                 //
@@ -3759,7 +3767,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         }
                                         // check for potential abuse
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                                                m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                                m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                                 }
                                 
                                 //

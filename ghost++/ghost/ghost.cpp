@@ -2133,3 +2133,32 @@ string CGHost :: GetLODMode( string fullmode ) {
 
     return shortenmode;
 }
+
+string CGHost :: GetMonthInWords( uint32_t month ) {
+    if(1==month)
+        return "January";
+    else if(2==month)
+        return "February";
+    else if(3==month)
+        return "March";
+    else if(4==month)
+        return "April";
+    else if(5==month)
+        return "May";
+    else if(6==month)
+        return "June";
+    else if(7==month)
+        return "July";
+    else if(8==month)
+        return "August";
+    else if(9==month)
+        return "September";
+    else if(10==month)
+        return "Ocotober";
+    else if(11==month)
+        return "November";
+    else if(12==month)
+        return "December";
+    else
+        return "unknown";
+}

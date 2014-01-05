@@ -377,7 +377,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
                                                 roleName,
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
                                 }
@@ -400,7 +400,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
                                                 roleName,
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
                                         }
@@ -429,7 +429,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
                                                 roleName,
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
                                     }
@@ -441,7 +441,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         {
                                 if( i->first.empty( ) )
                                         SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
                                             ) );
@@ -451,7 +451,7 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                                         if( Player )
                                                 SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
-                                                    Month,
+                                                    m_GHost->GetMonthInWords(Month),
                                                     Year,
                                                     m_GHost->GetAliasName( i->second->GetAlias( ) )
                                                 ) );
@@ -561,7 +561,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         {
                                 if( i->first.empty( ) )
                                         SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
                                             ) );
@@ -571,7 +571,7 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                                         if( Player )
                                                 SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
-                                                    Month,
+                                                    m_GHost->GetMonthInWords(Month),
                                                     Year,
                                                     m_GHost->GetAliasName( i->second->GetAlias( ) )
                                                 ) );
@@ -626,7 +626,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         }
                         else
                                 SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
                                             ) );
@@ -700,7 +700,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( i->first.empty( ) ) {
-                                        SendAllChat( "["+i->second->GetName( )+"] Month: "+Month+", Year: "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
+                                        SendAllChat( "["+i->second->GetName( )+"] "+m_GHost->GetMonthInWords(Month)+", "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
                                         SendAllChat( Summary );
                                 }
                                 else
@@ -708,7 +708,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
  
                                         if( Player ) {
-                                            SendChat( Player, "["+Player->GetName()+"] Month: "+Month+", Year: "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
+                                            SendChat( Player, "["+Player->GetName()+"] "+m_GHost->GetMonthInWords(Month)+", "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
                                                 SendChat( Player, Summary );
                                         }
                                 }
@@ -728,7 +728,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         {
                                 if( i->first.empty( ) )
                                         SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
                                             ) );
@@ -738,7 +738,7 @@ bool CGame :: Update( void *fd, void *send_fd )
  
                                         if( Player )
                                                 SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
-                                                Month,
+                                                m_GHost->GetMonthInWords(Month),
                                                 Year,
                                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
                                             ) );
@@ -3061,16 +3061,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, 0 ) ) );
                         else
-                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, 0 ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, 0 ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), m_GHost->GetMonthInWords(Month), Year, 0 ) ) );
                         else
-                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, 0 ) ) );
+                                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), m_GHost->GetMonthInWords(Month), Year, 0 ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -3118,16 +3118,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                         else
-                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                         else
-                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -3175,16 +3175,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Matches == 0 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                         else
-                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                 }
                 else if( Matches == 1 )
                 {
                         if( player->GetSpoofed( ) && Level >= 8 )
-                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                         else
-                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
                 }
                 else if( Matches > 1 )
                         SendChat( player, "Error, found to many name partial matching on ["+StatsUser+"]" );
@@ -3231,7 +3231,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 // check for potential abuse
  
                 if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                        m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                        m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, m_GHost->GetMonthInWords(Month), Year, m_StatsAlias ) ) );
         }
         
         //

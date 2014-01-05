@@ -488,7 +488,7 @@ string CLanguage :: HasPlayedGamesWithThisBot( string user, string score, string
         if( month == "0" && year == "0")
             UTIL_Replace( Out, "$TIME$", "overall");
         else
-            UTIL_Replace( Out, "$TIME$", month+"/"+year);
+            UTIL_Replace( Out, "$TIME$", month+", "+year);
 	return Out;
 }
 
@@ -499,7 +499,7 @@ string CLanguage :: HasntPlayedGamesWithThisBot( string user, string month, stri
         if( month == "0" && year == "0")
             UTIL_Replace( Out, "$TIME$", "overall");
         else
-            UTIL_Replace( Out, "$TIME$", month+"/"+year);
+            UTIL_Replace( Out, "$TIME$", month+", "+year);
 	return Out;
 }
 
@@ -638,7 +638,7 @@ string CLanguage :: HasPlayedAliasGamesWithThisBot2( string user, string totalga
         if( month == "0" && year == "0")
             UTIL_Replace( Out, "$TIME$", "overall");
         else
-            UTIL_Replace( Out, "$TIME$", month+"/"+year);
+            UTIL_Replace( Out, "$TIME$", month+", "+year);
 	return Out;
 }
 
@@ -650,7 +650,7 @@ string CLanguage :: HasntPlayedAliasGamesWithThisBot( string user, string month,
         if( month == "0" && year == "0")
             UTIL_Replace( Out, "$TIME$", "overall");
         else
-            UTIL_Replace( Out, "$TIME$", month+"/"+year);
+            UTIL_Replace( Out, "$TIME$", month+", "+year);
 	return Out;
 }
 
