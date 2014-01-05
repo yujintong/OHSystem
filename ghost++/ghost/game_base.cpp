@@ -5890,12 +5890,12 @@ void CBaseGame :: StartCountDown( bool force )
                                     SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. Vote with '!vote NUMBER'.");
                                     SendChat( (*i)->GetPID( ), "Possible votes to mode:");
                                     string Modes;
-                                    uitn32_t c = 1;
-                                    for( vector<CBNET *> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+                                    uint32_t c = 1;
+                                    for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
                                         if( 1==c)
-                                            Modes += UTIL_ToString(c)+": "+*i;
+                                            Modes += UTIL_ToString(c)+": "+*k;
                                         else 
-                                            Modes += ", "+UTIL_ToString(c)+": "+*i;
+                                            Modes += ", "+UTIL_ToString(c)+": "+*k;
                                         c++;
 
                                         if( Modes.size() > 100 )
@@ -5935,18 +5935,22 @@ void CBaseGame :: StartCountDown( bool force )
                         }
                         
                         if( m_GHost->m_VoteMode &&! m_Voted ) {
-                            if(! NotVoted.empty())
-                                SendAllChat( "Players who not voted yet: " + NotVoted );
-                            if( m_VotedTimeStart != 0) {
-                                if( m_GHost->m_RandomMode ) {
-                                    SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                            if(m_ModesToVote.size() != 0 ) {
+                                if(! NotVoted.empty())
+                                    SendAllChat( "Players who not voted yet: " + NotVoted );
+                                if( m_VotedTimeStart != 0) {
+                                    if( m_GHost->m_RandomMode ) {
+                                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                                    } else {
+                                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                                    }
                                 } else {
-                                    SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                                    StartVoteMode( );
                                 }
+                                return;
                             } else {
-                                StartedVoteMode( );
+                                CONSOLE_Print( "[ERROR] Mode Voting was enabled but didn't found any modes to vote.");
                             }
-                            return;
                         }
                         // if no problems found start the game
  
@@ -6080,18 +6084,22 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 }
                 
                 if( m_GHost->m_VoteMode &&! m_Voted ) {
-                    if(! NotVoted.empty())
-                        SendAllChat( "Players who not voted yet: " + NotVoted );
-                    if( m_VotedTimeStart != 0) {
-                        if( m_GHost->m_RandomMode ) {
-                            SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                    if(m_ModesToVote.size() != 0 ) {
+                        if(! NotVoted.empty())
+                            SendAllChat( "Players who not voted yet: " + NotVoted );
+                        if( m_VotedTimeStart != 0) {
+                            if( m_GHost->m_RandomMode ) {
+                                SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                            } else {
+                                SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                            }
                         } else {
-                            SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the default mode will be taken." );
+                            StartedVoteMode( );
                         }
+                        return;
                     } else {
-                        StartedVoteMode( );
+                        CONSOLE_Print( "[ERROR] Mode Voting was enabled but didn't found any modes to vote.");
                     }
-                    return;
                 }
  
                 // if no problems found start the game

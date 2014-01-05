@@ -317,7 +317,7 @@ public:
         void SetChecked( )                                                                                              { m_Checked++; }
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
         void SetVotedForInterruption ( bool nVoted )                                                                    { m_VotedForInterruption = nVoted; }
-        void SetVotedMode( uint32_t nVotedMode )                                                                        { m_VotedMode = nVotedmode;} 
+        void SetVotedMode( uint32_t nVotedMode )                                                                        { m_VotedMode = nVotedMode;} 
         
 	// processing functions
 

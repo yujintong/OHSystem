@@ -865,7 +865,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                     else 
                         g++;
                 } else {
-                    SendAllChat( "Player ["+(*i)->GetName( )*"] hasnt voted for a mode. No Result was counted.");
+                    SendAllChat( "Player ["+(*i)->GetName( )+"] hasnt voted for a mode. No Result was counted.");
                 }
             }
             uint32_t HighestVote = a;
@@ -881,7 +881,6 @@ bool CGame :: Update( void *fd, void *send_fd )
                 HighestVote = f;
             if( g > f)
                 HighestVote = g;
-            uitn32_t c = 0;
             vector<int> Same;
             if( HighestVote == a )
                 Same.push_back(a);
@@ -914,9 +913,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                 }
             } else {
                 SendAllChat("There ["+UTIL_ToString(c)+"] modes with the same highest vote amount.");
-                RandomMode = rand( ) % Same.size();
+                uint32_t RandomMode = rand( ) % Same.size();
                 SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode-1]]+"]. The game will start now." );
-                m_Map->SetDefaultHCL( m_ModesToVotem_ModesToVote[Same[RandomMode-1]] );
+                m_Map->SetDefaultHCL( m_ModesToVote[Same[RandomMode-1]] );
                 m_Voted = true;
                 StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
@@ -4404,18 +4403,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos ) {
                 SendChat( player, "Error. You havent choosed a valied modenumber.");
             } else {
-                SendAllChat("Player ["+player->GetName( )+"] has voted for ["+m_ModesToVote[Payload-1]+"]" );
-                player->SetVotedMode(Payload);
+                SendAllChat("Player ["+player->GetName( )+"] has voted for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
+                player->SetVotedMode(UTIL_ToUInt32(Payload));
                 uint32_t c = 0;
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i ) {
-                    if( (*i)->GetVotedMode() == Payload ) {
+                    if( (*i)->GetVotedMode() == UTIL_ToUInt32(Payload) ) {
                         c++;
                     }
                 }
                 if( m_AutoStartPlayers/2 <= c ) {
-                    if( Payload != 7 ) {
-                        SendAllChat( "The absolute vote was for ["+m_ModesToVote[Payload-1]+"]. The game will start now.");
-                        m_Map->SetDefaultHCL( m_ModesToVote[Payload-1] );
+                    if( UTIL_ToUInt32(Payload) != 7 ) {
+                        SendAllChat( "The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]. The game will start now.");
+                        m_Map->SetDefaultHCL( m_ModesToVote[UTIL_ToUInt32(Payload)-1] );
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );
