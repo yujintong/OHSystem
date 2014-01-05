@@ -840,7 +840,7 @@ bool CGame :: Update( void *fd, void *send_fd )
         }
  
         // mode voting the process if the mode hasnt been voted after the specific time, or if there is no clear "winner"
-        if(! m_Voted && GetTime() >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && !m_CountDownStarted ) {
+        if(! m_Voted && GetTime() >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && !m_CountDownStarted && m_VotedTimeStart != 0 ) {
             SendAllChat( "The voting has expired. You cant vote anymore for a mode.");
             uint32_t a = 0;
             uint32_t b = 0;
@@ -4414,7 +4414,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         c++;
                     }
                 }
-                if( m_AutoStartPlayers/2 <= c ) {
+                if( GetNumHumanPlayers( ) / 2  <= c ) {
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         SendAllChat( "The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]. The game will start now.");
                         m_Map->SetDefaultHCL( m_GameAliasName.find("lod") ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1] );
@@ -4430,7 +4430,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_LastAutoStartTime = GetTime( );
                     }
                 } else {
-                       SendAllChat("The mode has already ["+UTIL_ToString(c)+"] votes. There ["+UTIL_ToString( m_AutoStartPlayers/2 - c ) +"] more needed for an absolute voting of the mode.");
+                       SendAllChat("The mode has already ["+UTIL_ToString(c)+"] votes. There ["+UTIL_ToString( GetNumHumanPlayers( ) / 2 - c ) +"] more needed for an absolute voting of the mode.");
                 }
             }
         }
