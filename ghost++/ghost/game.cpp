@@ -4468,7 +4468,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             uint32_t mode4 = 0;
             uint32_t mode5 = 0;
             uint32_t mode6 = 0;
-            uitn32_t mode7 = 0;
+            uint32_t mode7 = 0;
             uint32_t notvoted = 0;
             for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
             {
