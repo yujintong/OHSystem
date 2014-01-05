@@ -4442,7 +4442,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else if( Command == "voteoptions" && m_GHost->m_VoteMode ) {
             SendChat( player, "Possible options to vote as mode:");
             SendChat( player, "=================================");
-            SendChat
             string Modes;
             uint32_t c = 1;
             for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
@@ -4461,7 +4460,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTERESULT
         //
-        else if( Command == "voteresult"&& m_GHost->m_VoteMode && m_Voted ) {
+        else if( Command == "voteresult" && m_GHost->m_VoteMode && m_Voted ) {
             uint32_t c = 0;
             uint32_t mode1 = 0;
             uint32_t mode2 = 0;
