@@ -116,7 +116,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<?=OS_IsUserGameAdmin( $Game["admin"])?>
 	<?=OS_IsUserGameWarned( $Game["warn"],  $Game["warn_expire"], $lang["warned"] )?>
 	<?=OS_IsUserGameBanned( $Game["banned"], $lang["banned"] ) ?>
-	<!--<?=OS_IsUserGameSafe( $Game["safelist"], $lang["safelist"] )?>-->
 	<span class="player_scores<?=$Game["class"]?>"><?=$Game["score_points"]?></span>
  </div>
  <div>
@@ -202,15 +201,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
 <?=os_display_custom_fields()?> 
    
-<?php 
-//REPLAY - GAME LOG
-include("inc/show_gamelog2.php"); 
-?>
      </div>
     </div>
    </div>
   </div>
 </div>
+
 
 <div class="s-c-x">
   <div class="wrapper">   

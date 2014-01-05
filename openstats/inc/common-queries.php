@@ -1,38 +1,25 @@
 <?php
-/*********************************************
-<!-- 
-*   	DOTA OPENSTATS
-*   
-*	Developers: Ivan.
-*	Contact: ivan.anta@gmail.com - Ivan
-*
-*	
-*	Please see http://openstats.iz.rs
-*	and post your webpage there, so I know who's using it.
-*
-*	Files downloaded from http://openstats.iz.rs
-*
-*	Copyright (C) 2010  Ivan
-*
-*
-*	This file is part of DOTA OPENSTATS.
-*
-* 
-*	 DOTA OPENSTATS is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    DOTA OPEN STATS is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with DOTA OPEN STATS.  If not, see <http://www.gnu.org/licenses/>
-*
--->
-**********************************************/
+/**
+ * Copyright [2013-2014] [OHsystem]
+ * 
+ * OHSystem is free software: You can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Please save the copyrights and notifications on the footer.
+ * This file is part of DOTA OPENSTATS.
+ * 
+ * You can contact the developers on: ohsystem-public@googlegroups.com
+ * or join us directly here: https://groups.google.com/d/forum/ohsystem-public
+ * 
+ * Visit us also on http://ohsystem.net/ and keep track always of the latest
+ * features and changes.
+ * 
+ * 
+ * This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+ * Official GhostPP-Forum: http://ghostpp.com/
+*/
 if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 
    function getSingleGame($gameid) {
@@ -49,7 +36,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	function getUserGames ( $id, $MinDuration, $offset, $rowsperpage, $filter = "" ) {
 	
 	 $sql = "SELECT s.*, g.id, g.map, g.gamename, g.datetime, g.ownername, g.duration,  g.creatorname, dg.winner, 
-	 g.gamestate AS type, s.player, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, gp.`left`
+	 g.gamestate AS type, s.player, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, gp.`left`, g.alias_id
 	 FROM ".OSDB_STATS." as s 
 	 LEFT JOIN ".OSDB_GP." as gp ON (gp.name) = (s.player)
 	 LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid
@@ -65,7 +52,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	function getAllGames($MinDuration, $offset, $rowsperpage, $filter="", $order = "id DESC" ) {
 	  $sql = "SELECT 
           g.id, g.views, g.stats, g.map, g.datetime, g.gamename, g.ownername, g.duration, g.creatorname, dg.winner, 
-		  g.gamestate as type, g.creatorserver as server
+		  g.gamestate as type, g.creatorserver as server, g.alias_id
 		  FROM ".OSDB_GAMES." as g 
 		  LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
 		  WHERE (map) LIKE '%".OS_DEFAULT_MAP."%' AND duration>='".$MinDuration."' $filter
@@ -96,7 +83,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   gp.left, 
 	   gp.name as name, 
 	   gp.ip as ip,
-	   b.name as banname 
+	   b.name as banname, g.alias_id
 	   FROM ".OSDB_DP." AS dp 
 	   LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid and dp.colour = gp.colour 
 	   LEFT JOIN ".OSDB_DG." AS dg ON dg.gameid = dp.gameid 
@@ -109,7 +96,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   LEFT JOIN ".OSDB_ITEMS." as it4 ON it4.itemid = item4
 	   LEFT JOIN ".OSDB_ITEMS." as it5 ON it5.itemid = item5
 	   LEFT JOIN ".OSDB_ITEMS." as it6 ON it6.itemid = item6
-	   LEFT JOIN ".OSDB_STATS." as s ON (s.player) = (gp.name)
+	   LEFT JOIN ".OSDB_STATS." as s ON (s.player) = (gp.name) AND s.alias_id = g.alias_id
 	   WHERE dp.gameid='".(int)$gid."'
 	   GROUP by gp.name
 	   ORDER BY newcolour";
@@ -253,7 +240,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	SUM(neutralkills) as neutralkills, 
 	SUM(towerkills) as towerkills, 
 	SUM(raxkills) as raxkills, 
-	SUM(courierkills) as courierkills
+	SUM(courierkills) as courierkills, 
+	g.alias_id
 	FROM ".OSDB_DP." AS dp 
 	LEFT JOIN ".OSDB_HEROES." as b ON hero = heroid 
 	LEFT JOIN ".OSDB_DG." as dg ON dg.gameid = dp.gameid
@@ -388,7 +376,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	or (winner=2 and newcolour > 5)) 
 	AND b.`left`/g.duration >= $minPlayedRatio  then 'WON' when ((winner=2 AND newcolour < 6) 
 	or (winner=1 and newcolour > 5)) 
-	AND b.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as result 
+	AND b.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as result, 
+	g.alias_id 
 	FROM ".OSDB_DP." AS dp 
 	LEFT JOIN ".OSDB_GP." AS b ON b.gameid = dp.gameid 
 	AND dp.colour = b.colour 
@@ -425,7 +414,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	or (winner=2 and newcolour > 5)) 
 	AND gp.`left`/g.duration >= $minPlayedRatio  then 'WON' when ((winner=2 and newcolour < 6) 
 	or (winner=1 and newcolour > 5)) 
-	AND gp.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as outcome 
+	AND gp.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as outcome, 
+	g.alias_id
 	FROM ".OSDB_DP." AS dp 
 	LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid and dp.colour = gp.colour 
 	LEFT JOIN ".OSDB_DG." AS dg ON dg.gameid = dp.gameid 
@@ -450,7 +440,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
     dp.creepdenies,	
 	dp.assists, 
 	dp.neutralkills,
-	dp.newcolour 
+	dp.newcolour, 
+	g.alias_id 
 			FROM ".OSDB_GP." as gp
 			LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid 
 			LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = g.id AND dp.colour = gp.colour 
@@ -486,7 +477,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
     dp.creepdenies,	
 	dp.assists, 
 	dp.neutralkills,
-	dp.newcolour 
+	dp.newcolour, 
+	g.alias_id 
 			FROM ".OSDB_GP." as gp
 			LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid 
 			LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = g.id AND dp.colour = gp.colour 
@@ -520,7 +512,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	MIN(`left`), 
 	MAX(`left`), 
 	AVG(`left`), 
-	SUM(`left`) 
+	SUM(`left`), 
+	g.alias_id 
 	FROM ".OSDB_GP." as gp
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
 	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 
@@ -534,7 +527,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 function GetMostPlayedHero($username, $limit = 1) {
    $username = strtolower($username);
    $sql = "SELECT SUM(`left`) AS timeplayed, original, description, 
-	COUNT(*) AS played 
+	COUNT(*) AS played, g.alias_id 
 	FROM ".OSDB_GP." as gp
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
 	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 
@@ -550,7 +543,7 @@ function GetMostPlayedHero($username, $limit = 1) {
 function GetMostKillsHero($username, $limit = 1) {
    $username = strtolower($username);
    $sql = "SELECT 
-	original, description, max(kills) as maxkills, g.id as gameid
+	original, description, max(kills) as maxkills, g.id as gameid, g.alias_id
 	FROM ".OSDB_DP." as dp
 	LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid AND dp.colour = gp.colour 
 	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
@@ -577,7 +570,7 @@ function GetMostDeathsHero($username, $limit = 1) {
 
 function GetMostAssistsHero($username, $limit = 1) {
    $username = strtolower($username);
-   $sql = "SELECT original, description, max(assists) as maxassists, g.id as gameid
+   $sql = "SELECT original, description, max(assists) as maxassists, g.id as gameid, g.alias_id
 	FROM ".OSDB_DP." AS a 
 	LEFT JOIN ".OSDB_GP." AS b ON b.gameid = a.gameid and a.colour = b.colour 
 	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
@@ -591,7 +584,7 @@ function GetMostAssistsHero($username, $limit = 1) {
 
 function GetMostWinsHero($username, $limit = 1) {
    $username = strtolower($username);
-   $sql = "SELECT original, description, COUNT(*) as wins, g.id as gameid
+   $sql = "SELECT original, description, COUNT(*) as wins, g.id as gameid, g.alias_id
 	FROM ".OSDB_GP." as gp
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
 	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 

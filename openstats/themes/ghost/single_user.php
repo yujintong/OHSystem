@@ -8,7 +8,56 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <div id="main-column">
      <div class="padding">
       <div class="inner">
-  <div align="center">
+	 
+<table>
+   <tr>
+     <td class="padLeft" width="400">
+  <h1>
+	<?=OS_ShowUserFlag( $User["letter"], $User["country"], 220 )?>
+    <?=$User["player"]?>  
+	<?=OS_IsUserGameBanned( $User["banned"], $lang["banned"] )?> 
+	<?=OS_IsUserGameAdmin( $User["GameAdmin"] )?>
+	<?=OS_IsUserGameWarned( $User["warn"],  $User["warn_expire"], $lang["warned"] )?>
+	<!--<?=OS_IsUserGameSafe( $User["safelist"], $lang["safelist"] )?>
+	<?=OS_IsUserGameLeaver( $User["leaver"], $lang["leaves"].": ".$User["leaver"]."<div>".$lang["stayratio"].": ".$User["stayratio"]."%</div>",1 )?>-->
+	<?=OS_bnet_icon($User["user_bnet"], 14, 14, "imgvalign")?>
+	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?> 
+  </h1>
+	 </td>
+	 <td style="text-align:right"><?=DisplayGameTypePlayer($GameAliases, $UserOtherGames, $User["player"])?></td>
+   </tr>
+   <tr>
+    <td  class="padLeft">
+	<?=$User["realm"]?>
+	</td>
+	<td>
+	</td>
+   </tr>
+   <?php if (isset($User["OtherStats"]) ) { ?>
+   <tr>
+   <td  class="padLeft">
+   <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$User["OtherStats"]?>"><?=$lang["most_recent_stats"]?></a></td>
+   <td></td>
+   </tr>
+   <?php } ?>
+   <tr>
+   <td  class="padLeft"><?php
+  if ( !empty($LastSeen["gameid"]) ) {
+  ?>
+  <div> <?=$lang["last_seen"]?>:
+  <a href="<?=OS_HOME?>?live_games&amp;gameid=<?=$LastSeen["gameid"]?>&amp;botid=<?=$LastSeen["botid"]?>">
+   <span <?=ShowToolTip("Last seen: <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
+    <?=$lang["game"]?> #<?=$LastSeen["gameid"]?>, <?=($LastSeen["time"])?>
+   </a>
+   </div>
+  <?php
+  }
+  ?></td>
+   <td></td>
+   </tr>
+</table>	 
+
+  <div align="center" style="display:none;">
   <h1>
 	<?=OS_ShowUserFlag( $User["letter"], $User["country"], 220 )?>
     <?=$User["player"]?>  

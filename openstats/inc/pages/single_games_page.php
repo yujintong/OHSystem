@@ -104,6 +104,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 //if user is NOT ranked (stats updated) show username instead of user ID
 	 if ( empty($row["userid"]) )
 	 $GameData[$c]["userid"]  = $row["name"];
+	 $GameData[$c]["alias_id"]  = $row["alias_id"];
      $GameData[$c]["kills"]  = ($row["kills"]);
 	 $GameData[$c]["deaths"]  = ($row["deaths"]);
 	 $GameData[$c]["assists"]  = ($row["assists"]);
@@ -197,7 +198,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 
 	 $GameData[$c]["left"]  = secondsToTime($row["left"]);
 	 $GameData[$c]["leftreason"]  = ($row["leftreason"]);
-	 
+	 $ScoreGain = "";
 	 if ($row["newcolour"]<=5 AND $row["winner"] == 1)  $ScoreGain=1; else
 	 if ($row["newcolour"]>5  AND $row["winner"] == 2)  $ScoreGain=1; else
 	 if ($row["newcolour"]<=5 AND $row["winner"] == 2)  $ScoreGain=2; else
@@ -258,9 +259,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
 	
-	 
 	 //Lobby/game log
-	 $sth2 = $db->prepare("SELECT * FROM ".OSDB_LG_LOGS." WHERE gameid = '".(int)$gameid ."' ");
+	 $sth2 = $db->prepare("SELECT * FROM oh_lobby_game_logs WHERE gameid = '".(int)$gameid ."' ");
 	 $result = $sth2->execute();
 	 $GameLogData = array();
 	 $i = 0;
@@ -271,6 +271,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   $GameLogData[$i]["lobbylog"]  = ($row2["lobbylog"]);
 	   $GameLogData[$i]["lobbylog"] = preg_replace('~\!pw (.+?)<\/div>~is' , '</div>', $GameLogData[$i]["lobbylog"]);
 	   $GameLogData[$i]["gamelog"]  = ($row2["gamelog"]);
+	   $GameLogData[$i]["gamelog"] = str_replace('<a ', '<a target="_blank" ', $GameLogData[$i]["gamelog"] );
 	   $i++;
-	 } 
+	 }
+	 
+	 
 ?>
