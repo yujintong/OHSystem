@@ -4397,11 +4397,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTE
         //
-        else if( Command == "vote" && m_GHost->m_VoteMode && GetTime( ) < m_VotedTimeStart + m_GHost->m_MaxVotingTime ) {
-            if( m_VotedTimeStart == 0 ) {
+        else if( Command == "vote" && m_GHost->m_VoteMode &&(! m_GameLoaded ||! m_GameLoading) ) {
+            if( GetTime( ) < m_VotedTimeStart + m_GHost->m_MaxVotingTime ) {
+                SendChat(player, "Error. Its alreay to late to vote.");
+            } else if( m_VotedTimeStart == 0 ) {
                 SendChat(player, "Error. You can vote currently. Vote will start when all slots are oocupied.");
-            }
-            else if( player->GetVotedMode() != 0 ) {
+            } else if( player->GetVotedMode() != 0 ) {
                 SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
             } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos ) {
                 SendChat( player, "Error. You havent choosed a valied modenumber.");
