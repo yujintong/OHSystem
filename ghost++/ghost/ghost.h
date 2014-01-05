@@ -236,6 +236,7 @@ public:
         bool m_VoteMode;
         uint32_t m_MaxVotingTime;
         bool m_RandomMode;
+        bool m_HideMessages;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
