@@ -4404,7 +4404,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SendChat(player, "Error. You can't vote currently. Vote will start when all needed slots are occupied.");
             } else if( player->GetVotedMode() != 0 ) {
                 SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
-            } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos ) {
+            } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos || UTIL_ToUInt32(Payload) > m_ModesToVote.size( ) ) {
                 SendChat( player, "Error. You havent choosed a valied modenumber.");
             } else {
                 SendAllChat("Player ["+player->GetName( )+"] has voted for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
