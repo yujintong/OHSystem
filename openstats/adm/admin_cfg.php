@@ -1315,6 +1315,19 @@ if ($handle = opendir("../themes")) {
 	   </select> Update IPs on bans table
 	   </td>
 	 </tr>
+	 
+     <tr>
+	   <td width="150"><b>Fix bans:</b></td>
+	   <td>
+	   <select name="CheckUserBans">
+	   <?php if ($CheckUserBans == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">On</option>
+	   <?php if ($CheckUserBans == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Off</option>
+	   </select> Auto-fix expired bans (even if player does not play after ban expire and stats update)
+	   </td>
+	 </tr>
+	 
      <tr>
 	   <td width="150"><b>Max. cron logs:</b></td>
 	   <td>

@@ -243,7 +243,41 @@ if ($BanIPUpdate == 1) {
 	$debug = "";
 	
  }
-   
+ 
+ 
+ 
+ 
+    //Check user bans from stats table (and remove false bans)
+ if ($CheckUserBans == 1) {
+    $debug = "";
+	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE banned = 1 LIMIT 50");
+    $result = $sth->execute(); 
+	
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	
+	 	$sth2 = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE name = '".$row["player"]."' ");
+        $result2 = $sth2->execute(); 
+		
+		$row2 = $sth2->fetch(PDO::FETCH_ASSOC);
+	    if ($sth2->rowCount() == 0 ) {
+		
+		 $upd = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 WHERE player = '".$row["player"]."' ");
+		 $result = $upd->execute();
+		 if (empty($debug) ) $debug.="Fixed (removed) bans: ";
+		 $debug.=$row["player"].", ";
+		}
+	}
+	$debug = substr( $debug, 0, (strlen($debug)-2) );
+	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND !empty($debug) ) {
+    $cron_data = 'DAEMON: '.$debug.'';
+	$sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	$result = $sth->execute();  
+	}
+	
+	$debug = "";
+
+    }
    
    //END WORK HERE
    

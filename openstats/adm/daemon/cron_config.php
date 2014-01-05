@@ -14,6 +14,8 @@ $MaxQueries = '100';
 
 $StatsCountryUpdate = '1';
 $BanIPUpdate = '1';
+//Check and verify user bans (or remove if player is not banned)
+$CheckUserBans = '1';
 $MaxCronLogs = '10000';
 //0 disabled, 1 basic, 2 full details
 $CronReportDetails = '1';
