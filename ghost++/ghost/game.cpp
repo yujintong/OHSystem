@@ -898,8 +898,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                 Same.push_back(6);
             if( HighestVote == g )
                 Same.push_back(7);
-            if( Same.size() <= 1 ){
-                if( HighestVote != g && Same.size() != 0 ) {
+            if( Same.size() <= 1 || HighestVote == 0 ){
+                if( HighestVote != g && Same.size() != 0 && HighestVote != 0) {
                     SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
                     m_HCLCommandString =  m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[HighestVote-1]) : m_ModesToVote[HighestVote-1];
                     m_Voted = true;
