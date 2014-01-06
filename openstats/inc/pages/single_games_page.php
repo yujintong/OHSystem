@@ -271,6 +271,16 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 if ( $HideEmptySlots == 1 AND (strlen($row["name"])<=2 OR $row["left"]<=0) ) 
 	 $GameData[$c]["hideslot"] = 'hiddenslot'; else $GameData[$c]["hideslot"] = "";
 	 
+	 if ($GameData[0]["winner"] == 1) { 
+	 $GameData[$c]["display_winner"] = $lang["sent_winner"];
+	 $GameData[$c]["display_loser"]  = $lang["scou_loser"];
+	 } else
+	 if ($GameData[0]["winner"] == 2) {  
+	 $GameData[$c]["display_winner"] = $lang["sent_loser"]; 
+	 $GameData[$c]["display_loser"]  = $lang["scou_winner"]; 
+	 }  else
+	 if ($GameData[0]["winner"] == 0) {  $GameData[$c]["display_winner"] = $lang["draw_game"]; }
+	 
 	 
 	 $GameData[$c]["newcolour"]  = ($row["newcolour"]);
 	 $GameData[$c]["gameid"]  = ($row["gameid"]);

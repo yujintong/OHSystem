@@ -1177,3 +1177,5 @@ select {
 }
 
 .hideElement { display:none; }
+.winner_background { background-color: #EDFDE4 !important; }
+.loser_background   { background-color: #FDE4E4 !important; }

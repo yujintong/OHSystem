@@ -54,11 +54,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 <table>
   <tr class="sentinelRow">
   <td width="850" class="aligncenter" align="center">
-	 <?php
-	 if ($GameData[0]["winner"] == 1) { ?><?=$lang["sent_winner"]?><?php } else
-	 if ($GameData[0]["winner"] == 2) { ?><?=$lang["sent_loser"]?><?php }  else
-	 if ($GameData[0]["winner"] == 0) { ?><?=$lang["draw_game"]?><?php }
-	 ?>
+	 <?=$Game["display_winner"]?>
 	 </td>
     </tr>
 </table>
@@ -80,11 +76,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 <table>
   <tr class="scourgeRow">
   <td width="850" class="aligncenter" align="center">
-	 <?php
-	 if ($GameData[0]["winner"] == 1) { ?><?=$lang["scou_loser"]?><?php }   else
-	 if ($GameData[0]["winner"] == 2) { ?><?=$lang["scou_winner"]?><?php }  else
-	 if ($GameData[0]["winner"] == 0) { ?><?=$lang["draw_game"]?><?php }
-	 ?>
+	 <?=$Game["display_loser"]?>
 	 </td>
     </tr>
 </table>

@@ -106,19 +106,19 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   unset($sth);
   if ( isset($_GET["m"]) AND is_numeric($_GET["m"]) AND $_GET["m"]<=12 AND $_GET["m"]>=1 ) {
   $m = safeEscape( (int) $_GET["m"] );
-  $filter.= "AND MONTH(datetime) = '".(int)$m."'";
+  $filter.= "AND MONTH(g.datetime) = '".(int)$m."'";
   }
   
   if ( isset($_GET["y"]) AND is_numeric($_GET["y"]) AND $_GET["y"]<=date("Y") AND $_GET["y"]>=1998 ) {
   $y = safeEscape( (int) $_GET["y"] );
-  $filter.= "AND YEAR(datetime) = '".(int)$y."'";
+  $filter.= "AND YEAR(g.datetime) = '".(int)$y."'";
   }
   
   if ( isset($_GET["game_type"]) AND is_numeric($_GET["game_type"]) )
-  $filter.=" AND alias_id = '".(int) $_GET["game_type"]."' ";
+  $filter.=" AND g.alias_id = '".(int) $_GET["game_type"]."' ";
   
-  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." 
-  WHERE (map) LIKE ('%".OS_DEFAULT_MAP."%') AND duration>='".$MinDuration."' ".$filter." LIMIT 1");
+  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." as g
+  WHERE (g.map) LIKE ('%".OS_DEFAULT_MAP."%') AND g.duration>='".$MinDuration."' ".$filter." LIMIT 1");
   
   $result = $sth->execute();	  
   
@@ -134,6 +134,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  
     }
     $sth = $db->prepare( $sql  );
+
 	$result = $sth->execute();	  
 	$c=0;
     $GamesData = array();
@@ -154,6 +155,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$GamesData[$c]["ownername"]  = ($row["ownername"]);
 	$GamesData[$c]["duration"]  = ($row["duration"]);
 	$GamesData[$c]["creatorname"]  = ($row["creatorname"]);
+	
+	$GamesData[$c]["flag"]  = ($row["flag"]); 
 	
 	if ( isset($_GET["h"]) AND file_exists("img/heroes/".$_GET["h"].".gif") )
 	$GamesData[$c]["hero_history"]  = $_GET["h"].""; else $GamesData[$c]["hero_history"] = "";
@@ -189,6 +192,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   $GamesData[$c]["leaver"] = 0;
 	   $GamesData[$c]["left"] = "";
 	   }
+	
+	if ( !empty($row["flag"]) ) {
+	    if ( $row["flag"] == "winner" ) $GamesData[$c]["winner"]=1;  else
+		if ( $row["flag"] == "loser" )  $GamesData[$c]["winner"]=2; else 
+		 $row["winner"]=0;
+	}
 	
 	//echo $GamesData[$c]["leaver"];
 	

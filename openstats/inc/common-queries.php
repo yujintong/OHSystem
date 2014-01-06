@@ -24,6 +24,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 
    function Get_w3mmdplayers($gameid) {
     global $db;
+	global $lang;
 	$Data = array();
 	$ScourgeRow = 0;
     $SentinelRow = 0;
@@ -101,7 +102,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
        $Hero = Get_TDRace( $vars  );
        $Data[$c]["hero_link"]  = 0;
 	   
-	   if ( file_exists("img/heroes/".$Hero)  ) {
+	   if ( !empty($Hero) AND file_exists("img/heroes/".$Hero) ) {
 	   $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
 	   }
 	   
@@ -110,7 +111,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
 	   $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
 	   $Data[$c]["raxkills"] = "";  $Data[$c]["courierkills"] = ""; $Data[$c]["neutralkills"] = "";
-	   $Data[$c]["gold"] = "";      $Data[$c]["left"] = "";
+	   $Data[$c]["gold"] = "";      $Data[$c]["left"] = ""; 
 	   
 	   $Data[$c]["side"] = "";
 	   
@@ -125,6 +126,21 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	    if ( $row["pid"]>$LimitTeam  AND $row["flag"] == "winner" AND $SetWinner == 0)  
 		{ $Data[0]["winner"] = '2'; $SetWinner = 1; }
 		
+	 
+	if ($Data[0]["winner"] == '1' AND $row["pid"]<= $LimitTeam) $Data[$c]["hideslot"] = "winner_background";
+	else $Data[$c]["hideslot"] = "loser_background";
+	if ($Data[0]["winner"] == '2' AND $row["pid"]> $LimitTeam)  $Data[$c]["hideslot"] = "winner_background";
+	 
+	 if ($Data[0]["winner"] == '1') {  
+	 $Data[$c]["display_winner"] = '<span class="winner2">'.$lang["sent_winner"]."</span>"; 
+	 $Data[$c]["display_loser"]  = '<span class="winner1">'.$lang["scou_loser"]."</span>"; 
+	 } else
+	 if ($Data[0]["winner"] == '2') { 
+	 $Data[$c]["display_winner"] = '<span class="winner1">'.$lang["sent_loser"]."</span>"; 
+	 $Data[$c]["display_loser"]  = '<span class="winner2">'.$lang["scou_winner"]."</span>"; 
+	 }  else
+	 if ($Data[0]["winner"] == '0') {  $Data[$c]["display_winner"] = $lang["draw_game"]; }
+		
 	   $c++;
 	 }
 
@@ -137,7 +153,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
    
    function W3mmdLimitTeams( $map ) {
     $val = 5;
-    if ( strstr($map, " TD ") ) $val = 3;
+    if ( strstr($map, "Legion TD") ) $val = 3;
 	
 	return $val;
    
@@ -221,9 +237,10 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	function getAllGames($MinDuration, $offset, $rowsperpage, $filter="", $order = "id DESC" ) {
 	  $sql = "SELECT 
           g.id, g.views, g.stats, g.map, g.datetime, g.gamename, g.ownername, g.duration, g.creatorname, dg.winner, 
-		  g.gamestate as type, g.creatorserver as server, g.alias_id
+		  g.gamestate as type, g.creatorserver as server, g.alias_id, w.flag
 		  FROM ".OSDB_GAMES." as g 
 		  LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
+		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` = 0
 		  WHERE (map) LIKE '%".OS_DEFAULT_MAP."%' AND duration>='".$MinDuration."' $filter
 		  ORDER BY $order
 		  LIMIT $offset, $rowsperpage";
