@@ -55,7 +55,33 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   ?></td>
    <td></td>
    </tr>
-</table>	 
+</table>	
+
+ <?php
+  if ( OS_is_banned_player( $User["banname"] ) ) {
+  ?>
+  <h2><span class="banned"><?=$lang["banned"]?></span> 	<?=OS_is_ban_perm($User["expiredate"], $lang["permanent_ban"])?></h2>
+  <table class="Table500px">
+  <tr>
+    <td width="100"><b><?=$lang["reason"]?>:</b> </td>
+	<td><span class="banned padTop"><?=$User["reason"]?></span></td>
+  <tr>
+    <td width="100"><b><?=$lang["bannedby"]?>:</b> </td>
+	<td><?=$User["bannedby"]?></td>
+  </tr>
+  <tr>
+    <td width="100"><b><?=$lang["date"]?>:</b> </td>
+	<td><?=$User["bandate"]?></td>
+  </tr>
+  <tr>
+    <td width="100"><b><?=$lang["expires"]?>:</b> </td>
+	<td>
+	<?=OS_ban_expired($User["expiredate"], "", "" )?>
+	<div><?=OS_ExpireDateRemain($User["expiredate"])?></div>
+	</td>
+  </tr>
+  </table>
+  <?php } ?> 
 
   <div align="center" style="display:none;">
   <h1>
@@ -90,8 +116,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   }
   ?>
   
-  <?php if ($User["hide"] == 0 ) { ?>
-  
   <?php
   if ( OS_is_banned_player( $User["banname"] ) ) {
   ?>
@@ -116,10 +140,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	</td>
   </tr>
   </table>
-  <?php
-  }
-  ?>
+  <?php } ?>
   </div>
+  
+  <?php if ($User["hide"] == 0 ) { ?>
   <div class="padTop">
   <table class="Table500px">
       <tr class="row">
