@@ -1047,7 +1047,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                             }
                                     }
 
-                                    if( unallowedcountry )
+                                    if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot )
                                     {
                                             SendAllChat( "Autokicking User ["+(*i)->GetName()+"] for joining with a denied country: " + CC );
                                             if(m_GHost->m_AutoDenyUsers)

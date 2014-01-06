@@ -237,6 +237,7 @@ public:
         uint32_t m_MaxVotingTime;
         bool m_RandomMode;
         bool m_HideMessages;
+        bool m_DenieCountriesOnThisBot;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
