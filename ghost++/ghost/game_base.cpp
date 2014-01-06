@@ -2026,7 +2026,7 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
                 if( !m_HCLCommandString.empty( ) )
                         SendChat( player, "     HCL Command String:  " + m_HCLCommandString );
                 if( m_GHost->m_VoteMode ) {
-                    SendChat( player, "Voting for a mode is enabled. See all possible modes with '!voteoptions'.");
+                    SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
                 }
         }
         else
@@ -2057,7 +2057,7 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         if( m_GHost->m_OHBalance)
             SendChat(player, "This is a balanced game, the slots will be balanced before the game will start.");
         if( m_GHost->m_VoteMode ) {
-            SendChat( player, "Voting for a mode is enabled. See all possible modes with '!voteoptions'.");
+            SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
         }
  
 }

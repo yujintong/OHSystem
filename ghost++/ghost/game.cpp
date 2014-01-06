@@ -1058,7 +1058,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         {
                             string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
                             if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
-                                SendAllChat("The ["+LTeam+"] has now the chance with '!a' to interrupt the automatic ending. There totally ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"] votes needed.");
+                                SendAllChat("The ["+LTeam+"] can interrupt auto end with !a command. Total votes required ["+UTIL_ToString(m_BreakAutoEndVotesNeeded)+"]");
                             m_EndTicks = GetTicks();
                             m_StartEndTicks = GetTicks();
                         }
