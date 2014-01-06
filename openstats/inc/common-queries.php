@@ -221,12 +221,13 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	function getUserGames ( $id, $MinDuration, $offset, $rowsperpage, $filter = "" ) {
 	
 	 $sql = "SELECT s.*, g.id, g.map, g.gamename, g.datetime, g.ownername, g.duration,  g.creatorname, dg.winner, 
-	 g.gamestate AS type, s.player, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, gp.`left`, g.alias_id
+	 g.gamestate AS type, s.player, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, gp.`left`, g.alias_id, w.flag
 	 FROM ".OSDB_STATS." as s 
 	 LEFT JOIN ".OSDB_GP." as gp ON (gp.name) = (s.player)
 	 LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid
 	 LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
 	 LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = dg.gameid AND gp.colour = dp.colour
+	 LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.pid = 0
 	 WHERE s.id = '".(int) $id."' AND (g.map) LIKE ('%".OS_DEFAULT_MAP."%') AND g.duration>='".$MinDuration."' ".$filter."
 	 LIMIT $offset, $rowsperpage";
 	 
