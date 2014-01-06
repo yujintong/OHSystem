@@ -2070,7 +2070,7 @@ void CGHost :: ReadRoomData()
 }
 
 string CGHost :: GetAliasName( uint32_t alias ) {
-    if( m_Aliases.size( ) != 0 && m_Aliases.size( ) >= alias-1 ) {
+    if( m_Aliases.size( ) != 0 && m_Aliases.size( ) >= alias ) {
         return m_Aliases[alias-1];
     }
     return "failed";
