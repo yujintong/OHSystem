@@ -145,6 +145,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
   <?php if ($User["hide"] == 0 ) { ?>
   <div class="padTop">
+  
+  <?php if (isset($User["admin_info"])) { ?>
+  <h4><span class="banned"><?=$lang["hide_stats_message"]?></h4>
+  <?php } ?>
+  
   <table class="Table500px">
       <tr class="row">
 	  <th class="padLeft" width="140"><?=$lang["stats"] ?>: <?=$User["month"]?> / <?=$User["year"]?></th>

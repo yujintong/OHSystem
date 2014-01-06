@@ -123,6 +123,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 	
 	$UserData[$c]["hide"]  = ($row["hide"]);
+	if ( os_is_logged() AND $_SESSION["level"]>=9 AND $row["hide"] == 1 ) {
+	$UserData[$c]["hide"] = 0;
+	$UserData[$c]["admin_info"] = 1;
+	}
 	
 	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
 	
