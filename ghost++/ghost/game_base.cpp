@@ -6558,21 +6558,19 @@ string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
 
 void CBaseGame :: StartVoteMode( ) {
     m_VotedTimeStart = GetTime( );
-    SendAllChat( "The voteing for a mode has started now. You can vote with '!vote NUMBER'.");
-    SendAllChat( "Possible votes to mode:");
+    SendAllChat( "The voting for a mode has started. You can vote with '!vote X'. Votes to mode:");
     string Modes;
     uint32_t c = 1;
     for( vector<string> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
         Modes += "["+UTIL_ToString(c)+": "+*i+"] ";
-        c++;
         
-        if( Modes.size() > 100 ) {
+        if( c == 4 ) {
             SendAllChat(Modes);
             Modes.clear();
         }
+        c++;
     }
     SendAllChat(Modes);
-    SendAllChat("=========================================================================");
 }
 
 void CBaseGame :: GetVotingModes( string allmodes ) {

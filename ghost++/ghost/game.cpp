@@ -4401,13 +4401,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         // !VOTE
         //
         else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) ) {
-            if( GetTime( ) >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && m_VotedTimeStart != 0 ) {
-                SendChat(player, "Error. Its alreay to late to vote.");
-            } else if( m_VotedTimeStart == 0 ) {
-                SendChat(player, "Error. You can't vote currently. Vote will start when all needed slots are occupied.");
-            } else if( player->GetVotedMode() != 0 ) {
+            if( player->GetVotedMode() != 0 ) {
                 SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
-            } else if( Payload.size( ) != 1 || !Payload.find_first_not_of( "1234567" ) == string :: npos || UTIL_ToUInt32(Payload) > m_ModesToVote.size( ) ) {
+            } else if( Payload.size( ) != 1 || ( UTIL_ToUInt32(Payload) < 1 && UTIL_ToUInt32(Payload) > ( m_ModesToVote.size( ) - 1 ) )  || UTIL_ToUInt32(Payload) > m_ModesToVote.size( ) ) {
                 SendChat( player, "Error. You havent choosed a valied modenumber.");
             } else {
                 SendAllChat("Player ["+player->GetName( )+"] has voted for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
@@ -4418,7 +4414,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         c++;
                     }
                 }
-                if( GetNumHumanPlayers( ) / 2  <= c ) {
+                if( GetNumHumanPlayers( ) / 2  <= c && m_VotedTimeStart != 0 ) {
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         SendAllChat( "The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]. The game will start now.");
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
@@ -4433,8 +4429,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );
                     }
-                } else {
-                       SendAllChat("The mode has already ["+UTIL_ToString(c)+"] votes. There ["+UTIL_ToString( GetNumHumanPlayers( ) / 2 - c ) +"] more needed for an absolute voting of the mode.");
                 }
             }
         }
@@ -4444,17 +4438,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( ( Command == "voteoptions" || Command == "votelist" || Command == "vo" ) && m_GHost->m_VoteMode ) {
             SendChat( player, "Possible options to vote as mode:");
-            SendChat( player, "==============================");
             string Modes;
             uint32_t c = 1;
             for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
                 Modes += "["+UTIL_ToString(c)+": "+*k+"] ";
-                c++;
-
-                if( Modes.size() > 100 ) {
+                if( c == 4 ) {
                     SendChat(player, Modes);
                     Modes.clear( );
                 }
+                c++;
             }
             SendChat(player, Modes);
         }

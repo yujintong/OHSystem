@@ -1566,7 +1566,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;
         m_NonAllowedDonwloadMessage = CFG->GetString("oh_downloadmessage", string());
 	m_VoteMode = CFG->GetInt( "oh_votemode", 0 ) == 0 ? false : true;
-        m_MaxVotingTime = CFG->GetInt( "oh_votemode_time", 120 );
+        m_MaxVotingTime = CFG->GetInt( "oh_votemode_time", 30 );
         m_RandomMode = CFG->GetInt( "oh_votemode_random", 0 ) == 0 ? false : true;
         m_HideMessages = CFG->GetInt( "oh_hideleavermessages", 1 ) == 0 ? false : true;
 }
