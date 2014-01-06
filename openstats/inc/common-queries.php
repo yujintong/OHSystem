@@ -22,133 +22,144 @@
 */
 if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 
-   function Get_w3mmdplayers($gameid) {
+function Get_w3mmdplayers($gameid) {
     global $db;
-	global $lang;
-	$Data = array();
-	$ScourgeRow = 0;
+    global $lang;
+    $Data = array();
+    $ScourgeRow = 0;
     $SentinelRow = 0;
-	$SetWinner = 0;
-	$Data[0]["winner"] = 0;
-	$c=0;
-	
-	$sth = $db->prepare(  "SELECT g.creatorname, g.duration, g.datetime, g.gamename, g.stats, g.views, g.map
-    FROM ".OSDB_GAMES." AS g
-    WHERE g.id='".(int)$gameid."'" );
-	$result = $sth->execute();
-	$row = $sth->fetch(PDO::FETCH_ASSOC);
-	
-	$Data[$c]["creatorname"] = $row["creatorname"];
-	$Data[$c]["duration"] = secondsToTime($row["duration"]);
-	$Data[$c]["datetime"] = date( OS_DATE_FORMAT, strtotime($row["datetime"]));
-	$Data[$c]["gamename"] = $row["gamename"];
-	$Data[$c]["stats"] = $row["stats"];
-    $Data[$c]["views"] = $row["views"];
-	$Map = $row["map"];
-	
-	$sth = $db->prepare(  "SELECT w.id, w.category, w.botid, w.gameid, w.pid, w.name, w.flag, w.leaver, w.practicing, gp.ip, gp.loadingtime, gp.left, gp.leftreason
-	FROM ".OSDB_GP." as gp
-	LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = gp.gameid AND gp.name = w.name
-    WHERE w.gameid ='".(int)$gameid."' 
-	ORDER BY w.pid ASC" );
-	
-	$result = $sth->execute();
-	
-	 if ( $sth->rowCount()>=1 ) {
-	 
-	 if ( file_exists("inc/geoip/geoip.inc") ) {
-	 include("inc/geoip/geoip.inc");
-	 $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
-	 $GeoIP = 1;
-	 }
-	 
-	 
-	 while($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-	   $Data[$c]["botid"] = $row["botid"];
-	   $Data[$c]["category"] = $row["category"];
-	   $Data[$c]["id"] = $row["id"];
-	   $Data[$c]["gameid"] = $row["gameid"];
-	   $Data[$c]["pid"] = $row["pid"];
-	   $Data[$c]["name"] = $row["name"];
-	   $Data[$c]["full_name"] = $row["name"];
-	   $Data[$c]["userid"] = $row["name"];
-	   $Data[$c]["flag"] = $row["flag"];
-	   $Data[$c]["leaver"] = $row["leaver"];
-	   $Data[$c]["practicing"] = $row["practicing"];
-	   
-	   $Data[$c]["leftreason"] = $row["leftreason"];
-	   $Data[$c]["left"] = $row["left"];
-	   $Data[$c]["loadingtime"] = $row["loadingtime"];
-	   $Data[$c]["ip"] = $row["ip"];
-	   $Data[$c]["hideElement"] = ' hideElement';
-	   
-	   $Data[$c]["counter"] = ''.($row["pid"]+1);
-	   
-	   if ($GeoIP == 1 ) {
-	   $Data[$c]["letter"]   = geoip_country_code_by_addr($GeoIPDatabase, $row["ip"]);
-	   $Data[$c]["country"]  = geoip_country_name_by_addr($GeoIPDatabase, $row["ip"]);
-	   }
-	      
-	   $Data[$c]["item1"] = "";  $Data[$c]["itemname1"] = ""; $Data[$c]["itemicon1"] = "empty.gif";
-	   $Data[$c]["item2"] = "";  $Data[$c]["itemname2"] = ""; $Data[$c]["itemicon2"] = "empty.gif";
-	   $Data[$c]["item3"] = "";  $Data[$c]["itemname3"] = ""; $Data[$c]["itemicon3"] = "empty.gif";
-	   $Data[$c]["item4"] = "";  $Data[$c]["itemname4"] = ""; $Data[$c]["itemicon4"] = "empty.gif";
-	   $Data[$c]["item5"] = "";  $Data[$c]["itemname5"] = ""; $Data[$c]["itemicon5"] = "empty.gif";
-	   $Data[$c]["item6"] = "";  $Data[$c]["itemname6"] = ""; $Data[$c]["itemicon6"] = "empty.gif";
-	   
-	   $Data[$c]["heroid"] = "blank"; $Data[$c]["hero"] = "blank"; $Data[$c]["description"] = "";
-	  
-	   $vars = Get_w3mmdvarsString($gameid, $row["pid"], "race");
-       $Hero = Get_TDRace( $vars  );
-       $Data[$c]["hero_link"]  = 0;
-	   
-	   if ( !empty($Hero) AND file_exists("img/heroes/".$Hero) ) {
-	   $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
-	   }
-	   
-	   $Data[$c]["level"] = "";  $Data[$c]["warn"] = "";  $Data[$c]["warn_expire"] = "";
-	   $Data[$c]["banned"] = ""; $Data[$c]["admin"] = ""; $Data[$c]["score_points"] = "";   
-	   $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
-	   $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
-	   $Data[$c]["raxkills"] = "";  $Data[$c]["courierkills"] = ""; $Data[$c]["neutralkills"] = "";
-	   $Data[$c]["gold"] = "";      $Data[$c]["left"] = ""; 
-	   
-	   $Data[$c]["side"] = "";
-	   
-	   $LimitTeam = W3mmdLimitTeams( $Map );
-	   
-	   if ( $row["pid"]<=$LimitTeam AND $SentinelRow == 0 ) { $Data[$c]["side"] = "sentinel"; $SentinelRow = 1; }
-	   if ( $row["pid"]>$LimitTeam  AND $ScourgeRow  == 0 ) { $Data[$c]["side"] = "scourge";  $ScourgeRow = 1;  }
+    $SetWinner = 0;
+    $Data[0]["winner"] = 0;
+    $c=0;
+        
+        $sth = $db->prepare(  "SELECT g.creatorname, g.duration, g.datetime, g.gamename, g.stats, g.views, g.map
+        FROM ".OSDB_GAMES." AS g
+        WHERE g.id='".(int)$gameid."'" );
+        $result = $sth->execute();
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        
+        $Data[$c]["creatorname"] = $row["creatorname"];
+        $Data[$c]["duration"] = secondsToTime($row["duration"]);
+        $Data[$c]["datetime"] = date( OS_DATE_FORMAT, strtotime($row["datetime"]));
+        $Data[$c]["gamename"] = $row["gamename"];
+        $Data[$c]["stats"] = $row["stats"];
+        $Data[$c]["views"] = $row["views"];
+        $Map = $row["map"];
+        
+        $sth = $db->prepare(  "SELECT w.id, w.category, w.botid, w.gameid, w.pid, w.name, w.flag, w.leaver, w.practicing, gp.ip, gp.loadingtime, gp.left, gp.leftreason
+        FROM ".OSDB_GP." as gp
+        LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = gp.gameid AND gp.name = w.name
+        WHERE w.gameid ='".(int)$gameid."' 
+        ORDER BY w.pid ASC" );
+        
+        $result = $sth->execute();
+        
+         if ( $sth->rowCount()>=1 ) {
+         
+         if ( file_exists("inc/geoip/geoip.inc") ) {
+         include("inc/geoip/geoip.inc");
+         $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
+         $GeoIP = 1;
+         }
+         
+         
+         while($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+           $Data[$c]["botid"] = $row["botid"];
+           $Data[$c]["category"] = $row["category"];
+           $Data[$c]["id"] = $row["id"];
+           $Data[$c]["gameid"] = $row["gameid"];
+           $Data[$c]["pid"] = $row["pid"];
+           $Data[$c]["name"] = $row["name"];
+           $Data[$c]["full_name"] = $row["name"];
+           $Data[$c]["userid"] = $row["name"];
+           $Data[$c]["flag"] = $row["flag"];
+           $Data[$c]["leaver"] = $row["leaver"];
+           $Data[$c]["practicing"] = $row["practicing"];
+           
+           $Data[$c]["leftreason"] = $row["leftreason"];
+           $Data[$c]["left"] = $row["left"];
+           $Data[$c]["loadingtime"] = $row["loadingtime"];
+           $Data[$c]["ip"] = $row["ip"];
+           $Data[$c]["hideElement"] = ' hideElement';
+           
+           $Data[$c]["counter"] = ''.($row["pid"]+1);
+           
+           if ($GeoIP == 1 ) {
+           $Data[$c]["letter"]   = geoip_country_code_by_addr($GeoIPDatabase, $row["ip"]);
+           $Data[$c]["country"]  = geoip_country_name_by_addr($GeoIPDatabase, $row["ip"]);
+           }
+              
+           $Data[$c]["item1"] = "";  $Data[$c]["itemname1"] = ""; $Data[$c]["itemicon1"] = "empty.gif";
+           $Data[$c]["item2"] = "";  $Data[$c]["itemname2"] = ""; $Data[$c]["itemicon2"] = "empty.gif";
+           $Data[$c]["item3"] = "";  $Data[$c]["itemname3"] = ""; $Data[$c]["itemicon3"] = "empty.gif";
+           $Data[$c]["item4"] = "";  $Data[$c]["itemname4"] = ""; $Data[$c]["itemicon4"] = "empty.gif";
+           $Data[$c]["item5"] = "";  $Data[$c]["itemname5"] = ""; $Data[$c]["itemicon5"] = "empty.gif";
+           $Data[$c]["item6"] = "";  $Data[$c]["itemname6"] = ""; $Data[$c]["itemicon6"] = "empty.gif";
+           
+           $Data[$c]["heroid"] = "blank"; $Data[$c]["hero"] = "blank"; $Data[$c]["description"] = "";
+          
+           $vars = Get_w3mmdvarsString($gameid, $row["pid"], "race");
+           $Hero = Get_TDRace( $vars  );
+           $Data[$c]["hero_link"]  = 0;
+           
+           if ( !empty($Hero) AND file_exists("img/heroes/".$Hero) ) {
+           $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
+           }
+           
+           $Data[$c]["level"] = "";  $Data[$c]["warn"] = "";  $Data[$c]["warn_expire"] = "";
+           $Data[$c]["banned"] = ""; $Data[$c]["admin"] = ""; $Data[$c]["score_points"] = "";   
+           $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
+           $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
+           $Data[$c]["raxkills"] = "";  $Data[$c]["courierkills"] = ""; $Data[$c]["neutralkills"] = "";
+           $Data[$c]["gold"] = "";      $Data[$c]["left"] = ""; 
+           
+           $Data[$c]["side"] = "";
+           
+           $LimitTeam = W3mmdLimitTeams( $Map );
+           
+           if ( $row["pid"]<=$LimitTeam AND $SentinelRow == 0 ) { $Data[$c]["side"] = "sentinel"; $SentinelRow = 1; }
+           if ( $row["pid"]>$LimitTeam  AND $ScourgeRow  == 0 ) { $Data[$c]["side"] = "scourge";  $ScourgeRow = 1;  }
 
-        if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "winner" AND $SetWinner == 0)  
-		{ $Data[0]["winner"] = '1'; $SetWinner = 1;  }
+           if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "winner" AND $SetWinner == 0)  
+                { $Data[0]["winner"] = '1'; $SetWinner = 1;  }
+                
+           if ( $row["pid"]>$LimitTeam  AND $row["flag"] == "winner" AND $SetWinner == 0)  
+                { $Data[0]["winner"] = '2'; $SetWinner = 1; }
+        
+        if ( !isset($winner) ) {
+		  
+		  if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "winner" ) $winner = 1; else
+		  if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "loser" )  $winner = 2; else 
+		  $winner = 0;
 		
-	    if ( $row["pid"]>$LimitTeam  AND $row["flag"] == "winner" AND $SetWinner == 0)  
-		{ $Data[0]["winner"] = '2'; $SetWinner = 1; }
-		
-	 
-	if ($Data[0]["winner"] == '1' AND $row["pid"]<= $LimitTeam) $Data[$c]["hideslot"] = "winner_background";
-	else $Data[$c]["hideslot"] = "loser_background";
-	if ($Data[0]["winner"] == '2' AND $row["pid"]> $LimitTeam)  $Data[$c]["hideslot"] = "winner_background";
-	 
-	 if ($Data[0]["winner"] == '1') {  
-	 $Data[$c]["display_winner"] = '<span class="winner2">'.$lang["sent_winner"]."</span>"; 
-	 $Data[$c]["display_loser"]  = '<span class="winner1">'.$lang["scou_loser"]."</span>"; 
-	 } else
-	 if ($Data[0]["winner"] == '2') { 
-	 $Data[$c]["display_winner"] = '<span class="winner1">'.$lang["sent_loser"]."</span>"; 
-	 $Data[$c]["display_loser"]  = '<span class="winner2">'.$lang["scou_winner"]."</span>"; 
-	 }  else
-	 if ($Data[0]["winner"] == '0') {  $Data[$c]["display_winner"] = $lang["draw_game"]; }
-		
-	   $c++;
-	 }
+		}
+        
+         
+        if ( $winner == 1 AND $row["pid"]<= $LimitTeam) $Data[$c]["hideslot"] = "winner_background";
+        else $Data[$c]["hideslot"] = "loser_background";
+        if ($Data[0]["winner"] == '2' AND $row["pid"]> $LimitTeam)  $Data[$c]["hideslot"] = "winner_background";
+         
+         if ( $winner == 1 ) {  
+         $Data[$c]["display_winner"] = '<span class="winner2">'.$lang["sent_winner"]."</span>"; 
+         $Data[$c]["display_loser"]  = '<span class="winner1">'.$lang["scou_loser"]."</span>"; 
+         } else
+         if ( $winner == 2 ) { 
+         $Data[$c]["display_winner"] = '<span class="winner1">'.$lang["sent_loser"]."</span>"; 
+         $Data[$c]["display_loser"]  = '<span class="winner2">'.$lang["scou_winner"]."</span>"; 
+         }  else
+         if ( $winner == 0 ) {  
+		 $Data[$c]["display_winner"] = $lang["draw_game"];
+         $Data[$c]["display_loser"]  = $lang["draw_game"];
+		 }
+                
+           $c++;
+         }
 
-	 if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
+         if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
 
-	 return $Data;
-	 
-	 }
+         return $Data;
+         
+         }
    }
    
    function W3mmdLimitTeams( $map ) {
