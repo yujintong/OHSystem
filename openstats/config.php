@@ -189,7 +189,7 @@ $DailyPoints = '5';
 
 //** CUSTOM ADDINGS **//
 // Custom Mapname for maps who havent '%dota%' in the mapname.
-$DefaultMap = "dota";
+$DefaultMap = "";
 
 //Display online/offline players on top page (req. extra queries)
 $OnlineOfflineOnTopPage = '0';

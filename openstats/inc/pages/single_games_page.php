@@ -5,16 +5,37 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
      $gameid = safeEscape( (int) $_GET["game"]);
 	 $MenuClass["games"] = "active";
 	 $c=0;
-     $GameData = array();
 	 
+	 //first check if this is custom map
+	 $W3mmd = Get_w3mmdplayers($gameid);
+	 $GameData = array();
+	
+     //Custom map	
+	 if ( !empty($W3mmd) ) {
+	 $GameData =  $W3mmd ;
+	 $HomeTitle = ($GameData[0]["gamename"]);
+	 $HomeDesc = os_strip_quotes($GameData[0]["gamename"]);
+	 $HomeKeywords = strtolower( os_strip_quotes($GameData[0]["gamename"])).','.$HomeKeywords;
+	 $BestPlayer = "";
+	 $PlayerAssists = "";
+	 $PlayerDeaths  = "";
+	 $PlayerCK  = "";
+	 $PlayerCD  = "";
+	 $PlayerKills = "";
+	 } else {
+	 
+	 /////////////////////////////////////////////////////////////////////
+	 //DOTA, LOD
 	 $sth = $db->prepare(  getSingleGame( (int)$gameid ) );
 	 $result = $sth->execute();
-	 
+
 	 if ( $sth->rowCount()<=0 ) {
      require_once(OS_PLUGINS_DIR.'index.php');
      os_init();
 	 header('location: '.OS_HOME.'?404'); die; 
 	 }
+	 
+	 
 	 
 	 $update_view = $db->exec("UPDATE ".OSDB_GAMES." SET views = views + 1 WHERE id = '".(int)$gameid ."' ");
 	 
@@ -26,7 +47,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $GameData[$c]["dt"]  = ($row["datetime"]);
 	 $GameData[$c]["gamename"]  = ($row["gamename"]);
 	 $GameData[$c]["winner"]  = ($row["winner"]);
-         $GameData[$c]["views"]  = ($row["views"]);
+     $GameData[$c]["views"]  = ($row["views"]);
 	 //SET META INFORMATION AND PAGE NAME
 	 $HomeTitle = ($row["gamename"]);
 	 $HomeDesc = os_strip_quotes($row["gamename"]);
@@ -64,6 +85,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$sth = $db->prepare(  getGameInfo( (int) $gameid)  );
 	$result = $sth->execute();
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	$GameData[$c]["hideElement"]  = "";
 	if( $row["newcolour"] <= 5 ) $GameData[$c]["counter"] = $row["newcolour"];
 	if( $row["newcolour"] > 5 ) $GameData[$c]["counter"] = $row["newcolour"]-1;
 	$GameData[$c]["side"] = "";
@@ -258,9 +280,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
-	
+		 
+	}
 	 //Lobby/game log
-	 $sth2 = $db->prepare("SELECT * FROM ".OSDB_LG_LOGS." WHERE gameid = '".(int)$gameid ."' ");
+	 $sth2 = $db->prepare("SELECT * FROM oh_lobby_game_logs WHERE gameid = '".(int)$gameid ."' ");
 	 $result = $sth2->execute();
 	 $GameLogData = array();
 	 $i = 0;
@@ -274,6 +297,5 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   $GameLogData[$i]["gamelog"] = str_replace('<a ', '<a target="_blank" ', $GameLogData[$i]["gamelog"] );
 	   $i++;
 	 }
-	 
-	 
+
 ?>
