@@ -1313,10 +1313,16 @@ function OS_ShowItem( $itemID, $itemname, $icon = "", $w = '100', $imgw = '64', 
   }
 }
 
-function OS_ShowHero($heroID, $description = '', $icon, $w = '100', $imgw='64', $imgh='64' ) {
+function OS_ShowHero($heroID, $description = '', $icon, $w = '100', $imgw='64', $imgh='64', $link = 1 ) {
+ if ($link == 1) {
   ?>
   <a href="<?=OS_HOME?>?hero=<?=$heroID?>"><img <?=ShowToolTip("<div>".$description."</div>", OS_HOME.'img/heroes/'.$icon, $w, $imgw, $imgh)?> src="<?=OS_HOME?>img/heroes/<?=$icon?>" alt="hero" width="48" height="48" /></a>
   <?php
+  } else {
+  ?>
+  <img src="<?=OS_HOME?>img/heroes/<?=$icon?>" alt="hero" width="48" height="48" />
+  <?php
+  }
 }
 
 function OS_ShowLiveHero($heroID ) {

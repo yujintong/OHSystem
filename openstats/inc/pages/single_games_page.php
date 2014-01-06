@@ -121,6 +121,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 	 
 	 $GameData[$c]["heroid"]  = ($row["hero"]);
+	 $GameData[$c]["hero_link"]  = 1;
 	 
 	 $GameData[$c]["userid"]  = ($row["userid"]);
 	 //if user is NOT ranked (stats updated) show username instead of user ID

@@ -106,7 +106,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   <tr class="row SingleGameRow <?=$Game["hideslot"]?> ">
  <td width="68" class="padLeft slot<?=$Game["counter"]?>">
  <a name="<?=strtolower($Game["name"])?>"></a>
- <?=OS_ShowHero( $Game["heroid"], $Game["description"], $Game["hero"] )?>
+ <?=OS_ShowHero( $Game["heroid"], $Game["description"], $Game["hero"], 100, 64,64, $Game["hero_link"] )?>
  </td>
  <td width="260">
  <div class="SingleGamePlayerName">

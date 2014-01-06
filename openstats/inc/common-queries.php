@@ -25,9 +25,13 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
    function Get_w3mmdplayers($gameid) {
     global $db;
 	$Data = array();
+	$ScourgeRow = 0;
+    $SentinelRow = 0;
+	$SetWinner = 0;
+	$Data[0]["winner"] = 0;
 	$c=0;
 	
-	$sth = $db->prepare(  "SELECT g.creatorname, g.duration, g.datetime, g.gamename, g.stats, g.views
+	$sth = $db->prepare(  "SELECT g.creatorname, g.duration, g.datetime, g.gamename, g.stats, g.views, g.map
     FROM ".OSDB_GAMES." AS g
     WHERE g.id='".(int)$gameid."'" );
 	$result = $sth->execute();
@@ -39,7 +43,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	$Data[$c]["gamename"] = $row["gamename"];
 	$Data[$c]["stats"] = $row["stats"];
     $Data[$c]["views"] = $row["views"];
-	
+	$Map = $row["map"];
 	
 	$sth = $db->prepare(  "SELECT w.id, w.category, w.botid, w.gameid, w.pid, w.name, w.flag, w.leaver, w.practicing, gp.ip, gp.loadingtime, gp.left, gp.leftreason
 	FROM ".OSDB_GP." as gp
@@ -92,7 +96,14 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   $Data[$c]["item6"] = "";  $Data[$c]["itemname6"] = ""; $Data[$c]["itemicon6"] = "empty.gif";
 	   
 	   $Data[$c]["heroid"] = "blank"; $Data[$c]["hero"] = "blank"; $Data[$c]["description"] = "";
-	   //$Data[$c]["letter"] = "noflag"; $Data[$c]["country"] = "";
+	  
+	   $vars = Get_w3mmdvarsString($gameid, $row["pid"], "race");
+       $Hero = Get_TDRace( $vars  );
+       $Data[$c]["hero_link"]  = 0;
+	   
+	   if ( file_exists("img/heroes/".$Hero)  ) {
+	   $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
+	   }
 	   
 	   $Data[$c]["level"] = "";  $Data[$c]["warn"] = "";  $Data[$c]["warn_expire"] = "";
 	   $Data[$c]["banned"] = ""; $Data[$c]["admin"] = ""; $Data[$c]["score_points"] = "";   
@@ -100,20 +111,84 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
 	   $Data[$c]["raxkills"] = "";  $Data[$c]["courierkills"] = ""; $Data[$c]["neutralkills"] = "";
 	   $Data[$c]["gold"] = "";      $Data[$c]["left"] = "";
-		
-	   if ( $row["pid"]<=5 ) $Data[$c]["side"] = "sentinel"; else  $Data[$c]["side"] = "scourge";
 	   
-	    if ( $row["pid"]<=5 AND $row["flag"] == "winner") $Data[$c]["winner"] = 1; else 
-	    if ( $row["pid"]>5  AND $row["flag"] == "winner") $Data[$c]["winner"] = 2; else 
-		$Data[$c]["winner"] = 0;
+	   $Data[$c]["side"] = "";
+	   
+	   $LimitTeam = W3mmdLimitTeams( $Map );
+	   
+	   if ( $row["pid"]<=$LimitTeam AND $SentinelRow == 0 ) { $Data[$c]["side"] = "sentinel"; $SentinelRow = 1; }
+	   if ( $row["pid"]>$LimitTeam  AND $ScourgeRow  == 0 ) { $Data[$c]["side"] = "scourge";  $ScourgeRow = 1;  }
+
+        if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "winner" AND $SetWinner == 0)  
+		{ $Data[0]["winner"] = '1'; $SetWinner = 1;  }
+		
+	    if ( $row["pid"]>$LimitTeam  AND $row["flag"] == "winner" AND $SetWinner == 0)  
+		{ $Data[0]["winner"] = '2'; $SetWinner = 1; }
+		
 	   $c++;
 	 }
-	 
+
 	 if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
-	 
+
 	 return $Data;
 	 
 	 }
+   }
+   
+   function W3mmdLimitTeams( $map ) {
+    $val = 5;
+    if ( strstr($map, " TD ") ) $val = 3;
+	
+	return $val;
+   
+   }
+   
+   //Get custom map VARs
+   function Get_w3mmdvarsString( $gameID, $pid = "", $varname="" ) {
+    global $db;
+	$sth = $db->prepare(  "SELECT value_string FROM ".OSDB_W3VARS." 
+	WHERE gameid = '".$gameID."' AND pid = '".$pid."' AND varname = '".$varname."' " );
+	$result = $sth->execute();
+
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	return $row["value_string"];
+   }
+   
+   function Get_w3mmdvars( $gameID, $pid = "", $varname="" ) {
+   
+    $sql = "";
+	global $db;
+    if ( !empty($pid) )     $sql.=" AND pid='".$pid."'";  
+    if ( !empty($varname) ) $sql.=" AND varname='".$varname."'";  
+   
+    $sth = $db->prepare(  "SELECT * FROM ".OSDB_W3VARS." WHERE gameid = '".$gameID."' $sql " );
+	$result = $sth->execute();
+	$c=0;
+	$Data = array();
+	
+	 while($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	   $Data[$c]["id"] = $row["id"];
+	   $Data[$c]["botid"] = $row["botid"];
+	   $Data[$c]["gameid"] = $row["gameid"];
+	   $Data[$c]["pid"] = $row["pid"];
+	   $Data[$c]["varname"] = $row["varname"];
+	   $Data[$c]["value_int"] = $row["value_int"];
+	   $Data[$c]["value_real"] = $row["value_real"];
+	   $Data[$c]["value_string"] = $row["value_string"];
+	   $c++;
+	}
+	return $Data;
+   }
+   
+   //Get custom map RACE
+   function Get_TDRace($race = "" ) {
+     $race = str_replace('"', "", $race);
+     $return = 'custom/'.$race.'.gif'; 
+	  
+	 //if ( $race == "Paladin" ) $return = $race.'.gif'; 
+	 
+	 return $return;
+	
    }
 
    function getSingleGame($gameid) {
