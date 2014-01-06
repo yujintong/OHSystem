@@ -2226,10 +2226,6 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
                         m_Balanced = false;
                 }
                 if( m_GHost->m_VoteMode && m_VotedTimeStart != 0 ) {
-                    for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-                    {
-                        (*i)->SetVotedMode( 0 );
-                    }
                     m_VotedTimeStart = 0;
                     m_Voted = false;
                 }
@@ -2980,10 +2976,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 m_Balanced = false;
         }
         if( m_GHost->m_VoteMode && m_VotedTimeStart != 0 ) {
-            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-            {
-                (*i)->SetVotedMode( 0 );
-            }
             m_VotedTimeStart = 0;
             m_Voted = false;
         }

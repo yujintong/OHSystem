@@ -871,17 +871,17 @@ bool CGame :: Update( void *fd, void *send_fd )
                 }
             }
             uint32_t HighestVote = a;
-            if( b > a)
+            if( b > HighestVote )
                 HighestVote = b;
-            if( c > b)
+            if( c > HighestVote )
                 HighestVote = c;
-            if( d > c)
+            if( d > HighestVote )
                 HighestVote = d;
-            if( e > d)
+            if( e > HighestVote )
                 HighestVote = e;
-            if( f > e)
+            if( f > HighestVote )
                 HighestVote = f;
-            if( g > f)
+            if( g > HighestVote )
                 HighestVote = g;
             vector<int> Same;
             if( HighestVote == a )
