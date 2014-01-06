@@ -885,19 +885,19 @@ bool CGame :: Update( void *fd, void *send_fd )
                 HighestVote = g;
             vector<int> Same;
             if( HighestVote == a )
-                Same.push_back(a);
+                Same.push_back(1);
             if( HighestVote == b )
-                Same.push_back(a);
+                Same.push_back(2);
             if( HighestVote == c )
-                Same.push_back(a);
+                Same.push_back(3);
             if( HighestVote == d )
-                Same.push_back(a);
+                Same.push_back(4);
             if( HighestVote == e )
-                Same.push_back(a);
+                Same.push_back(5);
             if( HighestVote == f )
-                Same.push_back(a);
+                Same.push_back(6);
             if( HighestVote == g )
-                Same.push_back(a);
+                Same.push_back(7);
             if( Same.size() <= 1 ){
                 if( HighestVote != g && Same.size() != 0 ) {
                     SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
