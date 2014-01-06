@@ -1175,3 +1175,5 @@ select {
     cursor:pointer;
     border: 1px solid #ccc;
 }
+
+.hideElement { display:none; }

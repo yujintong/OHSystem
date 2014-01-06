@@ -1379,7 +1379,7 @@ function OS_SingleGameUser($id, $fullname, $name, $bestPlayer = '', $level = 1, 
 global $lang;
 $text = "<div><b>".$lang["best_player"]."</b> ".$fullname."</div>";
 ?>
-  <a href="<?=OS_HOME?>?u=<?=$id?>"><?=$fullname?></a> (<?=$level?>)
+  <a href="<?=OS_HOME?>?u=<?=$id?>"><?=$fullname?></a> <?php if ($level>=1) { ?>(<?=$level?>) <?php } ?>
   <?php if (strtolower($bestPlayer) == strtolower($name) ) { ?><img <?=ShowToolTip($text, OS_HOME.'img/'.$winnerIcon.'', 160, 50, 50)?> src="<?=OS_HOME?>img/<?=$winnerIcon?>" class="imgvalign" width="32" height="32" /> <?php } ?>
 <?php
 }

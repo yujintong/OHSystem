@@ -528,7 +528,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   KEY `confirm` (`confirm`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `w3mmdplayers`;
+DROP TABLE IF EXISTS `oh_w3mmdplayers`;
 CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
@@ -542,7 +542,7 @@ CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `w3mmdvars`;
+DROP TABLE IF EXISTS `oh_w3mmdvars`;
 CREATE TABLE IF NOT EXISTS `w3mmdvars` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
