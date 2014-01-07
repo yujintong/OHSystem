@@ -349,6 +349,7 @@ int main( int argc, char **argv )
             uint32_t i_gameAlias=UTIL_ToUInt32(Alias);
             string s_gameAliasName="";
             bool b_ignored = false;
+            bool b_w3mmdfixedwinner = false;
             
             int i_playerCounter = 0;
             while( Row.size( ) == 9 ) {
@@ -538,6 +539,27 @@ int main( int argc, char **argv )
                     //select winner & pid flag
                     uint32_t i_legionTDPID=0;
                     string s_Winner="";
+                    // make sure the winner is set in any case, the autoend sometimes bugging here so the left players probably dont set the winner flag!
+                    // normally this is good but it does fail on the statspage then.
+                    if(! b_w3mmdfixedwinner ) {
+                        MYSQL_RES *LegionTDFixWinner1 = QueryBuilder(Connection, "SELECT pid, flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND flag != '' AND flag != 'NULL'" );
+                        if( LegionTDFixWinner1 ) {
+                            vector<string> Row = MySQLFetchRow( LegionTDPlayerResult );
+                        if( Row.size( ) == 2 ) {
+                            string Team1QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid <= 4" : " pid > 4 ";
+                            string Team2QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid >= 4" : " pid < 4 ";
+                            string Team1 = Row[1];
+                            string Team2 = "drawer";
+                            if( Team1 == "winner")
+                                Team2="loser";
+                            else if( Team1=="loser")
+                                Team2="winner";
+                            
+                            MYSQL_RES *LegionTDFixTeam1 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team1+"' WHERE gameid='"+GameID+"' AND "+Team1QueryCondition+";" );
+                            MYSQL_RES *LegionTDFixTeam2 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team2+"' WHERE gameid='"+GameID+"' AND "+Team2QueryCondition+";" );
+                           b_w3mmdfixedwinner=true; 
+                        }
+                    }
                     MYSQL_RES *LegionTDPlayerResult= QueryBuilder(Connection, "SELECT pid, flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND name='"+s_lowerPlayerName[i_playerCounter]+"';" );
                     if(LegionTDPlayerResult) {
                         vector<string> Row = MySQLFetchRow( LegionTDPlayerResult );
