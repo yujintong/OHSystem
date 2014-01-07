@@ -4403,7 +4403,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) ) {
             if( player->GetVotedMode() != 0 ) {
                 SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
-            } else if( Payload.size( ) != 1 || ( UTIL_ToUInt32(Payload) < 1 && UTIL_ToUInt32(Payload) > ( m_ModesToVote.size( ) - 1 ) )  || UTIL_ToUInt32(Payload) > m_ModesToVote.size( ) ) {
+            } else if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
                 SendChat( player, "Error. You havent choosed a valied modenumber.");
             } else {
                 SendAllChat("Player ["+player->GetName( )+"] has voted for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
