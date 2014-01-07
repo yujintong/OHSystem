@@ -1,7 +1,7 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
-$duration = 0; //
+$duration = $MinDuration; 
 $filter = "";
 $orderby = "id DESC";
 
@@ -286,13 +286,19 @@ if ( isset($_GET["game_id"]) AND is_numeric($_GET["game_id"]) ) {
   <?php
   while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
 	//REPLAY
-	 $duration = secondsToTime($row["duration"]);
+	 $dur = secondsToTime($row["duration"]);
      $replayDate =  strtotime($row["datetime"]);  //3*3600 = +3 HOURS,   +0 minutes.
      $replayDate = date("Y-m-d H:i",$replayDate);
      $gametimenew = substr(str_ireplace(":","-",date("Y-m-d H:i",strtotime($replayDate))),0,16);
 	 $gid =  (int)($row["id"]);
 	 $gamename = $row["gamename"];
 	 include('../inc/get_replay.php');
+	 
+	if ( !empty($row["flag"]) ) {
+	    if ( $row["flag"] == "winner" ) $row["winner"]=1;  else
+		if ( $row["flag"] == "loser" )  $row["winner"]=2; else 
+		 $row["winner"]=0;
+	}
 	 
 	 if ( file_exists($replayloc) ) $Replay = ($replayloc); else $Replay = "";
 	 //END REPLAY
