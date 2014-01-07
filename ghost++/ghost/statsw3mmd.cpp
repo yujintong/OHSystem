@@ -22,6 +22,7 @@
 #include "ghost.h"
 #include "util.h"
 #include "ghostdb.h"
+#include "gameplayer.h"
 #include "gameprotocol.h"
 #include "game_base.h"
 #include "stats.h"
