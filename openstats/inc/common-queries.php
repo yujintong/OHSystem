@@ -259,7 +259,7 @@ function Get_w3mmdplayers($gameid) {
 	 LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
 	 LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = dg.gameid AND gp.colour = dp.colour
 	 LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.pid = 0
-	 WHERE s.id = '".(int) $id."' AND (g.map) LIKE ('%".OS_DEFAULT_MAP."%') AND g.duration>='".$MinDuration."' ".$filter."
+	 WHERE s.id = '".(int) $id."' AND g.duration>='".$MinDuration."' ".$filter."
 	 LIMIT $offset, $rowsperpage";
 	 
 	return $sql;
@@ -273,7 +273,7 @@ function Get_w3mmdplayers($gameid) {
 		  FROM ".OSDB_GAMES." as g 
 		  LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
 		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` =0
-		  WHERE (map) LIKE '%".OS_DEFAULT_MAP."%' AND duration>='".$MinDuration."' $filter
+		  WHERE duration>='".$MinDuration."' $filter
 		  ORDER BY $order
 		  LIMIT $offset, $rowsperpage";
 	return $sql;

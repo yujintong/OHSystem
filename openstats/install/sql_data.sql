@@ -529,7 +529,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_w3mmdplayers`;
-CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
+CREATE TABLE IF NOT EXISTS `oh_w3mmdplayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
   `category` varchar(25) NOT NULL,
@@ -539,11 +539,13 @@ CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
   `flag` varchar(32) NOT NULL,
   `leaver` int(11) NOT NULL,
   `practicing` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `gameid` (`gameid`),
+  KEY `pid` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_w3mmdvars`;
-CREATE TABLE IF NOT EXISTS `w3mmdvars` (
+CREATE TABLE IF NOT EXISTS `oh_w3mmdvars` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
   `gameid` int(11) NOT NULL,
@@ -552,8 +554,10 @@ CREATE TABLE IF NOT EXISTS `w3mmdvars` (
   `value_int` int(11) DEFAULT NULL,
   `value_real` double DEFAULT NULL,
   `value_string` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `gameid` (`gameid`),
+  KEY `pid` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `wc3connect`;
 CREATE TABLE IF NOT EXISTS `wc3connect` (
