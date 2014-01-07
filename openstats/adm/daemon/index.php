@@ -278,6 +278,33 @@ if ($BanIPUpdate == 1) {
 	$debug = "";
 
     }
+	
+	
+	
+	//REMOVE OLD GAMES 
+ if ($RemoveOldLiveGames == 1) {
+	   $sel = $db->prepare("SELECT * FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
+	   $result = $sel->execute();
+	   $Total = $sel->rowCount();
+	   
+	   if ($Total>=1) {
+	   $del = $db->prepare("DELETE FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
+	   $result = $del->execute();
+	   }
+	
+    //Remove finished games	
+    $del = $db->prepare("DELETE FROM ".OSDB_GAMESTATUS." WHERE gamestatus>=3");
+    $result = $del->execute();
+	
+	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND !empty($debug) ) {
+    $cron_data = 'DAEMON: Removed <b>'.$Total.' inactive games from log.</b>';
+	$sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	$result = $sth->execute();  
+ }
+ }
+ 
+ 
    
    //END WORK HERE
    

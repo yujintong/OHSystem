@@ -341,6 +341,7 @@ $dt = new DateTime('now', $utc);
 	   <td>Top Page Start Year:</td>
 	   <td><input style="width: 98px;" class="field" type="text" value="<?=$TopPageStartYear?>" name="TopPageStartYear" /> </td>
 	 </tr>
+	 
 	 <tr  class="row">
 	   <td>Theme:</td>
 	   <td >
@@ -1327,6 +1328,19 @@ if ($handle = opendir("../themes")) {
 	   </select> Auto-fix expired bans (even if player does not play after ban expire and stats update)
 	   </td>
 	 </tr>
+	 
+     <tr>
+	   <td width="150"><b>Fix/remove inactive(corrupted) games from log:</b></td>
+	   <td>
+	   <select name="RemoveOldLiveGames">
+	   <?php if ($RemoveOldLiveGames == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">On</option>
+	   <?php if ($RemoveOldLiveGames == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Off</option>
+	   </select> This will remove all inactive games (games that never started) from database.
+	   </td>
+	 </tr>
+	 
 	 
      <tr>
 	   <td width="150"><b>Max. cron logs:</b></td>
