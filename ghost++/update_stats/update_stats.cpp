@@ -319,30 +319,30 @@ int main( int argc, char **argv )
             uint32_t i_userLevel[12];
             
             // dota values
-            uint32_t i_ingameKills[11];
-            uint32_t i_ingameDeaths[11];
-            uint32_t i_ingameAssists[11];
-            uint32_t i_ingameCreeps[11];
-            uint32_t i_ingameDenies[11];
-            uint32_t i_ingameNeutrals[11];
-            uint32_t i_ingameTower[11];
-            uint32_t i_ingameRaxes[11];
-            bool b_zerodeaths[11];
+            uint32_t i_ingameKills[12];
+            uint32_t i_ingameDeaths[12];
+            uint32_t i_ingameAssists[12];
+            uint32_t i_ingameCreeps[12];
+            uint32_t i_ingameDenies[12];
+            uint32_t i_ingameNeutrals[12];
+            uint32_t i_ingameTower[12];
+            uint32_t i_ingameRaxes[12];
+            bool b_zerodeaths[12];
             
             // legion td values
-            uint32_t legionTdValue[11];
-            uint32_t legionTdSeconds[11];
-            int32_t legionTdScore[11];
-            uint32_t legionTdWood[11];
-            uint32_t legionTdWoodTotal[11];
-            uint32_t legionTdLevel[11];
-            uint32_t legionTdLeaked[11];
-            uint32_t legionTdIncome[11];
-            uint32_t legionTdGoldTotal[11];
-            uint32_t legionTdGoldIncome[11];
-            string legionTdRace[11];
-            string legionTdName[11];
-            string legionTdGameMode[11];
+            uint32_t legionTdValue[12];
+            uint32_t legionTdSeconds[12];
+            int32_t legionTdScore[12];
+            uint32_t legionTdWood[12];
+            uint32_t legionTdWoodTotal[12];
+            uint32_t legionTdLevel[12];
+            uint32_t legionTdLeaked[12];
+            uint32_t legionTdIncome[12];
+            uint32_t legionTdGoldTotal[12];
+            uint32_t legionTdGoldIncome[12];
+            string legionTdRace[12];
+            string legionTdName[12];
+            string legionTdGameMode[12];
             
             // game values
             uint32_t i_gameDuration=0;
