@@ -3736,7 +3736,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 unsigned char oldsid = GetSIDFromPID( player->GetPID( ) );
                                 SwapSlots( oldsid, 11 );
                                 OpenSlot( oldsid, true );
-                                m_AutoStartPlayers = 11;
+                                m_AutoStartPlayers = m_AutoStartPlayers+1;
                                 SendAllChat( "Player [" + player->GetName( ) + "] will observe the game." );
                                 SendAllChat( "Set autostart automatically to 11 players." );
                         }
@@ -3773,7 +3773,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_ObservingPlayers -= 1;
                         SwapSlots( newslot, 11 );
                         CloseSlot( 11, true );
-                        m_AutoStartPlayers = 10;
+                        m_AutoStartPlayers = m_AutoStartPlayers-1;
                         SendAllChat( "Player [" + player->GetName( ) + "] will no longer observe the game." );
                         SendAllChat( "Set autostart automatically to 10 players." );
                 }
