@@ -675,8 +675,12 @@ bool CGame :: Update( void *fd, void *send_fd )
                             Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
-                                string Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot(
-                                        UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
+                            string Alias = m_GHost->GetAliasName( i->second->GetAlias( ) );
+                            transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
+                            string Summary="";
+                            if( Alias.find("lod")!=string::npos || Alias.find("dota")!=string::npos || Alias.find("imba")!=string::npos ) {
+                                Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot(
+                                        UTIL_ToString( UTIL_ToString( StatsPlayerSummary->GetGames( ) ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetDraw( ) ),
@@ -697,6 +701,14 @@ bool CGame :: Update( void *fd, void *send_fd )
                                         UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 1 ),
                                         UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 1 )
                                     );
+                            } else if(Alias.find("legion")!=string::npos) {
+                                /**
+                                 * Legion TD template
+                                 */
+                                Summary="Games: ["+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+"] Score: ["+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+"] Total(AVG) Wood/Gold/Income: "+UTIL_ToString( StatsPlayerSummary->GetCreeps( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetTowers( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetNeutrals( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 1)+") Total(AVG) Leaked: "+UTIL_ToString( StatsPlayerSummary->GetDenies( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 1)+")";
+                            } else {
+                                Summary="Found ["+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+"] games, which can not be detailed parsed.";
+                            }
  
                             if(! StatsPlayerSummary->GetHidden() )
                             {
