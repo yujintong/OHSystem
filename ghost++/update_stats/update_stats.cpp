@@ -547,7 +547,7 @@ int main( int argc, char **argv )
                             vector<string> Row = MySQLFetchRow( LegionTDFixWinner1 );
                             if( Row.size( ) == 2 ) {
                                 string Team1QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid <= 4" : " pid > 4 ";
-                                string Team2QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid >= 4" : " pid < 4 ";
+                                string Team2QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid > 4" : " pid <= 4 ";
                                 string Team1 = Row[1];
                                 string Team2 = "drawer";
                                 if( Team1 == "winner")
