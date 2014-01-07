@@ -831,7 +831,7 @@ if ( isset($_GET["game_type"]) ) { ?><input type="hidden" name="game_type" value
 <?php
 }
 
-function DisplayGameTypes( $GameAliases, $query = 'games', $ShowEmpty = 1) {
+function DisplayGameTypes( $GameAliases, $query = 'games', $ShowEmpty = 1, $anchor = '') {
 
 $qry = '';
 
@@ -840,13 +840,13 @@ global $lang;
 ?>
 	<select name="alias" onchange="location.href=this.value">
 	<?php if ($ShowEmpty == 1) { ?>
-	<option value="<?=OS_HOME?>?<?=$query?><?=$qry?>"><?=$lang["choose_game_type"]?></option>
+	<option value="<?=OS_HOME?>?<?=$query?><?=$qry?><?=$anchor?>"><?=$lang["choose_game_type"]?></option>
 	<?php } ?>
 	<?php 
 	if ( !empty($GameAliases) ) {
 	foreach ($GameAliases as $Alias) {
 	?>
-	<option <?=$Alias["selected"]?> value="<?=OS_HOME?>?<?=$query?>&game_type=<?=$Alias["alias_id"]?><?=$qry?>"><?=$Alias["alias_name"]?></option>
+	<option <?=$Alias["selected"]?> value="<?=OS_HOME?>?<?=$query?>&game_type=<?=$Alias["alias_id"]?><?=$qry?><?=$anchor?>"><?=$Alias["alias_name"]?></option>
 	<?php
 	}
 	}

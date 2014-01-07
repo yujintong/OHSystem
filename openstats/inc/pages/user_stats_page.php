@@ -551,6 +551,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $DefaultGameType = $row["alias_id"];
 	 }
 	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = ''; 
+	 
 	 $c++;
 	}
 	

@@ -29,7 +29,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	  //USER REGISTERED/CONFIRMED BNET ACCOUNT
 	 if ( $row["user_bnet"] >=1 ) {
-	 $sth2 = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE player = '".$row["user_name"]."' LIMIT 1 ");
+	 
+	 $sth2 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+	 WHERE player = '".$row["user_name"]."' 
+	 ORDER BY id DESC 
+	 LIMIT 1 ");
+	 
 	 $result = $sth2->execute();
 	 $row2 = $sth2->fetch(PDO::FETCH_ASSOC);
 	 $MemberData[$c]["points"] = number_format($row2["points"]);

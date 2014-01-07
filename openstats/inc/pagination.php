@@ -25,7 +25,6 @@ if ( isset($_GET["game"]) AND is_numeric($_GET["game"]) )   $prefix.="?game=".sa
 if ( isset($_GET["fame"]) )     $prefix.="?fame";
 if ( isset($_GET["shame"]) )     $prefix.="?shame";
 if ( isset($_GET["livegames"]) )     $prefix.="?livegames";
-if ( isset($_GET["game_type"]) )     $prefix.="&game_type=".(int)$_GET["game_type"];
 
 if ( isset($_GET["post_id"]) ) {
   $strana = "&amp;page=";
@@ -50,6 +49,8 @@ if ( isset($_GET["u"]) )    { $prefix.="?u=".safeEscape( (int) $_GET["u"]).""; $
 if ( isset($_GET["compare"]) ) $prefix.="&amp;compare";
 
 if ( isset($_GET["country"]) ) $prefix.="&amp;country=".substr($_GET["country"],0,2);
+
+if ( isset($_GET["game_type"]) )     $prefix.="&game_type=".(int)$_GET["game_type"];
 
  if (isset($_GET['m']) AND is_numeric($_GET['m']))  $prefix.="&amp;m=".substr($_GET["m"],0,2);
  if (isset($_GET['y']) AND is_numeric($_GET['y']))  $prefix.="&amp;y=".substr($_GET["y"],0,4);

@@ -39,6 +39,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 else
 	 $id = safeEscape( (int) $_GET["uid"] );
 	 
+	 if ( isset($_GET["game_type"]) ) $sqlFilter.=" AND g.alias_id='".(int)$_GET["game_type"]."'";
+	 
 	 if ( isset($_GET["h"]) ) {
 	   $hero = safeEscape(strtoupper($_GET["h"]) );
 	   $sqlFilter = "AND dp.hero = '".$hero."'";
