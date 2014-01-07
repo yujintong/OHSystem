@@ -139,6 +139,25 @@ function Get_w3mmdplayers($gameid) {
         else $Data[$c]["hideslot"] = "loser_background";
         if ($Data[0]["winner"] == '2' AND $row["pid"]> $LimitTeam)  $Data[$c]["hideslot"] = "winner_background";
          
+		//Get custom game "template"
+       	if ( strstr($Map, "Legion TD") ) {
+		$lang["sent_winner"] = "West Legion <b>Winner</b>";
+		$lang["scou_winner"] = "East Legion <b>Winner</b>";
+		
+		$lang["sent_loser"] = "West Legion <b>Loser</b>";
+		$lang["scou_loser"] = "East Legion <b>Loser</b>";
+		}
+		
+		if ( substr($Map,0,7) == "Warlock" ) {
+		$SentinelRow = 0;
+		$ScourgeRow = 0;
+		$lang["sent_winner"] = "Warlock winner";
+		$lang["scou_winner"] = "Warlock winner";
+		
+		$lang["sent_loser"] = "Warlock loser";
+		$lang["scou_loser"] = "Warlock loser";
+		}
+		 
          if ( $winner == 1 ) {  
          $Data[$c]["display_winner"] = '<span class="winner2">'.$lang["sent_winner"]."</span>"; 
          $Data[$c]["display_loser"]  = '<span class="winner1">'.$lang["scou_loser"]."</span>"; 
@@ -164,7 +183,8 @@ function Get_w3mmdplayers($gameid) {
    
    function W3mmdLimitTeams( $map ) {
     $val = 5;
-    if ( strstr($map, "Legion TD") ) $val = 3;
+    if ( strstr($map, "Legion TD") )     $val = 3;
+	if ( substr($map,0,7) == "Warlock" ) $val = 1;
 	
 	return $val;
    
@@ -252,7 +272,7 @@ function Get_w3mmdplayers($gameid) {
 		  g.gamestate as type, g.creatorserver as server, g.alias_id, w.flag
 		  FROM ".OSDB_GAMES." as g 
 		  LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
-		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` = 0
+		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` =0
 		  WHERE (map) LIKE '%".OS_DEFAULT_MAP."%' AND duration>='".$MinDuration."' $filter
 		  ORDER BY $order
 		  LIMIT $offset, $rowsperpage";

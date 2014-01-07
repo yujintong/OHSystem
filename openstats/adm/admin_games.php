@@ -5,6 +5,27 @@ $duration = 0; //
 $filter = "";
 $orderby = "id DESC";
 
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+
 $ReplayLocation = "../".$ReplayLocation;
   
 if ( isset($_GET["del"]) AND is_numeric($_GET["del"]) AND OS_IsRoot() ) {
@@ -184,7 +205,9 @@ if ( isset($_GET["game_id"]) AND is_numeric($_GET["game_id"]) ) {
 
 ?>
 <div align="center">
-
+<table>
+<tr>
+<td>
   <form action="" method="get">  
   Sort by:
   <input type="hidden" name="games" />
@@ -209,8 +232,30 @@ if ( isset($_GET["game_id"]) AND is_numeric($_GET["game_id"]) ) {
    &nbsp; &nbsp; <input type="button" value="Update Stats" class="menuButtons" onclick="location.href='<?=OS_HOME?>adm/update_stats.php'" />
    -->
 </form>
-
+</td>
+<td>
+	<select name="alias" onchange="location.href=this.value">
+	<?php if ($ShowEmpty == 1) { ?>
+	<option value="<?=OS_HOME?>adm/?games"><?=$lang["choose_game_type"]?></option>
+	<?php } ?>
+	<?php 
+	if ( !empty($GameAliases) ) {
+	foreach ($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="<?=OS_HOME?>adm/?games&game_type=<?=$Alias["alias_id"]?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+	}
+	?>
+	</select>
+	<input type="button" class="menuButtons" onclick="location.href='<?=OS_HOME?>adm/?games'" value="<?=$lang["show_all"]?>" />
+</td>
+</tr>
+</table>
 <?php
+
+
+  if ( isset($_GET["game_type"]) ) $filter.=" AND g.alias_id = '".$_GET["game_type"]."' ";
 
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." as g
   LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
