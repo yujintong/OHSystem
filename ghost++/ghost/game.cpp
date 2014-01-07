@@ -895,21 +895,21 @@ bool CGame :: Update( void *fd, void *send_fd )
                 HighestVote = f;
             if( g > HighestVote )
                 HighestVote = g;
-            vector<int> Same;
+            vector<string> Same;
             if( HighestVote == a )
-                Same.push_back(1);
+                Same.push_back("1");
             if( HighestVote == b )
-                Same.push_back(2);
+                Same.push_back("2");
             if( HighestVote == c )
-                Same.push_back(3);
+                Same.push_back("3");
             if( HighestVote == d )
-                Same.push_back(4);
+                Same.push_back("4");
             if( HighestVote == e )
-                Same.push_back(5);
+                Same.push_back("5");
             if( HighestVote == f )
-                Same.push_back(6);
+                Same.push_back("6");
             if( HighestVote == g )
-                Same.push_back(7);
+                Same.push_back("7");
             if( Same.size() <= 1 || HighestVote == 0 ){
                 if( HighestVote != g && Same.size() != 0 && HighestVote != 0) {
                     SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
@@ -928,8 +928,8 @@ bool CGame :: Update( void *fd, void *send_fd )
             } else {
                 SendAllChat("There ["+UTIL_ToString(Same.size())+"] modes with the same highest vote amount.");
                 uint32_t RandomMode = rand( ) % Same.size() - 1;
-                SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode]-1]+"]. The game will start now." );
-                m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode]-1]) : m_ModesToVote[Same[RandomMode]-1];
+                SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1]+"]. The game will start now." );
+                m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1]) : m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1];
                 m_Voted = true;
                 StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
