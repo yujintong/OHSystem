@@ -350,7 +350,7 @@ int main( int argc, char **argv )
             string s_gameAliasName="";
             bool b_ignored = false;
             
-            uint32_t i_playerCounter = 0;
+            int i_playerCounter = 0;
             while( Row.size( ) == 9 ) {
                 
                 //init dota relating values
