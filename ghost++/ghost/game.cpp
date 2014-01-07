@@ -680,7 +680,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                             string Summary="";
                             if( Alias.find("lod")!=string::npos || Alias.find("dota")!=string::npos || Alias.find("imba")!=string::npos ) {
                                 Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot(
-                                        UTIL_ToString( UTIL_ToString( StatsPlayerSummary->GetGames( ) ) ),
+                                        UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
                                         UTIL_ToString( StatsPlayerSummary->GetDraw( ) ),
