@@ -918,18 +918,18 @@ bool CGame :: Update( void *fd, void *send_fd )
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 } else {
-                    uint32_t RandomMode = rand( ) % m_ModesToVote.size( );
-                    SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode-1]+"] has been randomed. The game will start now.");
-                    m_HCLCommandString = m_lGameAliasName.find("lod")!=string::npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
+                    uint32_t RandomMode = rand( ) % m_ModesToVote.size( ) - 1;
+                    SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode]+"] has been randomed. The game will start now.");
+                    m_HCLCommandString = m_lGameAliasName.find("lod")!=string::npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode]) : m_ModesToVote[RandomMode];
                     m_Voted = true;
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 }
             } else {
                 SendAllChat("There ["+UTIL_ToString(Same.size())+"] modes with the same highest vote amount.");
-                uint32_t RandomMode = rand( ) % Same.size();
-                SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode-1]-1]+"]. The game will start now." );
-                m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode-1]-1]) : m_ModesToVote[Same[RandomMode-1]-1];
+                uint32_t RandomMode = rand( ) % Same.size() - 1;
+                SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[Same[RandomMode]-1]+"]. The game will start now." );
+                m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[Same[RandomMode]-1]) : m_ModesToVote[Same[RandomMode]-1];
                 m_Voted = true;
                 StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
