@@ -31,6 +31,7 @@ typedef pair<uint32_t,string> VarP;
 class CStatsW3MMD : public CStats
 {
 private:
+        uint32_t m_Winner;
 	string m_Category;
 	uint32_t m_NextValueID;
 	uint32_t m_NextCheckID;
@@ -51,6 +52,7 @@ public:
 	virtual bool ProcessAction( CIncomingAction *Action );
 	virtual void Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID );
 	virtual vector<string> TokenizeKey( string key );
+        virtual void SetWinner( uint32_t nWinner );
 };
 
 #endif
