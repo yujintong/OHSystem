@@ -543,7 +543,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
 	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
 	 
-	 if ( isset($UserAliasID) AND $UserAliasID == $row["alias_id"] )
+	 if ( isset($UserAliasID) AND $UserAliasID == $row["alias_id"] ) 
 	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
 	 
 	 if ( !isset($UserAliasID) AND $row["default_alias"] == 1) {
@@ -552,12 +552,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 }
 	 
 	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
-	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = ''; 
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; 
 	 
 	 $c++;
 	}
-	
-	
+
 	//Hook js
 	AddEvent("os_js", "OS_UserMap");
   
