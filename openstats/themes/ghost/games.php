@@ -21,7 +21,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 <table>
   <tr>
     <td width="200"><?=DisplayGameFilter($StartYear) ?></td>
-    <td><?=DisplayGameTypes( $GameAliases)?></td>
+    <td><?=DisplayGameTypes( $GameAliasesGames )?></td>
   </tr>
 </table>
 

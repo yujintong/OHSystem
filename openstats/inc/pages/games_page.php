@@ -244,14 +244,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
     $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
 	$result = $sth->execute();
-	$GameAliases = array();
+	$GameAliasesGames = array();
 	$c = 0;
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
-	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 $GameAliasesGames[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliasesGames[$c]["alias_name"] = $row["alias_name"];
 	 
 	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
-	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 $GameAliasesGames[$c]["selected"] = 'selected="selected"'; else $GameAliasesGames[$c]["selected"] = '';
 	 
 	 $c++;
 	}

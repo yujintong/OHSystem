@@ -219,6 +219,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$RecentGamesData[$c]["winner"]  = ($row["winner"]);
 	$RecentGamesData[$c]["type"]  = OS_GetGameState($row["type"], $lang["gamestate_pub"] , $lang["gamestate_priv"]);
 	
+	if ( !empty($row["flag"]) ) {
+	    if ( $row["flag"] == "winner" ) $RecentGamesData[$c]["winner"]=1;  else
+		if ( $row["flag"] == "loser" )  $RecentGamesData[$c]["winner"]=2; else 
+		 $RecentGamesData[$c]["winner"]=0;
+	}
+	
 	//REPLAY
 	 $duration = secondsToTime($row["duration"]);
      $replayDate =  strtotime($row["datetime"]);  //3*3600 = +3 HOURS,   +0 minutes.
