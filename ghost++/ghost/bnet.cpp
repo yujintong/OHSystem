@@ -793,7 +793,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                  * Legion TD template
                                  */
                                 Summary="G: "+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+" Score: "+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+" W/L/D: "+UTIL_ToString( StatsPlayerSummary->GetWins( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetLosses( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetDraw( ) )+" W/G/I: "+UTIL_ToString( StatsPlayerSummary->GetCreeps( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetTowers( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetNeutrals( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 1)+") K/L: "+UTIL_ToString( StatsPlayerSummary->GetKills( ) )+"("+UTIL_ToString( StatsPlayerSummary->GetAvgKills( ), 1 )+")/"+UTIL_ToString( StatsPlayerSummary->GetDenies( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 1)+")";
-                            } else {
+                            } else if(Alias.find("tree")!=string::npos) {
+                                /**
+                                 * Tree Tag template
+                                 */
+                                Summary="G: "+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+" Score: "+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+" W/L/D: "+UTIL_ToString( StatsPlayerSummary->GetWins( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetLosses( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetDraw( ) )+" K/D/S: "+UTIL_ToString( StatsPlayerSummary->GetKills( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgKills( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetDeaths( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDeaths( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetAssists( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 1)+") E/I: "+UTIL_ToString( StatsPlayerSummary->GetCreeps( ) )+"("+UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 1 )+")/"+UTIL_ToString( StatsPlayerSummary->GetDenies( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 1)+")";
+                            } else{
                                 Summary="Found ["+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+"] games, which can not be detailed parsed.";
                             } 
                             
