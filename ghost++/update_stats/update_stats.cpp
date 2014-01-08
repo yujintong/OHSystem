@@ -734,6 +734,8 @@ int main( int argc, char **argv )
                         i_newPlayerScore[i_playerCounter]=ScoreStart;
                         i_draws[i_playerCounter]=1;
                     }
+                }
+                
                 //check if the player had bet for this game
                 //check the current maxstreaks and determine if they should be set again
                 int32_t i_currentPoints=0;
