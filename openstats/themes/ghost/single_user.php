@@ -349,7 +349,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 </tr>
 </table>
 
-  <?=DisplayGameTypes( $GameAliases, 'u='.$User["id"], 1, '#game_history')?>
+  <?=DisplayGameTypes( $GameAliasesGames, 'u='.$User["id"], 1, '#game_history')?>
   
    <table>
     <tr>
