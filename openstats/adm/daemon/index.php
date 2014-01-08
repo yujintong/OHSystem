@@ -283,13 +283,28 @@ if ($BanIPUpdate == 1) {
 	
 	//REMOVE OLD GAMES 
  if ($RemoveOldLiveGames == 1) {
-	   $sel = $db->prepare("SELECT * FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
-	   $result = $sel->execute();
-	   $Total = $sel->rowCount();
+	   $debug = "";
+   	   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
+	   $result = $sth->execute();
+	   $r = $sth->fetch(PDO::FETCH_NUM);
+	   $Total = $r[0];
 	   
 	   if ($Total>=1) {
 	   $del = $db->prepare("DELETE FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
 	   $result = $del->execute();
+	   
+	   $debug.=" Removed $Total inactive games (games status).";
+	   }
+	   
+   	   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." WHERE datetime <= ( NOW() - INTERVAL 6 HOUR) AND gamestatus=0 AND stats = 0");
+	   $result = $sth->execute();
+	   $r = $sth->fetch(PDO::FETCH_NUM);
+	   $Total2 = $r[0];
+	   
+	   if ($Total2>=1) {
+	   $del2 = $db->prepare("DELETE FROM ".OSDB_GAMES." WHERE datetime <= ( NOW() - INTERVAL 6 HOUR) AND gamestatus=0 AND stats = 0");
+	   $result = $del2->execute();
+	   $debug.=" Removed $Total2 inactive games (games table).";
 	   }
 	
     //Remove finished games	
@@ -298,7 +313,7 @@ if ($BanIPUpdate == 1) {
 	
 	//Cron entry example - LOG
 	if ( $CronReportDetails >=1 AND !empty($debug) ) {
-    $cron_data = 'DAEMON: Removed <b>'.$Total.' inactive games from log.</b>';
+    $cron_data = 'DAEMON: '.$debug;
 	$sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
 	$result = $sth->execute();  
  }
