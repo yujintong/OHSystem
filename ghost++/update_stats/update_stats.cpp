@@ -678,8 +678,8 @@ int main( int argc, char **argv )
                                 else if( Team1=="loser")
                                     Team2="winner";
 
-                                MYSQL_RES *LegionTDFixTeam1 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team1+"' WHERE gameid='"+GameID+"' AND "+Team1QueryCondition+";" );
-                                MYSQL_RES *LegionTDFixTeam2 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team2+"' WHERE gameid='"+GameID+"' AND "+Team2QueryCondition+";" );
+                                MYSQL_RES *TreeTagFixTeam1 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team1+"' WHERE gameid='"+GameID+"' AND "+Team1QueryCondition+";" );
+                                MYSQL_RES *TreeTagFixTeam2 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team2+"' WHERE gameid='"+GameID+"' AND "+Team2QueryCondition+";" );
                                b_w3mmdfixedwinner=true; 
                             }
                         }
@@ -715,6 +715,41 @@ int main( int argc, char **argv )
                         treeTagEnt[i_playerCounter]=1;
                     else
                         treeTagInfernal[i_playerCounter]=0;
+                    
+                    // Winner
+                    if( s_Winner == "winner" ) {
+                        s_playerScore[i_playerCounter]="score = score+" + Int32_ToString( ScoreWin) + ",";
+                        i_newPlayerScore[i_playerCounter] = ScoreStart+ScoreWin;
+                        i_wins[i_playerCounter]=1;
+                    } 
+                    // Looser
+                    else if( s_Winner == "loser" ) {
+                        s_playerScore[i_playerCounter]="score = score-" + Int32_ToString( ScoreLoose) + ",";
+                        i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
+                        i_losses[i_playerCounter]=1;
+                    } 
+                    //Draw Game
+                    else if( s_Winner == "drawer" || s_Winner.empty() ) {
+                        s_playerScore[i_playerCounter]="";
+                        i_newPlayerScore[i_playerCounter]=ScoreStart;
+                        i_draws[i_playerCounter]=1;
+                    }
+                }
+                /**
+                 * W3MMD basic stats
+                 */
+                else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) {
+                    //select winner & pid flag
+                    string s_Winner="";
+                    // make sure the winner is set in any case, the autoend sometimes bugging here so the left players probably dont set the winner flag!
+                    // normally this is good but it does fail on the statspage then.
+                    MYSQL_RES *W3MMDPlayerResult= QueryBuilder(Connection, "SELECT flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND name='"+s_lowerPlayerName[i_playerCounter]+"';" );
+                    if(W3MMDPlayerResult) {
+                        vector<string> Row = MySQLFetchRow( W3MMDPlayerResult );
+                        if( Row.size( ) == 2 ) {
+                            s_Winner=Row[1];
+                        }
+                    }
                     
                     // Winner
                     if( s_Winner == "winner" ) {
