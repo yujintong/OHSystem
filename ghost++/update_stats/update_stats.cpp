@@ -344,6 +344,13 @@ int main( int argc, char **argv )
             string legionTdName[12];
             string legionTdGameMode[12];
             
+            // treetag values
+            uint32_t treeTagDeaths[12];
+            uint32_t treeTagKills[12];
+            uint32_t treeTagSaves[12];
+            uint32_t treeTagEnt[12];
+            uint32_t treeTagInfernal[12];
+            
             // game values
             uint32_t i_gameDuration=0;
             uint32_t i_gameAlias=UTIL_ToUInt32(Alias);
@@ -379,6 +386,13 @@ int main( int argc, char **argv )
                 legionTdRace[i_playerCounter]="";
                 legionTdName[i_playerCounter]="";
                 legionTdGameMode[i_playerCounter]="";
+                
+                //init treetag relationg values
+                treeTagDeaths[i_playerCounter]=0;
+                treeTagKills[i_playerCounter]=0;
+                treeTagSaves[i_playerCounter]=0;
+                treeTagEnt[i_playerCounter]=0;
+                treeTagInfernal[i_playerCounter]=0;
                 
                 //general datas
                 i_playerId[i_playerCounter]=0;
@@ -641,6 +655,85 @@ int main( int argc, char **argv )
                         
                 }
                 
+                /**
+                 * TREE TAG GAMES
+                 */
+                else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("tree")!=string::npos ) ) {
+                    //select winner & pid flag
+                    uint32_t i_treeTagPID=0;
+                    string s_Winner="";
+                    // make sure the winner is set in any case, the autoend sometimes bugging here so the left players probably dont set the winner flag!
+                    // normally this is good but it does fail on the statspage then.
+                    if(! b_w3mmdfixedwinner ) {
+                        MYSQL_RES *TreeTagFixWinner1 = QueryBuilder(Connection, "SELECT pid, flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND flag != '' AND flag != 'NULL'" );
+                        if( TreeTagFixWinner1 ) {
+                            vector<string> Row = MySQLFetchRow( TreeTagFixWinner1 );
+                            if( Row.size( ) == 2 ) {
+                                string Team1QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid <= 8" : " pid > 8 ";
+                                string Team2QueryCondition = UTIL_ToUInt32(Row[0]) < 4 ? " pid > 8" : " pid <= 8 ";
+                                string Team1 = Row[1];
+                                string Team2 = "drawer";
+                                if( Team1 == "winner")
+                                    Team2="loser";
+                                else if( Team1=="loser")
+                                    Team2="winner";
+
+                                MYSQL_RES *LegionTDFixTeam1 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team1+"' WHERE gameid='"+GameID+"' AND "+Team1QueryCondition+";" );
+                                MYSQL_RES *LegionTDFixTeam2 = QueryBuilder(Connection, "UPDATE oh_w3mmdplayers SET flag='"+Team2+"' WHERE gameid='"+GameID+"' AND "+Team2QueryCondition+";" );
+                               b_w3mmdfixedwinner=true; 
+                            }
+                        }
+                    }
+                    MYSQL_RES *TreeTagPlayerResult= QueryBuilder(Connection, "SELECT pid, flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND name='"+s_lowerPlayerName[i_playerCounter]+"';" );
+                    if(TreeTagPlayerResult) {
+                        vector<string> Row = MySQLFetchRow( TreeTagPlayerResult );
+                        if( Row.size( ) == 2 ) {
+                            i_treeTagPID = UTIL_ToUInt32(Row[0]);
+                            s_Winner=Row[1];
+                        }
+                    }
+                    //select flags for LegionTD
+                    MYSQL_RES *TreeTagPlayerFlagsResult = QueryBuilder(Connection, "SELECT `value_int`, varname FROM oh_w3mmdvars WHERE `pid` = '"+UTIL_ToString(i_treeTagPID)+"' AND value_int != 'NULL' AND `gameid`= '"+GameID+"' ORDER BY id DESC LIMIT 10;" );
+                    if( TreeTagPlayerFlagsResult ) {
+                        vector<string> Row = MySQLFetchRow( TreeTagPlayerFlagsResult );
+
+                        while( !Row.empty( ) )
+                        {
+                            if(Row[1]=="deaths")
+                                treeTagDeaths[i_playerCounter]=UTIL_ToUInt32(Row[0]);
+                            else if(Row[1]=="kills")
+                                treeTagKills[i_playerCounter]=UTIL_ToUInt32(Row[0]);
+                            else if(Row[1]=="saves")
+                                treeTagSaves[i_playerCounter]=UTIL_ToUInt32(Row[0]);
+                                
+                            Row = MySQLFetchRow( TreeTagPlayerFlagsResult );
+                        }
+                        mysql_free_result( TreeTagPlayerFlagsResult );
+                    }
+                    
+                    if(i_treeTagPID <= 8 )
+                        treeTagEnt[i_playerCounter]=1;
+                    else
+                        treeTagInfernal[i_playerCounter]=0;
+                    
+                    // Winner
+                    if( s_Winner == "winner" ) {
+                        s_playerScore[i_playerCounter]="score = score+" + Int32_ToString( ScoreWin) + ",";
+                        i_newPlayerScore[i_playerCounter] = ScoreStart+ScoreWin;
+                        i_wins[i_playerCounter]=1;
+                    } 
+                    // Looser
+                    else if( s_Winner == "loser" ) {
+                        s_playerScore[i_playerCounter]="score = score-" + Int32_ToString( ScoreLoose) + ",";
+                        i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
+                        i_losses[i_playerCounter]=1;
+                    } 
+                    //Draw Game
+                    else if( s_Winner == "drawer" || s_Winner.empty() ) {
+                        s_playerScore[i_playerCounter]="";
+                        i_newPlayerScore[i_playerCounter]=ScoreStart;
+                        i_draws[i_playerCounter]=1;
+                    }
                 //check if the player had bet for this game
                 //check the current maxstreaks and determine if they should be set again
                 int32_t i_currentPoints=0;
@@ -722,7 +815,9 @@ int main( int argc, char **argv )
                                             UpdateString +=  ", "+ s_playerScore[i] +" zerodeaths = zerodeaths+"+ ( b_zerodeaths[i] ? "1" : "0") +", kills=kills+"+UTIL_ToString(i_ingameKills[i])+", deaths=deaths+" + UTIL_ToString( i_ingameDeaths[i] ) + ", assists=assists+" + UTIL_ToString( i_ingameAssists[i] ) + ", creeps=creeps+" + UTIL_ToString( i_ingameCreeps[i] ) + ", denies=denies+" + UTIL_ToString( i_ingameDenies[i] ) + ", neutrals=neutrals+" + UTIL_ToString( i_ingameNeutrals[i] ) + ", towers=towers+" + UTIL_ToString( i_ingameTower[i] ) + ", rax=rax+" + UTIL_ToString( i_ingameRaxes[i] );
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
                                             UpdateString += ", "+ s_playerScore[i] +" kills=kills+"+UTIL_ToString(legionTdValue[i])+", deaths=deaths+"+UTIL_ToString(legionTdSeconds[i])+", assists=assists+"+UTIL_ToString(legionTdWood[i])+", creeps=creeps+"+UTIL_ToString(legionTdWoodTotal[i])+", denies=denies+"+UTIL_ToString(legionTdLeaked[i])+", neutrals=neutrals+"+UTIL_ToString(legionTdIncome[i])+", towers=towers+"+UTIL_ToString(legionTdGoldTotal[i])+", rax=rax+"+UTIL_ToString(legionTdGoldIncome[i]);
-
+                                        else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("tree")!=string::npos ) )
+                                            UpdateString += ", "+ s_playerScore[i] +" kills=kills+"+UTIL_ToString(treeTagKills[i])+", deaths=deaths+"+UTIL_ToString(treeTagDeaths[i])+", assists=assists+"+UTIL_ToString(treeTagSaves[i])+", creeps=creeps+"+UTIL_ToString(treeTagEnt[i])+", denies=denies+"+UTIL_ToString(treeTagInfernal[i]);
+                                            
                                         UpdateString += " WHERE id='" + UTIL_ToString( i_playerId[i] )+"';";
                                         MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, UpdateString );
                                     }
@@ -736,6 +831,8 @@ int main( int argc, char **argv )
                                                 InsertQuery += UTIL_ToString( i_ingameKills[i] )+", " + UTIL_ToString( i_ingameDeaths[i] ) + ", "+ UTIL_ToString( i_ingameAssists[i] ) + ", " + UTIL_ToString( i_ingameCreeps[i] ) + ", "+ UTIL_ToString( i_ingameDenies[i] ) + ", " + UTIL_ToString( i_ingameNeutrals[i] ) + ", " + UTIL_ToString( i_ingameTower[i] ) + ", " + UTIL_ToString( i_ingameRaxes[i] );
                                             else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
                                                 InsertQuery += UTIL_ToString(legionTdValue[i])+", "+UTIL_ToString(legionTdSeconds[i])+", "+UTIL_ToString(legionTdWood[i])+", "+UTIL_ToString(legionTdWoodTotal[i])+", +"+UTIL_ToString(legionTdLeaked[i])+", +"+UTIL_ToString(legionTdIncome[i])+", "+UTIL_ToString(legionTdGoldTotal[i])+", "+UTIL_ToString(legionTdGoldIncome[i]);
+                                            else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
+                                                InsertQuery += UTIL_ToString(treeTagKills[i])+", "+UTIL_ToString(treeTagDeaths[i])+", "+UTIL_ToString(treeTagSaves[i])+", "+UTIL_ToString(treeTagEnt[i])+", +"+UTIL_ToString(treeTagInfernal[i])+", 0, 0, 0";
                                             else {
                                                 InsertQuery += "0, 0, 0, 0, 0, 0, 0, 0";
                                             }
