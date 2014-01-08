@@ -128,6 +128,7 @@ private:
         uint32_t m_Alias;
         string m_AliasType;
         string m_PossibleModesToHost;
+        bool m_MapTradeAllowed;
 
 public:
 	CMap( CGHost *nGHost );
@@ -164,6 +165,7 @@ public:
 	vector<CGameSlot> GetSlots( )			{ return m_Slots; }
         uint32_t GetAlias( )                            { return m_Alias; }
         string GetPossibleModesToVote( )                { return m_PossibleModesToHost; }
+        bool GetMapTradeAllowed( )                      { return m_MapTradeAllowed; }
 
 	void Load( CConfig *CFG, string nCFGFile );
 	void CheckValid( );

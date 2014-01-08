@@ -3597,14 +3597,14 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
             case 0x50 : n += 6; break;
             case 0x51 :
               n += 10;
- 
-               SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
-               SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
-               player->SetDeleteMe( true );
-               player->SetLeftReason( "was kicked by host" );
-               player->SetLeftCode( PLAYERLEAVE_LOST );
-               m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "", m_GameAlias ) );
-                   
+              if(! m_Map->GetMapTradeAllowed() ) {
+                SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
+                SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
+                player->SetDeleteMe( true );
+                player->SetLeftReason( "was kicked by host" );
+                player->SetLeftCode( PLAYERLEAVE_LOST );
+                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "", m_GameAlias ) );
+              }
                delete action;
                return false;
             break;
