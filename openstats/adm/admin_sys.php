@@ -128,7 +128,8 @@ if ( isset( $_GET["word_filter"]) )  $HomeTitle = "Word Filter | DotA OpenStats 
 if ( isset( $_GET["ban_email"]) )    $HomeTitle = "Ban Email | DotA OpenStats v4"; else
 if ( isset( $_GET["pp"]) )           $HomeTitle = "Penalty Points and Offences | DotA OpenStats v4"; else
 if ( isset( $_GET["admin_logs"]) AND $_SESSION["level"]>=10 )  $HomeTitle = "Admin Logs | DotA OpenStats v4"; else
-if ( isset( $_GET["remote"]) )       $HomeTitle = "Remote Control | DotA OpenStats v4";
+if ( isset( $_GET["remote"]) )       $HomeTitle = "Remote Control | DotA OpenStats v4"; else
+if ( isset( $_GET["aliases"]) )      $HomeTitle = "Game Types | DotA OpenStats v4";
 
 //Version check
 

@@ -77,7 +77,7 @@ function Get_w3mmdplayers($gameid) {
            $Data[$c]["practicing"] = $row["practicing"];
            
            $Data[$c]["leftreason"] = $row["leftreason"];
-           $Data[$c]["left"] = $row["left"];
+           $Data[$c]["left"] = secondsToTime($row["left"]);
            $Data[$c]["loadingtime"] = $row["loadingtime"];
            $Data[$c]["ip"] = $row["ip"];
            $Data[$c]["hideElement"] = ' hideElement';
@@ -111,7 +111,7 @@ function Get_w3mmdplayers($gameid) {
            $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
            $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
            $Data[$c]["raxkills"] = "";  $Data[$c]["courierkills"] = ""; $Data[$c]["neutralkills"] = "";
-           $Data[$c]["gold"] = "";      $Data[$c]["left"] = ""; 
+           $Data[$c]["gold"] = "";       
            
            $Data[$c]["side"] = "";
            
@@ -139,7 +139,8 @@ function Get_w3mmdplayers($gameid) {
         else $Data[$c]["hideslot"] = "loser_background";
         if ($Data[0]["winner"] == '2' AND $row["pid"]> $LimitTeam)  $Data[$c]["hideslot"] = "winner_background";
          
-		//Get custom game "template"
+		//Get custom game "template" // hard-coded stuff here
+		//LEGION TD
        	if ( strstr($Map, "Legion TD") ) {
 		$lang["sent_winner"] = "West Legion <b>Winner</b>";
 		$lang["scou_winner"] = "East Legion <b>Winner</b>";
@@ -147,7 +148,7 @@ function Get_w3mmdplayers($gameid) {
 		$lang["sent_loser"] = "West Legion <b>Loser</b>";
 		$lang["scou_loser"] = "East Legion <b>Loser</b>";
 		}
-		
+		//WARLOCK
 		if ( substr($Map,0,7) == "Warlock" ) {
 		$SentinelRow = 0;
 		$ScourgeRow = 0;
@@ -157,6 +158,31 @@ function Get_w3mmdplayers($gameid) {
 		$lang["sent_loser"] = "Warlock loser";
 		$lang["scou_loser"] = "Warlock loser";
 		}
+		//HEROLINE
+       	if ( strstr($Map, "HeroLineWars") ) {
+		$lang["sent_winner"] = "Hero's Line 1 <b>Winner</b>";
+		$lang["scou_winner"] = "Hero's Line 2 <b>Winner</b>";
+		
+		$lang["sent_loser"] = "Hero's Line 1 <b>Loser</b>";
+		$lang["scou_loser"] = "Hero's Line 2 <b>Loser</b>";
+		}
+		//TREE TAG
+       	if ( strstr($Map, "TreeTag") ) {
+		$lang["sent_winner"] = "Ents <b>Winner</b>";
+		$lang["scou_winner"] = "Infernal <b>Winner</b>";
+		
+		$lang["sent_loser"] = "Ents <b>Loser</b>";
+		$lang["scou_loser"] = "Infernal <b>Loser</b>";
+		
+		if ( $row["pid"]<=8 ) {
+		$Data[$c]["heroid"] = "custom/ent.png"; $Data[$c]["hero"] =  "custom/ent.png"; $Data[$c]["description"] = "";
+		}
+		
+		if ( $row["pid"]>8 ) {
+		$Data[$c]["heroid"] = "custom/infernal.png"; $Data[$c]["hero"] =  "custom/infernal.png"; $Data[$c]["description"] = "";
+		}
+		}
+		
 		 
          if ( $winner == 1 ) {  
          $Data[$c]["display_winner"] = '<span class="winner2">'.$lang["sent_winner"]."</span>"; 
@@ -183,8 +209,10 @@ function Get_w3mmdplayers($gameid) {
    
    function W3mmdLimitTeams( $map ) {
     $val = 5;
-    if ( strstr($map, "Legion TD") )     $val = 3;
+    if ( strstr($map, "Legion TD") )     $val = 4;
 	if ( substr($map,0,7) == "Warlock" ) $val = 1;
+	if ( strstr($map, "HeroLineWars") )  $val = 4;
+	if ( strstr($map, "TreeTag") )  $val = 8;
 	
 	return $val;
    
