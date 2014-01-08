@@ -738,9 +738,9 @@ int main( int argc, char **argv )
                 /**
                  * W3MMD basic stats
                  */
-                else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) {
-                    //select winner & pid flag
-                    string s_Winner="";
+                else if( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) {
+                    //select winner 
+                    string s_Winner = "";
                     // make sure the winner is set in any case, the autoend sometimes bugging here so the left players probably dont set the winner flag!
                     // normally this is good but it does fail on the statspage then.
                     MYSQL_RES *W3MMDPlayerResult= QueryBuilder(Connection, "SELECT flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND name='"+s_lowerPlayerName[i_playerCounter]+"';" );
@@ -792,7 +792,6 @@ int main( int argc, char **argv )
                             i_maxLoosingStreak=UTIL_ToUInt32(Row[5]);
                         }
                     }
-                    
                 }
                 if( i_wins[i_playerCounter] == 1 ) {
                     s_playerWinStreak[i_playerCounter]="streak = streak+1, ";
