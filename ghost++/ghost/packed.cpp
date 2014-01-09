@@ -7,17 +7,18 @@
   * (at your option) any later version.
   * 
   * Please save the copyrights and notifications on the footer.
+  * We do NOT support or help people who removed this notice.
   * 
-  * You can contact the developers on: ohsystem-public@googlegroups.com
-  * or join us directly here: https://groups.google.com/d/forum/ohsystem-public
+  * You can contact the developers on: admin@ohsystem.net
+  * or join us directly here: https://ohsystem.net/forum
   * 
   * Visit us also on http://ohsystem.net/ and keep track always of the latest
   * features and changes.
   * 
-  * 
   * This is modified from GHOST++: http://ghostplusplus.googlecode.com/
   * Official GhostPP-Forum: http://ghostpp.com/
  */
+
 #include "ghost.h"
 #include "util.h"
 #include "crc32.h"
