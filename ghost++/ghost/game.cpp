@@ -915,6 +915,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 Same.push_back("6");
             if( HighestVote == g )
                 Same.push_back("7");
+
             if( Same.size() <= 1 || HighestVote == 0 ){
                 if( HighestVote != g && Same.size() != 0 && HighestVote != 0) {
                     SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
@@ -923,7 +924,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 } else {
-                    uint32_t RandomMode = rand( ) % m_ModesToVote.size( ) - 1;
+                    uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
                     SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode]+"] has been randomed. The game will start now.");
                     m_HCLCommandString = m_lGameAliasName.find("lod")!=string::npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode]) : m_ModesToVote[RandomMode];
                     m_Voted = true;
@@ -932,7 +933,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 }
             } else {
                 SendAllChat("There ["+UTIL_ToString(Same.size())+"] modes with the same highest vote amount.");
-                uint32_t RandomMode = rand( ) % Same.size() - 1;
+                uint32_t RandomMode = rand( ) % ( Same.size() - 1 );
                 SendAllChat("Choosed now randomly of the top modes ["+m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1]+"]. The game will start now." );
                 m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1]) : m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1];
                 m_Voted = true;
