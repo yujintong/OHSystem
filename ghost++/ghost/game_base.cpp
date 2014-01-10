@@ -965,8 +965,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                     {
                                             if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && !IsReserved( (*i)->GetName() ) )
                                             {
-                                                    string name=(*i)->GetName();
-                                                    string realm=(*i)->GetJoinedRealm( );
                                                     if(m_GHost->m_AutoDenyUsers)
                                                         m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                                     (*i)->SetDeleteMe( true );
@@ -976,8 +974,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                             }
                                             else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && !IsReserved( (*i)->GetName() ) )
                                             {
-                                                    string name=(*i)->GetName();
-                                                    string realm=(*i)->GetJoinedRealm( );
                                                     if(m_GHost->m_AutoDenyUsers)
                                                         m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                                     (*i)->SetDeleteMe( true );
@@ -990,8 +986,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                     {
                                             if( (*i)->GetGames( ) < m_GHost->m_MinLimit  && !IsReserved( (*i)->GetName() ) )
                                             {
-                                                    string name=(*i)->GetName();
-                                                    string realm=(*i)->GetJoinedRealm( );
                                                     if(m_GHost->m_AutoDenyUsers)
                                                         m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                                     (*i)->SetDeleteMe( true );
@@ -1001,8 +995,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                             }
                                             else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit  && !IsReserved( (*i)->GetName() ) )
                                             {
-                                                    string name=(*i)->GetName();
-                                                    string realm=(*i)->GetJoinedRealm( );
                                                     if(m_GHost->m_AutoDenyUsers)
                                                         m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                                     (*i)->SetDeleteMe( true );
@@ -2028,6 +2020,9 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
                 if( m_GHost->m_VoteMode ) {
                     SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
                 }
+                if( m_GHost->m_AllowVoteStart ) {
+                    SendChat( player, "Use '!votestart' for an early beginning. ["+UTIL_ToString(m_GHost->m_VoteStartMinPlayers)+"] are at least required.");
+                }
         }
         else
         {
@@ -2058,6 +2053,9 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
             SendChat(player, "This is a balanced game, the slots will be balanced before the game will start.");
         if( m_GHost->m_VoteMode ) {
             SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
+        }
+        if( m_GHost->m_AllowVoteStart ) {
+            SendChat( player, "Use '!votestart' for an early beginning. ["+UTIL_ToString(m_GHost->m_VoteStartMinPlayers)+"] are at least required.");
         }
  
 }
