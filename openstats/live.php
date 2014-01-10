@@ -258,7 +258,7 @@
 	  
 	 }
 	 
-	 if ( $Calculate <=1 ) { die( $lang["gl_compare_no"] ); }
+	 //if ( $Calculate <=1 ) { die( $lang["gl_compare_no"] ); }
 	 ?>
 
 	 <div class="LogCompareWrapper GameLogSimpleWrapper" id="WinChanceWrapper">
