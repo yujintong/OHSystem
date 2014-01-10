@@ -327,7 +327,7 @@ int main( int argc, char **argv )
             uint32_t i_ingameNeutrals[12];
             uint32_t i_ingameTower[12];
             uint32_t i_ingameRaxes[12];
-            bool b_zerodeaths[12];
+            uint32_t i_zerodeaths[12];
             
             // legion td values
             uint32_t legionTdValue[12];
@@ -370,7 +370,7 @@ int main( int argc, char **argv )
                 i_ingameNeutrals[i_playerCounter]=0;
                 i_ingameTower[i_playerCounter]=0;
                 i_ingameRaxes[i_playerCounter]=0;
-                b_zerodeaths[i_playerCounter]=false;
+                i_zerodeaths[i_playerCounter]=0;
                 
                 //init legiontd relating values
                 legionTdValue[i_playerCounter]=0;
@@ -525,7 +525,7 @@ int main( int argc, char **argv )
                         }
                     }
                     if(i_ingameDeaths[i_playerCounter]==0) {
-                        b_zerodeaths[i_playerCounter]=true;
+                        i_zerodeaths[i_playerCounter]=1;
                     }
                     
                     if( ( i_Winner == 1 && i_playerColour[i_playerCounter] >= 1 && i_playerColour[i_playerCounter] <= 5 ) || ( i_Winner == 2 && i_playerColour[i_playerCounter] >= 7 && i_playerColour[i_playerCounter] <= 11 ) ) {
@@ -848,7 +848,7 @@ int main( int argc, char **argv )
                                     if(! b_newPlayer[i] ) {
                                         string UpdateString = "UPDATE `oh_stats` SET last_seen=CURRENT_TIMESTAMP(), points_bet = '0', points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", leaver = leaver+'"+(b_leaver[i] ? "1" : "0" )+"', banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"', user_level = '"+UTIL_ToString(i_userLevel[i])+"', maxlosingstreak = '" + UTIL_ToString( i_maxLooseStreak[i] ) + "', maxstreak = '" + UTIL_ToString( i_maxWinStreak[i] ) + "', streak='"+ UTIL_ToString( i_looseStreak[i] ) +"', losingstreak='" + UTIL_ToString( i_winStreak[i] ) +"', wins = wins+" + UTIL_ToString( i_wins[i] ) + ", losses = losses+" + UTIL_ToString( i_losses[i] ) + ", draw = draw+" + UTIL_ToString( i_draws[i] ) + ", games= games+1, ip= '" + s_playerIp[i] + "', "+ s_playerScore[i]+ " ";
                                         if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("dota")!=string::npos || s_gameAliasName.find("lod")!=string::npos || s_gameAliasName.find("imba")!=string::npos ) )
-                                            UpdateString += ", zerodeaths = zerodeaths+"+ ( b_zerodeaths[i] ? UTIL_ToString(1) : UTIL_ToString(0) ) +", kills=kills+"+UTIL_ToString(i_ingameKills[i])+", deaths=deaths+" + UTIL_ToString( i_ingameDeaths[i] ) + ", assists=assists+" + UTIL_ToString( i_ingameAssists[i] ) + ", creeps=creeps+" + UTIL_ToString( i_ingameCreeps[i] ) + ", denies=denies+" + UTIL_ToString( i_ingameDenies[i] ) + ", neutrals=neutrals+" + UTIL_ToString( i_ingameNeutrals[i] ) + ", towers=towers+" + UTIL_ToString( i_ingameTower[i] ) + ", rax=rax+" + UTIL_ToString( i_ingameRaxes[i] );
+                                            UpdateString += ", zerodeaths = zerodeaths+"+ UTIL_ToString(i_zerodeaths[i])  +", kills=kills+"+UTIL_ToString(i_ingameKills[i])+", deaths=deaths+" + UTIL_ToString( i_ingameDeaths[i] ) + ", assists=assists+" + UTIL_ToString( i_ingameAssists[i] ) + ", creeps=creeps+" + UTIL_ToString( i_ingameCreeps[i] ) + ", denies=denies+" + UTIL_ToString( i_ingameDenies[i] ) + ", neutrals=neutrals+" + UTIL_ToString( i_ingameNeutrals[i] ) + ", towers=towers+" + UTIL_ToString( i_ingameTower[i] ) + ", rax=rax+" + UTIL_ToString( i_ingameRaxes[i] );
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
                                             UpdateString += ", kills=kills+"+UTIL_ToString(legionTdValue[i])+", deaths=deaths+"+UTIL_ToString(legionTdSeconds[i])+", assists=assists+"+UTIL_ToString(legionTdWood[i])+", creeps=creeps+"+UTIL_ToString(legionTdWoodTotal[i])+", denies=denies+"+UTIL_ToString(legionTdLeaked[i])+", neutrals=neutrals+"+UTIL_ToString(legionTdIncome[i])+", towers=towers+"+UTIL_ToString(legionTdGoldTotal[i])+", rax=rax+"+UTIL_ToString(legionTdGoldIncome[i]);
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("tree")!=string::npos ) )
