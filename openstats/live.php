@@ -298,9 +298,17 @@
 
 	 <?php
     } 	 
-	 //Sentinel
+//Sentinel
     $Notice = "";
 	$NoticeTooltip = '<img onMouseout="hidetooltip()" onMouseover="tooltip(\''.$lang["gl_no_stats_data"] .'\', \''.OS_HOME.'img/warn.png\', 200, 32, 32)" src="'.OS_HOME.'img/warn.png" width="16" height="16" class="imgvalign" alt="" />';
+	
+	if (!empty($PlayerData["player"]) ) $PlayerName = $PlayerData["player"];
+	else $PlayerName = "<i>".$PlayerData["no_stats"]."</i>";
+	 
+	if ($PlayerData["wins"]>=1)   $PlayerData["wins"] = ROUND($PlayerData["wins"], 1); 
+	if ($PlayerData["losses"]>=1) $PlayerData["losses"] = ROUND($PlayerData["losses"], 1); 
+	
+	$CheckPlayerName = strip_tags($PlayerName);
 	
 	 if ( !isset($ScourgeTable) ) {
 	    $SentWins+=$PlayerData["wins"];
@@ -318,7 +326,7 @@
 		  $Notice = $NoticeTooltip;
 		  }
 		}
-		else { $Percent = 0;  $Notice = $NoticeTooltip; }
+		else { $Percent = 33;  $Notice = $NoticeTooltip; 	 if (empty($CheckPlayerName)) $Percent = 0; }
 		$SentinelWP+=$Percent;
 
 	 } else {
@@ -339,7 +347,7 @@
 		  $Notice = $NoticeTooltip;
 		  }
 		}
-		else { $Percent = 0;  $Notice = $NoticeTooltip; }
+		else { $Percent = 33;  $Notice = $NoticeTooltip; 	 if (empty($CheckPlayerName)) $Percent = 0; }
 		$ScourgeWP+=$Percent;
 	 }
 
@@ -348,11 +356,6 @@
 		$PlayerData["losses"] = "";
 	 }
 	 
-	 if (!empty($PlayerData["player"]) ) $PlayerName = $PlayerData["player"];
-	 else $PlayerName = "<i>".$PlayerData["no_stats"]."</i>";
-	 
-	 if ($PlayerData["wins"]>=1)   $PlayerData["wins"] = ROUND($PlayerData["wins"], 1); 
-	 if ($PlayerData["losses"]>=1) $PlayerData["losses"] = ROUND($PlayerData["losses"], 1); 
 	 ?>
 	 <tr>
 	  <td class="padLeft"><?=$PlayerData["slot"]?></td>

@@ -202,21 +202,22 @@ if ( OS_is_admin() AND OS_PluginEdit( $ThisPlugin ) ) {
 		  
 		  if ( isset($userID) AND is_numeric($userID) AND $userID!= OS_GetUserID() ) {
 		  OS_add_custom_field( $userID, time() . "|" . OS_GetUserID()."||p.m.0" , $PMText);
+		  $MailText = $PMText;
 		  $PMName = ""; $PMText = "";
 		  ?><h4>Message was sent successfully</h4><?php
 		 //SEND EMAIL NOTIFICATION
 
 		 if ( !isset($_SESSION["mail_sent"]) ) {
-		  $row = $sth->fetch(PDO::FETCH_ASSOC);
+		  //$row = $sth->fetch(PDO::FETCH_ASSOC);
 		  $_SESSION["mail_sent"] = 1;
           global $lang;
 	      global $mail;
-		  global $HomeTitle;
+		  global $DefaultHomeTitle;
 	      $message = "You have just received a private message from ".$_SESSION["username"]."<br />";
 		  $message.=  "Click on the following link to read the message<br />";
 	      $message.=  "".OS_HOME."?action=pm&inbox";
 		  $message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />";
-		  $message.= convEnt($PMText);
+		  $message.= convEnt($MailText);
 		  $message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />$DefaultHomeTitle";
 		  
 	      require("inc/class.phpmailer.php");
@@ -224,7 +225,7 @@ if ( OS_is_admin() AND OS_PluginEdit( $ThisPlugin ) ) {
 	      $mail->CharSet = 'UTF-8';
 	      $mail->SetFrom($lang["email_from"], $lang["email_from_full"]);
 	      $mail->AddReplyTo($lang["email_from"], $lang["email_from_full"]);
-	      //$mail->AddAddress($row["user_email"], "");
+	      $mail->AddAddress($row["user_email"], "");
 	      $mail->Subject = "New Private Message";
 	      $mail->MsgHTML($message);
 		  $mail->AltBody = "This is the body in plain text for non-HTML mail clients";
