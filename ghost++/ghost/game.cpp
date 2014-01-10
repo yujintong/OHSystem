@@ -3491,7 +3491,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         } else {
 //                                if( m_MatchMaking && m_AutoStartPlayers != 0 )
 //                                        BalanceSlots( );
-
+                            SendAllChat("The votestart was successfully. The game will start now.");
                             StartCountDown( true );
                         }
                 }

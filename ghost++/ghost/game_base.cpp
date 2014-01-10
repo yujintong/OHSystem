@@ -1434,7 +1434,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         
          // expire the votestart
 
-        if( m_StartedVoteStartTime != 0 && GetTime( ) - m_StartedVoteStartTime >= 60 )
+        if( m_StartedVoteStartTime != 0 && GetTime( ) - m_StartedVoteStartTime >= 60 && ( !m_GameLoaded || !m_GameLoading) )
         {
                 CONSOLE_Print( "[GAME: " + m_GameName + "] votestart expired" );
                 SendAllChat( "Votestart expired (sixty seconds without pass)." );
