@@ -746,7 +746,7 @@ int main( int argc, char **argv )
                     MYSQL_RES *W3MMDPlayerResult= QueryBuilder(Connection, "SELECT flag FROM oh_w3mmdplayers WHERE gameid='"+GameID+"' AND name='"+s_lowerPlayerName[i_playerCounter]+"';" );
                     if(W3MMDPlayerResult) {
                         vector<string> Row = MySQLFetchRow( W3MMDPlayerResult );
-                        if( Row.size( ) == 2 ) {
+                        if( Row.size( ) == 1 ) {
                             s_Winner=Row[1];
                         }
                     }
@@ -764,7 +764,7 @@ int main( int argc, char **argv )
                         i_losses[i_playerCounter]=1;
                     } 
                     //Draw Game
-                    else if( s_Winner == "drawer" || s_Winner.empty() ) {
+                    else {
                         s_playerScore[i_playerCounter]="";
                         i_newPlayerScore[i_playerCounter]=ScoreStart;
                         i_draws[i_playerCounter]=1;
