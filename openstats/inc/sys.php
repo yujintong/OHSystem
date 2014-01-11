@@ -31,6 +31,14 @@ include(OS_PAGE_PATH."add_comment_page.php");
 		$sql = "AND alias_id = '".$game_type."' ";
 		}
 		
+		$sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1 LIMIT 1");
+	    $result = $sth->execute();
+		
+		if ( $sth->rowCount()>=1) {
+		$row = $sth->fetch(PDO::FETCH_ASSOC);
+		$sql.= " AND alias_id = '".$row["alias_id"]."' ";
+		}
+		
 		$sth = $db->prepare("SELECT *
 	    FROM ".OSDB_STATS." as s WHERE s.player = :player $sql ORDER BY id DESC LIMIT 1");
 		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
