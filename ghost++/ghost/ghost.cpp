@@ -463,11 +463,11 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastCommandListTime = GetTime( );
 	m_LastGameUpdateTime  = GetTime( );
 	m_LastFlameListUpdate = 0;
-        m_LastAliasListUpdate = 0;
+    m_LastAliasListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
-        m_LastDNListUpdate = 0;
+    m_LastDNListUpdate = 0;
 	m_LastDCountryUpdate = 0;
-        m_LastHCUpdate = GetTime();
+    m_LastHCUpdate = GetTime();
 	m_AutoHostMatchMaking = false;
 	m_AutoHostMinimumScore = 0.0;
 	m_AutoHostMaximumScore = 0.0;
@@ -507,7 +507,7 @@ CGHost :: CGHost( CConfig *CFG )
 		string ServerAlias = CFG->GetString( Prefix + "serveralias", string( ) );
 		string CDKeyROC = CFG->GetString( Prefix + "cdkeyroc", string( ) );
 		string CDKeyTFT = CFG->GetString( Prefix + "cdkeytft", string( ) );
-		string CountryAbbrev = CFG->GetString( Prefix + "countryabbrev", "USA" );
+        string CountryAbbrev = CFG->GetString( Prefix + "countryabbrev", "USA" );
 		string Country = CFG->GetString( Prefix + "country", "United States" );
 		string Locale = CFG->GetString( Prefix + "locale", "system" );
 		uint32_t LocaleID;
@@ -1175,11 +1175,11 @@ bool CGHost :: Update( long usecBlock )
     	}
         
         // refresh flamelist all 60 minutes
-	if( !m_CallableFlameList && GetTime( ) - m_LastFlameListUpdate >= 1200 && m_FlameCheck)
-	{
-		m_CallableFlameList = m_DB->ThreadedFlameList( );
-		m_LastFlameListUpdate = GetTime( );
-	}
+        if( m_FlameCheck && !m_CallableFlameList && ( GetTime( ) - m_LastFlameListUpdate >= 1200 || m_LastFlameListUpdate==0 ) )
+        {
+            m_CallableFlameList = m_DB->ThreadedFlameList( );
+            m_LastFlameListUpdate = GetTime( );
+        }
 
         if( m_CallableFlameList && m_CallableFlameList->GetReady( )&& m_FlameCheck)
         {
@@ -1190,11 +1190,11 @@ bool CGHost :: Update( long usecBlock )
         }
 
         // refresh alias list all 24 hours
-	if( !m_CallableAliasList && GetTime( ) - m_LastAliasListUpdate >= 86400 )
-	{
-		m_CallableAliasList = m_DB->ThreadedAliasList( );
-		m_LastAliasListUpdate = GetTime( );
-	}
+        if( !m_CallableAliasList && ( GetTime( ) - m_LastAliasListUpdate >= 86400 || m_LastAliasListUpdate == 0 ) )
+        {
+            m_CallableAliasList = m_DB->ThreadedAliasList( );
+            m_LastAliasListUpdate = GetTime( );
+        }
 
         if( m_CallableAliasList && m_CallableAliasList->GetReady( ))
         {
@@ -1205,11 +1205,11 @@ bool CGHost :: Update( long usecBlock )
         }
 
         // refresh denied names list all 60 minutes
-	if( !m_CallableDeniedNamesList && GetTime( ) - m_LastDNListUpdate >= 1200 )
-	{
-		m_CallableDeniedNamesList = m_DB->ThreadedDeniedNamesList( );
-		m_LastDNListUpdate = GetTime( );
-	}
+        if( !m_CallableDeniedNamesList && ( GetTime( ) - m_LastDNListUpdate >= 3600 || m_LastDNListUpdate == 0 ) )
+        {
+            m_CallableDeniedNamesList = m_DB->ThreadedDeniedNamesList( );
+            m_LastDNListUpdate = GetTime( );
+        }
 
         if( m_CallableDeniedNamesList && m_CallableDeniedNamesList->GetReady( ) )
         {
@@ -1220,7 +1220,7 @@ bool CGHost :: Update( long usecBlock )
         }
 
 	// refresh announce list all 60 minutes
-        if( !m_CallableAnnounceList && GetTime( ) - m_LastAnnounceListUpdate >= 1200 )
+        if( !m_CallableAnnounceList && ( GetTime( ) - m_LastAnnounceListUpdate >= 3600 || m_LastAnnounceListUpdate==0 ) )
         {
                 m_CallableAnnounceList = m_DB->ThreadedAnnounceList( );
                 m_LastAnnounceListUpdate = GetTime( );
@@ -1237,7 +1237,7 @@ bool CGHost :: Update( long usecBlock )
         }
 
         // refresh denied country list all 60 minutes
-        if( !m_CallableDCountryList && GetTime( ) - m_LastDCountryUpdate >= 1200 )
+        if( !m_CallableDCountryList && ( GetTime( ) - m_LastDCountryUpdate >= 1200 || m_LastDCountryUpdate == 0 ) )
         {
                 m_CallableDCountryList = m_DB->ThreadedDCountryList( );
                 m_LastDCountryUpdate = GetTime( );
