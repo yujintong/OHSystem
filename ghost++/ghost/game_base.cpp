@@ -6492,7 +6492,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
  
 void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
 {
-    if( m_GHost->m_Announces.size != 0 && m_GHost->m_Announces >= RandomNumber ) {
+    if( m_GHost->m_Announces.size( ) != 0 && m_GHost->m_Announces.size() >= RandomNumber ) {
         if( m_GHost->m_AnnounceHidden ) {
             for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
             {
