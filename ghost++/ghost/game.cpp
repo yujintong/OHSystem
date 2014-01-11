@@ -920,8 +920,8 @@ bool CGame :: Update( void *fd, void *send_fd )
 
             if( Same.size() <= 1 || HighestVote == 0 ){
                 if( HighestVote != g && Same.size() != 0 && HighestVote != 0) {
-                    SendAllChat("The absolute vote was for ["+m_ModesToVote[HighestVote-1]+"]. The game will start now.");
-                    m_HCLCommandString =  m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[HighestVote-1]) : m_ModesToVote[HighestVote-1];
+                    SendAllChat("The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32_t(Same[0])-1]+"]. The game will start now.");
+                    m_HCLCommandString =  m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32_t(Same[0])-1]) : m_ModesToVote[UTIL_ToUInt32_t(Same[0])-1];
                     m_Voted = true;
                     StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
