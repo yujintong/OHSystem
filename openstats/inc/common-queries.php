@@ -174,14 +174,38 @@ function Get_w3mmdplayers($gameid) {
 		$lang["sent_loser"] = "Ents <b>Loser</b>";
 		$lang["scou_loser"] = "Infernal <b>Loser</b>";
 		
-		if ( $row["pid"]<=8 ) {
+		if ( $row["pid"]<=$LimitTeam ) {
 		$Data[$c]["heroid"] = "custom/ent.png"; $Data[$c]["hero"] =  "custom/ent.png"; $Data[$c]["description"] = "";
 		}
 		
-		if ( $row["pid"]>8 ) {
+		if ( $row["pid"]>$LimitTeam ) {
 		$Data[$c]["heroid"] = "custom/infernal.png"; $Data[$c]["hero"] =  "custom/infernal.png"; $Data[$c]["description"] = "";
 		}
 		}
+		
+		//Battleships Battleships
+		if ( strstr($Map, "Battleships Cross") ) {
+		
+		$Data[$c]["heroid"] = "custom/ship.gif"; $Data[$c]["hero"] =  "custom/ship.gif"; $Data[$c]["description"] = "";
+		if ( $row["pid"]>=9 ) $Data[$c]["side"] = "sentinel";
+		if ($row["flag"] == "") $winner = 0;
+		
+		$lang["sent_winner"] = "South Aliance <b>Winner</b>";
+		$lang["scou_winner"] = "North Aliance <b>Winner</b>";
+		$lang["draw_game"] = "Leaver";
+		$lang["sent_loser"] = "South Aliance <b>Loser</b>";
+		$lang["scou_loser"] = "North Aliance <b>Loser</b>";
+		
+		if ( $row["pid"]>=9 ) {
+		$lang["sent_winner"] = "Goblin/Greenpeace <b>Winner</b>";
+		$lang["scou_winner"] = "Goblin/Greenpeace <b>Winner</b>";
+		$lang["draw_game"]  = "Goblin/Greenpeace <b>Leaver</b>";
+		$lang["sent_loser"] = "Goblin/Greenpeace <b>Loser</b>";
+		$lang["scou_loser"] = "Goblin/Greenpeace <b>Loser</b>";
+		}
+		
+		}
+		
 		
 		 
          if ( $winner == 1 ) {  
@@ -213,6 +237,7 @@ function Get_w3mmdplayers($gameid) {
 	if ( substr($map,0,7) == "Warlock" ) $val = 1;
 	if ( strstr($map, "HeroLineWars") )  $val = 4;
 	if ( strstr($map, "TreeTag") )  $val = 8;
+	if ( strstr($map, "Battleships Crossfire") )  $val = 4;
 	
 	return $val;
    
@@ -300,7 +325,7 @@ function Get_w3mmdplayers($gameid) {
 		  g.gamestate as type, g.creatorserver as server, g.alias_id, w.flag
 		  FROM ".OSDB_GAMES." as g 
 		  LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
-		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` =0
+		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` = 2
 		  WHERE duration>='".$MinDuration."' $filter
 		  ORDER BY $order
 		  LIMIT $offset, $rowsperpage";

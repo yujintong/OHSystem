@@ -36,6 +36,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	//Check user ban
 	$chk = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE name = '".$row["player"]."' ORDER BY id DESC LIMIT 1");
+	
     $result = $chk->execute();
 	$rowban = $chk->fetch(PDO::FETCH_ASSOC);
 
@@ -139,6 +140,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["banned"] = 0;
 	$UserData[$c]["banname"] ="";
 	}
+	
+	//Check if user have some privileges.
+	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+	 WHERE player = '".$row["player"]."' AND user_level>1 LIMIT 1");
+	 
+	 $result3 = $sth3->execute();
+	 $row3 = $sth3->fetch(PDO::FETCH_ASSOC);
+	 
+	 if ( $sth3->rowCount()>=1) {
+	    $UserData[$c]["GameAdmin"]  = ($row3["user_level"]);
+	    $UserData[$c]["banned"] = 0;
+	    $UserData[$c]["banname"] ="";
+	 }
+	 
+	 //$row2 = $sth2->fetch(PDO::FETCH_ASSOC);
+	// $IP = $row2["ip"];
 	
 	$UserData[$c]["ip"]  = ($row["ip"]);
 	$UserData[$c]["streak"]  = ($row["streak"]);
@@ -551,8 +568,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $DefaultGameType = $row["alias_id"];
 	 }
 	 
-	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
-	 $GameAliases[$c]["selected"] = 'selected="selected"'; 
+	 //if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 //$GameAliases[$c]["selected"] = 'selected="selected"'; 
 	 
 	 $c++;
 	}
