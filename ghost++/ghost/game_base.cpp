@@ -6492,25 +6492,29 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
  
 void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
 {
-    if( m_GHost->m_AnnounceHidden ) {
-        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-        {
-               
-                uint32_t Level = 0;
-                for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
-                {
-                        if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) )
-                        {
-                                Level = (*k)->IsLevel( (*i)->GetName( ) );
-                                break;
-                        }
-                }
- 
-                if( Level <= 1 )
-                        SendChat( (*i)->GetPID( ), "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
-        }
-    } else
-      SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+    if( m_GHost->m_Announces.size != 0 && m_GHost->m_Announces >= RandomNumber ) {
+        if( m_GHost->m_AnnounceHidden ) {
+            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+            {
+
+                    uint32_t Level = 0;
+                    for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+                    {
+                            if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) )
+                            {
+                                    Level = (*k)->IsLevel( (*i)->GetName( ) );
+                                    break;
+                            }
+                    }
+
+                    if( Level <= 1 )
+                            SendChat( (*i)->GetPID( ), "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+            }
+        } else
+          SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+    } else {
+        CONSOLE_Print("[Error] Announce event failed, make sure you have set an announce.");
+    }
 }
  
 string CBaseGame :: GetColoredName( string defaultname )
