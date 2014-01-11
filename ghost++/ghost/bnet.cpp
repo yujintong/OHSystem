@@ -2122,7 +2122,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 // !PPADD !PUNISH
                                 //
-                                else if(  Command == "ppadd" || Command == "punish" )
+                                else if( (  Command == "ppadd" || Command == "punish" ) && m_GHost->m_ChannelBotOnly )
                                 {
                                         string Victim;
                                         string Amount;
@@ -2170,7 +2170,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
                                 // !RPP      !REMOVEPP
                                 //
-                                else if( ( Command == "rpp" || Command == "removepp" ) && IsLevel( User ) >= 9 )
+                                else if( ( Command == "rpp" || Command == "removepp" ) && IsLevel( User ) >= 9 && m_GHost->m_ChannelBotOnly )
                                 {
                                         string SUser;
                                         string Amount;
@@ -2214,7 +2214,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !BAN
                                 //
  
-                                else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) )
+                                else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) && m_GHost->m_ChannelBotOnly )
                                 {
                                         if( IsLevel( User ) >= 7 )
                                         {
@@ -2255,7 +2255,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !IPRANGEBAN
                                 // PLEASE USE THIS BAN WITH CAUTION, IF YOU ARE NOT SURE WITH SUBNET's OR SIMILAIR THINGS, DON'T USE IT!
                                 //
-                                else if( ( Command == "irb" || Command == "iprangeadd"  || Command == "iprangeban" ) && !Payload.empty( ) && IsLevel( User ) == 10 )
+                                else if( ( Command == "irb" || Command == "iprangeadd"  || Command == "iprangeban" ) && !Payload.empty( ) && IsLevel( User ) == 10 && m_GHost->m_ChannelBotOnly )
                                 {
                                         string VictimIP;
                                         string Reason;
@@ -2285,7 +2285,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !TEMPBAN
                                 // !TBAN
                                 //
-                                else if( ( Command == "tempban" || Command == "tban" ) && !Payload.empty( ) )
+                                else if( ( Command == "tempban" || Command == "tban" ) && !Payload.empty( ) && m_GHost->m_ChannelBotOnly )
                                 {
                                         // extract the victim and the reason
                                         // e.g. "Varlock leaver after dying" -> victim: "Varlock", reason: "leaver after dying"
@@ -2434,7 +2434,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !AUTOHOST
                                 //
  
-                                else if( Command == "autohost" )
+                                else if( Command == "autohost" &&! m_GHost->m_ChannelBotOnly )
                                 {
                                         if( IsLevel( User ) == 10 || ForceRoot )
                                         {
@@ -2522,7 +2522,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !AUTOHOSTMM
                                 //
  
-                                else if( Command == "autohostmm" )
+                                else if( Command == "autohostmm" &&! m_GHost->m_ChannelBotOnly )
                                 {
                                         if( IsLevel( User ) == 10 || ForceRoot )
                                         {
