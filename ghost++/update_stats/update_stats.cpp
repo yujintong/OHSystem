@@ -798,8 +798,8 @@ int main( int argc, char **argv )
                     s_playerLooseStreak[i_playerCounter]="losingstreak = 0, ";
                     i_winStreak[i_playerCounter]=i_currStreak+1;
                     i_looseStreak[i_playerCounter]=0;
-                    if(i_currentPoints != 0 ) {
-                        i_winPoints[i_playerCounter] = i_currentPoints+i_currentPoints*2;
+                    if(i_pointsBet != 0 ) {
+                        i_winPoints[i_playerCounter] = i_currentPoints+i_pointsBet*2;
                     }
                     if(i_winStreak[i_playerCounter] >= i_maxStreak ) {
                         i_maxWinStreak[i_playerCounter]=i_winStreak[i_playerCounter];
@@ -809,8 +809,10 @@ int main( int argc, char **argv )
                     s_playerLooseStreak[i_playerCounter]="losingstreak = losingstreak+1, ";
                     i_looseStreak[i_playerCounter]=i_currLoosStreak+1;
                     i_winStreak[i_playerCounter]=0;
-                    if(i_currentPoints != 0 ) {
-                        i_winPoints[i_playerCounter] = i_currentPoints-i_currentPoints*4;
+                    if(i_pointsBet != 0 ) {
+                        i_winPoints[i_playerCounter] = i_currentPoints-i_pointsBet*4;
+                        if(i_winPoints[i_playerCounter]<0)
+                            i_winPoints[i_playerCounter]=0;
                     } else {
                         i_winPoints[i_playerCounter]=0;
                     }
