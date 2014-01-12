@@ -240,6 +240,7 @@ public:
         bool m_RandomMode;
         bool m_HideMessages;
         bool m_DenieCountriesOnThisBot;
+        bool m_KickSlowDownloader;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

@@ -1572,6 +1572,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
         m_RandomMode = CFG->GetInt( "oh_votemode_random", 0 ) == 0 ? false : true;
         m_HideMessages = CFG->GetInt( "oh_hideleavermessages", 1 ) == 0 ? false : true;
         m_DenieCountriesOnThisBot = CFG->GetInt( "oh_deniedcountries", 1 ) == 0 ? false : true;
+        m_KickSlowDownloader = CFG->GetInt("oh_kickslowdownloader", 1 ) == 0 ? false :  true;
 }
 
 void CGHost :: ExtractScripts( )

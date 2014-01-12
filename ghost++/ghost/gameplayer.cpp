@@ -382,7 +382,7 @@ bool CGamePlayer :: Update( void *fd )
 	// make this a bit dynamically, first 10 KB/s is a bit too low, increasing to 100KB/s
 	//decreasing the checktime to 5 seconds
 	// adding an actual playercheck how many players are ingame, if there less than 1 open slots we deny users with a download rate under 500KB/s
-	if( m_DownloadStarted && !m_DownloadFinished && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() && GetLastMapPartSent( ) > 0 )
+    if( m_DownloadStarted && !m_DownloadFinished && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() && GetLastMapPartSent( ) > 0 && m_Game->m_GHost->m_KickSlowDownloader )
 	{
 		uint32_t downloadingTime = GetTicks( ) - m_StartedDownloadingTicks;
 
