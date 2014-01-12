@@ -127,10 +127,10 @@ private:
 	uint32_t m_MapNumPlayers;
 	uint32_t m_MapNumTeams;
 	vector<CGameSlot> m_Slots;
-        uint32_t m_Alias;
-        string m_AliasType;
-        string m_PossibleModesToHost;
-        bool m_MapTradeAllowed;
+    uint32_t m_Alias;
+    string m_AliasType;
+    string m_PossibleModesToHost;
+    bool m_MapTradeAllowed;
 
 public:
 	CMap( CGHost *nGHost );
@@ -165,9 +165,9 @@ public:
 	uint32_t GetMapNumPlayers( )			{ return m_MapNumPlayers; }
 	uint32_t GetMapNumTeams( )				{ return m_MapNumTeams; }
 	vector<CGameSlot> GetSlots( )			{ return m_Slots; }
-        uint32_t GetAlias( )                            { return m_Alias; }
-        string GetPossibleModesToVote( )                { return m_PossibleModesToHost; }
-        bool GetMapTradeAllowed( )                      { return m_MapTradeAllowed; }
+    uint32_t GetAlias( )                            { return m_Alias; }
+    string GetPossibleModesToVote( )                { return m_PossibleModesToHost; }
+    bool GetMapTradeAllowed( )                      { return m_MapTradeAllowed; }
 
 	void Load( CConfig *CFG, string nCFGFile );
 	void CheckValid( );

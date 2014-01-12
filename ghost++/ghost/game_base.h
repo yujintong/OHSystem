@@ -189,6 +189,7 @@ protected:
         uint32_t m_StartEndTicks;
         bool m_Voted;                                                           // define if the vote process is already done when this option is enabled
         uint32_t m_VotedTimeStart;                                              // when the voting has started, a timer function
+        bool m_AllowMapTrading;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
