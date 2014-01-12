@@ -3604,9 +3604,9 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                 player->SetLeftReason( "was kicked by host" );
                 player->SetLeftCode( PLAYERLEAVE_LOST );
                 m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "", m_GameAlias ) );
-              }
                delete action;
                return false;
+             }
             break;
             case 0x52 : Failed = true; break;
             case 0x53 : Failed = true; break;
