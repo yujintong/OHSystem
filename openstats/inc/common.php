@@ -2,16 +2,19 @@
 /**
  * Copyright [2013-2014] [OHsystem]
  * 
+ * We spent a lot of time writing this code, so show some respect:
+ * - Do not remove this copyright notice anywhere (bot, website etc.)
+ * - We do not provide support to those who removed copyright notice
+ *
  * OHSystem is free software: You can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * Please save the copyrights and notifications on the footer.
  * This file is part of DOTA OPENSTATS.
  * 
- * You can contact the developers on: ohsystem-public@googlegroups.com
- * or join us directly here: https://groups.google.com/d/forum/ohsystem-public
+ * You can contact the developers on: admin@ohsystem.net
+ * or join us directly here: http://ohsystem.net/forum/
  * 
  * Visit us also on http://ohsystem.net/ and keep track always of the latest
  * features and changes.

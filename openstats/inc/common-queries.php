@@ -2,16 +2,19 @@
 /**
  * Copyright [2013-2014] [OHsystem]
  * 
+ * We spent a lot of time writing this code, so show some respect:
+ * - Do not remove this copyright notice anywhere (bot, website etc.)
+ * - We do not provide support to those who removed copyright notice
+ *
  * OHSystem is free software: You can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * Please save the copyrights and notifications on the footer.
  * This file is part of DOTA OPENSTATS.
  * 
- * You can contact the developers on: ohsystem-public@googlegroups.com
- * or join us directly here: https://groups.google.com/d/forum/ohsystem-public
+ * You can contact the developers on: admin@ohsystem.net
+ * or join us directly here: http://ohsystem.net/forum/
  * 
  * Visit us also on http://ohsystem.net/ and keep track always of the latest
  * features and changes.
@@ -187,19 +190,25 @@ function Get_w3mmdplayers($gameid) {
 		if ( strstr($Map, "Battleships Cross") ) {
 		
 		$Data[$c]["heroid"] = "custom/ship.gif"; $Data[$c]["hero"] =  "custom/ship.gif"; $Data[$c]["description"] = "";
-		if ( $row["pid"]>=9 ) $Data[$c]["side"] = "sentinel";
-		if ($row["flag"] == "") $winner = 0;
+		if ( $row["pid"]>=10 AND $ScourgeRow == 1) { $Data[$c]["side"] = "sentinel"; $ScourgeRow = 2; }
+		
+		if ($row["flag"] != "winner" AND $row["flag"] != "loser") { 
+		$winner = 0; 
+		$Data[0]["winner"] = 0; 
+		$Data[$c]["hideslot"] = "loser_background";
+		}
 		
 		$lang["sent_winner"] = "South Aliance <b>Winner</b>";
 		$lang["scou_winner"] = "North Aliance <b>Winner</b>";
-		$lang["draw_game"] = "Leaver";
+		$lang["draw_game"] = "South Aliance <b>Draw</b>";
+		if ( $row["pid"]>$LimitTeam ) $lang["draw_game"]  = "North Aliance <b>Draw</b>";
 		$lang["sent_loser"] = "South Aliance <b>Loser</b>";
 		$lang["scou_loser"] = "North Aliance <b>Loser</b>";
 		
 		if ( $row["pid"]>=9 ) {
 		$lang["sent_winner"] = "Goblin/Greenpeace <b>Winner</b>";
 		$lang["scou_winner"] = "Goblin/Greenpeace <b>Winner</b>";
-		$lang["draw_game"]  = "Goblin/Greenpeace <b>Leaver</b>";
+		$lang["draw_game"]  = "Goblin/Greenpeace <b>Draw</b>";
 		$lang["sent_loser"] = "Goblin/Greenpeace <b>Loser</b>";
 		$lang["scou_loser"] = "Goblin/Greenpeace <b>Loser</b>";
 		}
