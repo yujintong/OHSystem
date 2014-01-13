@@ -2,18 +2,20 @@
 
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
-    if ( !isset($search_members) ) $search_members=$lang["search_members"];
+    if ( !isset($members_search) ) $members_search=$lang["search_members"];
 	
 	$MenuClass["members"] = "active";
 
-     if ( isset($_GET["search_members"]) AND strlen($_GET["search_members"])>=2  ) {
-	    $search_members = safeEscape( trim($_GET["search_members"]));
+     if ( isset($_GET["search_members"]) AND strlen($_GET["members_search"])>=2  ) {
+	    $members_search = safeEscape( trim($_GET["members_search"]));
+		$search_members = safeEscape( trim($_GET["members_search"]));
 		$sql = "AND (user_name) LIKE ? ";
 		$start = "%";
 	 } else $sql = "";
 	 
 	 if ( isset($_GET["search_members"]) AND strlen($_GET["search_members"])==1  ) {
 	 	$search_members = safeEscape( trim($_GET["search_members"]));
+		$members_search = "";
 		$sql = "AND (user_name) LIKE ? ";
 		$start = "";
 	 }
@@ -69,6 +71,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $MembersData[$c]["user_website"] = ($row["user_website"]);
 	 $MembersData[$c]["user_gender"] = ($row["user_gender"]);
 	 $MembersData[$c]["user_fbid"] = ($row["user_fbid"]);
+	 $MembersData[$c]["phpbb_id"] = $row["phpbb_id"];
+	 
 	 $MembersData[$c]["can_comment"] = ($row["can_comment"]);
 	 $MembersData[$c]["code"] = ($row["code"]);
 	 $MembersData[$c]["user_joined"] = date(OS_DATE_FORMAT, $row["user_joined"]);
