@@ -123,7 +123,22 @@ CGame :: ~CGame( )
                                         Counter++;
                                 if( Counter <= 2 && VictimLevel <= 2 )
                                 {
-                                    string Reason = "left at " + UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
+                                    string Reason = "left at ";
+
+                                    if( EndTime < 300 ) {
+                                        Reason += UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
+                                    } else {
+                                        string EndMin = UTIL_ToString(EndTime/60);
+                                        string EndSec = UTIL_ToString(EndTime%60);
+                                        string LeaverMin = UTIL_ToString(LeftTime/60);
+                                        string LeaveSec = UTIL_ToString(LeftTime%60);
+                                        if(1==EndSec.size())
+                                            EndSec="0"+EndSec;
+                                        if(1==LeaverSec)
+                                            LeaverSec="0"+LeaveSec;
+
+                                        Reason += "0"+LeftMin+":"+LeftSec + "/0" + EndMin+":"+EndSec;
+                                    }
                                         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, m_GHost->m_LeaverAutoBanTime, "", m_GameAlias  ) );
                                 }
                         }
