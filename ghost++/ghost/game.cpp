@@ -123,7 +123,7 @@ CGame :: ~CGame( )
                                         Counter++;
                                 if( Counter <= 2 && VictimLevel <= 2 )
                                 {
-                                        string Reason = "left at " + UTIL_ToString( LeftTime ) + "/" + UTIL_ToString( EndTime );
+                                    string Reason = "left at " + UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
                                         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, m_GHost->m_LeaverAutoBanTime, "", m_GameAlias  ) );
                                 }
                         }
