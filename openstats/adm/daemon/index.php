@@ -320,6 +320,29 @@ if ($BanIPUpdate == 1) {
  }
  
  
+   //AUTO DELETE OLD REPLAYS
+   if ($AutoDeleteOldReplays>=1) {
+    $c = 0;
+    foreach (new DirectoryIterator('../../replays') as $fileInfo) {
+    if(!$fileInfo->isDot()) {
+	  $FileExtension = pathinfo($fileInfo->getFilename(), PATHINFO_EXTENSION);
+	  $FileExtension = strtolower($FileExtension);
+	  $FileTime = $fileInfo->getCTime();
+	    if ( $FileTime + ( 3600*24*$AutoDeleteOldReplays) <=time() AND $FileExtension == "w3g") {
+		$c++;
+		unlink("../../replays/".$fileInfo->getFilename());
+		}
+	  }
+	}
+	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND $c>=1 ) {
+       $cron_data = 'DAEMON: Deleted total of <b>'.$c.' replays</b>';
+	   $sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	   $result = $sth->execute();  
+      }
+   }
+ 
+ 
    
    //END WORK HERE
    
@@ -354,6 +377,7 @@ if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
 	
 	<link rel="shortcut icon" href="<?=OS_THEME_PATH?>favicon.ico" />
 	<link rel="stylesheet" href="<?=OS_THEME_PATH?>style.css" type="text/css" />
+	<title>Daemon - OHSystem</title>
 	<style>
 
 	</style>

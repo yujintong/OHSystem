@@ -18,6 +18,8 @@ $BanIPUpdate = '1';
 $CheckUserBans = '1';
 $MaxCronLogs = '10000';
 $RemoveOldLiveGames = '1';
+//Remove old replays from /replays folder. 0 - disable, 30 - remove replays older than 30 days
+$AutoDeleteOldReplays = '30';
 //0 disabled, 1 basic, 2 full details
 $CronReportDetails = '1';
 ?>
