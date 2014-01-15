@@ -86,15 +86,15 @@ function add_event($event, $value = NULL, $callback = NULL)
 function FilterData($data) {
 
     if ( is_array($data) ) foreach( $data as $d ) {
-	$d = trim(htmlentities(strip_tags($d)));
+	$d = trim((strip_tags($d)));
 	$data[] = $d;
 	}
-	else $data = trim(htmlentities(strip_tags($data)));
+	else $data = trim((strip_tags($data)));
  
     if (get_magic_quotes_gpc())
         if ( !is_array($data) ) $data = stripslashes($data);
  
-    if ( !is_array($data) ) $data = htmlentities(trim($data));
+    if ( !is_array($data) ) $data = (trim($data));
  
     return $data;
 }

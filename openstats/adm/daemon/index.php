@@ -323,14 +323,14 @@ if ($BanIPUpdate == 1) {
    //AUTO DELETE OLD REPLAYS
    if ($AutoDeleteOldReplays>=1) {
     $c = 0;
-    foreach (new DirectoryIterator('../../replays') as $fileInfo) {
+    foreach (new DirectoryIterator('../../'.$ReplayLocation.'') as $fileInfo) {
     if(!$fileInfo->isDot()) {
 	  $FileExtension = pathinfo($fileInfo->getFilename(), PATHINFO_EXTENSION);
 	  $FileExtension = strtolower($FileExtension);
 	  $FileTime = $fileInfo->getCTime();
-	    if ( $FileTime + ( 3600*24*$AutoDeleteOldReplays) <=time() AND $FileExtension == "w3g") {
+	    if ( $FileTime + ( 3600*24*$AutoDeleteOldReplays ) <=time() AND $FileExtension == "w3g") {
 		$c++;
-		unlink("../../replays/".$fileInfo->getFilename());
+		unlink("../../".$ReplayLocation."/".$fileInfo->getFilename());
 		}
 	  }
 	}

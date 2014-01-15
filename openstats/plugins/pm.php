@@ -4,7 +4,6 @@
 //Private message system
 
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
-
 $PluginEnabled = '1';
 $PluginOptions = '1';
 
@@ -13,6 +12,7 @@ $SendEmailOnPM = '1';
 $ThisPlugin = basename(__FILE__, '');
 
 define("OS_SEND_PM_EMAIL", $SendEmailOnPM);
+
 
 if ($PluginEnabled == 1  ) {
 
@@ -174,13 +174,13 @@ if ( OS_is_admin() AND OS_PluginEdit( $ThisPlugin ) ) {
 		$PMName = ""; $PMText = "";
 		
 		  if ( isset($_POST["pm_message"]) AND isset($_POST["pm_name"]) AND isset($_SESSION["code"]) AND isset($_POST["code"])) {
-		  $PMText= OS_StrToUTF8( $_POST['pm_message']);  
-		  $PMText = PrepareTextDB( strip_tags($PMText) );
+		  
+		  $PMText= ( $_POST['pm_message']);  
+		  $PMText = ( strip_tags($PMText) );
 		  $PMName = safeEscape( trim($_POST["pm_name"]));
 		  if ( $_SESSION["code"] != $_POST["code"] ) $errors.="<h4>Form is not valid. Try again.</h4>";
 		  if ( strlen($PMText)<=2 ) $errors.="<h4>There are not enough characters  in the message</h4>";
 		  if ( strlen($PMName)<=2 ) $errors.="<h4>Please, write a valid username</h4>";
-
 		  if (strtolower($PMName) == $_SESSION["username"] ) 
 		  $errors.="<h4>You can not send messages to yourself</h4>";
 		  
@@ -275,8 +275,7 @@ if ( OS_is_admin() AND OS_PluginEdit( $ThisPlugin ) ) {
 		if ( isset( $_POST["pm_message"] ) AND isset($_SESSION["code"]) AND isset($_POST["code"]) ) {
 
 		   if ( $_SESSION["code"] != $_POST["code"] ) $errors.="<div>Form is not valid. Try again.</div>";
-		   $PMText = htmlspecialchars( html_entity_decode($_POST['pm_message']), ENT_QUOTES, 'UTF-8');  
-		   $PMText = PrepareTextDB( strip_tags($PMText) );
+		     $PMText = strip_tags($_POST['pm_message']);  
 		   
 		   if ( strlen($PMText)<=2 ) $errors.="<div>There are not enough characters  in the message</div>";
 
@@ -494,8 +493,6 @@ if ( OS_is_admin() AND OS_PluginEdit( $ThisPlugin ) ) {
 		if ($read == 1) $text = '<span style="color: #686A6B;">'.convEnt($text) .'</span>';
 		
 		} else $text = AutoLinkShort(convEnt($row["field_value"]));
-
-		
 		?>
 		 <?php if (!isset($_GET["m"]) ) { ?>
 		 <tr class="row">
