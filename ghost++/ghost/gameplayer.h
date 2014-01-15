@@ -180,7 +180,7 @@ public:
 	CGamePlayer( CPotentialPlayer *potential, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
 	virtual ~CGamePlayer( );
 
-        vector<string> m_IgnoreList;                            // list of usernames this player is ignoring
+    vector<string> m_IgnoreList;                            // list of usernames this player is ignoring
 	unsigned char GetPID( )						{ return m_PID; }
 	string GetName( )							{ return m_Name; }
 	BYTEARRAY GetInternalIP( )					{ return m_InternalIP; }

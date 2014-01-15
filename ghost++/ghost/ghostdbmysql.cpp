@@ -1407,18 +1407,19 @@ uint32_t MySQLStoreLog( void *conn, string *error, uint32_t botid, uint32_t chat
 		                Rest = Rest.substr( Start );
                 }
 
-		string EscAdmin = MySQLEscapeString( conn, Admin );
-		string EscRest = MySQLEscapeString( conn, Rest );
-		if( EscAdmin != "" && EscRest != "" )
-		{
-                	string GIQuery = "INSERT INTO oh_adminlog ( `botid`, `gameid`, `log_time`, `log_admin`, `log_data` ) VALUES ( '" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( chatid ) + "', CURRENT_TIMESTAMP(),'" + EscAdmin + "',  '" + EscRest + "' );";
-       	        	if( mysql_real_query( (MYSQL *)conn, GIQuery.c_str( ), GIQuery.size( ) ) != 0 )
-               	        	*error = mysql_error( (MYSQL *)conn );
-               		else
-                       		RowID = mysql_insert_id( (MYSQL *)conn );
-		}
+                string EscAdmin = MySQLEscapeString( conn, Admin );
+                string EscRest = MySQLEscapeString( conn, Rest );
+                if( EscAdmin != "" && EscRest != "" )
+                {
+                            string GIQuery = "INSERT INTO oh_adminlog ( `botid`, `gameid`, `log_time`, `log_admin`, `log_data` ) VALUES ( '" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( chatid ) + "', CURRENT_TIMESTAMP(),'" + EscAdmin + "',  '" + EscRest + "' );";
+                            if( mysql_real_query( (MYSQL *)conn, GIQuery.c_str( ), GIQuery.size( ) ) != 0 )
+                                    *error = mysql_error( (MYSQL *)conn );
+                            else
+                                    RowID = mysql_insert_id( (MYSQL *)conn );
+                }
         }
 
+        admin.clear( );
         return RowID;
 }
 
@@ -2031,6 +2032,9 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
 
 	        if( mysql_real_query( (MYSQL *)conn, InsertQ.c_str( ), InsertQ.size( ) ) != 0 )
         	        *error = mysql_error( (MYSQL *)conn );
+            
+            lobbylog.clear( );
+            gamelog.clear( );
 	}
 
 	return databaseid;
@@ -2071,6 +2075,9 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
         if( mysql_real_query( (MYSQL *)conn, PlayerQuery.c_str( ), PlayerQuery.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
     }
+    for( vector<CDBBan *> :: iterator i = players.begin( ); i != players.end( ); i++ )
+          delete *i;
+    players.clear( );
         
     return gameid;
 }
