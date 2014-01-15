@@ -134,7 +134,7 @@ CGame :: ~CGame( )
                                         string LeftSec = UTIL_ToString(LeftTime%60);
                                         if(1==EndSec.size())
                                             EndSec="0"+EndSec;
-                                        if(1==LeftSec)
+                                        if(1==LeftSec.size())
                                             LeftSec="0"+LeftSec;
 
                                         Reason += "0"+LeftMin+":"+LeftSec + "/0" + EndMin+":"+EndSec;
