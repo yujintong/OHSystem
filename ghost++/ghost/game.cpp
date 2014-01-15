@@ -130,12 +130,12 @@ CGame :: ~CGame( )
                                     } else {
                                         string EndMin = UTIL_ToString(EndTime/60);
                                         string EndSec = UTIL_ToString(EndTime%60);
-                                        string LeaverMin = UTIL_ToString(LeftTime/60);
-                                        string LeaveSec = UTIL_ToString(LeftTime%60);
+                                        string LeftMin = UTIL_ToString(LeftTime/60);
+                                        string LeftSec = UTIL_ToString(LeftTime%60);
                                         if(1==EndSec.size())
                                             EndSec="0"+EndSec;
-                                        if(1==LeaverSec)
-                                            LeaverSec="0"+LeaveSec;
+                                        if(1==LeftSec)
+                                            LeftSec="0"+LeftSec;
 
                                         Reason += "0"+LeftMin+":"+LeftSec + "/0" + EndMin+":"+EndSec;
                                     }
