@@ -36,6 +36,8 @@ if ( isset($_GET["search"]) AND isset($s) ) $prefix.="?search=".$s;
 if ( isset($_GET["search_bans"]) AND isset($search_bans) ) $prefix.="&amp;search_bans=".$search_bans;
 if ( isset($_GET["search_heroes"]) AND isset($search_heroes) ) $prefix.="&amp;search_heroes=".$search_heroes;
 if ( isset($_GET["search_items"]) AND isset($search_items) ) $prefix.="&amp;search_items=".$search_items;
+if ( isset($_GET["members_search"]) ) $prefix.="&amp;members_search=".$_GET["members_search"];
+if ( isset($_GET["search_members"]) ) $prefix.="&amp;search_members=".$_GET["search_members"];
 
 if ( isset($_GET["L"]) AND strlen($_GET["L"]) == 1 ) $prefix.="&amp;L=".$_GET["L"];
 
