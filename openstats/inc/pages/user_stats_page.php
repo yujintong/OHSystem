@@ -488,22 +488,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		if (empty($row["admin"])) $PenaltyData[$c]["admin"] = "[system]";
 		$PenaltyData[$c]["total"] = $TotalPP;
 		$PenaltyData[$c]["warned"] = $Warned;
-		
-		//$PenaltyData[$c]["reason"] = str_replace(array("fuck", "FUCK", "Fuck"), array("f***", "F***", "F***"), $PenaltyData[$c]["reason"]);
-		
-		//Just fix for old version
-		if ( strstr( $row["reason"], "left ") AND   strstr( $row["reason"], "/")) {
-		 
-		 $fixReason = explode("/", $row["reason"]);
-		 if ( isset($fixReason[0]) ) $fixReason[0] = $fixReason[0]; else $fixReason[0] = "";
-		 if ( isset($fixReason[1]) ) $fixReason[1] = $fixReason[1]; else $fixReason[1] = "";
-		 
-		 $fixReason[0] = filter_var( $fixReason[0], FILTER_SANITIZE_NUMBER_INT);
-		 $fixReason[0] = ROUND( ($fixReason[0]/60) , 0);
-		 $fixReason[1] = ROUND( ($fixReason[1]/60) , 0);
-		 
-		 $PenaltyData[$c]["reason"] = "left: ". ( $fixReason[0] )." min. / ".( $fixReason[1] )." min.";
-		}
+		$PenaltyData[$c]["reason"] = $row["reason"];
 		
 		$c++;
 	   }
