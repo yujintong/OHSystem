@@ -131,6 +131,11 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $result = $sth->execute();
 	  if ( $sth->rowCount() >=1 AND !isset($_GET["edit"]) )  $errors.="<div>E-mail already taken</div>";
 	  
+	  $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." 
+	  WHERE (bnet_username) = ('".$bnet."') ");
+	  $result = $sth->execute();
+	  if ( $sth->rowCount() >=1 AND !isset($_GET["edit"]) )  $errors.="<div>Battle.net account already exists</div>";
+	  
 	  if ( empty($errors) ) {
 	  $sth = $db->prepare($sql);
 	  $result = $sth->execute();
