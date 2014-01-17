@@ -275,21 +275,19 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         uint32_t Result = i->second->GetResult( );
                         m_LastRegisterProcess = GetTime( );
                         if( Result == 1 )
-                                QueueChatCommand( "Your Account has successfully registered on our Database.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->SuccessfullyRegistered(), i->first, true );
                         else if( Result == 2 )
-                                QueueChatCommand( "Your Account was successfully confirmed.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->SuccessfullyRegistered(), i->first, true );
                         else if( Result == 3 )
-                                QueueChatCommand( "Error. Wrong Password.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->WrongPassword(), i->first, true );
                         else if( Result == 4 )
-                                QueueChatCommand( "Error. Wrong Email.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->WrongEMail(), i->first, true );
                         else if( Result == 5 )
-                                QueueChatCommand( "The User exist already.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->NameAlreadyUsed( ), i->first, true );
                         else if( Result == 6 )
-                                QueueChatCommand( "Error. There is no account to confirm.", i->first, true );
-                        else if( Result == 7 )
-                                QueueChatCommand( "Error. Something is missing here O_o.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->NoAccountToConfirm( ), i->first, true );
                         else
-                                QueueChatCommand( "Error. Something gone terrible wrong....", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, true );
  
  
                         m_GHost->m_DB->RecoverCallable( i->second );
@@ -306,35 +304,35 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 {
                         string Result = i->second->GetResult( );
                         if( i->second->GetType( ) == "betcheck" )
-                                QueueChatCommand( "[" + i->second->GetUser( ) + "] Current Points: " + Result, i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->BetPoints(i->second->GetUser( ), Result ), i->first, !i->first.empty( ) );
  
                         if( i->second->GetType( ) == "statsreset" )
                         {
                                 if( Result == "success" )
-                                        QueueChatCommand( "Successfully reseted stats for user ["+i->second->GetUser( )+"]", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->SuccessfullyResetedStats( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                                 else
-                                         QueueChatCommand( "No record found for player ["+i->second->GetUser( )+"]", i->first, !i->first.empty( ) );
+                                    QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                         }
                         if( i->second->GetType( ) == "aliascheck" )
                         {
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
-                                         QueueChatCommand( "No record found for player ["+i->second->GetUser( )+"]", i->first, !i->first.empty( ) );
+                                         QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ), i->first, !i->first.empty( ) );
                         }
                         if( i->second->GetType( ) == "rpp" )
                         {
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
-                                        QueueChatCommand( "Something went wrong here.", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
                         }
                         if( i->second->GetType() == "top")
                         {
                             if( Result != "failed" )
                                 QueueChatCommand( Result, i->first, !i->first.empty( ) );
                             else
-                                QueueChatCommand( "Something went wrong here.", i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
                         }
                         
                         m_GHost->m_DB->RecoverCallable( i->second );
@@ -352,9 +350,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         uint32_t Result = i->second->GetResult( );
  
                         if( Result == -1 )
-                                CONSOLE_Print( "Successfully stored a new message ");
+                            CONSOLE_Print( m_GHost->m_Language->SuccessfullyStoredMessage());
                         else if( Result > 0 ) {
-                                QueueChatCommand( "Welcome " + i->first + ". You have " + UTIL_ToString( Result ) + " Message(s). Check it out with the command: '!inbox'.", i->first, true );
+                            QueueChatCommand( m_GHost->m_Language->NewMessages(i->first, UTIL_ToString(Result)), i->first, true );
                         }
  
                         m_GHost->m_DB->RecoverCallable( i->second );
@@ -381,7 +379,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 {
                                                         if( Player->GetName() == i->first )
                                                         {
-                                                                CONSOLE_Print( "Successfully encoded the password for: "+Player->GetName() );
+                                                                CONSOLE_Print( m_GHost->m_Language->SuccessfullyTypedPassword( Player->GetName() ));
                                                                 Player->SetPasswordProt( false );
                                                                 Player->SetSpoofed( true );
                                                         }
@@ -406,28 +404,28 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         if( i->second->GetType( ) == "check" )
                         {
                                 if( Result != 0 )
-                                        QueueChatCommand( "User [" + i->second->GetName() + "] has [" + UTIL_ToString( Result ) + "] penalty points.", i->first, !i->first.empty( ) );
+                                    QueueChatCommand( m_GHost->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ), i->first, !i->first.empty( ) );
                                 else
-                                        QueueChatCommand( "User [" + i->second->GetName() + "] has no penalty points.", i->first, !i->first.empty( ) );
+                                    QueueChatCommand( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
                         }
                         else if( i->second->GetType( ) == "checkall" )
                         {
                                 if( Result != 0 )
-                                        QueueChatCommand( "User [" + i->second->GetName() + "] has [" + UTIL_ToString( Result ) + "] penalty points.", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ), i->first, !i->first.empty( ) );
                                 else
-                                        QueueChatCommand( "User [" + i->second->GetName() + "] has no penalty points.", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
                         }
                         else if( i->second->GetType( ) == "add" )
                         {
                                 if( Result == 1 )
-                                        QueueChatCommand( "Added [" + UTIL_ToString( i->second->GetAmount( ) ) + "] penalty point(s) for [" + i->second->GetName() + "] by [" + i->second->GetAdmin() + "]", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ), i->first, !i->first.empty( ) );
                                 else if(  Result == 2 )
-                                        QueueChatCommand( "User [" + i->second->GetName() + "] got banned for reaching too many penalty points", i->first, !i->first.empty( )  );
+                                        QueueChatCommand( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetUser()), i->first, !i->first.empty( )  );
                                 else
-                                        CONSOLE_Print( "Couldn't add a penalty point" );
+                                    CONSOLE_Print( m_GHost->m_Language->FailedToAddPPoint( ) );
                         }
                         else
-                                CONSOLE_Print( "Error. Something gone wrong" );
+                                CONSOLE_Print(  m_GHost->m_Language->WrongContactBotOwner( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -464,11 +462,11 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 {
                         string Result = i->second->GetResult( );
                         if( Result == "norec" )
-                                QueueChatCommand( "There no games played yet on this bot", i->first, !i->first.empty( ) );
+                            QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->first), i->first, !i->first.empty( ) );
                         else if( Result == "fail" )
-                                QueueChatCommand( "Found no banrecords on the latest played IP", i->first, !i->first.empty( ) );
+                            QueueChatCommand( m_GHost->m_Language->NotIPBanned( ), i->first, !i->first.empty( ) );
                         else
-                                QueueChatCommand( "Found bans on the last played IP Range: " + Result, i->first, !i->first.empty( ) );
+                                QueueChatCommand( m_GHost->m_Language->FoundIPBans( Result ), i->first, !i->first.empty( ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -484,21 +482,21 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 {
                         uint32_t Result = i->second->GetResult( );
                         if( Result == 1 )
-                                QueueChatCommand( "Error banning user. User ["+i->second->GetUser( )+"] is already permanently banned.", i->first, !i->first.empty( )  );
+                            QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyPermBanned( i->seconds->GetUser( ) ), i->first, !i->first.empty( )  );
                         else if( Result == 2 )
-                                QueueChatCommand( "Error banning user. User ["+i->second->GetUser( )+"] is already banned for a longer amount.", i->first, !i->first.empty( )  );
+                            QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
                         else if( Result >= 3 && Result <= 5 )
                         {
                                 AddBan( i->second->GetUser( ), i->second->GetIP( ), i->second->GetGameName( ), i->second->GetAdmin( ), i->second->GetReason( ) );
                                 if( Result == 3 )
-                                        QueueChatCommand( "Successfully banned ["+i->second->GetUser( )+"] on ["+i->second->GetServer( )+"]", i->first, !i->first.empty( ) );
+                                    QueueChatCommand( m_GHost->m_Language->SuccessfullyBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
                                 else if( Result == 4)
-                                        QueueChatCommand( "Successfully updated user ban: ["+i->second->GetUser( )+"] on ["+i->second->GetServer( )+"]", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->SuccessfullyUpdatedBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
                                 else if( Result == 5)
-                                        QueueChatCommand( "Successfully perma banned user ["+i->second->GetUser( )+"] on ["+i->second->GetServer( )+"]", i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
                         }
                         else
-                                QueueChatCommand( "Error, something gone wrong. Please report that to bot owner.", i->first, !i->first.empty( )  );
+                                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( )  );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -514,11 +512,11 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 {
                         bool Result = i->second->GetResult( );
                         if( Result && m_GHost->m_RanksLoaded)
-                            QueueChatCommand( "[" + i->second->GetName( ) + "] is now a [" + GetLevelName( i->second->GetLevel( ) ) + "] on [" + i->second->GetRealm( ) + "]" );
+                            QueueChatCommand( m_GHost->m_Language->ChangedRankOfUser( i->second->GetName( ), GetLevelName( i->second->GetLevel( ) ), i->second->GetRealm( ) );
                         else if( Result && !m_GHost->m_RanksLoaded)
-                            QueueChatCommand( "Could not add correctly a levelname. ranks.txt wasnt loaded.");
+                            QueueChatCommand( m_GHost->m_Language->RanksNotLoaded());
                         else
-                                QueueChatCommand( "Error. This User isnt registered on the Database." );
+                                QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetName( ) ) );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -604,12 +602,13 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             else
                             {
                                 if( i->first != i->second->GetName( ) )
-                                    QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
                                 else
                                 {
                                         string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
                                         if( StatsPlayerSummary->GetStreak( ) < 0 )
-                                                string Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
+                                                Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
+
                                     QueueChatCommand( m_GHost->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
                                                 UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
@@ -657,7 +656,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
                             } else {
                               if( i->first != i->second->GetName( ) )
-                                    QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
                                 else
                                 {
                                     if( m_GHost->m_RanksLoaded )
@@ -703,7 +702,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                         QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
                             } else {
                                 if( i->first != i->second->GetName())
-                                    QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
                                 else
                                 {
                                     if( StatsPlayerSummary->GetStreak( ) != 0 )
@@ -809,7 +808,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                 QueueChatCommand( Summary, i->first, !i->first.empty( ) );
                             } else {
                                 if( i->first != i->second->GetName())
-                                    QueueChatCommand( "Player ["+StatsPlayerSummary->GetPlayer( )+"] has a hidden Account, you cant see the stats." );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
                                 else
                                     QueueChatCommand( Summary, i->first, true );
                             }

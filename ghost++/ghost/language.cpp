@@ -1585,3 +1585,207 @@ string CLanguage :: PlayerReconnectedWithGProxy( string name )
 	UTIL_Replace( Out, "$NAME$", name );
 	return Out;
 }
+
+string CLanguage :: WrongContactBotOwner( )
+{
+    string Out = m_CFG->GetString("oh_900", "oh_900");
+
+    return Out;
+}
+
+string CLanguage :: RanksNotLoaded( )
+{
+    string Out = m_CFG->GetString("oh_901", "oh_901");
+
+    return Out;
+}
+
+string CLanguage :: SuccessfullyRegistered( )
+{
+    string Out = m_CFG->GetString("oh_001", "oh_001");
+
+    return Out;
+}
+
+string CLanguage :: SuccessfullyConfirmedAccount( )
+{
+    string Out = m_CFG->GetString("oh_002", "oh_002");
+
+    return Out;
+}
+
+string CLanguage :: WrongPassword()
+{
+    string Out = m_CFG->GetString("oh_003", "oh_003");
+
+    return Out;
+}
+
+string CLanguage :: WrongEMail()
+{
+    string Out = m_CFG->GetString("oh_004", "oh_004");
+
+    return Out;
+}
+
+string CLanguage :: NameAlreadyUsed()
+{
+    string Out = m_CFG->GetString("oh_005", "oh_005");
+
+    return Out;
+}
+
+string CLanguage :: NoAccountToConfirm()
+{
+    string Out = m_CFG->GetString("oh_006", "oh_006");
+
+    return Out;
+}
+
+string CLanguage :: BetPoints( string user, string points )
+{
+    string Out = m_CFG->GetString( "oh_007", "oh_007" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace(Out, "$POINTS$", points);
+    return Out;
+}
+
+string CLanguage :: SuccessfullyResetedStats( string user )
+{
+    string Out = m_CFG->GetString( "oh_008", "oh_008" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: NoRecordFoundForUser( string user )
+{
+    string Out = m_CFG->GetString( "oh_009", "oh_009" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: SuccessfullyStoredMessage()
+{
+    string Out = m_CFG->GetString("oh_010", "oh_010");
+
+    return Out;
+}
+
+string CLanguage :: NewMessages( string user, string amount )
+{
+    string Out = m_CFG->GetString( "oh_007", "oh_007" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace(Out, "$AMOUNT$", amount);
+    return Out;
+}
+
+string CLanguage :: SuccessfullyTypedPassword( string user )
+{
+    string Out = m_CFG->GetString( "oh_012", "oh_012" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserGotPenalityPoints( string user, string amount )
+{
+    string Out = m_CFG->GetString( "oh_013", "oh_013" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace(Out, "$AMOUNT$", amount);
+    return Out;
+}
+
+string CLanguage :: UserGotNoPenalityPoints( string user )
+{
+    string Out = m_CFG->GetString( "oh_014", "oh_014" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: AddedPenalityPoints( string user, string admin, string amount )
+{
+    string Out = m_CFG->GetString( "oh_015", "oh_015" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$ADMIN$", admin );
+    UTIL_Replace(Out, "$AMOUNT$", amount);
+    return Out;
+}
+
+string CLanguage :: BannedUserForReachingTooManyPPoints( string user )
+{
+    string Out = m_CFG->GetString( "oh_016", "oh_016" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: FailedToAddPPoint()
+{
+    string Out = m_CFG->GetString("oh_017", "oh_017");
+
+    return Out;
+}
+
+string CLanguage :: NotIPBanned()
+{
+    string Out = m_CFG->GetString("oh_018", "oh_018");
+
+    return Out;
+}
+
+string CLanguage :: FoundIPBans( string result )
+{
+    string Out = m_CFG->GetString( "oh_019", "oh_019" );
+    UTIL_Replace( Out, "$RESULT$", result );
+    return Out;
+}
+
+string CLanguage :: ErrorBanningUserAlreadyPermBanned( string user )
+{
+    string Out = m_CFG->GetString( "oh_020", "oh_020" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: ErrorBanningUserAlreadyLongerBanned( string user )
+{
+    string Out = m_CFG->GetString( "oh_021", "oh_021" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: SuccessfullyBannedUser( string user, string server )
+{
+    string Out = m_CFG->GetString( "oh_022", "oh_022" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$SERVER$", server );
+    return Out;
+}
+string CLanguage :: SuccessfullyUpdatedBannedUser( string user, string server )
+{
+    string Out = m_CFG->GetString( "oh_023", "oh_023" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$SERVER$", server );
+    return Out;
+}
+string CLanguage :: SuccessfullyPermBannedUser( string user, string server )
+{
+    string Out = m_CFG->GetString( "oh_024", "oh_024" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$SERVER$", server );
+    return Out;
+}
+
+string CLanguage :: ChangedRankOfUser( string user, string levelname, string server )
+{
+    string Out = m_CFG->GetString( "oh_025", "oh_025" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$LEVELNAME$", levelname );
+    UTIL_Replace(Out, "$SERVER$", server);
+    return Out;
+}
+
+string CLanguage :: UserHasAHiddenAcc( string user )
+{
+    string Out = m_CFG->GetString( "oh_026", "oh_026" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}

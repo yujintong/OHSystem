@@ -258,6 +258,37 @@ public:
 	string WaitForReconnectSecondsRemain( string seconds );
 	string WasUnrecoverablyDroppedFromGProxy( );
 	string PlayerReconnectedWithGProxy( string name );
+
+    //OH Lang CFG
+    string WrongContactBotOwner( );
+    string RanksNotLoaded( );
+    string SuccessfullyRegistered( );
+    string SuccessfullyConfirmedAccount( );
+    string WrongPassword( );
+    string WrongEMail( );
+    string NameAlreadyUsed( );
+    string NoAccountToConfirm( );
+    string BetPoints( string user, string points );
+    string SuccessfullyResetedStats( string user );
+    string NoRecordFoundForUser( string user );
+    string SuccessfullyStoredMessage( );
+    string NewMessages( string user, string amount );
+    string SuccessfullyTypedPassword( string user );
+    string UserGotPenalityPoints( string user, string amount );
+    string UserGotNoPenalityPoints( string user );
+    string AddedPenalityPoints( string user, string admin, string amount );
+    string BannedUserForReachingTooManyPPoints( string user );
+    string FailedToAddPPoint();
+    string NotIPBanned();
+    string FoundIPBans( string result );
+    string ErrorBanningUserAlreadyPermBanned( string user );
+    string ErrorBanningUserAlreadyLongerBanned( string user );
+    string SuccessfullyBannedUser( string user, string server );
+    string SuccessfullyUpdatedBannedUser( string user, string server );
+    string SuccessfullyPermBannedUser( string user, string server );
+    string ChangedRankOfUser( string user, string levelname, string server );
+    string UserHasAHiddenAcc( string user );
+
 };
 
 #endif
