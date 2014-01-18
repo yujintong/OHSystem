@@ -17,9 +17,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <?=$User["player"]?>  
 	<?=OS_IsUserGameBanned( $User["banned"], $lang["banned"] )?> 
 	<?=OS_IsUserGameAdmin( $User["GameAdmin"] )?>
-	<?=OS_IsUserGameWarned( $User["warn"],  $User["warn_expire"], $lang["warned"] )?>
-	<!--<?=OS_IsUserGameSafe( $User["safelist"], $lang["safelist"] )?>
-	<?=OS_IsUserGameLeaver( $User["leaver"], $lang["leaves"].": ".$User["leaver"]."<div>".$lang["stayratio"].": ".$User["stayratio"]."%</div>",1 )?>-->
+	<?=OS_IsUserGameLeaver( $User["leaver"], $lang["leaves"].": ".$User["leaver"]."<div>".$lang["stayratio"].": ".$User["stayratio"]."%</div>",1 )?>
 	<?=OS_bnet_icon($User["user_bnet"], 14, 14, "imgvalign")?>
 	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?> 
   </h1>

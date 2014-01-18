@@ -131,8 +131,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
 	
-	$UserData[$c]["warn_expire"]  = ($row["warn_expire"]);
-	$UserData[$c]["warn"]  = ($row["warn"]);
 	$UserData[$c]["GameAdmin"]  = ($row["user_level"]);
 	
 	//Don't show ban on safelisted user, because they are not really banned!

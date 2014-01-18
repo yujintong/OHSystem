@@ -105,7 +105,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <?=OS_ShowUserFlag( $Game["letter"], $Game["country"] )?>
     <?=OS_SingleGameUser($Game["userid"], $Game["full_name"], $Game["name"], $BestPlayer, $Game["level"])?>
 	<?=OS_IsUserGameAdmin( $Game["admin"])?>
-	<?=OS_IsUserGameWarned( $Game["warn"],  $Game["warn_expire"], $lang["warned"] )?>
 	<?=OS_IsUserGameBanned( $Game["banned"], $lang["banned"] ) ?>
 	<span class="player_scores<?=$Game["class"]?>"><?=$Game["score_points"]?></span>
  </div>

@@ -459,8 +459,6 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `rax` int(11) NOT NULL,
   `banned` tinyint(1) NOT NULL,
   `penalty` tinyint(4) NOT NULL,
-  `warn_expire` datetime NOT NULL,
-  `warn` int(11) NOT NULL,
   `realm` varchar(100) NOT NULL,
   `reserved` int(11) NOT NULL,
   `leaver` int(11) NOT NULL,

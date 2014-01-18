@@ -253,8 +253,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $GameData[$c]["banned"]  = ($row["banned"]);
 	 $GameData[$c]["admin"]  = ($row["admin"]);
      //$GameData[$c]["safelist"]  = ($row["safelist"]);
-	 $GameData[$c]["warn"]  = ($row["warn"]);
-     $GameData[$c]["warn_expire"]  = ($row["warn_expire"]);
 	 //CHECK IF USER IS BANNED
 	 if ( strtolower($row["name"]) == strtolower($row["banname"]) ) {
 	    $GameData[$c]["full_name"]  = '<span class="banned">'.($row["name"])."</span>";

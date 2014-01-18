@@ -109,7 +109,7 @@ function Get_w3mmdplayers($gameid) {
            $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
            }
            
-           $Data[$c]["level"] = "";  $Data[$c]["warn"] = "";  $Data[$c]["warn_expire"] = "";
+           $Data[$c]["level"] = ""; 
            $Data[$c]["banned"] = ""; $Data[$c]["admin"] = ""; $Data[$c]["score_points"] = "";   
            $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
            $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
@@ -345,7 +345,7 @@ function Get_w3mmdplayers($gameid) {
 	
     function getGameInfo($gid){
 	$sql = "
-	   SELECT winner, dp.gameid, gp.colour, newcolour, original as hero, description, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.gold,  dp.raxkills, dp.courierkills, s.id as userid, s.user_level as admin, s.warn, s.warn_expire, s.banned,
+	   SELECT winner, dp.gameid, gp.colour, newcolour, original as hero, description, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.gold,  dp.raxkills, dp.courierkills, s.id as userid, s.user_level as admin, s.banned,
 	   item1, item2, item3, item4, item5, item6, spoofedrealm, dp.level,
 	   it1.icon as itemicon1, 
 	   it2.icon as itemicon2, 
