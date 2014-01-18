@@ -1673,9 +1673,16 @@ string CLanguage :: SuccessfullyStoredMessage()
 
 string CLanguage :: NewMessages( string user, string amount )
 {
-    string Out = m_CFG->GetString( "oh_007", "oh_007" );
+    string Out = m_CFG->GetString( "oh_011", "oh_011" );
     UTIL_Replace( Out, "$USER$", user );
     UTIL_Replace(Out, "$AMOUNT$", amount);
+    return Out;
+}
+
+string CLanguage :: ErrorInboxEmpty()
+{
+    string Out = m_CFG->GetString("oh_011a", "oh_011a");
+
     return Out;
 }
 
@@ -1787,5 +1794,530 @@ string CLanguage :: UserHasAHiddenAcc( string user )
 {
     string Out = m_CFG->GetString( "oh_026", "oh_026" );
     UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: RankOfUser( string user, string time, string alias, string rank, string level, string levelname )
+{
+    string Out = m_CFG->GetString( "oh_027", "oh_027" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace(Out, "$TIME$", time);
+    UTIL_Replace(Out, "$ALIAS$", alias);
+    UTIL_Replace(Out, "$RANK$", rank);
+    UTIL_Replace(Out, "$LEVEL$", level);
+    UTIL_Replace( Out, "$LEVELNAME$", levelname );
+    return Out;
+}
+
+string CLanguage :: RankOfUserWithoutLevel( string user, string time, string alias, string rank)
+{
+    string Out = m_CFG->GetString( "oh_027a", "oh_027a" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace(Out, "$TIME$", time);
+    UTIL_Replace(Out, "$ALIAS$", alias);
+    UTIL_Replace(Out, "$RANK$", rank);
+    return Out;
+}
+
+string CLanguage :: StreakOfUser( string user, string time, string alias, string streak, strng maxstreak, string maxlstreak)
+{
+    string Out = m_CFG->GetString( "oh_028", "oh_028" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace(Out, "$TIME$", time);
+    UTIL_Replace(Out, "$ALIAS$", alias);
+    UTIL_Replace(Out, "$STREAK$", streak);
+    UTIL_Replace(Out, "$MAXSTREAK$", maxstreak);
+    UTIL_Replace(Out, "$MAXLSTREAK$", maxlstreak);
+    return Out;
+}
+
+string CLanguage :: UserMutedByRCON( string user, string admin )
+{
+    string Out = m_CFG->GetString( "oh_029", "oh_029" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$ADMIN$", admin );
+    return Out;
+}
+string CLanguage :: UserUnMutedByRCON( string user, string admin )
+{
+    string Out = m_CFG->GetString( "oh_030", "oh_030" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$ADMIN$", admin );
+    return Out;
+}
+
+string CLanguage :: UserKickedByRCON( string user, string admin )
+{
+    string Out = m_CFG->GetString( "oh_031", "oh_031" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$ADMIN$", admin );
+    return Out;
+}
+
+string CLanguage :: InvalidName( )
+{
+    string Out = m_CFG->GetString( "oh_032", "oh_032" );
+    return Out;
+}
+string CLanguage :: WrongInputUseALevel( )
+{
+    string Out = m_CFG->GetString( "oh_033", "oh_033" );
+    return Out;
+}
+string CLanguage :: WrongInputInvalidLevel( )
+{
+    string Out = m_CFG->GetString( "oh_034", "oh_034" );
+    return Out;
+}
+
+string CLanguage :: UserLevelCheck( string user, string level )
+{
+    string Out = m_CFG->GetString( "oh_035", "oh_035" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$LEVEL$", level );
+    return Out;
+}
+
+string CLanguage :: InvalidNameTooShort( )
+{
+    string Out = m_CFG->GetString( "oh_036", "oh_036" );
+    return Out;
+}
+
+string CLanguage :: NoPermissionToExecCommand( )
+{
+    string Out = m_CFG->GetString( "oh_037", "oh_037" );
+    return Out;
+}
+
+string CLanguage :: TooMuchPPoints( )
+{
+    string Out = m_CFG->GetString( "oh_038", "oh_038" );
+    return Out;
+}
+
+string CLanguage :: ErrorMissingReason( )
+{
+    string Out = m_CFG->GetString( "oh_039", "oh_039" );
+    return Out;
+}
+
+string CLanguage :: ErrorBadInput( )
+{
+    string Out = m_CFG->GetString( "oh_040", "oh_040" );
+    return Out;
+}
+
+string CLanguage :: BannedIPRange( string ip, string server )
+{
+    string Out = m_CFG->GetString( "oh_041", "oh_041" );
+    UTIL_Replace( Out, "$IP$", ip );
+    UTIL_Replace( Out, "$SERVER$", server);
+    return Out;
+}
+
+string CLanguage :: ErrorBanningWrongSuffix( string suffix )
+{
+    string Out = m_CFG->GetString( "oh_042", "oh_042" );
+    UTIL_Replace( Out, "$SUFFIX$", suffix );
+    return Out;
+}
+
+string CLanguage :: CheckBanTempUser( string user, string date, string expire, string remain, string reason )
+{
+    string Out = m_CFG->GetString( "oh_043", "oh_043" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$DATE$", date );
+    UTIL_Replace( Out, "$EXPIRE$", expire );
+    UTIL_Replace( Out, "$REMAIN$", remain );
+    UTIL_Replace( Out, "$REASON$", reason );
+    return Out;
+}
+
+string CLanguage :: CheckBanPermUser( string user, string date, string reason )
+{
+    string Out = m_CFG->GetString( "oh_044", "oh_044" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$DATE$", date );
+    UTIL_Replace( Out, "$REASON$", reason );
+    return Out;
+}
+
+string CLanguage :: CheckBanNameBan( )
+{
+    string Out = m_CFG->GetString( "oh_045", "oh_045" );
+    return Out;
+}
+
+string CLanguage :: ChangedStatusForVIPGames( string type )
+{
+    string Out = m_CFG->GetString( "oh_046", "oh_046" );
+    UTIL_Replace( Out, "$TYPE$", type );
+    return Out;
+}
+
+string CLanguage :: WrongOptionUserOnOff( )
+{
+    string Out = m_CFG->GetString( "oh_047", "oh_047" );
+    return Out;
+}
+
+string CLanguage :: ChangedMinPlayedGames( string type, string limit )
+{
+    string Out = m_CFG->GetString( "oh_048", "oh_048" );
+    UTIL_Replace( Out, "$TYPE$", type );
+    UTIL_Replace( Out, "$LIMIT$", limit );
+    return Out;
+}
+
+string CLanguage :: ErrorWrongInputForSayPlayer( )
+{
+    string Out = m_CFG->GetString( "oh_049", "oh_049" );
+    return Out;
+}
+
+string CLanguage :: ErrorWrongInputForMessage( )
+{
+    string Out = m_CFG->GetString( "oh_050", "oh_050" );
+    return Out;
+}
+
+string CLanguage :: ErrorMessageTooShort( )
+{
+    string Out = m_CFG->GetString( "oh_051", "oh_051" );
+    return Out;
+}
+
+string CLanguage :: ErrorRegisterAbusePrevention( )
+{
+    string Out = m_CFG->GetString( "oh_052", "oh_052" );
+    return Out;
+}
+
+string CLanguage :: WrongRegisterCommand( string command )
+{
+    string Out = m_CFG->GetString( "oh_053", "oh_053" );
+    UTIL_Replace( Out, "$COMMAND$", command);
+    return Out;
+}
+
+string CLanguage :: WrongPassRegisterCommand( string pass )
+{
+    string Out = m_CFG->GetString( "oh_054", "oh_054" );
+    UTIL_Replace( Out, "$PASS$", pass);
+    return Out;
+}
+
+string CLanguage :: PassTooShortRegisterCommand( string pass )
+{
+    string Out = m_CFG->GetString( "oh_055", "oh_055" );
+    UTIL_Replace( Out, "$PASS$", pass);
+    return Out;
+}
+
+string CLanguage :: InvalidEmailRegisterCommand( string mail)
+{
+    string Out = m_CFG->GetString( "oh_056", "oh_056" );
+    UTIL_Replace( Out, "$MAIL$", mail);
+    return Out;
+}
+
+string CLanguage :: ErrorWhispRegister( )
+{
+    string Out = m_CFG->GetString( "oh_057", "oh_057" );
+    return Out;
+}
+
+string CLanguage :: NoMapAliasRecordFound( )
+{
+    string Out = m_CFG->GetString( "oh_058", "oh_058" );
+    return Out;
+}
+
+string CLanguage :: PassProtAcc( )
+{
+    string Out = m_CFG->GetString( "oh_059", "oh_059" );
+    return Out;
+}
+
+string CLanguage :: RemovedPassProtAcc( )
+{
+    string Out = m_CFG->GetString( "oh_060", "oh_060" );
+    return Out;
+}
+
+string CLanguage :: NoPassProtAcc( )
+{
+    string Out = m_CFG->GetString( "oh_061", "oh_061" );
+    return Out;
+}
+
+string CLanguage :: CurrentPoints( string user, string points)
+{
+    string Out = m_CFG->GetString( "oh_062", "oh_062" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$POINTS$", points);
+    return Out;
+}
+
+string CLanguage :: ErrorAlreadyBet( )
+{
+    string Out = m_CFG->GetString( "oh_063", "oh_063" );
+    return Out;
+}
+
+string CLanguage :: UserBet( string user, string amount)
+{
+    string Out = m_CFG->GetString( "oh_064", "oh_064" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$AMOUNT$", amount);
+    return Out;
+}
+
+string CLanguage :: BetATooHighAmount( string result)
+{
+    string Out = m_CFG->GetString( "oh_065", "oh_065" );
+    UTIL_Replace( Out, "$RESULT$", result);
+    return Out;
+}
+
+string CLanguage :: RemovingPlayerNotifyFF( string team)
+{
+    string Out = m_CFG->GetString( "oh_066", "oh_066" );
+    UTIL_Replace( Out, "$TEAM$", team);
+    return Out;
+}
+
+string CLanguage :: WaitForProperStatsSafe( )
+{
+    string Out = m_CFG->GetString( "oh_067", "oh_067" );
+    return Out;
+}
+
+string CLanguage :: GameWillEndInTen( )
+{
+    string Out = m_CFG->GetString( "oh_068", "oh_068" );
+    return Out;
+}
+
+string CLanguage :: WinnerSetTo( string team)
+{
+    string Out = m_CFG->GetString( "oh_069", "oh_069" );
+    UTIL_Replace( Out, "$TEAM$", team);
+    return Out;
+}
+
+string CLanguage :: AutoEndSpreadInterruptNotify( string seconds, string votes )
+{
+    string Out = m_CFG->GetString( "oh_070", "oh_070" );
+    UTIL_Replace( Out, "$SECONDS$", seconds);
+    UTIL_Replace( Out, "$VOTES$", votes);
+    return Out;
+}
+
+string CLanguage :: VoteModeExpired( )
+{
+    string Out = m_CFG->GetString( "oh_071", "oh_071" );
+    return Out;
+}
+
+string CLanguage :: AbsoluteVoteChoosen( string mode )
+{
+    string Out = m_CFG->GetString( "oh_072", "oh_072" );
+    UTIL_Replace( Out, "$MODE$", mode );
+    return Out;
+}
+
+string CLanguage :: AbsoluteVoteChoosenRandom( string mode )
+{
+    string Out = m_CFG->GetString( "oh_073", "oh_073" );
+    UTIL_Replace( Out, "$MODE$", mode );
+    return Out;
+}
+
+string CLanguage :: TopVoteChoosenRandom( string mode )
+{
+    string Out = m_CFG->GetString( "oh_074", "oh_074" );
+    UTIL_Replace( Out, "$MODE$", mode );
+    return Out;
+}
+
+string CLanguage :: UserMayBanned( string user )
+{
+    string Out = m_CFG->GetString( "oh_075", "oh_075" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: AutoEndHighSpread( string spread )
+{
+    string Out = m_CFG->GetString( "oh_076", "oh_076" );
+    UTIL_Replace( Out, "$SPREAD$", spread );
+    return Out;
+}
+
+string CLanguage :: AutoEndTooFewPlayers( )
+{
+    string Out = m_CFG->GetString( "oh_077", "oh_077" );
+    return Out;
+}
+
+string CLanguage :: AutoEndToDraw( )
+{
+    string Out = m_CFG->GetString( "oh_078", "oh_078" );
+    return Out;
+}
+
+string CLanguage :: AutoEndOneTeamRemain( )
+{
+    string Out = m_CFG->GetString( "oh_079", "oh_079" );
+    return Out;
+}
+
+string CLanguage :: AutoEndSpreadNotify( string team, string votes )
+{
+    string Out = m_CFG->GetString( "oh_080", "oh_080" );
+    UTIL_Replace( Out, "$TEAM$", team);
+    UTIL_Replace( Out, "$VOTES$", votes);
+    return Out;
+}
+
+string CLanguage :: AutoEndEarlyDrawOne( )
+{
+    string Out = m_CFG->GetString( "oh_081", "oh_081" );
+    return Out;
+}
+string CLanguage :: AutoEndEarlyDrawTwo( )
+{
+    string Out = m_CFG->GetString( "oh_082", "oh_082" );
+    return Out;
+}
+string CLanguage :: AutoEndEarlyDrawThree( )
+{
+    string Out = m_CFG->GetString( "oh_083", "oh_083" );
+    return Out;
+}
+
+string CLanguage :: FoundNoMatchWithPlayername( )
+{
+    string Out = m_CFG->GetString( "oh_084", "oh_084" );
+    return Out;
+}
+
+string CLanguage :: SuccessfullyLetPlayerInsult( )
+{
+    string Out = m_CFG->GetString( "oh_085", "oh_085" );
+    return Out;
+}
+
+string CLanguage :: FoundMultiplyMatches( )
+{
+    string Out = m_CFG->GetString( "oh_086", "oh_086" );
+    return Out;
+}
+
+string CLanguage :: MessageTooLongChooseAMoreShorten( )
+{
+    string Out = m_CFG->GetString( "oh_087", "oh_087" );
+    return Out;
+}
+
+string CLanguage :: DisallowedOnlyCountryCheckNotify( )
+{
+    string Out = m_CFG->GetString( "oh_088", "oh_088" );
+    return Out;
+}
+
+string CLanguage :: DisallowedUnallowedCountryCheckNotify( )
+{
+    string Out = m_CFG->GetString( "oh_089", "oh_089" );
+    return Out;
+}
+
+string CLanguage :: ErrorCountryDenyListIsntCleared( )
+{
+    string Out = m_CFG->GetString( "oh_090", "oh_090" );
+    return Out;
+}
+
+string CLanguage :: ErrorCountryOnlyListIsntCleared( )
+{
+    string Out = m_CFG->GetString( "oh_091", "oh_091" );
+    return Out;
+}
+
+string CLanguage :: EnabledDeniedOrLimitedCountries( string type, string countries )
+{
+    string Out = m_CFG->GetString( "oh_092", "oh_092" );
+    UTIL_Replace( Out, "$TYPE$", type);
+    UTIL_Replace( Out, "$COUNTRIES$", countries);
+    return Out;
+}
+
+string CLanguage :: CountryKickExceptionPlayer( string user, string cc, string type, string levelname)
+{
+    string Out = m_CFG->GetString( "oh_093", "oh_093" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$CC$", cc);
+    UTIL_Replace( Out, "$TYPE$", type);
+    UTIL_Replace( Out, "$LEVELNAME$", levelname);
+    return Out;
+}
+
+string CLanguage :: KickedPlayerForDeniedCountry( string user)
+{
+    string Out = m_CFG->GetString( "oh_094", "oh_094" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: DeniedGarenaKickNotify( )
+{
+    string Out = m_CFG->GetString( "oh_095", "oh_095" );
+    return Out;
+}
+
+string CLanguage :: KickedPlayerForDeniedGarena( string user)
+{
+    string Out = m_CFG->GetString( "oh_096", "oh_096" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: DeniedUser( string user)
+{
+    string Out = m_CFG->GetString( "oh_097", "oh_097" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: RefilledCookies( string user)
+{
+    string Out = m_CFG->GetString( "oh_098", "oh_098" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: MutedAllChatOfUser( string user, string admin)
+{
+    string Out = m_CFG->GetString( "oh_099", "oh_099" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$ADMIN$", admin);
+    return Out;
+}
+
+string CLanguage :: UnMutedAllChatOfUser( string user, string admin)
+{
+    string Out = m_CFG->GetString( "oh_100", "oh_100" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$ADMIN$", admin);
+    return Out;
+}
+
+string CLanguage :: SetWinnerByUser( string user, string team)
+{
+    string Out = m_CFG->GetString( "oh_101", "oh_101" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$TEAM$", team);
     return Out;
 }

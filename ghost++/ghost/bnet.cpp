@@ -602,7 +602,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             else
                             {
                                 if( i->first != i->second->GetName( ) )
-                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                                 else
                                 {
                                         string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
@@ -651,18 +651,18 @@ bool CBNET :: Update( void *fd, void *send_fd )
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( m_GHost->m_RanksLoaded )
-                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->RankOfUser( i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(IsLevel( i->second->GetName( ) )), GetLevelName( IsLevel( i->second->GetName( ) ) ) ), i->first, !i->first.empty( ) );
                                 else
-                                        QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->RankOfUserWithoutLevel(i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ) ), i->first, !i->first.empty( ) );
                             } else {
                               if( i->first != i->second->GetName( ) )
-                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                                 else
                                 {
                                     if( m_GHost->m_RanksLoaded )
-                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( )+" Level: "+UTIL_ToString(IsLevel( i->second->GetName( ) ))+" Class: "+GetLevelName( IsLevel( i->second->GetName( ) ) ), i->first, true );
+                                            QueueChatCommand( m_GHost->m_Language->RankOfUser( i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(IsLevel( i->second->GetName( ) )), GetLevelName( IsLevel( i->second->GetName( ) ) ) ), i->first, true );
                                     else
-                                            QueueChatCommand( "["+i->second->GetName( )+": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Rank: "+StatsPlayerSummary->GetRank( ), i->first, true );
+                                            QueueChatCommand( m_GHost->m_Language->RankOfUserWithoutLevel(i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ) ), i->first, true );
                                 }
                             }
                         }
@@ -695,21 +695,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         {
                             string Time = Month+"/"+Year;
                             if(! StatsPlayerSummary->GetHidden() )
-                            {
-                                if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"] Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
-                                else
-                                        QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) );
-                            } else {
+                                QueueChatCommand( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ),( StatsPlayerSummary->GetStreak( ) != 0 ? UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) : "-" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) ), UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ), UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
+                            else {
                                 if( i->first != i->second->GetName())
-                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                                 else
-                                {
-                                    if( StatsPlayerSummary->GetStreak( ) != 0 )
-                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: " + UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max LosingStreak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
-                                    else
-                                            QueueChatCommand( "[" + StatsPlayerSummary->GetPlayer( ) + ": "+Time+" ] ["+m_GHost->GetAliasName( i->second->GetAlias( ) )+"]Current Streak: -" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) + " | Max Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ) + " | Max Losing Streak: " + UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ), i->first, true );
-                                }
+                                            QueueChatCommand( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ),( StatsPlayerSummary->GetStreak( ) != 0 ? UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) : "-" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) ), UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ), UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ), i->first, true );
                             }
                         }
                         else
@@ -735,7 +726,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         if( InboxSummary )
                                 QueueChatCommand( "[" + InboxSummary->GetUser( ) + "] " + InboxSummary->GetMessage( ), i->first, true );
                         else
-                                QueueChatCommand( "Error. Your Inbox is empty.", i->first, true );
+                                QueueChatCommand( m_GHost->m_Language->ErrorInboxEmpty( ), i->first, true );
  
                         m_GHost->m_DB->RecoverCallable( i->second );
                         delete i->second;
@@ -808,7 +799,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                 QueueChatCommand( Summary, i->first, !i->first.empty( ) );
                             } else {
                                 if( i->first != i->second->GetName())
-                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) );
+                                    QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                                 else
                                     QueueChatCommand( Summary, i->first, true );
                             }
@@ -1621,7 +1612,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat( "[" + Name + "] got muted by [" + User + "] using a remote command"   );
+                                                                                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User );
                                                                                                 Player->SetMuted( true );
                                                                                                 Success = true;
                                                                                         }
@@ -1637,7 +1628,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                (*i)->SendAllChat( "[" + Name + "] got muted by [" + User + "] using a remote command"   );
+                                                                                                (*i)->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User ) );
                                                                                                 Player->SetMuted( true );
                                                                                                 Success = true;
                                                                                         }
@@ -1684,7 +1675,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat( "[" + Name + "] got unmuted by [" + User + "] using a remote command"   );
+                                                                                                m_GHost->m_CurrentGame->SendAllChat(m_GHost->m_Language->UserUnMutedByRCON( Name, User ));
                                                                                                 Player->SetMuted( false );
                                                                                                 Success = true;
                                                                                         }
@@ -1700,7 +1691,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                (*i)->SendAllChat( "[" + Name + "] got unmuted by [" + User + "] using a remote command"   );
+                                                                                                (*i)->SendAllChat(m_GHost->m_Language->UserUnMutedByRCON( Name, User ));
                                                                                                 Player->SetMuted( false );
                                                                                                 Success = true;
                                                                                         }
@@ -1747,7 +1738,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat( "[" + Name + "] got kicked by [" + User + "] using a remote command"   );
+                                                                                                m_GHost->m_CurrentGame->SendAllChat(m_GHost->m_Language->UserKickedByRCON( Name, User ));
                                                                                                 Player->SetDeleteMe( true );
                                                                                                 Player->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
                                                                                                 Player->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1766,7 +1757,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                (*i)->SendAllChat( "[" + Name + "] got kicked by [" + User + "] using a remote command" );
+                                                                                                (*i)->SendAllChat( m_GHost->m_Language->UserKickedByRCON( Name, User ) );
                                                                                                 Player->SetDeleteMe( true );
                                                                                                 Player->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
                                                                                                 Player->SetLeftCode( PLAYERLEAVE_LOST );
@@ -2032,7 +2023,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         SS >> Name;
                                         if( Name.length() <= 3 )
                                         {
-                                                QueueChatCommand( "This is not a valid Name" );
+                                                QueueChatCommand( m_GHost->m_Language->InvalidName( ) );
                                                 return;
                                         }
                                         SS >> Realm;
@@ -2056,7 +2047,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                         if( Name.length() <= 3 )
                                         {
-                                                QueueChatCommand( "This is not a valid Name" );
+                                                QueueChatCommand( m_GHost->m_Language->InvalidName( ) );
                                                 return;
                                         }
  
@@ -2064,14 +2055,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                         if( SS.fail( ) || NewLevel.empty() )
                                         {
-                                                QueueChatCommand( "Error. Wrong input, please add a level." );
+                                                QueueChatCommand( m_GHost->m_Language->WrongInputUseALevel( ) );
                                                 return;
                                         }
                                         else
                                         {
                                                 if( !NewLevel.find_first_not_of( "1234567890" ) == string :: npos )
                                                 {
-                                                        QueueChatCommand( "This is not a valid level. Please use a correct number" );
+                                                        QueueChatCommand( m_GHost->m_Language->WrongInputInvalidLevel( ) );
                                                         return;
                                                 }
                                                 SS >> Realm;
@@ -2103,7 +2094,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( !Payload.empty() )
                                                 StatsUser = Payload;
  
-                                        QueueChatCommand( "User ["+StatsUser+"] is currently on Level: "+UTIL_ToString( IsLevel( StatsUser ) ) );
+                                        QueueChatCommand( m_GHost->m_Language->UserLevelCheck( StatsUser, UTIL_ToString( IsLevel( StatsUser ) ) ) );
                                 }
  
                                 //
@@ -2133,9 +2124,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( SS.fail( ) || Victim.empty() )
                                                 CONSOLE_Print( "[PP] bad input #1 to the !TEMPBAN command" );
                                         else if( Victim.size() < 3 )
-                                                QueueChatCommand( "Error. The name is too short, please add a valid name" );
+                                                QueueChatCommand( m_GHost->m_Language->InvalidNameTooShort( ) );
                                         else if( IsLevel( User ) != 10 && ( ( IsLevel( User ) == 9 && IsLevel( Victim ) >= 6 ) || ( ( IsLevel( User ) == 5 || IsLevel( User ) == 6 || IsLevel( User ) == 7 ) && IsLevel( Victim ) >= 2 ) ) )
-                                                QueueChatCommand( "Error. You have no access to punish this player.", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand( ), User, Whisper );
                                         else
                                         {
                                                 SS >> Amount;
@@ -2143,7 +2134,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 if( SS.fail( ) || Amount == "0" )
                                                         CONSOLE_Print( "[PP] bad input #2 to !TEMPBAN command" );
                                                 else if( ( UTIL_ToUInt32( Amount ) > 3 && IsLevel( User ) < 8 ) || UTIL_ToUInt32( Amount ) > 10 && IsLevel( User ) <= 10 )
-                                                        QueueChatCommand( "You shouldn't add more than 3 penalty points" );
+                                                        QueueChatCommand( m_GHost->m_Language->TooMuchPPoints( ) );
                                                 else
                                                 {
                                                         SS >> Reason;
@@ -2161,7 +2152,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                 m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Victim, Reason, User, UTIL_ToUInt32( Amount ), "add" ) ) );
                                                         }
                                                         else
-                                                                QueueChatCommand( "Error. Please add a reason to punish someone" );
+                                                                QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ) );
                                                 }
                                         }
                                 }
@@ -2178,12 +2169,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         SS << Payload;
                                         SS >> SUser;
                                         if( SS.fail( ) || SUser.empty() )
-                                                QueueChatCommand( "Error, bad input.", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language-> ErrorBadInput( ), User, Whisper );
                                         else
                                         {
                                                 SS >> Amount;
                                                 if( SS.fail( ) || Amount.empty() )
-                                                        QueueChatCommand( "Error, bad input.", User, Whisper );
+                                                        QueueChatCommand( m_GHost->m_Language-> ErrorBadInput( ), User, Whisper );
                                                 else
                                                 {
                                                         SS >> Reason;
@@ -2242,7 +2233,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                 m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "", 0 ) ) );
                                                 }
                                                 else
-                                                        QueueChatCommand( "Error. Please state a reason.", User, Whisper );
+                                                        QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ), User, Whisper );
                                         }
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
@@ -2276,7 +2267,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         else
                                         {
                                                 m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "", 0 ) ) );
-                                                QueueChatCommand( "Banned IPRange " + VictimIP + " on " + m_Server + ".", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->BannedIPRange( VictimIP, m_Server ), User, Whisper );
                                         }
                                 }
  
@@ -2303,9 +2294,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( SS.fail( ) || Victim.empty() )
                                                 CONSOLE_Print( "[TEMPBAN] bad input #1 to the !TEMPBAN command" );
                                         else if( Victim.size() < 3 )
-                                                QueueChatCommand( "Error. The name is too short, please add a valid name" );
+                                                QueueChatCommand( m_GHost->m_Language->InvalidNameTooShort() );
                                         else if( IsLevel( User ) != 10 && ( ( IsLevel( User ) == 9 && IsLevel( Victim ) >= 6 ) || ( ( IsLevel( User ) == 5 || IsLevel( User ) == 6 || IsLevel( User ) == 7 ) && IsLevel( Victim ) >= 2 ) ) )
-                                                QueueChatCommand( "Error. You have no access to ban this player.", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand(), User, Whisper );
                                         else
                                         {
                                                 SS >> Amount;
@@ -2370,16 +2361,16 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                                 //QueueChatCommand( "Temporary ban: " + Victim + " for " + UTIL_ToString(Amount) + " " + Suffix + " with reason: " + Reason, User, Whisper);
                                                                                         }
                                                                                         else
-                                                                                                QueueChatCommand( "Error. Please state a reason", User, Whisper );
+                                                                                                QueueChatCommand( m_GHost->m_Language->ErrorMissingReason(), User, Whisper );
                                                                                 }
                                                                         }
                                                                         else
-                                                                                QueueChatCommand( "Error. You have no access to ban a user for more than 5 days", User, Whisper );
+                                                                                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand(), User, Whisper );
  
                                                                 }
                                                                 else
                                                                 {
-                                                                        QueueChatCommand("Bad input, expected minute(s)/hour(s)/day(s)/week(s)/month(s), you said: " + Suffix, User, Whisper);
+                                                                        QueueChatCommand( m_GHost->m_Language->ErrorBanningWrongSuffix( Suffix ), User, Whisper);
                                                                 }
                                                         }
                                                 }
@@ -2667,9 +2658,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         Remaining += Ban->GetMinutes() + "m";
  
                                                 if( !Remaining.empty() )
-                                                        QueueChatCommand( "User [" + Ban->GetName() + "] has been banned on [" + Ban->GetDate() + "] until [" + Ban->GetExpire() + "] (Remaining: " + Remaining + ") Reason: " + Ban->GetReason() );
+                                                        QueueChatCommand( m_GHost->m_Language->CheckBanTempUser( Ban->GetName(),Ban->GetDate(),Ban->GetExpire(),Remaining,Ban->GetReason() ) );
                                                 else
-                                                        QueueChatCommand( "User [" + Ban->GetName() + "] has been permanently banned on [" + Ban->GetDate() + "] for [" + Ban->GetReason() + "]", User, Whisper );
+                                                        QueueChatCommand( m_GHost->m_Language->CheckBanPermUser( Ban->GetName(),Ban->GetDate(),Ban->GetReason()), User, Whisper );
                                         }
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->UserIsNotBanned( m_Server, Payload ), User, Whisper );
@@ -2684,7 +2675,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         CDBBan *Ban = IsBannedName( Payload );
                                         if( Ban )
                                         {
-                                                QueueChatCommand( "Your name got banned. Check the details using 'checkban'", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->CheckBanNameBan( ), User, Whisper );
                                                 return;
                                         }
                                         else
@@ -3233,15 +3224,15 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( Payload == "on" )
                                         {
                                                 m_GHost->m_RegVIPGames = 1;
-                                                QueueChatCommand( "Successfully set the requirement 'Register': on", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->ChangedStatusForVIPGames(Payload), User, Whisper );
                                         }
                                         else if (Payload == "off" )
                                         {
                                                 m_GHost->m_RegVIPGames = 0;
-                                                QueueChatCommand( "Successfully set the requirement 'Register': off", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->ChangedStatusForVIPGames(Payload), User, Whisper );
                                         }
                                         else
-                                                QueueChatCommand( "Error. Wrong option, please use on/off", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->WrongOptionUserOnOff( ), User, Whisper );
                                 }
  
                                 //
@@ -3252,12 +3243,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( Payload.empty() )
                                         {
                                                 m_GHost->m_MinVIPGames = 50;
-                                                QueueChatCommand( "Set the VIP minimum game limit to the default: " + UTIL_ToString( m_GHost->m_MinVIPGames ), User, Whisper );
+                                                QueueChatCommand( ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
                                         }
                                         else
                                         {
                                                 m_GHost->m_MinVIPGames = UTIL_ToUInt32( Payload );
-                                                QueueChatCommand( "Set the VIP minimum game limit to: " + UTIL_ToString( m_GHost->m_MinVIPGames ), User, Whisper );
+                                                QueueChatCommand( ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
                                         }
                                 }
  
@@ -3269,12 +3260,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( Payload.empty() )
                                         {
                                                 m_GHost->m_MinLimit = 25;
-                                                QueueChatCommand( "Set the VIP minimum game limit to the default: " + UTIL_ToString( m_GHost->m_MinLimit ), User, Whisper );
+                                                QueueChatCommand( ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
                                         }
                                         else
                                         {
                                                 m_GHost->m_MinLimit = UTIL_ToUInt32( Payload );
-                                                QueueChatCommand( "Set the VIP minimum game limit to: " + UTIL_ToString( m_GHost->m_MinLimit ), User, Whisper );
+                                                QueueChatCommand( ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
                                         }
                                 }
  
@@ -3443,7 +3434,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 }
                                                 else
                                                 {
-                                                        QueueChatCommand( "Error. Wrong input, please use '!sayplayer <user> <message>'", User, true );
+                                                        QueueChatCommand( m_GHost->m_Language->ErrorWrongInputForSayPlayer( ), User, true );
                                                         return;
                                                 }
  
@@ -3586,7 +3577,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 }
                         }
                         else if( !m_GHost->m_RanksLoaded )
-                            CONSOLE_Print( "Unable to exec command. ranks.txt was not loaded.");
+                            CONSOLE_Print( m_GHost->m_Language->RanksNotLoaded());
                         else
                             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] non-admin [" + User + "] sent command [" + Message + "]" );
  
@@ -3629,7 +3620,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 if( Ban->GetMinutes() != "" )
                                                         Remaining += Ban->GetMinutes() + "m";
  
-                                                QueueChatCommand( "User [" + Ban->GetName() + "] is banned on [" + Ban->GetDate() + "] until [" + Ban->GetExpire() + "] (Remaining: " + Remaining + ") Reason: " + Ban->GetReason() );
+                                                QueueChatCommand( m_GHost->m_Language->CheckBanTempUser(Ban->GetName(), Ban->GetDate(), Ban->GetExpire(), Remaining, Ban->GetReason() ) );
                                         }
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->UserIsNotBanned( m_Server, User ), User, Whisper );
@@ -3643,7 +3634,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         CDBBan *Ban = IsBannedName( User );
                                         if( Ban )
                                         {
-                                                QueueChatCommand( "Your name got banned. Check the details with 'checkban'", User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->CheckBanNameBan(), User, Whisper );
                                                 return;
                                         }
                                         else
@@ -3810,42 +3801,37 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( ( Command == "pm" || Command == "mail" ) && !Payload.empty( ) && m_GHost->m_MessageSystem )
                                 {
                                         CDBBan *Ban = IsBannedName( User );
- 
-                                        if( Ban || User.find( "nice" ) != string::npos && User.find( "hack" ) != string::npos )
-                                                QueueChatCommand( "You dont have access to this command.", User, Whisper );
+
+                                        string UserTo;
+                                        string Message;
+                                        stringstream SS;
+                                        SS << Payload;
+                                        SS >> UserTo;
+                                        if( !SS.eof( ) )
+                                        {
+                                                getline( SS, Message );
+                                                string :: size_type Start = Message.find_first_not_of( " " );
+
+                                                if( Start != string :: npos )
+                                                       Message = Message.substr( Start );
+                                        }
                                         else
                                         {
-                                                string UserTo;
-                                                string Message;
-                                                stringstream SS;
-                                                SS << Payload;
-                                                SS >> UserTo;
-                                                if( !SS.eof( ) )
-                                                {
-                                                        getline( SS, Message );
-                                                        string :: size_type Start = Message.find_first_not_of( " " );
- 
-                                                        if( Start != string :: npos )
-                                                               Message = Message.substr( Start );
-                                                }
-                                                else
-                                                {
-                                                        QueueChatCommand( "Error. Wrong input, please use '!pm <user> <message>'", User, true );
-                                                        return;
-                                                }
-                                                if( UserTo.length() >= 3 )
-                                                {
-                                                        if( Payload.length() > 3 )
-                                                        {
-                                                                QueueChatCommand( "Successfully stored your message.", User, true );
-                                                                m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
-                                                        }
-                                                        else
-                                                                QueueChatCommand( "Error. The message is too short" );
-                                                }
-                                                else
-                                                        QueueChatCommand( "Error. This User is not valid" );
+                                                QueueChatCommand( m_GHost->m_Language->ErrorWrongInputForMessage( ), User, true );
+                                                return;
                                         }
+                                        if( UserTo.length() >= 3 )
+                                        {
+                                                if( Payload.length() > 3 )
+                                                {
+                                                        QueueChatCommand( m_GHost->m_Language->SuccessfullyStoredMessage(), User, true );
+                                                        m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
+                                                }
+                                                else
+                                                        QueueChatCommand( m_GHost->m_Language->ErrorMessageTooShort( ) );
+                                        }
+                                        else
+                                                QueueChatCommand( m_GHost->m_Language->InvalidNameTooShort() );
                                 }
  
                                 //
@@ -3867,11 +3853,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 type = "r";
                                         else if( Command == "verify" || Command == "confirm" )
                                                 type = "c";
-                                        else
-                                                CONSOLE_Print( "Unknown type?" );
  
                                         if( GetTime( ) - m_LastRegisterProcess <= 180 && ( Command == "reg" || Command == "registration" ) )
-                                                QueueChatCommand( "Error. Please wait 3 minutes before registering, we want to avoid potential abuse.");
+                                                QueueChatCommand( m_GHost->m_Language->ErrorRegisterAbusePrevention( ) );
                                         else
                                         {
                                                 string Mail;
@@ -3890,7 +3874,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 }
                                                 else
                                                 {
-                                                        QueueChatCommand( "Error. Wrong input, please use '!" + Command + " MAILADRESS PASSWORD'", User, true );
+                                                        QueueChatCommand( m_GHost->m_Language-> WrongRegisterCommand( Command ), User, true );
                                                         return;
                                                 }
                                                 if( Whisper )
@@ -3898,19 +3882,19 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
                                                         {
                                                                 if( Password.find( " " ) != string::npos )
-                                                                        QueueChatCommand( "Your password: " + Password + " is invalid, please don't use spaces.", User, true );
-                                                                else if( Password.length() > 3 )
+                                                                        QueueChatCommand( m_GHost->m_Language->WrongPassRegisterCommand( Password ), User, true );
+                                                                else if( Password.length() > 2 )
                                                                 {
                                                                         m_PairedRegAdds.push_back( PairedRegAdd( User, m_GHost->m_DB->ThreadedRegAdd( User, m_Server, Mail, Password, type ) ) );
                                                                 }
                                                                 else
-                                                                        QueueChatCommand( "Your password: " + Password + " is too short, please use a longer password.", User, true );
+                                                                        QueueChatCommand( m_GHost->m_Language->PassTooShortRegisterCommand( Password ), User, true );
                                                         }
                                                         else
-                                                                QueueChatCommand( "Your emailadress is invalid: " + Mail + ". Please use a real email address.", User, true );
+                                                                QueueChatCommand( m_GHost->m_Language->InvalidEmailRegisterCommand( Mail), User, true );
                                                 }
                                                 else
-                                                        QueueChatCommand( "Error. Please whisper to the bot, since other players shouldn't see your password.", User, true );
+                                                        QueueChatCommand( m_GHost->m_Language->ErrorWhispRegister( ), User, true );
                                         }
  
                                 }
@@ -3948,7 +3932,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "", 0, "statsreset" ) ) );
                                         }
                                         else
-                                                QueueChatCommand( "Error. You dont have access to this command." );
+                                                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand() );
                                 }
  
                                 //
