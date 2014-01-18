@@ -211,8 +211,14 @@
 	 $c=1;
 	 $Calculate = 0;
 	 if (!empty($PlayerList) ) foreach ( $PlayerList as $Player ) {
+	 
+	 //Get stats from default game type
+	 $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1 LIMIT 1");
+	 $result = $sth->execute();
+	 $row2 = $sth->fetch(PDO::FETCH_ASSOC);
+	 
 	 $sth = $db->prepare( "SELECT * FROM `".OSDB_STATS."` 
-	 WHERE player = '".$Player."' ");
+	 WHERE player = '".$Player."' AND alias_id = '".$row2["alias_id"]."' ORDER BY id DESC");
      $result = $sth->execute();
 	 $row = $sth->fetch(PDO::FETCH_ASSOC);
 	 
