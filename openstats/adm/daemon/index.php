@@ -250,7 +250,7 @@ if ($BanIPUpdate == 1) {
     //Check user bans from stats table (and remove false bans)
  if ($CheckUserBans == 1) {
     $debug = "";
-	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE banned = 1 LIMIT $MaxQueries");
+	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE banned = 1 ORDER BY RAND() LIMIT $MaxQueries");
     $result = $sth->execute(); 
 	
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
