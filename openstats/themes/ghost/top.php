@@ -51,8 +51,7 @@ foreach ($TopData as $Data) { ?>
 	<?=OS_TopUser($Data["id"], $Data["player"])?>
 	<?=OS_IsUserGameBanned( $Data["banned"], $lang["banned"] )?>	
 	<?=OS_IsUserGameAdmin( $Data["admin"] )?>
-	<?=OS_IsUserGameWarned( $Data["warn"],  $Data["warn_expire"], $lang["warned"] )?>
-	<!--<?=OS_IsUserGameSafe( $Data["safelist"], $lang["safelist"] )?>
+	<!--
 	<?=OS_IsUserGameLeaver( $Data["leaver"], $lang["leaves"].": ".$Data["leaver"]."<div>".$lang["stayratio"].": ".$Data["stayratio"]."%</div>" )?>-->
 	</td>
 	<td width="80" class="font12"><?=$Data["score"]?></td>

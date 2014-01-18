@@ -163,8 +163,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$TopData[$c]["towers"]  = ($row["towers"]);
 	$TopData[$c]["rax"]  = ($row["rax"]);
 	$TopData[$c]["banned"]  = ($row["banned"]);
-	$TopData[$c]["warn_expire"]  = ($row["warn_expire"]);
-	$TopData[$c]["warn"]  = ($row["warn"]);
 	$TopData[$c]["admin"]  = ($row["user_level"]);
 	
 	if ( $row["user_level"]>1 ) $TopData[$c]["banned"] = 0;
