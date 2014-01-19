@@ -840,6 +840,8 @@ $qry = '';
 
 if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
 global $lang;
+
+if ( isset($_GET["uid"]) AND is_numeric($_GET["uid"]) ) $query.='&uid='.(int)$_GET["uid"];
 ?>
 	<select name="alias" onchange="location.href=this.value">
 	<?php if ($ShowEmpty == 1) { ?>

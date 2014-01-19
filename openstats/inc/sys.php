@@ -29,18 +29,19 @@ include(OS_PAGE_PATH."add_comment_page.php");
 		if ( isset($_GET["game_type"]) ) { 
 		$game_type = (int)$_GET["game_type"];
 		$sql = "AND alias_id = '".$game_type."' ";
+		} else {
+		
+		  $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1 LIMIT 1");
+	      $result = $sth->execute();
+		
+		  if ( $sth->rowCount()>=1) {
+		  $row = $sth->fetch(PDO::FETCH_ASSOC);
+		  $sql = " AND alias_id = '".$row["alias_id"]."' ";
+		  }
 		}
-		
-		$sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1 LIMIT 1");
-	    $result = $sth->execute();
-		
-		if ( $sth->rowCount()>=1) {
-		$row = $sth->fetch(PDO::FETCH_ASSOC);
-		$sql.= " AND alias_id = '".$row["alias_id"]."' ";
-		}
-		
 		$sth = $db->prepare("SELECT *
 	    FROM ".OSDB_STATS." as s WHERE s.player = :player $sql ORDER BY id DESC LIMIT 1");
+
 		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
 		$result = $sth->execute();
 	  
