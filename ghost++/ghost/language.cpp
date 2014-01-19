@@ -2387,7 +2387,7 @@ string CLanguage :: CurrentVoteKickProcessUser( string user )
     return Out;
 }
 
-string CLanguage :: CurrentVoteKickRunTime( string runtime, strng timeleft )
+string CLanguage :: CurrentVoteKickRunTime( string runtime, string timeleft )
 {
     string Out = m_CFG->GetString( "oh_112", "oh_112" );
     UTIL_Replace( Out, "$RUNTIME$", runtime);

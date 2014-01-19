@@ -375,7 +375,7 @@ public:
     string DidNotFoundAlias( string alias );
     string UsingDefaultAlias( string alias );
     string CurrentVoteKickProcessUser( string user );
-    string CurrentVoteKickRunTime( string runtime, strng timeleft );
+    string CurrentVoteKickRunTime( string runtime, string timeleft );
     string NotifyForAbusiveVotekick( );
     string NotifyForCustomVotekickReason( );
     string VoteKickedUserWhoWasntMarkedAsFeeder( string user );
