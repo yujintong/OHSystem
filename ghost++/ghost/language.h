@@ -365,6 +365,40 @@ public:
     string MutedAllChatOfUser( string user, string admin);
     string UnMutedAllChatOfUser( string user, string admin);
     string SetWinnerByUser( string user, string team);
+    string UserAlreadyVotedForFF( );
+    string UserAlreadyVotedForDraw( );
+    string DisplayIgnoredPlayersForUser( string ignored );
+    string AlreadyMarkedAsAFK( );
+    string AlreadyMarkedAsFeeder( );
+    string AlreadyMarkedAsFullFeeder( );
+    string AlreadyMarkedXTimesWithHighPing( string times);
+    string DidNotFoundAlias( string alias );
+    string UsingDefaultAlias( string alias );
+    string CurrentVoteKickProcessUser( string user );
+    string CurrentVoteKickRunTime( string runtime, strng timeleft );
+    string NotifyForAbusiveVotekick( );
+    string NotifyForCustomVotekickReason( );
+    string VoteKickedUserWhoWasntMarkedAsFeeder( string user );
+    string VoteKickFeederAbuseReason( );
+    string VoteKickedUserWhoWasMarkedAsFeederLevelOne( string user );
+    string ReminederForVotekickAFeederLevelOne( );
+    string VoteKickNotPossiblePlayerIsInAnotherTeam( string user );
+    string UnableToVotekickYourself( );
+    string UnableToVoteStartMissingPlayers( string players );
+    string UnableToVoteStartMissingVotesd( string votes );
+    string SuccessfullyVoteStarted( );
+    string UnableToVoteStartOwnerInGame( );
+    string UnableToVoteKickNotUsersTeam( );
+    string UserVotedForDraw( string user, string votes );
+    string UndrawNotify( );
+    string UserRecalledDrawVote( string user );
+    string ObserverTriesToDraw( );
+
+
+
+
+
+
 };
 
 #endif

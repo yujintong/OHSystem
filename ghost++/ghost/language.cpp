@@ -2321,3 +2321,187 @@ string CLanguage :: SetWinnerByUser( string user, string team)
     UTIL_Replace( Out, "$TEAM$", team);
     return Out;
 }
+
+string CLanguage :: UserAlreadyVotedForFF( )
+{
+    string Out = m_CFG->GetString( "oh_102", "oh_102" );
+    return Out;
+}
+
+string CLanguage :: UserAlreadyVotedForDraw( )
+{
+    string Out = m_CFG->GetString( "oh_103", "oh_103" );
+    return Out;
+}
+
+string CLanguage :: DisplayIgnoredPlayersForUser( string ignored )
+{
+    string Out = m_CFG->GetString( "oh_104", "oh_104" );
+    UTIL_Replace( Out, "$IGNORED$", ignored);
+    return Out;
+}
+
+string CLanguage :: AlreadyMarkedAsAFK( )
+{
+    string Out = m_CFG->GetString( "oh_105", "oh_105" );
+    return Out;
+}
+
+string CLanguage :: AlreadyMarkedAsFeeder( )
+{
+    string Out = m_CFG->GetString( "oh_106", "oh_106" );
+    return Out;
+}
+
+string CLanguage :: AlreadyMarkedAsFullFeeder( )
+{
+    string Out = m_CFG->GetString( "oh_107", "oh_107" );
+    return Out;
+}
+
+string CLanguage :: AlreadyMarkedXTimesWithHighPing( string times)
+{
+    string Out = m_CFG->GetString( "oh_108", "oh_108" );
+    UTIL_Replace( Out, "$TIMES$", times);
+    return Out;
+}
+
+string CLanguage :: DidNotFoundAlias( string alias )
+{
+    string Out = m_CFG->GetString( "oh_109", "oh_109" );
+    UTIL_Replace( Out, "$ALIAS$", alias);
+    return Out;
+}
+
+string CLanguage :: UsingDefaultAlias( string alias )
+{
+    string Out = m_CFG->GetString( "oh_109", "oh_109" );
+    UTIL_Replace( Out, "$ALIAS$", alias);
+    return Out;
+}
+
+string CLanguage :: CurrentVoteKickProcessUser( string user )
+{
+    string Out = m_CFG->GetString( "oh_111", "oh_111" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: CurrentVoteKickRunTime( string runtime, strng timeleft )
+{
+    string Out = m_CFG->GetString( "oh_112", "oh_112" );
+    UTIL_Replace( Out, "$RUNTIME$", runtime);
+    UTIL_Replace( Out, "$TIMELEFT$", timeleft);
+    return Out;
+}
+
+string CLanguage :: NotifyForAbusiveVotekick( )
+{
+    string Out = m_CFG->GetString( "oh_113", "oh_113" );
+    return Out;
+}
+
+string CLanguage :: NotifyForCustomVotekickReason( )
+{
+    string Out = m_CFG->GetString( "oh_114", "oh_114" );
+    return Out;
+}
+
+string CLanguage :: VoteKickedUserWhoWasntMarkedAsFeeder( string user )
+{
+    string Out = m_CFG->GetString( "oh_115", "oh_115" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: VoteKickFeederAbuseReason( )
+{
+    string Out = m_CFG->GetString( "oh_116", "oh_116" );
+    return Out;
+}
+
+string CLanguage :: VoteKickedUserWhoWasMarkedAsFeederLevelOne( string user )
+{
+    string Out = m_CFG->GetString( "oh_117", "oh_117" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: ReminederForVotekickAFeederLevelOne( )
+{
+    string Out = m_CFG->GetString( "oh_118", "oh_118" );
+    return Out;
+}
+
+string CLanguage :: VoteKickNotPossiblePlayerIsInAnotherTeam( string user )
+{
+    string Out = m_CFG->GetString( "oh_119", "oh_119" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: UnableToVotekickYourself( )
+{
+    string Out = m_CFG->GetString( "oh_120", "oh_120" );
+    return Out;
+}
+
+string CLanguage :: UnableToVoteStartMissingPlayers( string players )
+{
+    string Out = m_CFG->GetString( "oh_121", "oh_121" );
+    UTIL_Replace( Out, "$PLAYERS$", players);
+    return Out;
+}
+
+string CLanguage :: UnableToVoteStartMissingVotesd( string votes )
+{
+    string Out = m_CFG->GetString( "oh_122", "oh_122" );
+    UTIL_Replace( Out, "$VOTES$", votes);
+    return Out;
+}
+
+string CLanguage :: SuccessfullyVoteStarted( )
+{
+    string Out = m_CFG->GetString( "oh_123", "oh_123" );
+    return Out;
+}
+
+string CLanguage :: UnableToVoteStartOwnerInGame( )
+{
+    string Out = m_CFG->GetString( "oh_124", "oh_124" );
+    return Out;
+}
+
+string CLanguage :: UnableToVoteKickNotUsersTeam( )
+{
+    string Out = m_CFG->GetString( "oh_125", "oh_125" );
+    return Out;
+}
+
+string CLanguage :: UserVotedForDraw( string user, string votes )
+{
+    string Out = m_CFG->GetString( "oh_126", "oh_126" );
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$VOTES$", votes);
+    return Out;
+}
+
+string CLanguage :: UndrawNotify( )
+{
+    string Out = m_CFG->GetString( "oh_127", "oh_127" );
+    return Out;
+}
+
+string CLanguage :: UserRecalledDrawVote( string user )
+{
+    string Out = m_CFG->GetString( "oh_128", "oh_128" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: ObserverTriesToDraw( )
+{
+    string Out = m_CFG->GetString( "oh_129", "oh_129" );
+    return Out;
+}
+

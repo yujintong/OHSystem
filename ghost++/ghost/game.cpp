@@ -3032,10 +3032,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( Command == "checkme" )
         {
                 SendChat( player, "[" + User + "] (P: " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) + ") (F: " + player->GetCLetter( ) + ") (Role: " + ( LevelName.empty() ? "unknown" : LevelName ) + ") (SpoofChecked: " + ( player->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) + ")" );
-                if( player->GetKickVote( ) )
-                        SendChat( player, "[INFO] You already voted to forfeit the game. See current results with '!wff'" );
+                if( player->GetForfeitVote() )
+                        SendChat( player, m_GHost->m_Language->UserAlreadyVotedForFF( ) );
                 if( player->GetDrawVote( ) )
-                         SendChat( player, "[INFO] You already voted to draw the game. You can change your mind by using '!undraw'" );
+                         SendChat( player, m_GHost->m_Language->UserAlreadyVotedForDraw( ) );
                 string IgnoredPlayers;
                 for( vector<string> :: iterator i = player->m_IgnoreList.begin( ); i != player->m_IgnoreList.end( ); ++i )
                 {
@@ -3045,15 +3045,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 IgnoredPlayers = ", " + *i;
                 }
                 if( !IgnoredPlayers.empty( ) )
-                        SendChat( player, "[INFO] Ignored players: "+IgnoredPlayers );
+                        SendChat( player, m_GHost->m_Language->DisplayIgnoredPlayersForUser( IgnoredPlayers ) );
                 if( player->GetAFKMarked( ) )
-                        SendChat( player, "[WARNING] You got already marked as an AFKer, if you are AFK once again for more than 3 mins you will be kicked with an autoban." );
+                        SendChat( player, m_GHost->m_Language->AlreadyMarkedAsAFK( ) );
                 if( player->GetFeedLevel( ) == 1 )
-                         SendChat( player, "[WARNING] You are already marked as a feeder, might wanna be careful about dying." );
+                         SendChat( player, m_GHost->m_Language->AlreadyMarkedAsFeeder( ) );
                 if( player->GetFeedLevel( ) == 2 )
-                        SendChat( player, "[WARNING] You are marked as a complete feeder, you could be votekicked." );
+                        SendChat( player, m_GHost->m_Language->AlreadyMarkedAsFullFeeder( ) );
                 if( player->GetHighPingTimes( ) > 0 )
-                        SendChat( player, "[WARNING] You have been marked already ["+UTIL_ToString( player->GetHighPingTimes( ) )+"] as a high-ping player." );
+                        SendChat( player, m_GHost->m_Language->AlreadyMarkedXTimesWithHighPing( UTIL_ToString( player->GetHighPingTimes( ) ) ) );
         }
         //
         // !STATS
@@ -3118,8 +3118,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
                 
                 if( m_StatsAlias == 0 ) {
-                    SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
-                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
+                    SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
+                    SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
                     m_StatsAlias = m_GameAlias;
                 }
                 string StatsUser = User;
@@ -3175,8 +3175,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
                 
                 if( m_StatsAlias == 0 ) {
-                    SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
-                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
+                    SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
+                    SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ));
                     m_StatsAlias = m_GameAlias;
                 }
                 string StatsUser = User;
@@ -3231,8 +3231,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
                 
                 if( m_StatsAlias == 0 ) {
-                    SendChat( player, "Did not found any stats alias for ["+alias+"]. User '!statsaliases' to see all aliases" );
-                    SendChat( player, "Using now the default alias defined on this game: ["+m_GHost->m_Aliases[m_GameAlias-1]+"]");
+                    SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
+                    SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ));
                     m_StatsAlias = m_GameAlias;
                 }
                 
@@ -3291,8 +3291,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( ( Command == "wvk" || Command == "whovk" || Command == "whovoted" || Command == "whovotekicked" ) && !m_KickVotePlayer.empty( ) )
         {
-                SendChat( player, "Current votekick process for player ["+m_KickVotePlayer+"]" );
-                SendChat( player, "Process is running since [" +UTIL_ToString(GetTime()-m_StartedKickVoteTime)+ "] seconds, [" +UTIL_ToString(60-(GetTime()-m_StartedKickVoteTime))+"] left to votekick" );
+                SendChat( player, m_GHost->m_Language->CurrentVoteKickProcessUser( m_KickVotePlayer) );
+                SendChat( player, m_GHost->m_Language->CurrentVoteKickRunTime( UTIL_ToString(GetTime()-m_StartedKickVoteTime), UTIL_ToString(60-(GetTime()-m_StartedKickVoteTime)) ) );
                 uint32_t VotesNeeded = (float)( ( GetNumHumanPlayers( ) - 1 ) /2) * 0.75;
                 uint32_t Votes = 0;
                 string VotedPlayers;
@@ -3322,7 +3322,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else if( player->GetVKTimes( ) == 5 )
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( player->GetName( ), "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
                 else if( player->GetVKTimes( ) >= 2 )
-                        SendChat( player, "[INFO] Abusive usage of the votekick command is banable." );
+                        SendChat( player, m_GHost->m_Language->NotifyForAbusiveVotekick( ) );
  
                 if( !m_KickVotePlayer.empty( ) )
                         SendChat( player, m_GHost->m_Language->UnableToVoteKickAlreadyInProgress( ) );
@@ -3338,17 +3338,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         SS >> reason;
                         if( SS.fail( ) || reason.empty( ) )
                         {
-                                SendChat( player, "[INFO] Error. Please add a reason to votekick a player." );
+                                SendChat( player, m_GHost->m_Language->ErrorMissingReason() );
                                 return HideCommand;
                         }
                         if( !CustomVoteKickReason( reason ) )
                         {
-                                SendChat( player, "[INFO] Error. Please add a valied reason to votekick, see the reasons with '!vkreasons'" );
+                                SendChat( player, m_GHost->m_Language->NotifyForCustomVotekickReason( ) );
                                 return HideCommand;
                         }
                         else
                         {
-                                SendChat( player, "[INFO] You used a correct votekick reason. We saved the reason and stats, abusive usage is banable." );
                                 CGamePlayer *LastMatch = NULL;
                                 uint32_t Matches = GetPlayerFromNamePartial( name, &LastMatch );
  
@@ -3398,25 +3397,25 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
  
                                         if( reason.find( "feeding" ) != string::npos && LastMatch->GetFeedLevel( ) == 0 )
                                         {
-                                                SendChat( player, "[INFO] Player ["+LastMatch->GetName( )+"] wasnt marked as a feeder. Adding one additional infraction point for abusing the votekick command." );
-                                                SendChat( player, "[INFO] Abuse points will be kept, and if you have to many this game, you will be banned." );
+                                                SendChat( player, m_GHost->m_Language->VoteKickedUserWhoWasntMarkedAsFeeder( LastMatch->GetName( ) ) );
+                                                SendChat( player, m_GHost->m_Language->VoteKickFeederAbuseReason( ));
                                                 player->SetVKTimes( );
                                                 return HideCommand;
                                         }
  
                                         if( reason.find( "feeding" ) != string::npos && LastMatch->GetFeedLevel( ) == 1 )
                                         {
-                                                SendChat( player, "[INFO] Player ["+LastMatch->GetName( )+"] is on a warning level, you may not votekick him yet." );
-                                                SendChat( player, "[INFO] We will inform you when you are able to votekick a player for feeding." );
+                                                SendChat( player, m_GHost->m_Language->VoteKickedUserWhoWasMarkedAsFeederLevelOne(LastMatch->GetName( ) ) );
+                                                SendChat( player, m_GHost->m_Language->ReminederForVotekickAFeederLevelOne( ) );
                                                 return HideCommand;
                                         }
  
                                         if( VLevel > 2 && Level < VLevel )
-                                                SendChat( player, "[INFO] You may not votekick this player." );
+                                                SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
                                         else if( OnlyPlayer )
-                                                SendChat( player, "[INFO] Unable to votekick player [" + LastMatch->GetName( ) + "] cannot votekick when there is only one player on the victim's team." );
+                                                SendChat( player, m_GHost->m_Language->VoteKickNotPossiblePlayerIsInAnotherTeam( LastMatch->GetName( ) ) );
                                         else if( LastMatch == player )
-                                                SendChat( player, "[INFO] You cannot votekick yourself!" );
+                                                SendChat( player, m_GHost->m_Language->UnableToVotekickYourself( ) );
                                         else
                                         {
                                                 m_KickVotePlayer = LastMatch->GetName( );
@@ -3426,7 +3425,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                         (*i)->SetKickVote( false );
  
                                                 player->SetKickVote( true );
-                                                CONSOLE_Print( "[GAME: " + m_GameName + "] votekick against player [" + m_KickVotePlayer + "] started by player [" + User + "]" );
                                                 SendAllChat( m_GHost->m_Language->StartedVoteKick( LastMatch->GetName( ), User, UTIL_ToString( (float)( ( GetNumHumanPlayers( ) - 1 ) /2) * 0.75, 0 ) ) );
                                                 SendAllChat( m_GHost->m_Language->TypeYesToVote( string( 1, m_GHost->m_CommandTrigger ) ) );
                                         }
@@ -3458,15 +3456,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         if(m_StartedVoteStartTime == 0) { //need >minplayers or admin to START a votestart
                             if (GetNumHumanPlayers() < m_GHost->m_VoteStartMinPlayers ) { //need at least eight players to votestart
-                                        SendChat( player, "You cannot use !votestart until there are " + UTIL_ToString(m_GHost->m_VoteStartMinPlayers) + " or more players in the game!" );
+                                        SendChat( player, m_GHost->m_Language->UnableToVoteStartMissingPlayers( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ) );
                                         return false;
                             }
 
                             for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                                         (*i)->SetStartVote( false );
                             m_StartedVoteStartTime = GetTime();
-
-                            CONSOLE_Print( "[GAME: " + m_GameName + "] votestart started by player [" + User + "]" );
                         }
 
                         player->SetStartVote(true);
@@ -3485,16 +3481,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
 
                         if(Votes < VotesNeeded) {
-                            SendAllChat( "["+UTIL_ToString(VotesNeeded - Votes) + "] more votes needed to votestart.");
+                            SendAllChat( m_GHost->m_Language->UnableToVoteStartMissingVotesd( UTIL_ToString(VotesNeeded - Votes) ) );
                         } else {
 //                                if( m_MatchMaking && m_AutoStartPlayers != 0 )
 //                                        BalanceSlots( );
-                            SendAllChat("The votestart was successfully. The game will start now.");
+                            SendAllChat(m_GHost->m_Language->SuccessfullyVoteStarted( ));
                             StartCountDown( true );
                         }
                 }
                 else {
-                        SendChat( player, "Error: cannot votestart because the game is locked. Owner is " + m_OwnerName );
+                        SendChat( player, m_GHost->m_Language->UnableToVoteStartOwnerInGame( ) );
                 }
         }
         
@@ -3540,7 +3536,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         if( !m_GameLoading && !m_GameLoaded )
                                                 OpenSlot( GetSIDFromPID( Victim->GetPID( ) ), false );
  
-                                        CONSOLE_Print( "[GAME: " + m_GameName + "] votekick against player [" + m_KickVotePlayer + "] passed with [" + UTIL_ToString( Votes ) + "/" + UTIL_ToString( VotesNeeded ) + "] votes." );
                                         SendAllChat( m_GHost->m_Language->VoteKickPassed( m_KickVotePlayer ) );
                                 }
                                 else
@@ -3553,7 +3548,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 SendAllChat( m_GHost->m_Language->VoteKickAcceptedNeedMoreVotes( m_KickVotePlayer, User, UTIL_ToString( VotesNeeded - Votes ) ) );
                 }
                 else
-                        SendChat( player, "You may only vote for kicking players from your team." );
+                        SendChat( player, m_GHost->m_Language->UnableToVoteKickNotUsersTeam( ) );
  
         }
  
@@ -3587,24 +3582,24 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
  
                         if( Votes >= VotesNeeded )
                         {
-                                SendAllChat( "The game has now been recorded as a draw. You may leave at any time." );
+                            SendAllChat( m_GHost->m_Language->AutoEndEarlyDrawTwo( ) );
                                 m_SoftGameOver = true;
                                 m_GameOverTime = GetTime( );
                         }
                         else if( ChangedVote ) //only display message if they actually changed vote
                         {
-                                SendAllChat( "Player [" + player->GetName( ) + "] has voted to draw the game. " + UTIL_ToString( VotesNeeded - Votes ) + " more votes are needed to pass the draw vote." );
-                                SendChat( player, "Use !undraw to recall your vote to draw the game." );
+                                SendAllChat( m_GHost->m_Language->UserVotedForDraw( player->GetName( ), UTIL_ToString( VotesNeeded - Votes ) ) );
+                                SendChat( player, m_GHost->m_Language->UndrawNotify( ) );
                         }
                 }
                 else if( Command == "undraw" && player->GetDrawVote( ) )
                 {
                         player->SetDrawVote( false );
-                        SendAllChat( "[" + player->GetName( ) + "] recalled vote to draw the game." );
+                        SendAllChat( m_GHost->m_Language->UserRecalledDrawVote( player->GetName( ) ) );
                 }
             }
             else
-                SendChat(player, "Error. You are not allowed to vote, you are not playing.");
+                SendChat(player, m_GHost->m_Language->ObserverTriesToDraw( ) );
         }
  
         //
@@ -4365,7 +4360,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_MuteType = 2;
                     }
                     else
-                        SendAllChat("Player ["+player->GetName()+"] voted to mute ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(4-m_MuteVotes)+"] nore required." );
+                        SendAllChat("Player ["+player->GetName()+"] voted to mute ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(4-m_MuteVotes)+"] more required." );
                         
                     }
                 }
