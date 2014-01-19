@@ -3,7 +3,8 @@ if (strstr($_SERVER['REQUEST_URI'], basename(__FILE__) ) ) { header('HTTP/1.1 40
 
 //Load config (and before that disable session handler)
 $NoSession = '1';  
-include("../../config.php");
+if (file_exists("../../config.php") ) include("../../config.php"); else 
+if (file_exists("../config.php") )    include("../config.php"); else die("Missing config.php");
 
 //Specify password for cron access
 $CronPassword = 'mypassword';

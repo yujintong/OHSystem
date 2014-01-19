@@ -32,6 +32,24 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 		</select>  
 		<input class="menuButtons" type="submit" value="Search players" />
 		</td>
+		<td>
+		  <select name="realm">
+		    <option value="">Realm:</option>
+<?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'europe.battle.net') $s='selected="selected"'; else $s=''; ?>
+		    <option <?=$s?> value="europe.battle.net">europe.battle.net</option>
+<?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'useast.battle.net') $s='selected="selected"'; else $s=''; ?>
+			<option <?=$s?> value="useast.battle.net">useast.battle.net</option>
+<?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'uswest.battle.net') $s='selected="selected"'; else $s=''; ?>
+			<option <?=$s?> value="uswest.battle.net">uswest.battle.net</option>
+<?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'server.eurobattle.net') $s='selected="selected"'; else $s=''; ?>
+			<option <?=$s?> value="server.eurobattle.net">server.eurobattle.net</option>
+<?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'WC3Connect') $s='selected="selected"'; else $s=''; ?>
+			<option <?=$s?> value="WC3Connect">OH Connect</option>
+<?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'garena') $s='selected="selected"'; else $s=''; ?>
+			<option <?=$s?> value="garena">Garena</option>
+		  </select>
+		  <input class="menuButtons" type="submit" value="Search players" />
+		</td>
 	   </tr>
 	 </table>
 	 </form>
@@ -96,7 +114,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 	$sth = $db->prepare("DELETE FROM ".OSDB_BANS." WHERE (name) = ('".$remove."') ");
 	$result = $sth->execute();
 	if ( $del ) echo '<h2>User removed from Bans</h2>';
-	$sth = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0, warn=0, warn_expire='0000-00-00 00:00:00' 
+	$sth = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 
 	WHERE (player) = ('".$remove."')");
 	$result = $sth->execute();
 	OS_AddLog($_SESSION["username"], "[os_players] Removed ban: ( #".$remove." ) ");
@@ -108,7 +126,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 	$sth = $db->prepare("DELETE FROM ".OSDB_BANS." WHERE (name) = ('".$remove."') ");
 	$result = $sth->execute();
 	if ( $del ) echo '<h2>User removed from Warns</h2>';
-	$sth = $db->query("UPDATE ".OSDB_STATS." SET banned = 0, warn=0, warn_expire='0000-00-00 00:00:00' 
+	$sth = $db->query("UPDATE ".OSDB_STATS." SET banned = 0
 	WHERE (player) = ('".$remove."')");
 	$result = $sth->execute();
   }
@@ -157,6 +175,9 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'banned' )   $sql.=' AND banned>=1 '; 
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'safelist' ) $sql.=' AND user_level=2 OR user_level=3'; 
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'hidden' )   $sql.=" AND hide>=1"; 
+  
+  
+  if ( isset($_GET["realm"])   AND !empty($_GET["realm"]) )   $sql.=" AND realm = '".strip_tags($_GET["realm"])."' "; 
   
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'points' )   $ord = "points DESC";
   
@@ -277,7 +298,11 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	}
 	else {
 	
-  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE id>=1 $sql ");
+  $groupBy = 'GROUP BY player';  
+  $groupBy = '';
+  $where = " AND `month` = '".date("n")."' AND `year` = '".date("Y")."' ";
+	
+  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy ");
   $result = $sth->execute();
   $r = $sth->fetch(PDO::FETCH_NUM);
   $numrows = $r[0];
@@ -287,16 +312,17 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
   $SHOW_TOTALS = 1;
   include('pagination.php');
   
-  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE id>=1 $sql 
+  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy 
   ORDER BY $ord LIMIT $offset, $rowsperpage");
   $result = $sth->execute();
   ?>
   
    <table>
     <tr>
-	  <th width="190" class="padLeft">Player</th>
+	  <th width="160" class="padLeft">Player</th>
+	  <th width="95" class="padLeft">Realm</th>
 	  <th width="100">Score</th>
-	  <th width="100">Games (W/L)</th>
+	  <th width="100">Games (W/L/<span style="color:red">Left</span>)</th>
 	  <th width="100">Points</th>
 	  <th width="165">Action</th>
 	  <th class="padLeft">Status</th>
@@ -334,19 +360,16 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	
 	if ( $row["banned"] >= 1 )   $banned = '<img width="16" height="16" src="del.png" alt="" class="imgvalign"/>  <span style="color:red">Banned</span>'; else $banned = "";
 	
-	if ( $row["warn"] >= 1 ) {
-	$warnDate = date( $DateFormat, strtotime($row["warn_expire"]) );
-	$warn = '<span style="color:red">Warned: '.$row["warn"]."x (expire: $warnDate) </span>"; 
-	}
-	else $warn = "";
+	if ( $row["leaver"]>=1 ) $col='red'; else $col = '#000';
 	?>
 	<tr class="row">
 	  <td><img <?=ShowToolTip($Country , OS_HOME.'img/flags/'.$Letter.'.gif', 130, 21, 15)?> class="imgvalign" width="21" height="15" src="<?=OS_HOME?>img/flags/<?=$Letter?>.gif" alt="" /> 
 	  <a target="_blank" href="<?=OS_HOME?>?u=<?=$row["id"]?>"><?=$row["player"]?></a>
 	  
 	  </td>
+	  <td><?=($row["realm"])?></td>
 	  <td><b><?=number_format($row["score"],0)?></b></td>
-	  <td><b><?=$row["games"]?></b> (<?=$row["wins"]?> / <?=$row["losses"]?>)</td>
+	  <td><b><?=$row["games"]?></b> (<?=$row["wins"]?> / <?=$row["losses"]?> / <span style="color:<?=$col?>"><?=$row["leaver"]?></span>)</td>
 	  <td>
 	  <?=number_format($row["points"],0)?> <a href="javascript:;" onclick="showhide('po_<?=$row["id"]?>')">[+]</a>
 	  <div id="po_<?=$row["id"]?>" style="display:none;">
@@ -396,11 +419,6 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	   </div>
 	   
 	  <div>
-	  <?php if (!empty($warn) ) { ?>
-	  <a class="menuButtons" href="javascript:;" onclick="if (confirm('Remove Warn?') ) { location.href='<?=OS_HOME?>adm/?players&amp;remove_warn=<?=$row["player"]?><?=$p?>' }">&raquo; Remove Warn</a>
-	  <?php } else { ?>
-	  <a class="menuButtons" href="javascript:;" onclick="if (confirm('Warn player?') ) { location.href='<?=OS_HOME?>adm/?warns&amp;add=<?=$row["player"]?>' }">&raquo; Warn player</a>
-	  <?php } ?>
 	   </div>
 	   
 	   <div>
@@ -412,7 +430,6 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	   <?=OS_IsUserGameAdmin( $row["user_level"] )?>
 	   <?=OS_ShowUserRole( $row["user_level"] )?>
 	  <?=$banned?> 
-	  <?=$warn?> 
 	  </td>
 	</tr>
 	<?php

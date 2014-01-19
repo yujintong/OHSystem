@@ -43,7 +43,8 @@ require_once('../../inc/class.db.PDO.php');
 
 // below: just to load default constants (we dont want to load config.php, because cron+session conflict)
 // this is temporary solution
-$website = ''; $HomeTitle = ''; $TimeZone = ''; $BotName = '';
+if (!isset($TimeZone)) $TimeZone = '';
+$website = ''; $HomeTitle = ''; $BotName = '';
 $DefaultStyle = 'ghost'; $default_language = 'english';
 $DateFormat = ''; $MinDuration = ''; $DefaultMap = 'dota';
 $TopPage = 1; $HeroesPage = '';  $OnlineOfflineOnTopPage = '';
@@ -52,7 +53,7 @@ $TopPage = 1; $HeroesPage = '';  $OnlineOfflineOnTopPage = '';
 require_once("../../inc/default-constants.php");
 require_once("../../inc/common-queries.php");
 
-date_default_timezone_set($TimeZone);
+if (!empty($TimeZone)) date_default_timezone_set($TimeZone);
 
 $CronTempFile = '_working.txt';
 
