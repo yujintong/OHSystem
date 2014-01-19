@@ -318,7 +318,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
-                                         QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ), i->first, !i->first.empty( ) );
+                                         QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                         }
                         if( i->second->GetType( ) == "rpp" )
                         {
@@ -418,9 +418,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         else if( i->second->GetType( ) == "add" )
                         {
                                 if( Result == 1 )
-                                        QueueChatCommand( m_GHost->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->AddedPenalityPoints(i->second->GetName() ), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ), i->first, !i->first.empty( ) );
                                 else if(  Result == 2 )
-                                        QueueChatCommand( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetUser()), i->first, !i->first.empty( )  );
+                                        QueueChatCommand( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
                                 else
                                     CONSOLE_Print( m_GHost->m_Language->FailedToAddPPoint( ) );
                         }
@@ -482,7 +482,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 {
                         uint32_t Result = i->second->GetResult( );
                         if( Result == 1 )
-                            QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyPermBanned( i->seconds->GetUser( ) ), i->first, !i->first.empty( )  );
+                            QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyPermBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
                         else if( Result == 2 )
                             QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
                         else if( Result >= 3 && Result <= 5 )
@@ -512,7 +512,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 {
                         bool Result = i->second->GetResult( );
                         if( Result && m_GHost->m_RanksLoaded)
-                            QueueChatCommand( m_GHost->m_Language->ChangedRankOfUser( i->second->GetName( ), GetLevelName( i->second->GetLevel( ) ), i->second->GetRealm( ) );
+                            QueueChatCommand( m_GHost->m_Language->ChangedRankOfUser( i->second->GetName( ), GetLevelName( i->second->GetLevel( ) ), i->second->GetRealm( ) ) );
                         else if( Result && !m_GHost->m_RanksLoaded)
                             QueueChatCommand( m_GHost->m_Language->RanksNotLoaded());
                         else
@@ -1612,7 +1612,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User );
+                                                                                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User ) );
                                                                                                 Player->SetMuted( true );
                                                                                                 Success = true;
                                                                                         }
@@ -3243,12 +3243,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( Payload.empty() )
                                         {
                                                 m_GHost->m_MinVIPGames = 50;
-                                                QueueChatCommand( ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
                                         }
                                         else
                                         {
                                                 m_GHost->m_MinVIPGames = UTIL_ToUInt32( Payload );
-                                                QueueChatCommand( ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
                                         }
                                 }
  
@@ -3260,12 +3260,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( Payload.empty() )
                                         {
                                                 m_GHost->m_MinLimit = 25;
-                                                QueueChatCommand( ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
                                         }
                                         else
                                         {
                                                 m_GHost->m_MinLimit = UTIL_ToUInt32( Payload );
-                                                QueueChatCommand( ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
+                                                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
                                         }
                                 }
  

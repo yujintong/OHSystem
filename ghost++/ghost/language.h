@@ -291,7 +291,7 @@ public:
     string UserHasAHiddenAcc( string user );
     string RankOfUser( string user, string time, string alias, string rank, string level, string levelname );
     string RankOfUserWithoutLevel( string user, string time, string alias, string rank);
-    string StreakOfUser( string user, string time, string alias, string streak, strng maxstreak, string maxlstreak);
+    string StreakOfUser( string user, string time, string alias, string streak, string maxstreak, string maxlstreak);
     string UserMutedByRCON( string user, string admin );
     string UserUnMutedByRCON( string user, string admin );
     string UserKickedByRCON( string user, string admin );

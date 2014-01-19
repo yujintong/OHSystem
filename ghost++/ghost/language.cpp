@@ -1819,7 +1819,7 @@ string CLanguage :: RankOfUserWithoutLevel( string user, string time, string ali
     return Out;
 }
 
-string CLanguage :: StreakOfUser( string user, string time, string alias, string streak, strng maxstreak, string maxlstreak)
+string CLanguage :: StreakOfUser( string user, string time, string alias, string streak, string maxstreak, string maxlstreak)
 {
     string Out = m_CFG->GetString( "oh_028", "oh_028" );
     UTIL_Replace( Out, "$USER$", user );
