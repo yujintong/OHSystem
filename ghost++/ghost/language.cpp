@@ -2505,3 +2505,317 @@ string CLanguage :: ObserverTriesToDraw( )
     return Out;
 }
 
+string CLanguage :: RemainFFTime( string remain )
+{
+    string Out = m_CFG->GetString( "oh_130", "oh_130" );
+    UTIL_Replace( Out, "$REMAIN$", remain );
+    return Out;
+}
+
+string CLanguage :: TeamForfeited( string team )
+{
+    string Out = m_CFG->GetString( "oh_131", "oh_131" );
+    UTIL_Replace( Out, "$TEAM$", team);
+    return Out;
+}
+
+string CLanguage :: StayToSafeStats( )
+{
+    string Out = m_CFG->GetString( "oh_132", "oh_132" );
+    return Out;
+}
+
+string CLanguage :: UserForfeitedGame( string user )
+{
+    string Out = m_CFG->GetString( "oh_133", "oh_133" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserForfeitedGameNotify( string team, string votes, string votesneeded )
+{
+    string Out = m_CFG->GetString( "oh_134", "oh_134" );
+    UTIL_Replace( Out, "$TEAM$", team );
+    UTIL_Replace( Out, "$VOTES$", votes );
+    UTIL_Replace( Out, "$VOTESNEEDED$", votesneeded );
+    return Out;
+}
+
+string CLanguage :: NoOneHasForfeitedYet( )
+{
+    string Out = m_CFG->GetString( "oh_135", "oh_135" );
+    return Out;
+}
+
+string CLanguage :: ErrorForfeitingNoTwoTeamMap( )
+{
+    string Out = m_CFG->GetString( "oh_136", "oh_136" );
+    return Out;
+}
+
+string CLanguage :: UserWillObserveGame( string user )
+{
+    string Out = m_CFG->GetString( "oh_137", "oh_137" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: ErrorObserverGameAlreadyObserver( )
+{
+    string Out = m_CFG->GetString( "oh_138", "oh_138" );
+    return Out;
+}
+
+string CLanguage :: UserWillNoLongerObserveGame( string user )
+{
+    string Out = m_CFG->GetString( "oh_139", "oh_139" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: ErrorRemovingPassProtectionInvalidOption( )
+{
+    string Out = m_CFG->GetString( "oh_140", "oh_140" );
+    return Out;
+}
+
+string CLanguage :: ErrorBetInvalidAmount( )
+{
+    string Out = m_CFG->GetString( "oh_141", "oh_141" );
+    return Out;
+}
+
+string CLanguage :: ErrorBetInvalidLogicalAmount( )
+{
+    string Out = m_CFG->GetString( "oh_142", "oh_142" );
+    return Out;
+}
+
+string CLanguage :: ErrorBetAlreadyTooLate( )
+{
+    string Out = m_CFG->GetString( "oh_143", "oh_143" );
+    return Out;
+}
+
+string CLanguage :: UserRequestedToPauseGame( string user )
+{
+    string Out = m_CFG->GetString( "oh_144", "oh_144" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: GamePauseNotify( )
+{
+    string Out = m_CFG->GetString( "oh_145", "oh_145" );
+    return Out;
+}
+
+string CLanguage :: ErrorPausingAlreadyRequested( )
+{
+    string Out = m_CFG->GetString( "oh_146", "oh_146" );
+    return Out;
+}
+
+string CLanguage :: UserRequestedToUnPauseGame( string user )
+{
+    string Out = m_CFG->GetString( "oh_147", "oh_147" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: ErrorUnPausingGameIsntPaused( )
+{
+    string Out = m_CFG->GetString( "oh_148", "oh_148" );
+    return Out;
+}
+
+string CLanguage :: ErrorOneTeamHasNoPlayers( )
+{
+    string Out = m_CFG->GetString( "oh_149", "oh_149" );
+    return Out;
+}
+
+string CLanguage :: ErrorNotATwoTeamMap( )
+{
+    string Out = m_CFG->GetString( "oh_150", "oh_150" );
+    return Out;
+}
+
+string CLanguage :: UserAteACookie( string user )
+{
+    string Out = m_CFG->GetString( "oh_151", "oh_151" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserRemovedCookieNotify( string user )
+{
+    string Out = m_CFG->GetString( "oh_152", "oh_152" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: ErrorEatACookieNoCookieAvaible( )
+{
+    string Out = m_CFG->GetString( "oh_153", "oh_153" );
+    return Out;
+}
+
+string CLanguage :: UserIgnoredPlayer( string user )
+{
+    string Out = m_CFG->GetString( "oh_154", "oh_154" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserUnIgnoredPlayer( string user )
+{
+    string Out = m_CFG->GetString( "oh_155", "oh_155" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserIgnoringAllPlayersNotify( )
+{
+    string Out = m_CFG->GetString( "oh_156", "oh_156" );
+    return Out;
+}
+
+string CLanguage :: UserUnIgnoringAllPlayersNotify( )
+{
+    string Out = m_CFG->GetString( "oh_157", "oh_157" );
+    return Out;
+}
+
+string CLanguage :: RuleTagNotify( )
+{
+    string Out = m_CFG->GetString( "oh_158", "oh_158" );
+    return Out;
+}
+
+string CLanguage :: UserStartedVoteMute( string user, string target )
+{
+    string Out = m_CFG->GetString( "oh_159", "oh_159" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$TARGET$", target );
+    return Out;
+}
+
+string CLanguage :: UserStartedVoteMuteVotesNeeded( string team, string votes )
+{
+    string Out = m_CFG->GetString( "oh_160", "oh_160" );
+    UTIL_Replace( Out, "$TEAM$", team);
+    UTIL_Replace( Out, "$VOTES$", votes );
+    return Out;
+}
+
+string CLanguage :: UserStartedVoteMuteVoteExpire( string expire )
+{
+    string Out = m_CFG->GetString( "oh_161", "oh_161" );
+    UTIL_Replace( Out, "$EXPIRE$", expire );
+    return Out;
+}
+
+string CLanguage :: UserStartedVoteGlobalMute( string user, string target )
+{
+    string Out = m_CFG->GetString( "oh_162", "oh_162" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$TARGET$", target );
+    return Out;
+}
+
+string CLanguage :: UserStartedVoteGlobalMuteVotesNeeded( )
+{
+    string Out = m_CFG->GetString( "oh_163", "oh_163" );
+    return Out;
+}
+
+string CLanguage :: UserStartedVoteNotify( )
+{
+    string Out = m_CFG->GetString( "oh_164", "oh_164" );
+    return Out;
+}
+
+string CLanguage :: SuccessfullyVoteMutedUser( string user )
+{
+    string Out = m_CFG->GetString( "oh_165", "oh_165" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserVotedForMute( string user, string target, string votes )
+{
+    string Out = m_CFG->GetString( "oh_166", "oh_166" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$TARGET$", target );
+    UTIL_Replace( Out, "$VOTES$", votes );
+    return Out;
+}
+
+string CLanguage :: UserVotedToModeNoVotesOnTeam( )
+{
+    string Out = m_CFG->GetString( "oh_167", "oh_167" );
+    return Out;
+}
+
+string CLanguage :: UserVotedToModeNoVotesOnObserver( )
+{
+    string Out = m_CFG->GetString( "oh_168", "oh_168" );
+    return Out;
+}
+
+string CLanguage :: ErrorVotingThereIsNoVote( )
+{
+    string Out = m_CFG->GetString( "oh_169", "oh_169" );
+    return Out;
+}
+
+string CLanguage :: SuccessfullyInterruptedAutoEnd( )
+{
+    string Out = m_CFG->GetString( "oh_170", "oh_170" );
+    return Out;
+}
+
+string CLanguage :: UserVotedForInterruptAutoEnd( string user, string votes )
+{
+    string Out = m_CFG->GetString( "oh_171", "oh_171" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$VOTES$", votes );
+    return Out;
+}
+
+string CLanguage :: UserAlreadyVotedForIntteruptAutoEnd( )
+{
+    string Out = m_CFG->GetString( "oh_172", "oh_172" );
+    return Out;
+}
+
+string CLanguage :: ErrorVotedAlreadyForMode( )
+{
+    string Out = m_CFG->GetString( "oh_173", "oh_173" );
+    return Out;
+}
+
+string CLanguage :: ErrorInvalidModeWasVoted( )
+{
+    string Out = m_CFG->GetString( "oh_174", "oh_174" );
+    return Out;
+}
+
+string CLanguage :: UserVotedForMode( string user, string mode )
+{
+    string Out = m_CFG->GetString( "oh_175", "oh_175" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$MODE$", mode );
+    return Out;
+}
+
+string CLanguage :: PlayersWhoDidntVoteForMode( string players )
+{
+    string Out = m_CFG->GetString( "oh_176", "oh_176" );
+    UTIL_Replace( Out, "$PLAYERS$", players );
+    return Out;
+}
+
+
+

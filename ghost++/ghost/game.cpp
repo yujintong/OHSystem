@@ -3608,7 +3608,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( m_GameLoaded && m_ForfeitTime == 0 && ( Command == "ff" || Command == "forfeit" ) && !m_SoftGameOver )
         {
                 if( GetTime( ) - m_GameLoadedTime <= ( m_GHost->m_MinFF*60 - 400*m_Leavers ) )
-                        SendChat( player, "[INFO] You may FF after [20] minutes, ["+UTIL_ToString( ( ( m_GameLoadedTime + ( ( m_GHost->m_MinFF - m_Leavers * 2 ) * 60 ) ) - GetTime( ) ) / 60 )+"] minutes remaining." );
+                        SendChat( player, m_GHost->m_Language->RemainFFTime( UTIL_ToString( ( ( m_GameLoadedTime + ( ( m_GHost->m_MinFF - m_Leavers * 2 ) * 60 ) ) - GetTime( ) ) / 60 ) ) );
                 else
                 {
                         bool ChangedVote = true;
@@ -3659,14 +3659,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         {
                                                 m_Stats->SetWinner( ( playerTeam + 1 ) % 2 );
                                                 m_ForfeitTime = GetTime( );
-                                                SendAllChat( "The [" + ForfeitTeamString + "] forfeited the game." );
-                                                SendAllChat( "Please stay until the gameover timer has finished to keep your stats!" );
+                                                SendAllChat( m_GHost->m_Language->TeamForfeited( ForfeitTeamString ) );
+                                                SendAllChat( m_GHost->m_Language->StayToSafeStats( ) );
                                         }
  
                                         else if( ChangedVote )
                                         {
-                                                SendAllChat( "[" + player->GetName( ) + "] voted to forfeit the game." );
-                                                SendAllChat( "[" + ForfeitTeamString + "] forfeit status: [" + UTIL_ToString( numVoted ) + "/" + UTIL_ToString( numTotal ) + "]" );
+                                                SendAllChat( m_GHost->m_Language->UserForfeitedGame( player->GetName() ) );
+                                                SendAllChat( m_GHost->m_Language->UserForfeitedGameNotify(ForfeitTeamString, UTIL_ToString( numVoted ), UTIL_ToString( numTotal ) ) );
                                         }
                                 }
                         }
@@ -3723,9 +3723,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         Votes++;
                 }
                 if( Votes == 0 )
-                        SendChat( player, "No one has voted for forfeiting the game yet" );
+                        SendChat( player, m_GHost->m_Language->NoOneHasForfeitedYet( ) );
                 else if( !twoteammap )
-                        SendChat( player, "Error, this is not a two-team map, you cannot forfeit here" );
+                        SendChat( player, m_GHost->m_Language->ErrorForfeitingNoTwoTeamMap( ) );
                 else
                 {
                         SendChat( player, "Forfeits:" );
@@ -3748,14 +3748,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 SwapSlots( oldsid, 11 );
                                 OpenSlot( oldsid, true );
                                 m_AutoStartPlayers = m_AutoStartPlayers+1;
-                                SendAllChat( "Player [" + player->GetName( ) + "] will observe the game." );
-                                SendAllChat( "Set autostart automatically to 11 players." );
+                                SendAllChat( m_GHost->m_Language->UserWillObserveGame( player->GetName( ) ) );
+                                SendAllChat( m_GHost->m_Language->AutoStartEnabled( "11" ) );
                         }
                         else
-                                SendChat( player, "Error. There is already a game observer." );
+                                SendChat( player, m_GHost->m_Language->ErrorObserverGameAlreadyObserver( ) );
                 }
                 else
-                        SendChat( player, "Error. You require at least to be a safelisted member to have access to this command." );
+                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
         }
  
         //
@@ -3785,11 +3785,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         SwapSlots( newslot, 11 );
                         CloseSlot( 11, true );
                         m_AutoStartPlayers = m_AutoStartPlayers-1;
-                        SendAllChat( "Player [" + player->GetName( ) + "] will no longer observe the game." );
-                        SendAllChat( "Set autostart automatically to 10 players." );
+                        SendAllChat( m_GHost->m_Language->UserWillNoLongerObserveGame( player->GetName( ) ) );
+                        SendAllChat( m_GHost->m_Language->AutoStartEnabled( "10" ) );
                 }
                 else
-                        SendChat( player, "Error. You require at least to be a safelisted member to have access to this command." );
+                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
         }
  
         //
@@ -3822,7 +3822,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else if( Status == "0" || Status == "clear" )
                         m_PairedPassChecks.push_back( PairedPassCheck( User, m_GHost->m_DB->ThreadedPassCheck( User, Password, 1 ) ) );
                 else
-                        SendChat( player, "Error wrong status, please use 'clear' or '0' to remove the password protection" );
+                        SendChat( player, m_GHost->m_Language->ErrorRemovingPassProtectionInvalidOption( ) );
  
                 HideCommand = true;
         }
@@ -3852,7 +3852,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 Message = Message.substr( Start );
                 }
                 else
-                        SendChat( player, "Error. Wrong input, please use '!pm <user> <message>'" );
+                        SendChat( player, m_GHost->m_Language->ErrorWrongInputForMessage( ) );
  
                 if( UserTo.length() >= 3 )
                 {
@@ -3861,10 +3861,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
                         }
                         else
-                                SendChat( player, "Error. The message is to short." );
+                                SendChat( player, m_GHost->m_Language->ErrorMessageTooShort() );
                 }
                 else
-                        SendChat( player, "Error. This User is invalid" );
+                        SendChat( player, m_GHost->m_Language->InvalidName() );
         }
  
         //
@@ -3890,22 +3890,17 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
                 if( !Payload.find_first_not_of( "1234567890" ) == string :: npos )
                 {
-                        SendChat( player, "Error. You should bet an amount." );
+                        SendChat( player, m_GHost->m_Language->ErrorBetInvalidAmount( ) );
                         return HideCommand;
                 }
                 if( UTIL_ToUInt32( Payload ) > 50 || UTIL_ToUInt32( Payload ) <= 0 )
                 {
-                        SendChat( player, "Error. You shouldn't bet an amount over 50 and not lower than 0 or 0." );
-                        return HideCommand;
-                }
-                if( UTIL_ToUInt32( Payload ) < 0 )
-                {
-                        SendChat( player, "Error. You shouldn't bet a negative amount." );
+                        SendChat( player, m_GHost->m_Language->ErrorBetInvalidLogicalAmount( ) );
                         return HideCommand;
                 }
                 if( GetTime() - m_GameLoadedTime >= 300 )
                 {
-                        SendChat( player, "Error. You may should not bet yet, its already too late" );
+                        SendChat( player, m_GHost->m_Language->ErrorBetAlreadyTooLate( ) );
                         return HideCommand;
                 }
                 else
@@ -3928,8 +3923,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         if( !m_PauseReq )
                         {
-                                SendAllChat( "User [" + player->GetName() + "] requested to pause the game for 60 seconds" );
-                                SendAllChat( "Game will be paused in 10 seconds." );
+                                SendAllChat( m_GHost->m_Language->UserRequestedToPauseGame( player->GetName() ) );
+                                SendAllChat( m_GHost->m_Language->GamePauseNotify( ) );
                                 player->SetUsedPause( true );
                                 m_PauseReq = true;
                                 m_PauseIntroTime = GetTime();
@@ -3937,10 +3932,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 m_Paused = false;
                         }
                         else
-                                SendChat( player, "Error, someone already requested to pause the game." );
+                                SendChat( player, m_GHost->m_Language->ErrorPausingAlreadyRequested( ) );
                 }
                 else
-                        SendChat( player, "Error, you need to be at least a safelisted player to request a pause." );
+                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
         }
  
         //
@@ -3952,16 +3947,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         if( m_Paused )
                         {
-                                SendAllChat( "User [" + player->GetName() + "] requested to unpause the game." );
+                                SendAllChat( m_GHost->m_Language->UserRequestedToUnPauseGame( player->GetName() ) );
                                 m_PauseTime = 55;
                                 m_PauseTicks = 5;
                                 m_LastCountDownTicks = 0;
                         }
                         else
-                                SendChat( player, "Error, the game isn't pause." );
+                                SendChat( player, m_GHost->m_Language->ErrorUnPausingGameIsntPaused( ) );
                 }
                 else
-                        SendChat( player, "Error, you need to be at least a safelisted player to request a pause." );
+                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
         }
  
         //
@@ -4015,10 +4010,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 SendAllChat( "Win Chance [Sentinel: " + SeWP + "%] [Scourge: " + ScWP + "%]" );
                         }
                         else
-                                SendChat( player, "Error. Currently one team hasn't got a player recorded" );
+                                SendChat( player, m_GHost->m_Language->ErrorOneTeamHasNoPlayers( ) );
                 }
                 else
-                        SendChat( player, "Error, this isn't a two-team map" );
+                        SendChat( player, m_GHost->m_Language->ErrorNotATwoTeamMap( ) );
         }
  
         //
@@ -4113,11 +4108,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( player->GetCookies( ) != 0 )
                 {
                         player->SetCookie( player->GetCookies( )-1 );
-                        SendAllChat( player->GetName( ) + " ate a cookie, that was tasty!" );
-                        SendChat( player, "You have now " + UTIL_ToString( player->GetCookies( ) ) + " cookies left." );
+                        SendAllChat( m_GHost->m_Language->UserAteACookie( player->GetName( ) ) );
+                        SendChat( player, m_GHost->m_Language->UserRemovedCookieNotify( UTIL_ToString( player->GetCookies( ) ) ) );
                 }
                 else
-                        SendChat( player, "Error, you dont have a cookie!" );
+                        SendChat( player, m_GHost->m_Language->ErrorEatACookieNoCookieAvaible( ) );
         }
  
         //
@@ -4129,14 +4124,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
  
                 if( Matches == 0 )
-                        SendChat( player, "Unable to ignore player [" + Payload + "]. No matches found." );
+                        SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
                 else if( Matches == 1 )
                 {
                         player->Ignore( LastMatch->GetName( ) );
-                        SendChat( player, "You have ignored player [" + LastMatch->GetName( ) + "]. You will not be able to send or receive messages from the player." );
+                        SendChat( player, m_GHost->m_Language->UserIgnoredPlayer( LastMatch->GetName( ) ) );
                 }
                 else
-                        SendChat( player, "Unable to ignore player [" + Payload + "]. Found more than one match." );
+                        SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
         }
  
         //
@@ -4148,14 +4143,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
  
                 if( Matches == 0 )
-                        SendChat( player, "Unable to unignore player [" + Payload + "]. No matches found." );
+                        SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
                 else if( Matches == 1 )
                 {
                         player->UnIgnore( LastMatch->GetName( ) );
-                        SendChat( player, "You have unignored player [" + LastMatch->GetName( ) + "]." );
+                        SendChat( player, m_GHost->m_Language->UserUnIgnoredPlayer( LastMatch->GetName( ) ) );
                 }
                 else
-                        SendChat( player, "Unable to unignore player [" + Payload + "]. Found more than one match." );
+                        SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
         }
  
         //
@@ -4167,7 +4162,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         player->Ignore( (*i)->GetName( ) );
                 }
-                SendChat( player, "You are know ignoring all players." );
+                SendChat( player, m_GHost->m_Language->UserIgnoringAllPlayersNotify( ) );
         }
  
         //
@@ -4179,7 +4174,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                         player->UnIgnore( (*i)->GetName( ) );
                 }
-                SendChat( player, "You are know ignoring all players." );
+                SendChat( player, m_GHost->m_Language->UserUnIgnoringAllPlayersNotify( ) );
         }
  
         //
@@ -4190,7 +4185,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload.empty( ) )
                 {
                     SendChat( player, "Rule Tags: "+GetRuleTags( ) );
-                    SendChat( player, "You can see a rule by using !rule <tag>");
+                    SendChat( player, m_GHost->m_Language->RuleTagNotify( ) );
                 }
                 else
                     SendChat( player, GetRule( Payload ) );
@@ -4252,7 +4247,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                 if( Matches == 0 )
-                    SendChat(player, "Unable to votemute Player ["+Payload+"]. Found no match.");
+                    SendChat(player, m_GHost->m_Language->FoundNoMatchWithPlayername());
                 else if( Matches == 1)
                 {
                     char votePlayerTeam = m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( );
@@ -4269,19 +4264,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
                         //remove the target
                         VotesNeeded--;
-                        SendAllChat("Player ["+player->GetName()+"] started a votemute for player ["+LastMatch->GetName()+"]");
-                        SendAllChat("The vote can be only done by the ["+TeamString+"] there ["+UTIL_ToString(VotesNeeded)+"] more votes needed.");
-                        SendAllChat("The votemute will expire in ["+UTIL_ToString(m_GHost->m_VoteMuteTime)+"] seconds." );
+                        SendAllChat(m_GHost->m_Language->UserStartedVoteMute( player->GetName(), LastMatch->GetName() ) );
+                        SendAllChat( UserStartedVoteMuteVotesNeeded( TeamString, UTIL_ToString(VotesNeeded) ) );
+                        SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_GHost->m_VoteMuteTime) ) );
                         m_MuteType = 0;
                     } else {
                         // enemy team we need 2 votes from each team to have a success votemute (only allchat is affected)
-                        SendAllChat("Player ["+player->GetName()+"] started a global mute for player ["+LastMatch->GetName()+"]");
-                        SendAllChat("The vote require [2] votes on each side. There [3] votes more needed.");
-                        SendAllChat("The votemute will expire in ["+UTIL_ToString(m_GHost->m_VoteMuteTime)+"] seconds." );
+                        SendAllChat( m_GHost->m_Language->UserStartedVoteGlobalMute( player->GetName(), LastMatch->GetName() ) );
+                        SendAllChat( m_GHost->m_Language->UserStartedVoteGlobalMuteVotesNeeded( ) );
+                        SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_GHost->m_VoteMuteTime) ) );
                         m_MuteType = 1;
                         m_EnemyVotes = 1;
                     }
-                    SendAllChat("You can also vote by using '!votemute'.");
+                    SendAllChat( m_GHost->m_Language->UserStartedVoteNotify( ) );
                     m_VoteMuteEventTime = GetTime();
                     m_VoteMutePlayer = LastMatch->GetName();
                     m_VoteMuteTargetTeam = targetPlayerTeam;
@@ -4309,10 +4304,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             if( Player )
                             {
                                 Player->SetMuted(true);
-                                SendAllChat("Successfully voted to mute player ["+Player->GetName()+"]. He is now muted.");
+                                SendAllChat( m_GHost->m_Language->SuccessfullyVoteMutedUser( Player->GetName() ) );
                             }
-                            else
-                                SendAllChat("There now enough votes to mute player ["+m_VoteMutePlayer+"]. Probably he isnt ingame anymore.");
+
                             m_VoteMuteEventTime = 0;
                             m_VoteMutePlayer.clear();
                             m_VoteMuteTargetTeam = 0;
@@ -4322,7 +4316,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
                         else
                         {
-                            SendAllChat("Player ["+player->GetName()+"] voted to mute player ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(VotesNeeded-m_MuteVotes)+"] votes more needed.");
+                            SendAllChat( m_GHost->m_Language->UserVotedForMute( player->GetName(), m_VoteMutePlayer, UTIL_ToString(VotesNeeded-m_MuteVotes) ) );
                         }
                     }
                 }
@@ -4338,9 +4332,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_EnemyVotes++;
                     }
                     else if( m_EnemyVotes == 2 || m_MuteVotes-m_EnemyVotes == 2)
-                        SendChat(player, "Error. There no more votes left on this teamside.");
+                        SendChat(player, m_GHost->m_Language->UserVotedToModeNoVotesOnTeam( ));
                     else
-                        SendChat(player, "Error. You are observing and you can not vote for muting.");
+                        SendChat(player, m_GHost->m_Language->UserVotedToModeNoVotesOnObserver( ));
                         
                     if(m_MuteVotes == 4)
                     {
@@ -4348,10 +4342,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         if( Player )
                         {
                             Player->SetGlobalChatMuted(true);
-                            SendAllChat("Successfully voted to mute the allchat of player ["+Player->GetName()+"]. He is now muted on the allchat.");
+                            SendAllChat(m_GHost->m_Language->SuccessfullyVoteMutedUser( Player->GetName() ));
                         }
-                        else
-                            SendAllChat("There now enough votes to mute player ["+m_VoteMutePlayer+"]. Probably he isnt ingame anymore.");
+
                         m_VoteMuteEventTime = 0;
                         m_VoteMutePlayer.clear();
                         m_VoteMuteTargetTeam = 0;
@@ -4360,12 +4353,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_MuteType = 2;
                     }
                     else
-                        SendAllChat("Player ["+player->GetName()+"] voted to mute ["+m_VoteMutePlayer+"]. There ["+UTIL_ToString(4-m_MuteVotes)+"] more required." );
+                        SendAllChat( m_GHost->m_Language->UserVotedForMute( player->GetName(), m_VoteMutePlayer, UTIL_ToString(VotesNeeded-m_MuteVotes) ) );
                         
                     }
                 }
                 else
-                    SendChat(player, "Error. There is no voting for muting a player currently in progress.");
+                    SendChat(player, m_GHost->m_Language->ErrorVotingThereIsNoVote( ) );
             }
         
         // autoending break command
@@ -4386,16 +4379,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_BreakAutoEndVotes = 0;
                         m_BreakAutoEndVotesNeeded = 0;
                         m_LoosingTeam = 0;
-                        SendAllChat("[Info] The autoending has been interrupted. The game will no longer end until a new player is leaving.");
+                        SendAllChat( m_GHost->m_Language->SuccessfullyInterruptedAutoEnd( ));
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                         {
                             (*i)->SetVotedForInterruption( false );
                         }
                     }
                     else
-                        SendAllChat("[INFO] Player ["+player->GetName()+"] voted to interrupt the autoend. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to interrupt the autoend." );
+                        SendAllChat( m_GHost->m_Language->UserVotedForInterruptAutoEnd( player->GetName(), UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes) ) );
                 } else {
-                    SendChat( player, "[INFO] You already voted to interrupt the autoending.");
+                    SendChat( player, m_GHost->m_Language->UserAlreadyVotedForIntteruptAutoEnd( ) );
                 }
             }
         }
@@ -4413,11 +4406,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) ) {
             if( player->GetVotedMode() != 0 ) {
-                SendChat(player, "Error. You have already voted for a mode, there is no option to change your vote.");
+                SendChat(player, m_GHost->m_Language->ErrorVotedAlreadyForMode( ) );
             } else if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
-                SendChat( player, "Error. You havent choosed a valied modenumber.");
+                SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
             } else {
-                SendAllChat("Player ["+player->GetName( )+"] has voted for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
+                SendAllChat( m_GHost->m_Language->UserVotedForMode( player->GetName( ), m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
                 player->SetVotedMode(UTIL_ToUInt32(Payload));
                 uint32_t c = 0;
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i ) {
@@ -4427,14 +4420,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 }
                 if( GetNumHumanPlayers( ) / 2  <= c && m_VotedTimeStart != 0 ) {
                     if( UTIL_ToUInt32(Payload) != 7 ) {
-                        SendAllChat( "The absolute vote was for ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]. The game will start now.");
+                        SendAllChat( m_GHost->m_Language->AbsoluteVoteChoosen( m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
                         m_LastAutoStartTime = GetTime( );
                     } else {
                         uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
-                        SendAllChat( "The absolute vote was for [Random]. The Mode ["+m_ModesToVote[RandomMode-1]+"] has been randomed.");
+                        SendAllChat( m_GHost->m_Language->AbsoluteVoteChoosenRandom( m_ModesToVote[RandomMode-1] ) );
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
                         m_Voted = true;
                         StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
@@ -4523,7 +4516,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
             SendChat( player, Return );
             if( notvoted != 0 ) {
-                SendChat(player, "Totally ["+UTIL_ToString(notvoted)+"] player(s) didn't vote for a mode.");
+                SendChat(player, m_GHost->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ;
             }
         }
         return HideCommand;
@@ -4631,15 +4624,15 @@ string CGame :: GetRule( string tag )
                         
                         return "["+rtag+"] "+rule;
                 }
-                return "Error. Bad input for the rule command, please contact the bot owner with the exact command to fix this";
+                return m_GHost->m_Language->WrongContactBotOwner();
         }
         ++saver;
         if( saver > 10 )
         {
             CONSOLE_Print( "There to many rules, stopping after 10.");
-            return "Error, hit to many rules, please report this to the bot owner.";
+            return m_GHost->m_Language->WrongContactBotOwner();
             break;
         }
     }
-    return "Error. You have probably choosen a wrong tag, please recheck the tags with '!rules'";
+    return m_GHost->m_Language->RuleTagNotify();
 }
