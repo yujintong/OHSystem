@@ -4265,7 +4265,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         //remove the target
                         VotesNeeded--;
                         SendAllChat(m_GHost->m_Language->UserStartedVoteMute( player->GetName(), LastMatch->GetName() ) );
-                        SendAllChat( UserStartedVoteMuteVotesNeeded( TeamString, UTIL_ToString(VotesNeeded) ) );
+                        SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVotesNeeded( TeamString, UTIL_ToString(VotesNeeded) ) );
                         SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_GHost->m_VoteMuteTime) ) );
                         m_MuteType = 0;
                     } else {
@@ -4353,7 +4353,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_MuteType = 2;
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->UserVotedForMute( player->GetName(), m_VoteMutePlayer, UTIL_ToString(VotesNeeded-m_MuteVotes) ) );
+                        SendAllChat( m_GHost->m_Language->UserVotedForMute( player->GetName(), m_VoteMutePlayer, UTIL_ToString(4-m_MuteVotes) ) );
                         
                     }
                 }
@@ -4516,7 +4516,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
             SendChat( player, Return );
             if( notvoted != 0 ) {
-                SendChat(player, m_GHost->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ;
+                SendChat(player, m_GHost->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ) ;
             }
         }
         return HideCommand;
