@@ -418,7 +418,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         else if( i->second->GetType( ) == "add" )
                         {
                                 if( Result == 1 )
-                                        QueueChatCommand( m_GHost->m_Language->AddedPenalityPoints(i->second->GetName() ), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ), i->first, !i->first.empty( ) );
+                                        QueueChatCommand( m_GHost->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ) ), i->first, !i->first.empty( ) );
                                 else if(  Result == 2 )
                                         QueueChatCommand( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
                                 else
