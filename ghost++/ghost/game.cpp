@@ -431,7 +431,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 if( Player )
                                 {
                                     if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                                            SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc( Player->GetPlayer( ) ) );
+                                            SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc( Player->GetName( ) ) );
                                     else
                                     {
                                             uint32_t sn = StatsPlayerSummary->GetStreak( );
@@ -795,7 +795,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 else if( Result == "successfully bet" )
                                         SendAllChat( m_GHost->m_Language->UserBet(i->second->GetUser( ), UTIL_ToString( i->second->GetOne( ) ) ) );
                                 else if( Result == "not listed" )
-                                        SendChat( Player, m_GHost->m_Language->NoRecordFoundForUser() );
+                                        SendChat( Player, m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ) );
                                 else if ( Result != "failed" )
                                         SendChat( Player, m_GHost->m_Language->BetATooHighAmount( Result));
                                 else
