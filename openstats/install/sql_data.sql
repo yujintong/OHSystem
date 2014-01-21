@@ -501,6 +501,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   `user_email` varchar(60) NOT NULL,
   `user_joined` int(11) NOT NULL DEFAULT '0',
   `user_level` tinyint(1) NOT NULL,
+  `user_level_expire` datetime NOT NULL,
   `admin_realm` varchar(64) NOT NULL,
   `expire_date` datetime NOT NULL,
   `user_last_login` int(11) NOT NULL DEFAULT '0',

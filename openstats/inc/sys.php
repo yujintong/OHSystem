@@ -44,6 +44,14 @@ include(OS_PAGE_PATH."add_comment_page.php");
 
 		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
 		$result = $sth->execute();
+		
+		if ( $sth->rowCount()<=0 ) {
+		$sth = $db->prepare("SELECT *
+	    FROM ".OSDB_STATS." as s WHERE s.player = :player ORDER BY id DESC LIMIT 1");
+
+		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
+		$result = $sth->execute();
+		}
 	  
 		if ( $sth->rowCount()>=1 ) {
 		   $row = $sth->fetch(PDO::FETCH_ASSOC);
