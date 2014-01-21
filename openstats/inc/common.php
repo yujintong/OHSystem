@@ -2164,7 +2164,7 @@ function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQ
 	<input type="hidden" name="y" value="<?=(int)$_GET["y"]?>" />
 	<?php } ?>
 	
-	<select name="<?=$qry?>">
+	<select name="<?=$qry?>" <?php if($page=="bans") { ?>onchange="search_bans.value=this.value"<?php } ?>>
 	 <option value=""> &nbsp; </option>
 	<?php
 	for ($i = 0; $i <= ($countAlph-1); $i++) {
