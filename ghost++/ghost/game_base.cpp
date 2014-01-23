@@ -646,7 +646,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             }
             else
             {
-                if( GetTicks( ) - i->first > ( m_GHost->m_VirtualLobbyTime/1000) )
+                if( GetTicks( ) - i->first > ( m_GHost->m_VirtualLobbyTime*1000) )
                 {
                     CONSOLE_Print( "deleting banned player..!" );
                     i->second->SetDeleteMe( true );
