@@ -1652,7 +1652,7 @@ function OS_ExpireDateRemain( $bandate = "", $d="d", $h="h", $min="min", $remain
     
 	if ( $days>=1 ) echo "<b>".$days." $d</b>, ";
 
-	echo "<b>".$hours." $h</b>, ";
+	if ($hours>=1)  echo "<b>".$hours." $h</b>, ";
 	echo "<b>".$minutes." $min</b> $remain";
   }
 }
