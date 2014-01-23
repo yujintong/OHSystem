@@ -453,12 +453,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         Player->SetCountry( StatsPlayerSummary->GetCountry());
                                         Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
                                 }
-                                CIncomingJoinPlayer *joinPlayer = GetPlayerFromName( i->first, true );
-                                if( joinPlayer ) {
-                                    joinPlayer->SetScore( StatsPlayerSummary->GetScore());
-                                    joinPlayer->SetCLetter( StatsPlayerSummary->GetCountryCode());
-                                    joinPlayer->SetGames( StatsPlayerSummary->GetGames( ) );
-                                }
                         }
  
                         m_GHost->m_DB->RecoverCallable( i->second );
@@ -652,10 +646,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             }
             else
             {
-                CONSOLE_Print( "bannnnn ... " + UTIL_ToString( GetTicks( ) - i->first ) );
                 if( GetTicks( ) - i->first > ( m_GHost->m_VirtualLobbyTime * 1000 ) )
                 {
-                    CONSOLE_Print( "deleting banned player..!" );
+                    CONSOLE_Print( "Deleting a player from a virtual Lobby!" );
                     i->second->SetDeleteMe( true );
                 }
 
@@ -983,6 +976,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         {
                                 if(m_GHost->m_AutoDenyUsers)
                                     m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+
                                 (*i)->SetDeleteMe( true );
                                 (*i)->SetLeftReason( "was kicked for non typing the password." );
                                 (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -2051,15 +2045,15 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_CustomVirtualLobbyInfoBanText ) );
     } else if(2==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+m_GHost->m_MinLimit+"]") );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinLimit )+"]") );
     } else if(3==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of score." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+m_GHost->m_MinScoreLimit+"]") );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinScoreLimit )+"]") );
     } else if(4==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least to be registered on the statspage." ) );
-    } else if(5==type) 6{
+    } else if(5==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+m_GHost->m_MinVIPGames+"]") );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinVIPGames )+"]") );
     } else if(6==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least a safelisted spot." ) );
     } else if(7==type) {
@@ -2377,7 +2371,12 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
  
         bool Reserved = IsReserved( joinPlayer->GetName( ) ) || Level > 1 || IsOwner( joinPlayer->GetName( ) );
- 
+
+        CGamePlayer *TempPlayer = new CGamePlayer( potential, 255, JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
+
+        // check basic player values
+         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
+
         // check if player has only digits
         if( Level == 0 && is_digits( joinPlayer->GetName( ) ) )
         {
@@ -2563,9 +2562,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 }
             }
         }
- 
-        // check basic player values
-         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
 
         if( m_MatchMaking && m_AutoStartPlayers != 0 && !m_Map->GetMapMatchMakingCategory( ).empty( ) && m_Map->GetMapOptions( ) & MAPOPT_FIXEDPLAYERSETTINGS )
         {
@@ -2579,7 +2575,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
  
         if( m_GameType == 3 )
         {
-                if( joinPlayer->GetGames( ) < m_GHost->m_MinLimit && !Reserved )
+                if( TempPlayer->GetGames( ) < m_GHost->m_MinLimit && !Reserved )
                 {
                     if(m_GHost->m_AutoDenyUsers)
                         m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
@@ -2592,7 +2588,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     SendVirtualLobbyInfo( potentialCopy, NULL, 2 );
                     return;
                 }
-                else if( m_GHost->m_MinScoreLimit != 0 && joinPlayer->GetScore( ) < m_GHost->m_MinScoreLimit && !Reserved )
+                else if( m_GHost->m_MinScoreLimit != 0 && TempPlayer->GetScore( ) < m_GHost->m_MinScoreLimit && !Reserved )
                 {
                     if(m_GHost->m_AutoDenyUsers)
                         m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
@@ -2608,7 +2604,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
         if( m_GameType == 4 )
         {
-                if( m_GHost->m_RegVIPGames && !joinPlayer->GetRegistered( ) && !Reserved )
+                if( m_GHost->m_RegVIPGames && !TempPlayer->GetRegistered( ) && !Reserved )
                 {
                     if(m_GHost->m_AutoDenyUsers)
                         m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
@@ -2621,10 +2617,10 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     SendVirtualLobbyInfo( potentialCopy, NULL, 4 );
                     return;
                 }
-                else if( joinPlayer->GetGames( ) < m_GHost->m_MinVIPGames  && !Reserved )
+                else if( TempPlayer->GetGames( ) < m_GHost->m_MinVIPGames  && !Reserved )
                 {
                         if(m_GHost->m_AutoDenyUsers)
-                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                            m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                         CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
                         potentialCopy->SetBanned( );
                         potential->SetSocket( NULL );
@@ -2641,6 +2637,10 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 if( !Reserved )
                 {
                         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
+
+                        if(m_GHost->m_AutoDenyUsers)
+                            m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+
                         CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
                         potentialCopy->SetBanned( );
                         potential->SetSocket( NULL );
@@ -2680,7 +2680,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 if( CC == "a1" || CC == "a2")
                 {
                         if(m_GHost->m_AutoDenyUsers)
-                            m_Denied.push_back( joinPlayer->GetName( ) + " " + joinPlayer->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                            m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
                         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
 
                         CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
@@ -2697,7 +2697,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && !Reserved )
         {
                 if(m_GHost->m_AutoDenyUsers)
-                    m_Denied.push_back( joinPlayer->GetName( ) + " " + joinPlayer->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                    m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
                 CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
                 potentialCopy->SetBanned( );
@@ -2855,19 +2855,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                         }
                 }
         }
- 
-        // we have a slot for the new player
-        // make room for them by deleting the virtual host player if we have to
- 
-        if( GetSlotsAllocated( ) >= m_Slots.size() - 1 || EnforcePID == m_VirtualHostPID )
-                DeleteVirtualHost( );
- 
-        // turning the CPotentialPlayer into a CGamePlayer is a bit of a pain because we have to be careful not to close the socket
-        // this problem is solved by setting the socket to NULL before deletion and handling the NULL case in the destructor
-        // we also have to be careful to not modify the m_Potentials vector since we're currently looping through it
-        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] joined the game" );
-        CGamePlayer *Player = new CGamePlayer( potential, m_SaveGame ? EnforcePID : GetNewPID( ), JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
- 
+  
         // check if this is a protected account
         if( m_GHost->m_AccountProtection )
                 m_PairedPWChecks.push_back( PairedPWCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedPWCheck( joinPlayer->GetName( ) ) ) );
