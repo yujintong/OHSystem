@@ -1,7 +1,17 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
+   	//GAME TYPES/ALIASES (dota, lod)
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+
     $uid = safeEscape( (int) $_GET["u"] );
+	
+	$year  = date("Y");
+	$month = date("n");
+	
 	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  WHERE id = :user_id LIMIT 1");
 	$sth->bindValue(':user_id', (int)$uid, PDO::PARAM_INT);  
 	$result = $sth->execute();
@@ -26,6 +36,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	//Check user ban
 	$chk = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE name = '".$row["player"]."' ORDER BY id DESC LIMIT 1");
+	
     $result = $chk->execute();
 	$rowban = $chk->fetch(PDO::FETCH_ASSOC);
 
@@ -63,6 +74,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	$UserData[$c]["id"]        = (int)($row["id"]);
 	$UserData[$c]["player"]   = ($row["player"]);
+	$UserData[$c]["alias_id"]  = ($row["alias_id"]);
+	$UserAliasID = ($row["alias_id"]);
+	
 	$PlayerName = $UserData[$c]["player"];
 	$UserData[$c]["banname"]  = ($rowban["name"]);
 	$UserData[$c]["bandate"]  = date($DateFormat, strtotime($rowban["date"]));
@@ -95,12 +109,28 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["rax"]  = ($row["rax"]);
 	$UserData[$c]["banned"]  = ($row["banned"]);
 	
+	$UserData[$c]["month"]  = ($row["month"]);
+	$UserData[$c]["year"]  = ($row["year"]);
+	
+	if ( $row["month"] != date("m") OR $row["year"]!= date("Y") ) {
+	
+	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+	 WHERE player = '".$row["player"]."' AND alias_id = '".$UserAliasID."' 
+	 ORDER BY id DESC LIMIT 1");
+	 $result3 = $sth3->execute();
+	 $row3 = $sth3->fetch(PDO::FETCH_ASSOC);
+	 
+	 $UserData[$c]["OtherStats"]  = ($row3["id"]);
+	}
+	
 	$UserData[$c]["hide"]  = ($row["hide"]);
+	if ( os_is_logged() AND $_SESSION["level"]>=9 AND $row["hide"] == 1 ) {
+	$UserData[$c]["hide"] = 0;
+	$UserData[$c]["admin_info"] = 1;
+	}
 	
 	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
 	
-	$UserData[$c]["warn_expire"]  = ($row["warn_expire"]);
-	$UserData[$c]["warn"]  = ($row["warn"]);
 	$UserData[$c]["GameAdmin"]  = ($row["user_level"]);
 	
 	//Don't show ban on safelisted user, because they are not really banned!
@@ -109,6 +139,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["banname"] ="";
 	}
 	
+	//Check if user have some privileges.
+	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+	 WHERE player = '".$row["player"]."' AND user_level>1 LIMIT 1");
+	 
+	 $result3 = $sth3->execute();
+	 $row3 = $sth3->fetch(PDO::FETCH_ASSOC);
+	 
+	 if ( $sth3->rowCount()>=1) {
+	    $UserData[$c]["GameAdmin"]  = ($row3["user_level"]);
+	    $UserData[$c]["banned"] = 0;
+	    $UserData[$c]["banname"] ="";
+	 }
+	 
+	 //$row2 = $sth2->fetch(PDO::FETCH_ASSOC);
+	// $IP = $row2["ip"];
+	
 	$UserData[$c]["ip"]  = ($row["ip"]);
 	$UserData[$c]["streak"]  = ($row["streak"]);
 	$UserData[$c]["maxstreak"]  = ($row["maxstreak"]);
@@ -116,7 +162,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["maxlosingstreak"]  = ($row["maxlosingstreak"]);
 	$UserData[$c]["zerodeaths"]  = ($row["zerodeaths"]);
 	
-        if( strlen($row["realm"]) <= 2 ) {
+    if( strlen($row["realm"]) <= 2 ) {
 		$UserData[$c]["realm"] = "Garena";
 	} else {
 		$UserData[$c]["realm"]  = ($row["realm"]);
@@ -180,6 +226,89 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$c++;
 	}
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($gi);
+	
+	$sth = $db->prepare("SELECT 
+	SUM(score) as totalscore,
+	SUM(games) as totalgames,
+	SUM(wins)  as totalwins,
+	SUM(losses) as totallosses,
+	SUM(draw) as totaldraw,
+	SUM(kills) as totalkills,
+	SUM(deaths) as totaldeaths,
+	SUM(assists) as totalassists,
+	SUM(creeps) as totalcreeps,
+	SUM(denies) as totaldenies,
+	SUM(neutrals) as totalneutrals,
+	SUM(towers) as totaltowers,
+	SUM(rax) as totalrax,
+	SUM(leaver) as totalleaver,
+	SUM(zerodeaths) as totalzerodeaths,
+	SUM(maxstreak) as totalmaxstreak
+	FROM ".OSDB_STATS." 
+	WHERE LOWER(player) = '".strtolower($PlayerName)."'  ");
+	
+	$result = $sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	$UserData[0]["totalscore"] = $row["totalscore"];
+	$UserData[0]["totalgames"] = $row["totalgames"];
+	$UserData[0]["totalwins"] = $row["totalwins"];
+	$UserData[0]["totallosses"] = $row["totallosses"];
+	$UserData[0]["totaldraw"] = $row["totaldraw"];
+	$UserData[0]["totalkills"] = $row["totalkills"];
+	$UserData[0]["totaldeaths"] = $row["totaldeaths"];
+	$UserData[0]["totalassists"] = $row["totalassists"];
+	$UserData[0]["totalcreeps"] = $row["totalcreeps"];
+	$UserData[0]["totaldenies"] = $row["totaldenies"];
+	$UserData[0]["totalneutrals"] = $row["totalneutrals"];
+	$UserData[0]["totaltowers"] = $row["totaltowers"];
+	$UserData[0]["totalrax"] = $row["totalrax"];
+	$UserData[0]["totalleaver"] = $row["totalleaver"];
+	$UserData[0]["totalzerodeaths"] = $row["totalzerodeaths"];
+	$UserData[0]["totalmaxstreak"] = $row["totalmaxstreak"];
+	
+	if ($row["totalwins"] >0 )
+	$UserData[0]["totalwinslosses"] = round($row["totalwins"]/($row["totalwins"]+$row["totallosses"]), 3)*100;
+	else $UserData[0]["totalwinslosses"] = 0;
+	
+	if ($row["totaldeaths"]>=1) $UserData[0]["totalkd"]  = round($row["totalkills"] / $row["totaldeaths"],2);
+    else $UserData[0]["totalkd"] = $row["totalkills"];
+	
+	if ($row["totalgames"]>=1 AND $row["totalkills"]>=1) {
+	$UserData[0]["totalkpg"] = round($row["totalkills"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalkpg"] = 0;
+	
+	if ($row["totalgames"]>=1 AND $row["totaldeaths"]>=1) {
+	$UserData[0]["totaldpg"] = round($row["totaldeaths"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totaldpg"] = 0;
+	
+	//AVG assists
+	if ($row["totalgames"]>=1 AND $row["totalassists"]>=1) {
+	$UserData[0]["totalapg"] = round($row["totalassists"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalapg"] = 0;
+	
+	//AVG creeps per game
+	if ($row["totalgames"]>=1 AND $row["totalcreeps"]>=1) {
+	$UserData[0]["totalckpg"] = ROUND($row["totalcreeps"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalckpg"] = 0;
+
+	//AVG denies per game
+	if ($row["totalgames"]>=1 AND $row["totaldenies"]>=1) {
+	$UserData[0]["totalcdpg"] = ROUND($row["totaldenies"]/$row["totalgames"],2); 
+	}
+	else $UserData[0]["totalcdpg"] = 0;
+	
+	if ($row["totalgames"] >0 ) {
+	$left2 = $row["totalgames"] - $row["totalleaver"];
+	$StayR2 = round(($left2/$row["totalgames"])*100, 1);
+	$UserData[0]["totalstayratio"] = $StayR2;
+	}
+	else $UserData[0]["totalstayratio"] = 0;
+	
+	
 	
 	//CHECK BNET USERNAME
 	
@@ -346,28 +475,18 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		$PenaltyData[$c]["reason"] = $row["reason"];
 		$PenaltyData[$c]["offence_time"] = $row["offence_time"];
 		$PenaltyData[$c]["date"] = date(OS_DATE_FORMAT, strtotime($row["offence_time"]));
+		
+		$ExpireDate = (strtotime($row["offence_time"])) + ($PPExpireDays*3600*24);
+		$PenaltyData[$c]["expire_date_int"] = $ExpireDate;
+		$PenaltyData[$c]["expire_date"] = date(OS_DATE_FORMAT, $ExpireDate);
+		
 		$PenaltyData[$c]["offence_expire"] = $row["offence_expire"];
 		$PenaltyData[$c]["pp"] = $row["pp"];
 		$PenaltyData[$c]["admin"] = $row["admin"];
 		if (empty($row["admin"])) $PenaltyData[$c]["admin"] = "[system]";
 		$PenaltyData[$c]["total"] = $TotalPP;
 		$PenaltyData[$c]["warned"] = $Warned;
-		
-		//$PenaltyData[$c]["reason"] = str_replace(array("fuck", "FUCK", "Fuck"), array("f***", "F***", "F***"), $PenaltyData[$c]["reason"]);
-		
-		//Just fix for old version
-		if ( strstr( $row["reason"], "left ") AND   strstr( $row["reason"], "/")) {
-		 
-		 $fixReason = explode("/", $row["reason"]);
-		 if ( isset($fixReason[0]) ) $fixReason[0] = $fixReason[0]; else $fixReason[0] = "";
-		 if ( isset($fixReason[1]) ) $fixReason[1] = $fixReason[1]; else $fixReason[1] = "";
-		 
-		 $fixReason[0] = filter_var( $fixReason[0], FILTER_SANITIZE_NUMBER_INT);
-		 $fixReason[0] = ROUND( ($fixReason[0]/60) , 0);
-		 $fixReason[1] = ROUND( ($fixReason[1]/60) , 0);
-		 
-		 $PenaltyData[$c]["reason"] = "left: ". ( $fixReason[0] )." min. / ".( $fixReason[1] )." min.";
-		}
+		$PenaltyData[$c]["reason"] = $row["reason"];
 		
 		$c++;
 	   }
@@ -400,8 +519,46 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$LastSeen["time"] = date( $DateFormat, strtotime($row["log_time"]));  
 	$LastSeen["log_data"] = $row["log_data"]; 
 	}
-	   //Hook js
-	     AddEvent("os_js", "OS_UserMap");
+	
+	//This will be added later
+	include("inc/pages/player_role.php");
+	
+	
+	//Check other game types
+	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  
+	WHERE player = :player AND `month` = '".$month."' AND year = '".$year."' AND alias_id != '".$UserAliasID."' LIMIT 1");
+	$sth->bindValue(':player', $PlayerName, PDO::PARAM_STR);  
+	$result = $sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	
+	$UserOtherGames["id"] = $row["id"];
+	
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($UserAliasID) AND $UserAliasID == $row["alias_id"] ) 
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($UserAliasID) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 //if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 //$GameAliases[$c]["selected"] = 'selected="selected"'; 
+	 
+	 $c++;
+	}
+
+	//Hook js
+	AddEvent("os_js", "OS_UserMap");
   
   function OS_UserMap() {
 ?>

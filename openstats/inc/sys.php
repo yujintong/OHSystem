@@ -25,11 +25,33 @@ include(OS_PAGE_PATH."add_comment_page.php");
 	 //If "u" is not a number, found in the database this user (if exists)
 	 if ( isset($_GET["u"]) AND !is_numeric( $_GET["u"]) ) {
 	    $uid = OS_StrToUTF8( trim($_GET["u"]) );
-	  
+	    $sql = "";
+		if ( isset($_GET["game_type"]) ) { 
+		$game_type = (int)$_GET["game_type"];
+		$sql = "AND alias_id = '".$game_type."' ";
+		} else {
+		
+		  $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1 LIMIT 1");
+	      $result = $sth->execute();
+		
+		  if ( $sth->rowCount()>=1) {
+		  $row = $sth->fetch(PDO::FETCH_ASSOC);
+		  $sql = " AND alias_id = '".$row["alias_id"]."' ";
+		  }
+		}
 		$sth = $db->prepare("SELECT *
-	    FROM ".OSDB_STATS." as s WHERE s.player = :player LIMIT 1");
+	    FROM ".OSDB_STATS." as s WHERE s.player = :player $sql ORDER BY id DESC LIMIT 1");
+
 		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
 		$result = $sth->execute();
+		
+		if ( $sth->rowCount()<=0 ) {
+		$sth = $db->prepare("SELECT *
+	    FROM ".OSDB_STATS." as s WHERE s.player = :player ORDER BY id DESC LIMIT 1");
+
+		$sth->bindValue(':player', $uid, PDO::PARAM_STR);
+		$result = $sth->execute();
+		}
 	  
 		if ( $sth->rowCount()>=1 ) {
 		   $row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -75,7 +97,7 @@ include(OS_PAGE_PATH."add_comment_page.php");
   if ( isset( $_GET["member"]) AND is_numeric($_GET["member"]))include(OS_PAGE_PATH."single_member_page.php"); else
   if ( isset($_GET["items"]) AND $ItemsPage == 1)              include(OS_PAGE_PATH."items_page.php"); else
   if ( isset($_GET["item"]) AND $ItemsPage == 1)               include(OS_PAGE_PATH."single_item_page.php"); else
-
+  
   if (  OS_is_home_page())                                     include(OS_PAGE_PATH."home_page.php"); else
   if ( isset($_GET["profile"]) AND os_is_logged() )            include(OS_PAGE_PATH."user_profile_page.php"); else
   if ( isset($_GET["profile"]) AND !os_is_logged() )           { header("location: ".OS_HOME."?login"); die; } else

@@ -7,16 +7,18 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <div id="main-column">
      <div class="padding">
       <div class="inner">
-	  <h2><?=$lang["displlay_stats_for"]?> <?=MonthYearForm( $TopPageStartYear )?></h2>
-	 
+	  
+	 <form action="" method="get">
      <table>
 	   <tr>
-	    <td><?=OS_SortTopPlayers()?></td>
+	    <td><?=MonthYearForm( $TopPageStartYear )?></td>
+		<td><?=DisplayGameTypesTop( $GameAliases)?></td>
+	    <td valign="middle" style="vertical-align:middle;"><?=OS_SortTopPlayers()?></td>
 	    <td><?=OS_AZ_Filter('top')?></td>
-	    <td><?=OS_ComparePlayers( 'form_start' )?></td>
 	    <td><?=OS_DisplayCountries('country', 1, 'top' )?></td>
 	   </tr>
 	 </table>
+	 </form>
 	 
     <table>
      <tr> 
@@ -49,8 +51,7 @@ foreach ($TopData as $Data) { ?>
 	<?=OS_TopUser($Data["id"], $Data["player"])?>
 	<?=OS_IsUserGameBanned( $Data["banned"], $lang["banned"] )?>	
 	<?=OS_IsUserGameAdmin( $Data["admin"] )?>
-	<?=OS_IsUserGameWarned( $Data["warn"],  $Data["warn_expire"], $lang["warned"] )?>
-	<!--<?=OS_IsUserGameSafe( $Data["safelist"], $lang["safelist"] )?>
+	<!--
 	<?=OS_IsUserGameLeaver( $Data["leaver"], $lang["leaves"].": ".$Data["leaver"]."<div>".$lang["stayratio"].": ".$Data["stayratio"]."%</div>" )?>-->
 	</td>
 	<td width="80" class="font12"><?=$Data["score"]?></td>

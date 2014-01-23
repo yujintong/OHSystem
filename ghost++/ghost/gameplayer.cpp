@@ -1,21 +1,24 @@
-/*
-
-   Copyright [2008] [Trevor Hogan]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
-
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #include "ghost.h"
@@ -37,7 +40,7 @@
 // CPotentialPlayer
 //
 
-CPotentialPlayer :: CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket ) : m_Protocol( nProtocol ), m_Game( nGame ), m_Socket( nSocket ), m_DeleteMe( false ), m_Error( false ), m_IncomingJoinPlayer( NULL ), m_IncomingGarenaUser( NULL )
+CPotentialPlayer :: CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket ) : m_Protocol( nProtocol ), m_Game( nGame ), m_Socket( nSocket ), m_DeleteMe( false ), m_Error( false ), m_IncomingJoinPlayer( NULL ), m_IncomingGarenaUser( NULL ), m_Banned( false )
 {
 
 }
@@ -181,7 +184,7 @@ void CPotentialPlayer :: ProcessPackets( )
 				delete m_IncomingJoinPlayer;
 				m_IncomingJoinPlayer = m_Protocol->RECEIVE_W3GS_REQJOIN( Packet->GetData( ) );
 
-				if( m_IncomingJoinPlayer )
+                if( m_IncomingJoinPlayer && !m_Banned)
 					m_Game->EventPlayerJoined( this, m_IncomingJoinPlayer );
 
 				// don't continue looping because there may be more packets waiting and this parent class doesn't handle them
@@ -224,7 +227,8 @@ m_PID( nPID ), m_Name( nName ), m_InternalIP( nInternalIP ), m_JoinedRealm( nJoi
 m_LastMapPartSent( 0 ), m_LastMapPartAcked( 0 ), m_StartedDownloadingTicks( 0 ), m_FinishedLoadingTicks( 0 ), m_StartedLaggingTicks( 0 ), m_StatsSentTime( 0 ), m_StatsDotASentTime( 0 ), m_LastGProxyWaitNoticeSentTime( 0 ), m_Score( -100000.0 ), m_WinPerc( 0.0 ), m_LeavePerc( 0.0 ), m_Games( 0 ),
 m_LoggedIn( false ), m_Spoofed( false ), m_PasswordProt( 0 ), m_Registered( false ), m_Reserved( nReserved ), m_WhoisShouldBeSent( false ), m_WhoisSent( false ), m_DownloadAllowed( false ), m_DownloadStarted( false ), m_DownloadFinished( false ), m_FinishedLoading( false ), m_Lagging( false ),
 m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "X?" ), m_Country( "unknown" ), m_Cookies( 0 ), m_Count( 0 ), m_Silence( false ), m_ForcedGproxy( false ), m_HasLeft( false ),
-m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 )
+m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
+  m_VotedMode( 0 ), m_NoLag( false )
 {
 
 }
@@ -234,7 +238,8 @@ m_PID( nPID ), m_Name( nName ), m_InternalIP( nInternalIP ), m_JoinedRealm( nJoi
 m_LastMapPartSent( 0 ), m_LastMapPartAcked( 0 ), m_StartedDownloadingTicks( 0 ), m_FinishedLoadingTicks( 0 ), m_StartedLaggingTicks( 0 ), m_StatsSentTime( 0 ), m_StatsDotASentTime( 0 ), m_LastGProxyWaitNoticeSentTime( 0 ), m_Score( -100000.0 ), m_WinPerc( 0.0 ), m_LeavePerc( 0.0 ), m_Games( 0 ),
 m_LoggedIn( false ), m_Spoofed( false ), m_PasswordProt( 0 ), m_Registered( false ), m_Reserved( nReserved ), m_WhoisShouldBeSent( false ), m_WhoisSent( false ), m_DownloadAllowed( false ), m_DownloadStarted( false ), m_DownloadFinished( false ), m_FinishedLoading( false ), m_Lagging( false ),
 m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "??" ), m_Country( "unknown" ), m_Cookies( 0 ), m_Count( 0 ), m_Silence( false ), m_ForcedGproxy( false ), m_HasLeft( false ),
-m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 )
+m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
+  m_VotedMode( 0 ), m_NoLag( false )
 {
 	// todotodo: properly copy queued packets to the new player, this just discards them
 	// this isn't a big problem because official Warcraft III clients don't send any packets after the join request until they receive a response
@@ -377,11 +382,11 @@ bool CGamePlayer :: Update( void *fd )
 	// make this a bit dynamically, first 10 KB/s is a bit too low, increasing to 100KB/s
 	//decreasing the checktime to 5 seconds
 	// adding an actual playercheck how many players are ingame, if there less than 1 open slots we deny users with a download rate under 500KB/s
-	if( m_DownloadStarted && !m_DownloadFinished && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() && GetLastMapPartSent( ) > 0 )
+    if( m_DownloadStarted && !m_DownloadFinished && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() && GetLastMapPartSent( ) > 0 && m_Game->m_GHost->m_KickSlowDownloader )
 	{
 		uint32_t downloadingTime = GetTicks( ) - m_StartedDownloadingTicks;
 
-		if( downloadingTime > 5000 )
+		if( downloadingTime > 5000 && m_Level < 1)
 		{
 			if( GetLastMapPartAcked( ) / downloadingTime < 500 && m_Game->GetSlotsOccupied( ) <= 1 )
 			{
@@ -580,15 +585,7 @@ void CGamePlayer :: ProcessPackets( )
 					// determine if we should auto-mute this player
 					if( ChatPlayer->GetType( ) == CIncomingChatPlayer :: CTH_MESSAGE || ChatPlayer->GetType( ) == CIncomingChatPlayer :: CTH_MESSAGEEXTRA )
 					{
-						uint32_t Level;
-                				for( vector<CBNET *> :: iterator i = m_Game->m_GHost->m_BNETs.begin( ); i != m_Game->m_GHost->m_BNETs.end( ); ++i )
-                				{
-                				        if( (*i)->GetServer( ) == m_JoinedRealm )
-				                        {
-								Level = (*i)->IsLevel( m_Name );
-							}
-						}
-						if( Level <= 1 )
+						if( m_Level <= 1 &&! GetMuted( ) )
 						{
 							m_MuteMessages.push_back( GetTicks( ) );
 
@@ -626,14 +623,14 @@ void CGamePlayer :: ProcessPackets( )
                                                                 }
                                                                 if( m_Count == 3 )
                                                                 {
-									m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Spam", m_Game->m_GHost->m_SpamBanTime, "" ) ) );
+									m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Spam", m_Game->m_GHost->m_SpamBanTime, "", m_Game->m_GameAlias ) ) );
                                                                         SetMuted( true );
                                                                         m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Name + " has been automatically permanently muted for spamming." );
 
                                                                 }
 							}
                                                         
-                                                        //we adding this condition not in the next condiition to avoid a jump into ghost.cpp to check if the message was a flame message or not
+                                                        //we adding this condition not in the next condition to avoid a jump into ghost.cpp to check if the message was a flame message or not
                                                         if(m_Game->m_GHost->m_FlameCheck)
                                                         {
                                                             //now check for flamers
@@ -676,7 +673,7 @@ void CGamePlayer :: ProcessPackets( )
 
                                                                     if( RecentCount == 4 )
                                                                     {
-                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_FirstFlameBanTime, "" ) ) );
+                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_FirstFlameBanTime, "", m_Game->m_GameAlias ) ) );
                                                                             SetMuted( true );
                                                                             m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Name + " has been automatically permanently muted for flaming." );
 
@@ -684,7 +681,7 @@ void CGamePlayer :: ProcessPackets( )
                                                                     if( RecentCount == 5 )
                                                                     {
                                                                         //some people simple dont understand the ban policy.
-                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_SecondFlameBanTime, "" ) ) );
+                                                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( m_JoinedRealm, m_Name, GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Flame/Insult", m_Game->m_GHost->m_SecondFlameBanTime, "", m_Game->m_GameAlias ) ) );
                                                                             SetMuted( true );
                                                                             m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Name + " has been automatically permanently muted for flaming." );
 

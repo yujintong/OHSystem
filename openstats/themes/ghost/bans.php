@@ -19,7 +19,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    style="height: 26px;" 
    onblur= "if (this.value == '')  {this.value = '<?=$search_bans?>';}"
    onfocus="if (this.value == '<?=$search_bans?>') {this.value = '';}" 
-   name="search_bans"
+   name="search_bans" id="search_bans"
    />
    <input type="submit" value="<?=$lang["search"]?>" class="menuButtons" />
    </form>

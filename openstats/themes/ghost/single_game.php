@@ -54,17 +54,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 <table>
   <tr class="sentinelRow">
   <td width="850" class="aligncenter" align="center">
-	 <?php
-	 if ($GameData[0]["winner"] == 1) { ?><?=$lang["sent_winner"]?><?php } else
-	 if ($GameData[0]["winner"] == 2) { ?><?=$lang["sent_loser"]?><?php }  else
-	 if ($GameData[0]["winner"] == 0) { ?><?=$lang["draw_game"]?><?php }
-	 ?>
+	 <?=$Game["display_winner"]?>
 	 </td>
     </tr>
 </table>
 	
 <table>
-  <tr>
+  <tr class="<?=$Game["hideElement"]?>">
     <th width="75" class="padLeft"><?=$lang["hero"]?></th>
     <th width="220"><?=$lang["player"]?></th>
     <th width="90" ><?=$lang["kda"]?></th>
@@ -80,23 +76,19 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 <table>
   <tr class="scourgeRow">
   <td width="850" class="aligncenter" align="center">
-	 <?php
-	 if ($GameData[0]["winner"] == 1) { ?><?=$lang["scou_loser"]?><?php }   else
-	 if ($GameData[0]["winner"] == 2) { ?><?=$lang["scou_winner"]?><?php }  else
-	 if ($GameData[0]["winner"] == 0) { ?><?=$lang["draw_game"]?><?php }
-	 ?>
+	 <?=$Game["display_loser"]?>
 	 </td>
     </tr>
 </table>
 	
 <table>
-  <tr>
+  <tr class="<?=$Game["hideElement"]?>">
     <th width="68" class="padLeft"><?=$lang["hero"]?></th>
     <th width="260"><?=$lang["player"]?></th>
-    <th width="90" ><?=$lang["kda"]?></th>
-	<th width="90" ><?=$lang["cdn"]?></th>
-	<th width="90" ><?=$lang["trc"]?></th>
-	<th width="90" ><?=$lang["gold"]?></th>
+    <th width="90" class="<?=$Game["hideElement"]?>"><?=$lang["kda"]?></th>
+	<th width="90" class="<?=$Game["hideElement"]?>"><?=$lang["cdn"]?></th>
+	<th width="90" class="<?=$Game["hideElement"]?>"><?=$lang["trc"]?></th>
+	<th width="90" class="<?=$Game["hideElement"]?>"><?=$lang["gold"]?></th>
 	<th width="180"><?=$lang["left"]?></th>
   </tr>
 </table>
@@ -106,20 +98,17 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   <tr class="row SingleGameRow <?=$Game["hideslot"]?> ">
  <td width="68" class="padLeft slot<?=$Game["counter"]?>">
  <a name="<?=strtolower($Game["name"])?>"></a>
- <?=OS_ShowHero( $Game["heroid"], $Game["description"], $Game["hero"] )?>
+ <?=OS_ShowHero( $Game["heroid"], $Game["description"], $Game["hero"], 100, 64,64, $Game["hero_link"] )?>
  </td>
  <td width="260">
  <div class="SingleGamePlayerName">
- <?php //Flag | Player name | admin icon | warn icon | banned icon | safelist icon | points for game?>
     <?=OS_ShowUserFlag( $Game["letter"], $Game["country"] )?>
     <?=OS_SingleGameUser($Game["userid"], $Game["full_name"], $Game["name"], $BestPlayer, $Game["level"])?>
 	<?=OS_IsUserGameAdmin( $Game["admin"])?>
-	<?=OS_IsUserGameWarned( $Game["warn"],  $Game["warn_expire"], $lang["warned"] )?>
 	<?=OS_IsUserGameBanned( $Game["banned"], $lang["banned"] ) ?>
-	<!--<?=OS_IsUserGameSafe( $Game["safelist"], $lang["safelist"] )?>-->
 	<span class="player_scores<?=$Game["class"]?>"><?=$Game["score_points"]?></span>
  </div>
- <div>
+ <div class="<?=$Game["hideElement"]?>">
  <?=OS_ShowItem( $Game["item1"], $Game["itemname1"], $Game["itemicon1"] )?>
  <?=OS_ShowItem( $Game["item2"], $Game["itemname2"], $Game["itemicon2"] )?>
  <?=OS_ShowItem( $Game["item3"], $Game["itemname3"], $Game["itemicon3"] )?>
@@ -128,22 +117,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
  <?=OS_ShowItem( $Game["item6"], $Game["itemname6"], $Game["itemicon6"] )?>
  </div>
  </td>
- <td width="90" class="statsscore">
+ <td width="90" class="statsscore <?=$Game["hideElement"]?>">
  	  <span class="won"><?=($Game["kills"])?></span> / 
 	  <span class="lost"><?=$Game["deaths"]?></span> / 
 	  <span class="assists"><?=$Game["assists"]?></span>
  </td>
- <td width="90" class="statsscore">
+ <td width="90" class="statsscore <?=$Game["hideElement"]?>" <?=$Game["hideElement"]?>>
   	  <span class="won"><?=($Game["creepkills"])?></span> / 
 	  <span class="lost"><?=$Game["creepdenies"]?></span> / 
 	  <span class="assists"><?=$Game["neutralkills"]?></span>
  </td>
- <td width="90" class="statsscore">
+ <td width="90" class="statsscore <?=$Game["hideElement"]?>" <?=$Game["hideElement"]?>>
    	  <span class="won"><?=($Game["towerkills"])?></span> / 
 	  <span class="lost"><?=$Game["raxkills"]?></span> / 
 	  <span class="assists"><?=$Game["courierkills"]?></span>
  </td>
- <td width="90" class="statsscore"><?=$Game["gold"]?></td>
+ <td width="90" class="statsscore <?=$Game["hideElement"]?>" <?=$Game["hideElement"]?>><?=$Game["gold"]?></td>
  <td width="180" class="statsscore<?=$Game["leaver"]?>">
  <?=$Game["left"]?>
  <div class="left_reason overflow_hidden"><?=$Game["leftreason"]?></div>
@@ -202,11 +191,20 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
 <?=os_display_custom_fields()?> 
    
-<?php 
-//REPLAY - GAME LOG
-include("inc/show_gamelog2.php"); 
-?>
      </div>
+    </div>
+   </div>
+  </div>
+</div>
+
+
+<div class="s-c-x">
+  <div class="wrapper">   
+    <div id="main-column">
+     <div class="padding">
+      <div class="inner" style="height:390px;">
+<?php include("inc/show_gamelog3.php"); ?>
+      </div>
     </div>
    </div>
   </div>

@@ -210,7 +210,7 @@ $lang["apg"]                  = "APG";
 $lang["assists_per_game"]     = "Assists pro Spiel";  
 $lang["ckpg"]                 = "CKPG";  
 $lang["creeps_per_game"]      = "Creep kills pro Spiel";  
-$lang["cdpg"]                 = "CDPK";  
+$lang["cdpg"]                 = "CDPG";  
 $lang["denies_per_game"]      = "Denies pro Spiel";  
 $lang["deaths_per_game"]      = "Deaths pro Spiel";  
 $lang["npg"]                  = "NPG";  
@@ -493,4 +493,11 @@ $lang["hide_stats_message"]  = "The user does not want to show his statistics";
 $lang["last_seen"]           = "Last seen";
 $lang["displlay_stats_for"]  = "Displaying statistics for";
 $lang["select_country"]      = "Select country";
+
+$lang["most_recent_stats"]  = "Show most recent statistics";
+
+$lang["game_log_lobby"]  = "Lobby Log";
+$lang["game_log_game"]   = "Game Log";
+$lang["show_all"]        = "Show All";
+$lang["choose_game_type"]        = "Choose game type";
 ?>  

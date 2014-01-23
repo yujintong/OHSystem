@@ -110,6 +110,8 @@ if ( isset( $_POST["update_config"]) AND OS_IsRoot() ) {
    write_value_of('$BanIPUpdate', "$BanIPUpdate", trim(strip_tags($_POST["BanIPUpdate"])) , "$ccfg");
    write_value_of('$MaxCronLogs', "$MaxCronLogs", trim(strip_tags($_POST["MaxCronLogs"])) , "$ccfg");
    write_value_of('$CronReportDetails', "$CronReportDetails", trim(strip_tags($_POST["CronReportDetails"])) , $ccfg);
+   write_value_of('$RemoveOldLiveGames', "$RemoveOldLiveGames", trim(strip_tags($_POST["RemoveOldLiveGames"])) , $ccfg);
+   write_value_of('$AutoDeleteOldReplays', "$AutoDeleteOldReplays", trim(strip_tags($_POST["AutoDeleteOldReplays"])) , $ccfg);
    }
 
    $WordLimit = trim($_POST["limit_words"]);
@@ -341,6 +343,7 @@ $dt = new DateTime('now', $utc);
 	   <td>Top Page Start Year:</td>
 	   <td><input style="width: 98px;" class="field" type="text" value="<?=$TopPageStartYear?>" name="TopPageStartYear" /> </td>
 	 </tr>
+	 
 	 <tr  class="row">
 	   <td>Theme:</td>
 	   <td >
@@ -1315,6 +1318,39 @@ if ($handle = opendir("../themes")) {
 	   </select> Update IPs on bans table
 	   </td>
 	 </tr>
+	 
+     <tr>
+	   <td width="150"><b>Fix bans:</b></td>
+	   <td>
+	   <select name="CheckUserBans">
+	   <?php if ($CheckUserBans == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">On</option>
+	   <?php if ($CheckUserBans == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Off</option>
+	   </select> Auto-fix expired bans (even if player does not play after ban expire and stats update)
+	   </td>
+	 </tr>
+	 
+     <tr>
+	   <td width="150"><b>Fix/remove inactive(corrupted) games from log:</b></td>
+	   <td>
+	   <select name="RemoveOldLiveGames">
+	   <?php if ($RemoveOldLiveGames == 1) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="1">On</option>
+	   <?php if ($RemoveOldLiveGames == 0) $s='selected="selected"'; else $s='';?>
+	   <option <?=$s?> value="0">Off</option>
+	   </select> This will remove all inactive games (games that never started) from database.
+	   </td>
+	 </tr>
+	 
+     <tr>
+	   <td width="150"><b>Remove old replays:</b></td>
+	   <td>
+	   <input type="text" value="<?=$AutoDeleteOldReplays?>" name="AutoDeleteOldReplays" /> 0 - disable, 30 - remove files older than 30 days.
+	   </td>
+	 </tr>
+	 
+	 
      <tr>
 	   <td width="150"><b>Max. cron logs:</b></td>
 	   <td>

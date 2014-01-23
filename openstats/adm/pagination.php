@@ -35,6 +35,7 @@ if ( isset($_GET["letter"]) ) $prefix.="&amp;letter=".substr($_GET["letter"],0,2
 if ( isset($_GET["country"]) ) $prefix.="&amp;country=".substr($_GET["country"],0,2);
 
 if ( isset($_GET["player"]) ) $prefix.="&amp;player=".($_GET["player"]);
+if ( isset($_GET["realm"]) ) $prefix.="&amp;realm=".($_GET["realm"]);
 
 if ( isset($_GET["show"]) ) {
    if ($_GET["show"] == "unparsed") $prefix.="&amp;show=unparsed";
@@ -56,6 +57,8 @@ if ( isset($_GET["ip_range"]) ) $prefix.="&amp;ip_range=".(int) strip_tags($_GET
 if ( isset($_GET["sort"]) ) $prefix.="&amp;sort=".safeEscape( $_GET["sort"]);
 if ( isset($_GET["uid"]) )  $prefix.="&amp;uid=".safeEscape( (int) $_GET["uid"]);
 if ( isset($_GET["u"]) )    { $prefix.="?u=".safeEscape( (int) $_GET["u"]).""; $end ="#game_history"; }
+
+if ( isset($_GET["game_type"]) ) $prefix.="&amp;game_type=".(int)$_GET["game_type"];
 
               $rowsperpage = $result_per_page;
               $totalpages = ceil($numrows / $rowsperpage);

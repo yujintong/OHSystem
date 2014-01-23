@@ -19,9 +19,9 @@ if ( isset($CommentsData) AND !empty($CommentsData) ) {
 <?php
    foreach($CommentsData as $Comment) {
    ?>
-   <li class="comment">
+   <li class="comment<?=$Comment["comment_class"]?>">
 	<div class="CommentWrapper">
-	   <div class="comment-header padLeft">
+	   <div class="comment-header <?=$Comment["comment_class_header"]?> padLeft">
 <?php if (!empty($Comment["fb"]) ) { ?>
 <a href="http://www.facebook.com/profile.php?id=<?=$Comment["fb"]?>" target="_blank"><img src="https://graph.facebook.com/<?=$Comment["fb"]?>/picture" alt="*" width="64" height="64" class="imgvaligntop" /> <?=$Comment["username"]?></a>
 <?php } else { ?>

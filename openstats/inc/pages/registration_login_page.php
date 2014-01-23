@@ -191,7 +191,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 		//$bnet_username = $row["user_name"];
 		if ( $password == $rawPW ) {
 		
-		 $code = generate_hash(10,1);
+		 $code = generate_hash(10,0);
 	     $hashpw = generate_hash(16,1);
 	     $password_db = generate_password($password, $hashpw);
 		 $updatePW = $db->update(OSDB_USERS, array(
@@ -335,7 +335,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	  $hash = generate_hash(16,1);
 	  $password_db = generate_password($password, $hash);
 	  
-	  if ($UserActivation == 1) $code = generate_hash(16,1); else $code = '';
+	  if ($UserActivation == 1) $code = generate_hash(16,0); else $code = '';
 	  
 	  //FIND user location
 	if ( file_exists("inc/geoip/geoip.inc") ) {

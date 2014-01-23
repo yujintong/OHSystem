@@ -1,21 +1,24 @@
-/*
-
-   Copyright [2008] [Trevor Hogan]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
-
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #include "ghost.h"
@@ -371,9 +374,11 @@ CGHost :: CGHost( CConfig *CFG )
 	m_FinishedGames = 0;
 	m_CallableGameUpdate = NULL;
 	m_CallableFlameList = NULL;
+        m_CallableAliasList = NULL;
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
+        m_CallableDeniedNamesList = NULL;
         m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
         m_RanksLoaded = true;
@@ -458,9 +463,11 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastCommandListTime = GetTime( );
 	m_LastGameUpdateTime  = GetTime( );
 	m_LastFlameListUpdate = 0;
+    m_LastAliasListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
+    m_LastDNListUpdate = 0;
 	m_LastDCountryUpdate = 0;
-        m_LastHCUpdate = GetTime();
+    m_LastHCUpdate = GetTime();
 	m_AutoHostMatchMaking = false;
 	m_AutoHostMinimumScore = 0.0;
 	m_AutoHostMaximumScore = 0.0;
@@ -500,7 +507,7 @@ CGHost :: CGHost( CConfig *CFG )
 		string ServerAlias = CFG->GetString( Prefix + "serveralias", string( ) );
 		string CDKeyROC = CFG->GetString( Prefix + "cdkeyroc", string( ) );
 		string CDKeyTFT = CFG->GetString( Prefix + "cdkeytft", string( ) );
-		string CountryAbbrev = CFG->GetString( Prefix + "countryabbrev", "USA" );
+        string CountryAbbrev = CFG->GetString( Prefix + "countryabbrev", "USA" );
 		string Country = CFG->GetString( Prefix + "country", "United States" );
 		string Locale = CFG->GetString( Prefix + "locale", "system" );
 		uint32_t LocaleID;
@@ -1166,14 +1173,13 @@ bool CGHost :: Update( long usecBlock )
         	delete m_CallableGameUpdate;
         	m_CallableGameUpdate = NULL;
     	}
-
-
-	// refresh flamelist all 5 minutes
-	if( !m_CallableFlameList && GetTime( ) - m_LastFlameListUpdate >= 300 && m_FlameCheck)
-	{
-		m_CallableFlameList = m_DB->ThreadedFlameList( );
-		m_LastFlameListUpdate = GetTime( );
-	}
+        
+        // refresh flamelist all 60 minutes
+        if( m_FlameCheck && !m_CallableFlameList && ( GetTime( ) - m_LastFlameListUpdate >= 1200 || m_LastFlameListUpdate==0 ) )
+        {
+            m_CallableFlameList = m_DB->ThreadedFlameList( );
+            m_LastFlameListUpdate = GetTime( );
+        }
 
         if( m_CallableFlameList && m_CallableFlameList->GetReady( )&& m_FlameCheck)
         {
@@ -1183,8 +1189,38 @@ bool CGHost :: Update( long usecBlock )
                 m_CallableFlameList = NULL;
         }
 
-	// refresh announce list all 5 minutes
-        if( !m_CallableAnnounceList && GetTime( ) - m_LastAnnounceListUpdate >= 300 )
+        // refresh alias list all 24 hours
+        if( !m_CallableAliasList && ( GetTime( ) - m_LastAliasListUpdate >= 86400 || m_LastAliasListUpdate == 0 ) )
+        {
+            m_CallableAliasList = m_DB->ThreadedAliasList( );
+            m_LastAliasListUpdate = GetTime( );
+        }
+
+        if( m_CallableAliasList && m_CallableAliasList->GetReady( ))
+        {
+                m_Aliases = m_CallableAliasList->GetResult( );
+                m_DB->RecoverCallable( m_CallableAliasList );
+                delete m_CallableAliasList;
+                m_CallableAliasList = NULL;
+        }
+
+        // refresh denied names list all 60 minutes
+        if( !m_CallableDeniedNamesList && ( GetTime( ) - m_LastDNListUpdate >= 3600 || m_LastDNListUpdate == 0 ) )
+        {
+            m_CallableDeniedNamesList = m_DB->ThreadedDeniedNamesList( );
+            m_LastDNListUpdate = GetTime( );
+        }
+
+        if( m_CallableDeniedNamesList && m_CallableDeniedNamesList->GetReady( ) )
+        {
+                m_DeniedNamePartials = m_CallableDeniedNamesList->GetResult( );
+                m_DB->RecoverCallable( m_CallableDeniedNamesList );
+                delete m_CallableDeniedNamesList;
+                m_CallableDeniedNamesList = NULL;
+        }
+
+	// refresh announce list all 60 minutes
+        if( !m_CallableAnnounceList && ( GetTime( ) - m_LastAnnounceListUpdate >= 3600 || m_LastAnnounceListUpdate==0 ) )
         {
                 m_CallableAnnounceList = m_DB->ThreadedAnnounceList( );
                 m_LastAnnounceListUpdate = GetTime( );
@@ -1200,8 +1236,8 @@ bool CGHost :: Update( long usecBlock )
 		m_AnnounceLines = m_Announces.size();
         }
 
-        // refresh denied country list all 5 minutes
-        if( !m_CallableDCountryList && GetTime( ) - m_LastDCountryUpdate >= 300 )
+        // refresh denied country list all 60 minutes
+        if( !m_CallableDCountryList && ( GetTime( ) - m_LastDCountryUpdate >= 1200 || m_LastDCountryUpdate == 0 ) )
         {
                 m_CallableDCountryList = m_DB->ThreadedDCountryList( );
                 m_LastDCountryUpdate = GetTime( );
@@ -1218,7 +1254,7 @@ bool CGHost :: Update( long usecBlock )
         // load a new m_ReservedHostCounter
         if( m_ReservedHostCounter == 0 && m_LastHCUpdate != 0 && GetTime( ) - m_LastHCUpdate >= 5 )
         {
-                m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0 );
+                m_CallableHC = m_DB->ThreadedGameDBInit( vector<CDBBan *>(), m_AutoHostGameName, 0, 0 );
                 m_LastHCUpdate = 0;
         }
 
@@ -1460,9 +1496,9 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_VoteKickAllowed = CFG->GetInt( "bot_votekickallowed", 1 ) == 0 ? false : true;
 	m_VoteKickPercentage = CFG->GetInt( "bot_votekickpercentage", 100 );
 	LoadDatas();
-        LoadRules();
-        LoadRanks();
-        ReadRoomData();
+    LoadRules();
+    LoadRanks();
+    ReadRoomData();
 	if( m_VoteKickPercentage > 100 )
 	{
 		m_VoteKickPercentage = 100;
@@ -1476,61 +1512,68 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_TCPNoDelay = CFG->GetInt( "tcp_nodelay", 0 ) == 0 ? false : true;
 	m_MatchMakingMethod = CFG->GetInt( "bot_matchmakingmethod", 1 );
 	m_MapGameType = CFG->GetUInt( "bot_mapgametype", 0 );
-        m_AutoHostGameType = CFG->GetInt( "oh_autohosttype", 3 );
-        m_AllGamesFinished = false;
-        m_AllGamesFinishedTime = 0;
-        m_MinVIPGames = CFG->GetInt( "vip_mingames", 25 );
-        m_RegVIPGames = CFG->GetInt( "vip_reg", 0 ) == 0 ? false : true;
-        m_TFT = CFG->GetInt( "bot_tft", 1 ) == 0 ? false : true;
-        m_OHBalance = CFG->GetInt( "oh_balance", 1 ) == 0 ? false : true;
-        m_HighGame = CFG->GetInt( "oh_rankedgame", 0 ) == 0 ? false : true;
-        m_MinLimit = CFG->GetInt( "oh_mingames", 25 );
-        m_ObserverFake = CFG->GetInt( "oh_observer", 1 ) == 0 ? false : true;
+    m_AutoHostGameType = CFG->GetInt( "oh_autohosttype", 3 );
+    m_AllGamesFinished = false;
+    m_AllGamesFinishedTime = 0;
+    m_MinVIPGames = CFG->GetInt( "vip_mingames", 25 );
+    m_RegVIPGames = CFG->GetInt( "vip_reg", 0 ) == 0 ? false : true;
+    m_TFT = CFG->GetInt( "bot_tft", 1 ) == 0 ? false : true;
+    m_OHBalance = CFG->GetInt( "oh_balance", 1 ) == 0 ? false : true;
+    m_HighGame = CFG->GetInt( "oh_rankedgame", 0 ) == 0 ? false : true;
+    m_MinLimit = CFG->GetInt( "oh_mingames", 25 );
+    m_ObserverFake = CFG->GetInt( "oh_observer", 1 ) == 0 ? false : true;
 	m_NoGarena = CFG->GetInt( "oh_nogarena", 0 ) == 0 ? false : true;
 	m_CheckIPRange = CFG->GetInt( "oh_checkiprangeonjoin", 0 ) == 0 ? false : true;
 	m_DenieProxy = CFG->GetInt( "oh_proxykick", 0 ) == 0 ? false : true;
 	m_LiveGames = CFG->GetInt( "oh__general_livegames", 1 ) == 0 ? false : true;
-        m_MinFF = CFG->GetInt( "oh_minff", 20 );
-        m_MinimumLeaverKills = CFG->GetInt( "antifarm_minkills", 3 );
-        m_MinimumLeaverDeaths = CFG->GetInt( "antifarm_mindeaths", 3 );
-        m_MinimumLeaverAssists = CFG->GetInt( "antifarm_minassists", 3 );
-        m_DeathsByLeaverReduction =  CFG->GetInt( "antifarm_deathsbyleaver", 1 );
+    m_MinFF = CFG->GetInt( "oh_minff", 20 );
+    m_MinimumLeaverKills = CFG->GetInt( "antifarm_minkills", 3 );
+    m_MinimumLeaverDeaths = CFG->GetInt( "antifarm_mindeaths", 3 );
+    m_MinimumLeaverAssists = CFG->GetInt( "antifarm_minassists", 3 );
+    m_DeathsByLeaverReduction =  CFG->GetInt( "antifarm_deathsbyleaver", 1 );
 	m_MinPlayerAutoEnd = CFG->GetInt( "autoend_minplayer", 2 );
 	m_MaxAllowedSpread = CFG->GetInt( "autoend_maxspread", 2 );
 	m_EarlyEnd = CFG->GetInt( "autoend_earlyend", 1 ) == 0 ? false : true;
 	m_StatsUpdate = CFG->GetInt( "oh_general_updatestats", 1 ) == 0 ? false : true;
-        m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
-        m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
-        if( m_FunCommands )
-            LoadInsult( );
-        m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
-        m_AccountProtection = CFG->GetInt("oh_general_accountprotection", 1 ) == 0 ? false : true;
-        m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
-        m_FountainFarmWarning = CFG->GetInt("oh_fountainfarm_warning", 0 ) == 0 ? false : true;
-        m_FountainFarmMessage = CFG->GetString("oh_fountainfarm_message", "Remind: Any kind or at least an attempt of fountainfarm is banable." );
-        m_AutoDenyUsers = CFG->GetInt("oh_general_autodeny", 0) == 0 ? false : true;
-        m_AllowVoteStart = CFG->GetInt("oh_allowvotestart", 0) == 0 ? false : true;
-        m_VoteStartMinPlayers = CFG->GetInt("oh_votestartminimumplayers", 3);
+    m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
+    m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
+    if( m_FunCommands )
+        LoadInsult( );
+    m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
+    m_AccountProtection = CFG->GetInt("oh_general_accountprotection", 1 ) == 0 ? false : true;
+    m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
+    m_AnnounceHidden = CFG->GetInt("oh_hiddenAnnounce", 0 ) == 0 ? false : true;
+    m_FountainFarmWarning = CFG->GetInt("oh_fountainfarm_warning", 0 ) == 0 ? false : true;
+    m_FountainFarmMessage = CFG->GetString("oh_fountainfarm_message", "Remind: Any kind or at least an attempt of fountainfarm is banable." );
+    m_AutoDenyUsers = CFG->GetInt("oh_general_autodeny", 0) == 0 ? false : true;
+    m_AllowVoteStart = CFG->GetInt("oh_allowvotestart", 0) == 0 ? false : true;
+    m_VoteStartMinPlayers = CFG->GetInt("oh_votestartminimumplayers", 3);
 	m_AutoMuteSpammer = CFG->GetInt( "oh_mutespammer", 1 ) == 0 ? false : true;
-        m_FlameCheck = CFG->GetInt("oh_flamecheck", 0) == 0 ? false : true;
-        m_BotManagerName = CFG->GetString( "oh_general_botmanagername", "PeaceMaker" );
-        m_IngameVoteKick = CFG->GetInt("oh_ingamevotekick", 1) == 0 ? false : true;
-        m_LeaverAutoBanTime = CFG->GetInt("oh_leaverautobantime", 86400);
-        m_FirstFlameBanTime = CFG->GetInt("oh_firstflamebantime", 172800 );
-        m_SecondFlameBanTime = CFG->GetInt("oh_secondflamebantime", 345600);
-        m_SpamBanTime = CFG->GetInt("oh_spambantime", 172800 );
-        m_VKAbuseBanTime = CFG->GetInt("oh_votekickabusebantime", 432000);
-        m_VoteMuting = CFG->GetInt("oh_votemute", 1) == 0 ? false : true;
-        m_VoteMuteTime = CFG->GetInt("oh_votemutetime", 180);
-        m_AutoEndTime = CFG->GetInt("autoend_votetime", 120);
-        m_AllowHighPingSafeDrop = CFG->GetInt("oh_allowsafedrop", 1);
-        m_MinPauseLevel = CFG->GetInt("oh_minpauselevel", 3);
-        m_MinScoreLimit = CFG->GetInt("oh_minscorelimit", 0);
-        m_AutobanAll = CFG->GetInt("oh_autobanall", 1) == 0 ? false : true;
-        m_WC3ConnectAlias = CFG->GetString("wc3connect_alias", "WC3Connect");
-        m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;
-        m_NonAllowedDonwloadMessage = CFG->GetString("oh_downloadmessage", string());
-	//m_VoteingModes = CFG->GetInt( "oh_modevoting", 0 ) == 0 ? false : true;
+    m_FlameCheck = CFG->GetInt("oh_flamecheck", 0) == 0 ? false : true;
+    m_BotManagerName = CFG->GetString( "oh_general_botmanagername", "PeaceMaker" );
+    m_IngameVoteKick = CFG->GetInt("oh_ingamevotekick", 1) == 0 ? false : true;
+    m_LeaverAutoBanTime = CFG->GetInt("oh_leaverautobantime", 86400);
+    m_FirstFlameBanTime = CFG->GetInt("oh_firstflamebantime", 172800 );
+    m_SecondFlameBanTime = CFG->GetInt("oh_secondflamebantime", 345600);
+    m_SpamBanTime = CFG->GetInt("oh_spambantime", 172800 );
+    m_VKAbuseBanTime = CFG->GetInt("oh_votekickabusebantime", 432000);
+    m_VoteMuting = CFG->GetInt("oh_votemute", 1) == 0 ? false : true;
+    m_VoteMuteTime = CFG->GetInt("oh_votemutetime", 180);
+    m_AutoEndTime = CFG->GetInt("autoend_votetime", 120);
+    m_AllowHighPingSafeDrop = CFG->GetInt("oh_allowsafedrop", 1);
+    m_MinPauseLevel = CFG->GetInt("oh_minpauselevel", 3);
+    m_MinScoreLimit = CFG->GetInt("oh_minscorelimit", 0);
+    m_AutobanAll = CFG->GetInt("oh_autobanall", 1) == 0 ? false : true;
+    m_WC3ConnectAlias = CFG->GetString("wc3connect_alias", "WC3Connect");
+    m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;
+    m_NonAllowedDonwloadMessage = CFG->GetString("oh_downloadmessage", string());
+	m_VoteMode = CFG->GetInt( "oh_votemode", 0 ) == 0 ? false : true;
+    m_MaxVotingTime = CFG->GetInt( "oh_votemode_time", 30 );
+    m_RandomMode = CFG->GetInt( "oh_votemode_random", 0 ) == 0 ? false : true;
+    m_HideMessages = CFG->GetInt( "oh_hideleavermessages", 1 ) == 0 ? false : true;
+    m_DenieCountriesOnThisBot = CFG->GetInt( "oh_deniedcountries", 1 ) == 0 ? false : true;
+    m_KickSlowDownloader = CFG->GetInt("oh_kickslowdownloader", 1 ) == 0 ? false :  true;
+    m_VirtualBanLobby = CFG->GetInt("oh_virtualbanlobby", 1 ) == 0 ? false : true;
 }
 
 void CGHost :: ExtractScripts( )
@@ -1821,14 +1864,13 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         m_CallableGameUpdate = m_DB->ThreadedGameUpdate(m_CurrentGame->GetMapName( ), m_CurrentGame->GetGameName(), m_CurrentGame->GetOwnerName(), m_CurrentGame->GetCreatorName(), m_CurrentGame->GetSlotsOccupied(), m_CurrentGame->GetPlayerList( ), m_CurrentGame->GetSlotsOccupied() + m_CurrentGame->GetSlotsOpen(), TotalGames, TotalPlayers, true);
         m_LastGameUpdateTime = GetTime();
     }
-    m_CurrentGame->GAME_Print( 11, "", "", "System", "", "Game Created ["+m_CurrentGame->GetMapName( )+"|"+m_CurrentGame->GetGameName()+"] game created by ["+m_CurrentGame->GetCreatorName()+"]" );
 }
 
 bool CGHost :: FlameCheck( string message )
 {
 	transform( message.begin( ), message.end( ), message.begin( ), ::tolower );
 
-	char forbidden[] = {",.!�$%&/()={[]}*'+#-_.:,;?|"};
+	char forbidden[] = {",.!ï¿½$%&/()={[]}*'+#-_.:,;?|"};
 	char *check;
 	int len = message.length();
 	int c = 1;
@@ -1891,6 +1933,7 @@ void CGHost :: LoadRules( )
     string File = "rules.txt";
     string line;
     ifstream myfile(File.c_str());
+    m_Rules.clear();
     if (myfile.is_open())
     {
 	while ( getline (myfile,line) )
@@ -1921,6 +1964,7 @@ void CGHost :: LoadRanks( )
     string File = "ranks.txt";
     ifstream in;
     in.open( File.c_str() );
+    m_Ranks.clear();
     if( !in.fail( ) )
     {
             // don't print more than 8 lines
@@ -1953,6 +1997,7 @@ void CGHost :: LoadInsult()
     string File = "insult.txt";
     ifstream in;
     in.open( File.c_str() );
+    m_Insults.clear();
     if( !in.fail( ) )
     {
             string Line;
@@ -1964,7 +2009,7 @@ void CGHost :: LoadInsult()
             in.close( );
     }
     else
-        CONSOLE_Print("Error. Unable to read file [insult.txt]. User levels will not work for this session.");
+        CONSOLE_Print("Error. Unable to read file [insult.txt].");
 }
 
 string CGHost :: GetTimeFunction( uint32_t type )
@@ -2027,4 +2072,99 @@ void CGHost :: ReadRoomData()
 		}
 	}
 	in.close( );
+}
+
+string CGHost :: GetAliasName( uint32_t alias ) {
+    if( m_Aliases.size( ) != 0 && m_Aliases.size( ) >= alias && alias != 0 ) {
+        return m_Aliases[alias-1];
+    }
+    return "failed";
+}
+
+uint32_t CGHost :: GetStatsAliasNumber( string alias ) {
+    uint32_t m_StatsAlias = 0;
+    uint32_t c = 1;
+    if(! alias.empty() ) {
+        transform( alias.begin( ), alias.end( ), alias.begin( ), ::tolower );
+        for( vector<string> :: iterator i = m_Aliases.begin( ); i != m_Aliases.end( ); ++i ) {
+            string Alias = *i;
+            transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
+            if( Alias.substr(0, alias.size( ) ) == alias || Alias == alias ) {
+                m_StatsAlias = c;
+                break;
+            }
+            c++;
+        }
+
+        if( m_StatsAlias == 0 ) {
+            CONSOLE_Print( "Did not found any alias for ["+alias+"]" );
+        }
+    } else {
+        m_StatsAlias = m_CurrentGame->m_GameAlias;
+    }
+    return m_StatsAlias;
+}
+
+/**
+ * 
+ * This function does switch a long mode into a saved shorten mode which is avaible for lod.
+ * Modes which contain more than 10 caracters cant be encoded on LoD, so the map owners added shorten modes
+ * The modes can be found here: http://legendsofdota.com/index.php?/page/index.html
+ * 
+ * @param fullmode
+ * @return shorten mode
+ */
+string CGHost :: GetLODMode( string fullmode ) {
+    string shortenmode = fullmode;
+    if(fullmode == "sdzm3lseb")
+        shortenmode = "rgc";
+    else if(fullmode == "sds5ebzm")
+        shortenmode = "rgc2";
+    else if(fullmode == "sds6d2oseb")
+        shortenmode = "rgc3";
+    else if(fullmode == "mds6d5ulabosfnzm")
+        shortenmode = "md";
+    else if(fullmode == "sds6d5ulabosfnzm")
+        shortenmode = "sd";
+    else if(fullmode == "aps6ulabosfnzm")
+        shortenmode = "ap";
+    else if(fullmode == "ardms6omfrulabzm")
+        shortenmode = "ar";
+    else if(fullmode == "sds6sofnulboabd3")
+        shortenmode = "chev1";
+    else if(fullmode == "ardms6sofnulboab")
+        shortenmode = "chev2";
+    else if(fullmode == "aps6fnulboabssosls")
+        shortenmode = "chev3";
+
+    return shortenmode;
+}
+
+string CGHost :: GetMonthInWords( string month ) {
+    if(month=="1")
+        return "January";
+    else if(month=="2")
+        return "February";
+    else if(month=="3")
+        return "March";
+    else if(month=="4")
+        return "April";
+    else if(month=="5")
+        return "May";
+    else if(month=="6")
+        return "June";
+    else if(month=="7")
+        return "July";
+    else if(month=="8")
+        return "August";
+    else if(month=="9")
+        return "September";
+    else if(month=="10")
+        return "Ocotober";
+    else if(month=="11")
+        return "November";
+    else if(month=="12")
+        return "December";
+    else
+        return "unknown";
 }

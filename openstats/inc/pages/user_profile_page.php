@@ -105,6 +105,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	     $imagename = strtolower($_FILES['avatar_upload']['name']);
 		 $fileExt = end( explode('.', $imagename) );
 		 $savedName = generate_hash(4)."_".generate_hash(12).".".$fileExt;
+		 $savedName = uniqid( time() ).".".$fileExt;
          $source = $_FILES['avatar_upload']['tmp_name'];
          $target = "img/avatars/".$savedName;
 		 //die($fileExt);
@@ -127,7 +128,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
            imagecopyresampled($tn, $image, 0, 0, 0, 0, $modwidth, $modheight, $width, $height); 
 		   
 		   //SAVE IMAGE AND REMOVE UPLOADED
-		   $NewSavedName = "profile_".generate_hash(3)."_".generate_hash(6)."_".generate_hash(6).".".$fileExt;
+		   $NewSavedName = "profile_".uniqid( time() ).".".$fileExt;
 		   $NewTarget = "img/avatars/".$NewSavedName;
 		   
 		   if ( $fileExt == "jpg")  imagejpeg($tn, $NewTarget, $ImageQuality); else
@@ -208,7 +209,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $ProfileData[$c]["hide_stats"] = 0;
 	 //CHECK POINTS FOR BNET USERS
      if ( $row["user_bnet"]>=1 ) {
-	    $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE player = :player LIMIT 1");
+	    $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE player = :player ORDER BY id DESC LIMIT 1");
 		$sth->bindValue(':player', $row["user_name"], PDO::PARAM_STR);
 		$result = $sth->execute();
 	  

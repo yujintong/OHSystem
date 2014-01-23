@@ -8,6 +8,28 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 //$HomeKeywords = strtolower($row["gamename"]).','.$HomeKeywords;
      $MenuClass["top"] = "active";
      $orderby = "`score` DESC";
+	 
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+	 
    
    if ( isset($_GET["sort"]) ) {
      if ( $_GET["sort"] == "score") $orderby = "`score` DESC";
@@ -27,18 +49,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 if ( $_GET["sort"] == "streak") $orderby = "(`maxstreak`) DESC";
    }
    
-   if ( isset($_GET["L"]) AND strlen($_GET["L"]) == 1 ) {
-     $sql = " AND player LIKE ('".strtolower($_GET["L"])."%') ";
-   } else $sql = "";
-   
-   
-  if ( isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) {
-    $country = strip_tags(substr($_GET["country"],0,2));
-    $sql = " AND country_code = '".$country."' ";
- }  
- 
+
   $currentYear  = date("Y", time() );
-  $currentMonth = date("m", time() );
+  $currentMonth = date("n", time() );
   
   $sqlCurrentDate = " AND `month` = '".$currentMonth."' AND `year` = '".$currentYear."'";
   
@@ -46,8 +59,37 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
     $sqlCurrentDate = " AND `year` = '".(int)$_GET["y"]."' ";
     $sqlCurrentDate.= " AND `month` = '".(int)$_GET["m"]."' ";
+	
+	$HomeTitle.=" | ".(int)$_GET["m"]."/".(int)$_GET["y"];
   }
   
+   $sql = "";
+	  
+   if ( isset($_GET["L"]) AND strlen($_GET["L"]) == 1 ) {
+     $sql = " AND player LIKE ('".strtolower($_GET["L"])."%') ";
+	 
+	 $HomeTitle.=" | ".strip_tags($_GET["L"])."";
+   }
+   
+   
+  if ( isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) {
+    $country = strip_tags(substr($_GET["country"],0,2));
+    $sql.= " AND country_code = '".$country."' ";
+	
+	$HomeTitle.=" | $country";
+ } 
+ 
+  if ( isset($_GET["game_type"]) AND is_numeric($_GET["game_type"]) ) {
+    
+	$sql.=" AND alias_id='". ( int ) $_GET["game_type"]."' ";
+   
+  } else {
+    //DefaultGameType
+  $sql.=" AND alias_id='". $DefaultGameType."' ";
+  }
+  
+
+ 
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
   WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
   $result = $sth->execute();
@@ -104,6 +146,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$TopData[$c]["counter"]        = $counter;
 	$TopData[$c]["id"]        = (int)($row["id"]);
 	$TopData[$c]["player"]  = ($row["player"]);
+	
+	$TopData[$c]["realm"] = ($row["realm"]);
 
 	$TopData[$c]["score"]  = number_format($row["score"],0);
 	$TopData[$c]["games"]  = number_format($row["games"],0);
@@ -119,8 +163,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$TopData[$c]["towers"]  = ($row["towers"]);
 	$TopData[$c]["rax"]  = ($row["rax"]);
 	$TopData[$c]["banned"]  = ($row["banned"]);
-	$TopData[$c]["warn_expire"]  = ($row["warn_expire"]);
-	$TopData[$c]["warn"]  = ($row["warn"]);
 	$TopData[$c]["admin"]  = ($row["user_level"]);
 	
 	if ( $row["user_level"]>1 ) $TopData[$c]["banned"] = 0;
@@ -229,5 +271,5 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$c++;
 	}	
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
-
+	
 ?>

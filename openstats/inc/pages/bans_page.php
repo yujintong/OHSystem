@@ -93,7 +93,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$BansData[$c]["admin"]  = ($row["admin"]);
 	if ( empty($row["admin"]) ) $BansData[$c]["admin"] = '<span class="banned">[system]</span>';
 	$BansData[$c]["reason"]  = substr(stripslashes($row["reason"]),0, 30);
-	$BansData[$c]["reason"] = str_replace("&amp;#039;", "'", $BansData[$c]["reason"]);
+	$BansData[$c]["reason"] = str_replace( array("&amp;#039;", "&amp;quot;"), array("'", '"'), $BansData[$c]["reason"]);
 	$BansData[$c]["reason_full"]  = ($row["reason"]);
 	$BansData[$c]["expiredate"]   = ($row["expiredate"]);
 	$BansData[$c]["warn"]  = ($row["warn"]);

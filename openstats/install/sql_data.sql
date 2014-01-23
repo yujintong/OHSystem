@@ -21,10 +21,21 @@ CREATE TABLE IF NOT EXISTS `oh_adminlog` (
   KEY `gameid` (`gameid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `oh_aliases`;
+CREATE TABLE IF NOT EXISTS `oh_aliases` (
+  `alias_id` int(11) NOT NULL,
+  `alias_name` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `default_alias` tinyint(1) NOT NULL,
+  PRIMARY KEY (`alias_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO `oh_aliases` (`alias_id`, `alias_name`, `default_alias`) VALUES (1, 'DotA', 1);
+
 DROP TABLE IF EXISTS `oh_bans`;
 CREATE TABLE IF NOT EXISTS `oh_bans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `server` varchar(100) NOT NULL,
   `name` varchar(15) NOT NULL,
   `ip` varchar(16) NOT NULL,
@@ -181,6 +192,18 @@ CREATE TABLE IF NOT EXISTS `oh_downloads` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `oh_goals` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `goal` tinyint(4) NOT NULL,
+  `min_games` smallint(6) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
+  `reward` smallint(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `start` (`start_date`),
+  KEY `end` (`end_date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `oh_gamelist`;
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -222,6 +245,7 @@ DROP TABLE IF EXISTS `oh_games`;
 CREATE TABLE IF NOT EXISTS `oh_games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `server` varchar(100) NOT NULL,
   `map` varchar(100) NOT NULL,
   `datetime` datetime NOT NULL,
@@ -409,6 +433,7 @@ DROP TABLE IF EXISTS `oh_stats`;
 CREATE TABLE IF NOT EXISTS `oh_stats` (
   `botid` int(11) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `alias_id` smallint(11) NOT NULL,
   `player` varchar(30) NOT NULL,
   `player_lower` varchar(30) NOT NULL,
   `last_seen` datetime NOT NULL,
@@ -434,8 +459,6 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `rax` int(11) NOT NULL,
   `banned` tinyint(1) NOT NULL,
   `penalty` tinyint(4) NOT NULL,
-  `warn_expire` datetime NOT NULL,
-  `warn` int(11) NOT NULL,
   `realm` varchar(100) NOT NULL,
   `reserved` int(11) NOT NULL,
   `leaver` int(11) NOT NULL,
@@ -478,6 +501,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   `user_email` varchar(60) NOT NULL,
   `user_joined` int(11) NOT NULL DEFAULT '0',
   `user_level` tinyint(1) NOT NULL,
+  `user_level_expire` datetime NOT NULL,
   `admin_realm` varchar(64) NOT NULL,
   `expire_date` datetime NOT NULL,
   `user_last_login` int(11) NOT NULL DEFAULT '0',
@@ -503,8 +527,8 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   KEY `confirm` (`confirm`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `w3mmdplayers`;
-CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
+DROP TABLE IF EXISTS `oh_w3mmdplayers`;
+CREATE TABLE IF NOT EXISTS `oh_w3mmdplayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
   `category` varchar(25) NOT NULL,
@@ -514,11 +538,13 @@ CREATE TABLE IF NOT EXISTS `w3mmdplayers` (
   `flag` varchar(32) NOT NULL,
   `leaver` int(11) NOT NULL,
   `practicing` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `gameid` (`gameid`),
+  KEY `pid` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `w3mmdvars`;
-CREATE TABLE IF NOT EXISTS `w3mmdvars` (
+DROP TABLE IF EXISTS `oh_w3mmdvars`;
+CREATE TABLE IF NOT EXISTS `oh_w3mmdvars` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) NOT NULL,
   `gameid` int(11) NOT NULL,
@@ -527,8 +553,10 @@ CREATE TABLE IF NOT EXISTS `w3mmdvars` (
   `value_int` int(11) DEFAULT NULL,
   `value_real` double DEFAULT NULL,
   `value_string` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `gameid` (`gameid`),
+  KEY `pid` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `wc3connect`;
 CREATE TABLE IF NOT EXISTS `wc3connect` (

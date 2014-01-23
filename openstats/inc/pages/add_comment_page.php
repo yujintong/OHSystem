@@ -14,7 +14,7 @@ if (os_is_logged() AND isset($_SESSION["level"] ) AND $_SESSION["level"]>=9 AND 
    $result = $sth->execute();
    $r = $sth->fetch(PDO::FETCH_NUM);
    $TotalComments =  $r[0];
-   $update = $db->exec("UPDATE ".OSDB_NEWS." SET ".OSDB_COMMENTS." = '".(int) $TotalComments."' WHERE news_id = '". (int) $pid."' ");
+   $update = $db->exec("UPDATE ".OSDB_NEWS." SET comments = '".(int) $TotalComments."' WHERE news_id = '". (int) $pid."' ");
    
    header('location: '.OS_HOME.'?post_id='.$pid.'#comments'); die;
 }

@@ -1,21 +1,24 @@
-/*
-
-   Copyright [2008] [Trevor Hogan]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
-
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #ifndef GAME_BASE_H
@@ -68,29 +71,30 @@ public:
 	CGHost *m_GHost;
 
 protected:
-    	CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
+    CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
 	vector<CDBBan *> m_DBBans;					// vector of potential ban data for the database (see the Update function for more info, it's not as straightforward as you might think)
 	CTCPServer *m_Socket;							// listening socket
 	CGameProtocol *m_Protocol;						// game protocol
-	vector<CPotentialPlayer *> m_Potentials;		// vector of potential players (connections that haven't sent a W3GS_REQJOIN packet yet)
+    map<uint32_t, CPotentialPlayer*> m_BannedPlayers;
+    vector<CPotentialPlayer *> m_Potentials;		// vector of potential players (connections that haven't sent a W3GS_REQJOIN packet yet)
 	vector<CCallableScoreCheck *> m_ScoreChecks;
-        vector<PairedPWCheck> m_PairedPWChecks;				// vector for checking if a player joined with a password
+    vector<PairedPWCheck> m_PairedPWChecks;				// vector for checking if a player joined with a password
 	vector<Pairedpm> m_Pairedpms;
 	vector<PairedWPCheck> m_PairedWPChecks;
-        vector<PairedBanCheck2> m_PairedBanCheck2s;
-        vector<PairedLogUpdate> m_PairedLogUpdates;
-        CCallableGameDBInit *m_CallableGameDBInit;
+    vector<PairedBanCheck2> m_PairedBanCheck2s;
+    vector<PairedLogUpdate> m_PairedLogUpdates;
+    CCallableGameDBInit *m_CallableGameDBInit;
 	queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
 	vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)
 	set<string> m_IgnoredNames;						// set of player names to NOT print ban messages for when joining because they've already been printed
 	set<string> m_IPBlackList;						// set of IP addresses to blacklist from joining (todotodo: convert to uint32's for efficiency)
 	vector<CGameSlot> m_EnforceSlots;				// vector of slots to force players to use (used with saved games)
 	vector<PIDPlayer> m_EnforcePlayers;				// vector of pids to force players to use (used with saved games)
-        CCallableBanList *m_CallableBanList;			// threaded database ban list in progress
-        vector<CDBBan *> m_Bans;						// vector of cached bans
-        vector<CCallableConnectCheck *> m_ConnectChecks;        // session validation for wc3connect system
-        CCallableTBRemove *m_CallableTBRemove;
-        CCallablePList *m_CallablePList;                // threaded database permission list in progress
+    CCallableBanList *m_CallableBanList;			// threaded database ban list in progress
+    vector<CDBBan *> m_Bans;						// vector of cached bans
+    vector<CCallableConnectCheck *> m_ConnectChecks;        // session validation for wc3connect system
+    CCallableTBRemove *m_CallableTBRemove;
+    CCallablePList *m_CallablePList;                // threaded database permission list in progress
 	CSaveGame *m_SaveGame;							// savegame data (this is a pointer to global data)
 	CReplay *m_Replay;								// replay
 	bool m_Exiting;									// set to true and this class will be deleted next update
@@ -113,7 +117,6 @@ protected:
 	uint32_t m_Latency;								// the number of ms to wait between sending action packets (we queue any received during this time)
 	uint32_t m_SyncLimit;							// the maximum number of packets a player can fall out of sync before starting the lag screen
 	uint32_t m_SyncCounter;							// the number of actions sent so far (for determining if anyone is lagging)
-	uint32_t m_CreationTime;						// GetTime when the game was created
 	uint32_t m_LastPingTime;						// GetTime when the last ping was sent
 	uint32_t m_LastRefreshTime;						// GetTime when the last game refresh was sent
 	uint32_t m_LastDownloadTicks;					// GetTicks when the last map download cycle was performed
@@ -172,38 +175,41 @@ protected:
 	bool m_ModeVoted;
 	uint32_t m_LatestSlot;
 	uint32_t m_Leavers;
-        uint32_t m_LastPermissionRefresh;
-        vector<string> m_GarenaPermissions;
-        uint32_t m_StartedVoteStartTime;
-        uint32_t m_LastBanRefreshTime;
-        uint32_t m_VoteMuteEventTime;
-        string m_VoteMutePlayer;
-        uint32_t m_VoteMuteTargetTeam;
-        uint32_t m_MuteVotes;
-        uint32_t m_EnemyVotes;
-        uint32_t m_MuteType;
-        uint32_t m_LoosingTeam;
-        bool m_EndGame;
-        uint32_t m_BreakAutoEndVotesNeeded;
-        uint32_t m_BreakAutoEndVotes;
-        uint32_t m_EndTicks;
+    uint32_t m_StartedVoteStartTime;
+    uint32_t m_VoteMuteEventTime;
+    string m_VoteMutePlayer;
+    uint32_t m_VoteMuteTargetTeam;
+    uint32_t m_MuteVotes;
+    uint32_t m_EnemyVotes;
+    uint32_t m_MuteType;
+    uint32_t m_LoosingTeam;
+    bool m_EndGame;
+    uint32_t m_BreakAutoEndVotesNeeded;
+    uint32_t m_BreakAutoEndVotes;
+    uint32_t m_EndTicks;
+    uint32_t m_StartEndTicks;
+    bool m_Voted;                                                           // define if the vote process is already done when this option is enabled
+    uint32_t m_VotedTimeStart;                                              // when the voting has started, a timer function
+    bool m_AllowMapTrading;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
 	virtual ~CBaseGame( );
 
-        CMap *m_Map;
-        uint16_t m_HostPort;                                                    // the port to host games on
-        uint32_t m_EntryKey;                                                    // random entry key for LAN, used to prove that a player is actually joining from LAN
-        uint32_t m_HostCounter;                                                 // a unique game number
-        bool m_GameLoading;                                                             // if the game is currently loading or not
-        bool m_GameLoaded;                                                              // if the game has loaded or not
+    vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
+    CMap *m_Map;
+    uint16_t m_HostPort;                                                    // the port to host games on
+    uint32_t m_EntryKey;                                                    // random entry key for LAN, used to prove that a player is actually joining from LAN
+    uint32_t m_HostCounter;                                                 // a unique game number
+    bool m_GameLoading;                                                             // if the game is currently loading or not
+    bool m_GameLoaded;                                                              // if the game has loaded or not
 	string m_GameName;
 	vector<string> m_BasicDenied;
-        vector<Pairedpenp> m_Pairedpenps;
-        vector<PairedBanAdd> m_PairedBanAdds;           // vector of paired threaded database ban adds in progress
-        vector<CGameSlot> m_Slots;                                              // vector of slots
+    vector<Pairedpenp> m_Pairedpenps;
+    vector<PairedBanAdd> m_PairedBanAdds;           // vector of paired threaded database ban adds in progress
+    vector<CGameSlot> m_Slots;                                              // vector of slots
 	vector<CGamePlayer *> m_Players;                        // vector of players
+    uint32_t m_CreationTime;						// GetTime when the game was created
 	virtual vector<CGameSlot> GetEnforceSlots( )	{ return m_EnforceSlots; }
 	virtual vector<PIDPlayer> GetEnforcePlayers( )	{ return m_EnforcePlayers; }
 	virtual CSaveGame *GetSaveGame( )				{ return m_SaveGame; }
@@ -226,6 +232,7 @@ public:
 	virtual bool GetGameLoading( )					{ return m_GameLoading; }
 	virtual bool GetGameLoaded( )					{ return m_GameLoaded; }
 	virtual bool GetLagging( )						{ return m_Lagging; }
+    virtual uint32_t GetCreationTime( )                                     { return m_CreationTime; }
 
 	virtual void SetEnforceSlots( vector<CGameSlot> nEnforceSlots )		{ m_EnforceSlots = nEnforceSlots; }
 	virtual void SetEnforcePlayers( vector<PIDPlayer> nEnforcePlayers )	{ m_EnforcePlayers = nEnforcePlayers; }
@@ -235,6 +242,7 @@ public:
 	virtual void SetMaximumScore( double nMaximumScore )				{ m_MaximumScore = nMaximumScore; }
 	virtual void SetRefreshError( bool nRefreshError )					{ m_RefreshError = nRefreshError; }
 	virtual void SetMatchMaking( bool nMatchMaking )					{ m_MatchMaking = nMatchMaking; }
+    virtual void SetCreationTime( uint32_t nCreationTime )                                                         { m_CreationTime = nCreationTime; }
 
 	virtual uint32_t GetNextTimedActionTicks( );
 	virtual uint32_t GetSlotsOccupied( );
@@ -274,6 +282,7 @@ public:
 	virtual void SendAllActions( );
 	virtual void SendWelcomeMessage( CGamePlayer *player );
 	virtual void SendEndMessage( );
+    virtual void SendBannedInfo( CPotentialPlayer *player, CDBBan *Ban );
 
 	// events
 	// note: these are only called while iterating through the m_Potentials or m_Players vectors
@@ -349,8 +358,6 @@ public:
 	virtual void CreateFakePlayer( );
 	virtual void DeleteFakePlayer( );
 	virtual bool is_digits( const std::string &str );
-        CDBBan *IsBannedName( string name );
-	CDBBan *IsBannedIP( string ip );
 	double m_ScourgeWinPoints;						 // scourge value to calculate the winperc
 	double m_SentinelWinPoints;						 // sentinel value to calculate the winperc
 	double m_TotalWinPoints;						 // total value to calculate the winperc
@@ -359,20 +366,26 @@ public:
 	string m_LogData;
 	vector<string> m_AdminLog;
 	uint32_t m_GameTicks;
-        bool m_PlayerUpdate;
-        uint32_t m_ChatID;
+    bool m_PlayerUpdate;
+    uint32_t m_ChatID;
 	virtual bool IsDenied( string username, string ip );
-        bool m_PauseReq;
-        uint32_t m_PauseIntroTime;
-        bool m_Paused;
-        uint32_t m_PauseTicks;
-        uint32_t m_PauseTime;
+    virtual bool HasDeniedWordPharse( string username );
+    bool m_PauseReq;
+    uint32_t m_PauseIntroTime;
+    bool m_Paused;
+    uint32_t m_PauseTicks;
+    uint32_t m_PauseTime;
 	bool m_SendPauseInfo;
-        virtual BYTEARRAY Silence(BYTEARRAY PIDs);
-        virtual void GAME_Print( uint32_t type, string MinString, string SecString, string Player1, string Player2, string message );
+    virtual BYTEARRAY Silence(BYTEARRAY PIDs);
+    virtual void GAME_Print( uint32_t type, string MinString, string SecString, string Player1, string Player2, string message );
 	virtual void AnnounceEvent( uint32_t randomnumber );
 	string GetColoredName( string defaultname );
-        virtual string GetJoinedRealm( uint32_t hostcounter );
+    virtual string GetJoinedRealm( uint32_t hostcounter );
+    uint32_t m_GameAlias;
+    string m_GameAliasName;
+    string m_lGameAliasName;
+    virtual void StartVoteMode( );
+    void GetVotingModes( string allmodes );
 };
 
 #endif

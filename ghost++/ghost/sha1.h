@@ -1,19 +1,24 @@
-/*
-	100% free public domain implementation of the SHA-1
-	algorithm by Dominik Reichl <Dominik.Reichl@tiscali.de>
-
-	* modified by Trevor Hogan for use with GHost++ *
-
-	=== Test Vectors (from FIPS PUB 180-1) ===
-
-	"abc"
-		A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
-
-	"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
-		84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
-
-	A million repetitions of "a"
-		34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #ifndef ___SHA1_H___

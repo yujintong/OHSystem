@@ -162,6 +162,10 @@ $TotalFiles = $c;
 	  <th width="90">Setup BOT:</th>
 	  <th>
 	  <a class="menuButtons" href="<?=OS_HOME?>adm/?announcements">Annoucements</a>
+	  <?php if (OS_IsRoot() ) { ?>
+	  <a class="menuButtons" href="<?=OS_HOME?>adm/?aliases">Game Types (Aliases)</a>
+	  <?php } ?>
+	  <a class="menuButtons" href="<?=OS_HOME?>adm/?ban_names">Ban Names</a>
 	  <a class="menuButtons" href="<?=OS_HOME?>adm/?word_filter">Word filter</a>
 	  <a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;addcountry">Ban Country</a>
 	  <a class="menuButtons" href="<?=OS_HOME?>adm/?remote">Remote control</a>
@@ -471,5 +475,7 @@ if ( isset( $_GET["announcements"]) ) include('admin_announcements.php'); else
 if ( isset( $_GET["ban_email"]) AND OS_IsRoot() )     include('admin_ban_email.php'); else
 if ( isset( $_GET["geoip"]) )       include('admin_geoip.php'); else
 if ( isset( $_GET["admin_logs"])    AND $_SESSION["level"]>=10 ) include('admin_logs.php'); else 
-if ( isset( $_GET["warns"]) )       include('admin_warns.php');
+if ( isset( $_GET["warns"]) )       include('admin_warns.php'); else 
+if ( isset( $_GET["aliases"]) )     include('admin_aliases.php'); else
+if ( isset( $_GET["ban_names"]) )     include('admin_banned_names.php');
 ?>

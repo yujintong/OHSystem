@@ -43,7 +43,8 @@ require_once('../../inc/class.db.PDO.php');
 
 // below: just to load default constants (we dont want to load config.php, because cron+session conflict)
 // this is temporary solution
-$website = ''; $HomeTitle = ''; $TimeZone = ''; $BotName = '';
+if (!isset($TimeZone)) $TimeZone = '';
+$website = ''; $HomeTitle = ''; $BotName = '';
 $DefaultStyle = 'ghost'; $default_language = 'english';
 $DateFormat = ''; $MinDuration = ''; $DefaultMap = 'dota';
 $TopPage = 1; $HeroesPage = '';  $OnlineOfflineOnTopPage = '';
@@ -52,7 +53,7 @@ $TopPage = 1; $HeroesPage = '';  $OnlineOfflineOnTopPage = '';
 require_once("../../inc/default-constants.php");
 require_once("../../inc/common-queries.php");
 
-date_default_timezone_set($TimeZone);
+if (!empty($TimeZone)) date_default_timezone_set($TimeZone);
 
 $CronTempFile = '_working.txt';
 
@@ -122,6 +123,7 @@ do{
    file_put_contents($CronTempFile, $counter );
    $counter++;
    $debug = "";
+   $fn = time();
    
    //TRUNCATE TABLE - clean up
    	$sth = $db->prepare("SELECT COUNT(*) FROM cron_logs LIMIT 1");
@@ -140,7 +142,7 @@ do{
 if ($BanIPUpdate == 1) {  
 
    $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." 
-   WHERE id>=1 AND country='' AND (ip='0.0.0.0') AND ip NOT LIKE (':%')
+   WHERE id>=1 AND country='' AND ip NOT LIKE (':%')
    ORDER BY RAND()
    LIMIT $MaxQueries");
    
@@ -190,18 +192,18 @@ if ($BanIPUpdate == 1) {
 
 
 
-
    //COUNTRY UPDATE FROM "stats" table
  if ($StatsCountryUpdate == 1) {
    
     $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." 
     WHERE country = ''
+	ORDER BY RAND()
     LIMIT $MaxQueries");
     $result = $sth->execute();
 	$total = $sth->rowCount();
 	
 	$debug = "";
-
+	$count = 0;
 	 while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
     $name = $row["player"];
 	$Letter = ""; $Country = "";
@@ -211,16 +213,18 @@ if ($BanIPUpdate == 1) {
 	$Letter   = geoip_country_code_by_addr($GeoIPDatabase, $ip);
 	$Country  = geoip_country_name_by_addr($GeoIPDatabase, $ip);
 	
-	if ( substr($ip, 0,7) == "23.243." OR substr($ip, 0,7) == "23.242." OR substr($ip, 0,7) == "23.241." ) {
-	 $Letter  = "US";
-	 $Country = "United States";
-	}
+	// if ( substr($ip, 0,7) == "23.243." OR substr($ip, 0,7) == "23.242." OR substr($ip, 0,7) == "23.241." ) {
+	///   $Letter  = "US";
+	//   $Country = "United States";
+	//}
 	
+
 	if ( !empty($Country) ) {
-	$upd = $db->prepare("UPDATE ".OSDB_STATS." SET country='".$Country."', country_code = '".$Letter."' WHERE id = '".$row["id"]."' ");
+
+	$upd = $db->prepare("UPDATE ".OSDB_STATS." SET country='".convEnt2($Country)."', country_code = '".$Letter."' WHERE id = '".$row["id"]."' ");
 	$result = $upd->execute();
-	
-	if ($total>=1 AND empty($debug) )  $debug = " <b>Updating Countries (found: $total entries)</b>";
+	$count++;
+	if ($total>=1 AND empty($debug) AND $count>=1 )  $debug = " <b>Updating Countries (found: $total entries)</b>";
 	
 	if ( $CronReportDetails ==2 ) $debug.= "<div><b>$name</b>, $ip, $Letter, $Country</div>";
 	} else {
@@ -242,9 +246,104 @@ if ($BanIPUpdate == 1) {
  }
  
  
-  
-   
-   
+ 
+ 
+    //Check user bans from stats table (and remove false bans)
+ if ($CheckUserBans == 1) {
+    $debug = "";
+	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE banned = 1 ORDER BY RAND() LIMIT $MaxQueries");
+    $result = $sth->execute(); 
+	
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	
+	 	$sth2 = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE name = '".$row["player"]."' ");
+        $result2 = $sth2->execute(); 
+		
+		$row2 = $sth2->fetch(PDO::FETCH_ASSOC);
+	    if ($sth2->rowCount() == 0 ) {
+		
+		 $upd = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 WHERE player = '".$row["player"]."' ");
+		 $result = $upd->execute();
+		 if (empty($debug) ) $debug.="Fixed (removed) bans: ";
+		 $debug.=$row["player"].", ";
+		}
+	}
+	$debug = substr( $debug, 0, (strlen($debug)-2) );
+	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND !empty($debug) ) {
+    $cron_data = 'DAEMON: '.$debug.'';
+	$sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	$result = $sth->execute();  
+	}
+	
+	$debug = "";
+
+    }
+	
+	
+	
+	//REMOVE OLD GAMES 
+ if ($RemoveOldLiveGames == 1) {
+	   $debug = "";
+   	   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
+	   $result = $sth->execute();
+	   $r = $sth->fetch(PDO::FETCH_NUM);
+	   $Total = $r[0];
+	   
+	   if ($Total>=1) {
+	   $del = $db->prepare("DELETE FROM ".OSDB_GAMESTATUS." WHERE gametime <= ( NOW() - INTERVAL 2 HOUR)");
+	   $result = $del->execute();
+	   
+	   $debug.=" Removed $Total inactive games (games status).";
+	   }
+	   
+   	   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." WHERE datetime <= ( NOW() - INTERVAL 6 HOUR) AND gamestatus=0 AND stats = 0");
+	   $result = $sth->execute();
+	   $r = $sth->fetch(PDO::FETCH_NUM);
+	   $Total2 = $r[0];
+	   
+	   if ($Total2>=1) {
+	   $del2 = $db->prepare("DELETE FROM ".OSDB_GAMES." WHERE datetime <= ( NOW() - INTERVAL 6 HOUR) AND gamestatus=0 AND stats = 0");
+	   $result = $del2->execute();
+	   $debug.=" Removed $Total2 inactive games (games table).";
+	   }
+	
+    //Remove finished games	
+    $del = $db->prepare("DELETE FROM ".OSDB_GAMESTATUS." WHERE gamestatus>=3");
+    $result = $del->execute();
+	
+	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND !empty($debug) ) {
+    $cron_data = 'DAEMON: '.$debug;
+	$sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	$result = $sth->execute();  
+ }
+ }
+ 
+ 
+   //AUTO DELETE OLD REPLAYS
+   if ($AutoDeleteOldReplays>=1) {
+    $c = 0;
+    foreach (new DirectoryIterator('../../'.$ReplayLocation.'') as $fileInfo) {
+    if(!$fileInfo->isDot()) {
+	  $FileExtension = pathinfo($fileInfo->getFilename(), PATHINFO_EXTENSION);
+	  $FileExtension = strtolower($FileExtension);
+	  $FileTime = $fileInfo->getCTime();
+	    if ( $FileTime + ( 3600*24*$AutoDeleteOldReplays ) <=time() AND $FileExtension == "w3g") {
+		$c++;
+		unlink("../../".$ReplayLocation."/".$fileInfo->getFilename());
+		}
+	  }
+	}
+	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND $c>=1 ) {
+       $cron_data = 'DAEMON: Deleted total of <b>'.$c.' replays</b>';
+	   $sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	   $result = $sth->execute();  
+      }
+   }
+ 
+ 
    
    //END WORK HERE
    
@@ -279,6 +378,7 @@ if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
 	
 	<link rel="shortcut icon" href="<?=OS_THEME_PATH?>favicon.ico" />
 	<link rel="stylesheet" href="<?=OS_THEME_PATH?>style.css" type="text/css" />
+	<title>Daemon - OHSystem</title>
 	<style>
 
 	</style>

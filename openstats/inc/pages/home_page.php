@@ -75,6 +75,15 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$CommentsData[$c]["phpbb_id"]  = ($row["phpbb_id"]);
 	$CommentsData[$c]["smf_id"]  = ($row["smf_id"]);
 	$CommentsData[$c]["user_bnet"]  = ($row["user_bnet"]);
+	
+	if ( $row["user_level"]>=9 ) { 
+	$CommentsData[$c]["comment_class"]  = " staff"; 
+	$CommentsData[$c]["comment_class_header"]  = " staff_header "; 
+	}
+	else { 
+	     $CommentsData[$c]["comment_class"] = "";
+	     $CommentsData[$c]["comment_class_header"] = ""; 
+	     }
 	$c++;
 	}	
 	//$db->free($result);	
@@ -208,7 +217,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$RecentGamesData[$c]["duration"]  = ($row["duration"]);
 	$RecentGamesData[$c]["creatorname"]  = ($row["creatorname"]);
 	$RecentGamesData[$c]["winner"]  = ($row["winner"]);
-	$RecentGamesData[$c]["type"]  = ($row["type"]);
+	$RecentGamesData[$c]["type"]  = OS_GetGameState($row["type"], $lang["gamestate_pub"] , $lang["gamestate_priv"]);
+	
+	if ( !empty($row["flag"]) ) {
+	    if ( $row["flag"] == "winner" ) $RecentGamesData[$c]["winner"]=1;  else
+		if ( $row["flag"] == "loser" )  $RecentGamesData[$c]["winner"]=2; else 
+		 $RecentGamesData[$c]["winner"]=0;
+	}
 	
 	//REPLAY
 	 $duration = secondsToTime($row["duration"]);

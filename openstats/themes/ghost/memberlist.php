@@ -13,15 +13,15 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    <input type="hidden" name="members" />
    <input 
    type="text" 
-   value="<?=$search_members?>" 
+   value="<?=$members_search?>" 
    style="height: 26px;" 
-   onblur= "if (this.value == '')  {this.search_members = '<?=$search_members?>';}"
-   onfocus="if (this.value == '<?=$search_members?>') {this.value = '';}" 
-   name="search_members"
+   onblur= "if (this.value == '')  {this.members_search = '<?=$members_search?>';}"
+   onfocus="if (this.value == '<?=$members_search?>') {this.value = '';}" 
+   name="members_search"
    />
    
    <input type="submit" value="<?=$lang["search"]?>" class="menuButtons" />
-   <span><?=LettersLink("members", "search_members")?></span>
+   <span><?=OS_AZ_Filter('members', 'search_members')?></span>
    </form>
 	 
   <table>

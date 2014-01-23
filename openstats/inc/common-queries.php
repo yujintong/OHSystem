@@ -1,39 +1,304 @@
 <?php
-/*********************************************
-<!-- 
-*   	DOTA OPENSTATS
-*   
-*	Developers: Ivan.
-*	Contact: ivan.anta@gmail.com - Ivan
-*
-*	
-*	Please see http://openstats.iz.rs
-*	and post your webpage there, so I know who's using it.
-*
-*	Files downloaded from http://openstats.iz.rs
-*
-*	Copyright (C) 2010  Ivan
-*
-*
-*	This file is part of DOTA OPENSTATS.
-*
-* 
-*	 DOTA OPENSTATS is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    DOTA OPEN STATS is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with DOTA OPEN STATS.  If not, see <http://www.gnu.org/licenses/>
-*
--->
-**********************************************/
+/**
+ * Copyright [2013-2014] [OHsystem]
+ * 
+ * We spent a lot of time writing this code, so show some respect:
+ * - Do not remove this copyright notice anywhere (bot, website etc.)
+ * - We do not provide support to those who removed copyright notice
+ *
+ * OHSystem is free software: You can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This file is part of DOTA OPENSTATS.
+ * 
+ * You can contact the developers on: admin@ohsystem.net
+ * or join us directly here: http://ohsystem.net/forum/
+ * 
+ * Visit us also on http://ohsystem.net/ and keep track always of the latest
+ * features and changes.
+ * 
+ * 
+ * This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+ * Official GhostPP-Forum: http://ghostpp.com/
+*/
 if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
+
+function Get_w3mmdplayers($gameid) {
+    global $db;
+    global $lang;
+    $Data = array();
+    $ScourgeRow = 0;
+    $SentinelRow = 0;
+    $SetWinner = 0;
+    $Data[0]["winner"] = 0;
+    $c=0;
+        
+        $sth = $db->prepare(  "SELECT g.creatorname, g.duration, g.datetime, g.gamename, g.stats, g.views, g.map
+        FROM ".OSDB_GAMES." AS g
+        WHERE g.id='".(int)$gameid."'" );
+        $result = $sth->execute();
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        
+        $Data[$c]["creatorname"] = $row["creatorname"];
+        $Data[$c]["duration"] = secondsToTime($row["duration"]);
+        $Data[$c]["datetime"] = date( OS_DATE_FORMAT, strtotime($row["datetime"]));
+        $Data[$c]["gamename"] = $row["gamename"];
+        $Data[$c]["stats"] = $row["stats"];
+        $Data[$c]["views"] = $row["views"];
+        $Map = $row["map"];
+        
+        $sth = $db->prepare(  "SELECT w.id, w.category, w.botid, w.gameid, w.pid, w.name, w.flag, w.leaver, w.practicing, gp.ip, gp.loadingtime, gp.left, gp.leftreason
+        FROM ".OSDB_GP." as gp
+        LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = gp.gameid AND gp.name = w.name
+        WHERE w.gameid ='".(int)$gameid."' 
+        ORDER BY w.pid ASC" );
+        
+        $result = $sth->execute();
+        
+         if ( $sth->rowCount()>=1 ) {
+         
+         if ( file_exists("inc/geoip/geoip.inc") ) {
+         include("inc/geoip/geoip.inc");
+         $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
+         $GeoIP = 1;
+         }
+         
+         
+         while($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+           $Data[$c]["botid"] = $row["botid"];
+           $Data[$c]["category"] = $row["category"];
+           $Data[$c]["id"] = $row["id"];
+           $Data[$c]["gameid"] = $row["gameid"];
+           $Data[$c]["pid"] = $row["pid"];
+           $Data[$c]["name"] = $row["name"];
+           $Data[$c]["full_name"] = $row["name"];
+           $Data[$c]["userid"] = $row["name"];
+           $Data[$c]["flag"] = $row["flag"];
+           $Data[$c]["leaver"] = $row["leaver"];
+           $Data[$c]["practicing"] = $row["practicing"];
+           
+           $Data[$c]["leftreason"] = $row["leftreason"];
+           $Data[$c]["left"] = secondsToTime($row["left"]);
+           $Data[$c]["loadingtime"] = $row["loadingtime"];
+           $Data[$c]["ip"] = $row["ip"];
+           $Data[$c]["hideElement"] = ' hideElement';
+           
+           $Data[$c]["counter"] = ''.($row["pid"]+1);
+           
+           if ($GeoIP == 1 ) {
+           $Data[$c]["letter"]   = geoip_country_code_by_addr($GeoIPDatabase, $row["ip"]);
+           $Data[$c]["country"]  = geoip_country_name_by_addr($GeoIPDatabase, $row["ip"]);
+           }
+              
+           $Data[$c]["item1"] = "";  $Data[$c]["itemname1"] = ""; $Data[$c]["itemicon1"] = "empty.gif";
+           $Data[$c]["item2"] = "";  $Data[$c]["itemname2"] = ""; $Data[$c]["itemicon2"] = "empty.gif";
+           $Data[$c]["item3"] = "";  $Data[$c]["itemname3"] = ""; $Data[$c]["itemicon3"] = "empty.gif";
+           $Data[$c]["item4"] = "";  $Data[$c]["itemname4"] = ""; $Data[$c]["itemicon4"] = "empty.gif";
+           $Data[$c]["item5"] = "";  $Data[$c]["itemname5"] = ""; $Data[$c]["itemicon5"] = "empty.gif";
+           $Data[$c]["item6"] = "";  $Data[$c]["itemname6"] = ""; $Data[$c]["itemicon6"] = "empty.gif";
+           
+           $Data[$c]["heroid"] = "blank"; $Data[$c]["hero"] = "blank"; $Data[$c]["description"] = "";
+          
+           $vars = Get_w3mmdvarsString($gameid, $row["pid"], "race");
+           $Hero = Get_TDRace( $vars  );
+           $Data[$c]["hero_link"]  = 0;
+           
+           if ( !empty($Hero) AND file_exists("img/heroes/".$Hero) ) {
+           $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
+           }
+           
+           $Data[$c]["level"] = ""; 
+           $Data[$c]["banned"] = ""; $Data[$c]["admin"] = ""; $Data[$c]["score_points"] = "";   
+           $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
+           $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";
+           $Data[$c]["raxkills"] = "";  $Data[$c]["courierkills"] = ""; $Data[$c]["neutralkills"] = "";
+           $Data[$c]["gold"] = "";       
+           
+           $Data[$c]["side"] = "";
+           
+           $LimitTeam = W3mmdLimitTeams( $Map );
+           
+           if ( $row["pid"]<=$LimitTeam AND $SentinelRow == 0 ) { $Data[$c]["side"] = "sentinel"; $SentinelRow = 1; }
+           if ( $row["pid"]>$LimitTeam  AND $ScourgeRow  == 0 ) { $Data[$c]["side"] = "scourge";  $ScourgeRow = 1;  }
+
+           if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "winner" AND $SetWinner == 0)  
+                { $Data[0]["winner"] = '1'; $SetWinner = 1;  }
+                
+           if ( $row["pid"]>$LimitTeam  AND $row["flag"] == "winner" AND $SetWinner == 0)  
+                { $Data[0]["winner"] = '2'; $SetWinner = 1; }
+        
+        if ( !isset($winner) ) {
+		  
+		  if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "winner" ) $winner = 1; else
+		  if ( $row["pid"]<=$LimitTeam AND $row["flag"] == "loser" )  $winner = 2; else 
+		  $winner = 0;
+		
+		}
+        
+         
+        if ( $winner == 1 AND $row["pid"]<= $LimitTeam) $Data[$c]["hideslot"] = "winner_background";
+        else $Data[$c]["hideslot"] = "loser_background";
+        if ($Data[0]["winner"] == '2' AND $row["pid"]> $LimitTeam)  $Data[$c]["hideslot"] = "winner_background";
+         
+		//Get custom game "template" // hard-coded stuff here
+		//LEGION TD
+       	if ( strstr($Map, "Legion TD") ) {
+		$lang["sent_winner"] = "West Legion <b>Winner</b>";
+		$lang["scou_winner"] = "East Legion <b>Winner</b>";
+		
+		$lang["sent_loser"] = "West Legion <b>Loser</b>";
+		$lang["scou_loser"] = "East Legion <b>Loser</b>";
+		}
+		//WARLOCK
+		if ( substr($Map,0,7) == "Warlock" ) {
+		$SentinelRow = 0;
+		$ScourgeRow = 0;
+		$lang["sent_winner"] = "Warlock winner";
+		$lang["scou_winner"] = "Warlock winner";
+		
+		$lang["sent_loser"] = "Warlock loser";
+		$lang["scou_loser"] = "Warlock loser";
+		}
+		//HEROLINE
+       	if ( strstr($Map, "HeroLineWars") ) {
+		$lang["sent_winner"] = "Hero's Line 1 <b>Winner</b>";
+		$lang["scou_winner"] = "Hero's Line 2 <b>Winner</b>";
+		
+		$lang["sent_loser"] = "Hero's Line 1 <b>Loser</b>";
+		$lang["scou_loser"] = "Hero's Line 2 <b>Loser</b>";
+		}
+		//TREE TAG
+       	if ( strstr($Map, "TreeTag") ) {
+		$lang["sent_winner"] = "Ents <b>Winner</b>";
+		$lang["scou_winner"] = "Infernal <b>Winner</b>";
+		
+		$lang["sent_loser"] = "Ents <b>Loser</b>";
+		$lang["scou_loser"] = "Infernal <b>Loser</b>";
+		
+		if ( $row["pid"]<=$LimitTeam ) {
+		$Data[$c]["heroid"] = "custom/ent.png"; $Data[$c]["hero"] =  "custom/ent.png"; $Data[$c]["description"] = "";
+		}
+		
+		if ( $row["pid"]>$LimitTeam ) {
+		$Data[$c]["heroid"] = "custom/infernal.png"; $Data[$c]["hero"] =  "custom/infernal.png"; $Data[$c]["description"] = "";
+		}
+		}
+		
+		//Battleships Battleships
+		if ( strstr($Map, "Battleships Cross") ) {
+		
+		$Data[$c]["heroid"] = "custom/ship.gif"; $Data[$c]["hero"] =  "custom/ship.gif"; $Data[$c]["description"] = "";
+		if ( $row["pid"]>=10 AND $ScourgeRow == 1) { $Data[$c]["side"] = "sentinel"; $ScourgeRow = 2; }
+		
+		if ($row["flag"] != "winner" AND $row["flag"] != "loser") { 
+		$winner = 0; 
+		$Data[0]["winner"] = 0; 
+		$Data[$c]["hideslot"] = "loser_background";
+		}
+		
+		$lang["sent_winner"] = "South Aliance <b>Winner</b>";
+		$lang["scou_winner"] = "North Aliance <b>Winner</b>";
+		$lang["draw_game"] = "South Aliance <b>Draw</b>";
+		if ( $row["pid"]>$LimitTeam ) $lang["draw_game"]  = "North Aliance <b>Draw</b>";
+		$lang["sent_loser"] = "South Aliance <b>Loser</b>";
+		$lang["scou_loser"] = "North Aliance <b>Loser</b>";
+		
+		if ( $row["pid"]>=9 ) {
+		$lang["sent_winner"] = "Goblin/Greenpeace <b>Winner</b>";
+		$lang["scou_winner"] = "Goblin/Greenpeace <b>Winner</b>";
+		$lang["draw_game"]  = "Goblin/Greenpeace <b>Draw</b>";
+		$lang["sent_loser"] = "Goblin/Greenpeace <b>Loser</b>";
+		$lang["scou_loser"] = "Goblin/Greenpeace <b>Loser</b>";
+		}
+		
+		}
+		
+		
+		 
+         if ( $winner == 1 ) {  
+         $Data[$c]["display_winner"] = '<span class="winner2">'.$lang["sent_winner"]."</span>"; 
+         $Data[$c]["display_loser"]  = '<span class="winner1">'.$lang["scou_loser"]."</span>"; 
+         } else
+         if ( $winner == 2 ) { 
+         $Data[$c]["display_winner"] = '<span class="winner1">'.$lang["sent_loser"]."</span>"; 
+         $Data[$c]["display_loser"]  = '<span class="winner2">'.$lang["scou_winner"]."</span>"; 
+         }  else
+         if ( $winner == 0 ) {  
+		 $Data[$c]["display_winner"] = $lang["draw_game"];
+         $Data[$c]["display_loser"]  = $lang["draw_game"];
+		 }
+                
+           $c++;
+         }
+
+         if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
+
+         return $Data;
+         
+         }
+   }
+   
+   function W3mmdLimitTeams( $map ) {
+    $val = 5;
+    if ( strstr($map, "Legion TD") )     $val = 4;
+	if ( substr($map,0,7) == "Warlock" ) $val = 1;
+	if ( strstr($map, "HeroLineWars") )  $val = 4;
+	if ( strstr($map, "TreeTag") )  $val = 8;
+	if ( strstr($map, "Battleships Crossfire") )  $val = 4;
+	
+	return $val;
+   
+   }
+   
+   //Get custom map VARs
+   function Get_w3mmdvarsString( $gameID, $pid = "", $varname="" ) {
+    global $db;
+	$sth = $db->prepare(  "SELECT value_string FROM ".OSDB_W3VARS." 
+	WHERE gameid = '".$gameID."' AND pid = '".$pid."' AND varname = '".$varname."' " );
+	$result = $sth->execute();
+
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	return $row["value_string"];
+   }
+   
+   function Get_w3mmdvars( $gameID, $pid = "", $varname="" ) {
+   
+    $sql = "";
+	global $db;
+    if ( !empty($pid) )     $sql.=" AND pid='".$pid."'";  
+    if ( !empty($varname) ) $sql.=" AND varname='".$varname."'";  
+   
+    $sth = $db->prepare(  "SELECT * FROM ".OSDB_W3VARS." WHERE gameid = '".$gameID."' $sql " );
+	$result = $sth->execute();
+	$c=0;
+	$Data = array();
+	
+	 while($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	   $Data[$c]["id"] = $row["id"];
+	   $Data[$c]["botid"] = $row["botid"];
+	   $Data[$c]["gameid"] = $row["gameid"];
+	   $Data[$c]["pid"] = $row["pid"];
+	   $Data[$c]["varname"] = $row["varname"];
+	   $Data[$c]["value_int"] = $row["value_int"];
+	   $Data[$c]["value_real"] = $row["value_real"];
+	   $Data[$c]["value_string"] = $row["value_string"];
+	   $c++;
+	}
+	return $Data;
+   }
+   
+   //Get custom map RACE
+   function Get_TDRace($race = "" ) {
+     $race = str_replace('"', "", $race);
+     $return = 'custom/'.$race.'.gif'; 
+	  
+	 //if ( $race == "Paladin" ) $return = $race.'.gif'; 
+	 
+	 return $return;
+	
+   }
 
    function getSingleGame($gameid) {
 	 $sql = "SELECT winner, creatorname, duration, datetime, gamename, stats, views
@@ -49,13 +314,14 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	function getUserGames ( $id, $MinDuration, $offset, $rowsperpage, $filter = "" ) {
 	
 	 $sql = "SELECT s.*, g.id, g.map, g.gamename, g.datetime, g.ownername, g.duration,  g.creatorname, dg.winner, 
-	 g.gamestate AS type, s.player, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, gp.`left`
+	 g.gamestate AS type, s.player, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, gp.`left`, g.alias_id, w.flag
 	 FROM ".OSDB_STATS." as s 
 	 LEFT JOIN ".OSDB_GP." as gp ON (gp.name) = (s.player)
 	 LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid
 	 LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
 	 LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = dg.gameid AND gp.colour = dp.colour
-	 WHERE s.id = '".(int) $id."' AND (g.map) LIKE ('%".OS_DEFAULT_MAP."%') AND g.duration>='".$MinDuration."' ".$filter."
+	 LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.pid = 0
+	 WHERE s.id = '".(int) $id."' AND g.duration>='".$MinDuration."' ".$filter."
 	 LIMIT $offset, $rowsperpage";
 	 
 	return $sql;
@@ -65,10 +331,11 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	function getAllGames($MinDuration, $offset, $rowsperpage, $filter="", $order = "id DESC" ) {
 	  $sql = "SELECT 
           g.id, g.views, g.stats, g.map, g.datetime, g.gamename, g.ownername, g.duration, g.creatorname, dg.winner, 
-		  g.gamestate as type, g.creatorserver as server
+		  g.gamestate as type, g.creatorserver as server, g.alias_id, w.flag
 		  FROM ".OSDB_GAMES." as g 
 		  LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
-		  WHERE (map) LIKE '%".OS_DEFAULT_MAP."%' AND duration>='".$MinDuration."' $filter
+		  LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.`pid` = 2
+		  WHERE duration>='".$MinDuration."' $filter
 		  ORDER BY $order
 		  LIMIT $offset, $rowsperpage";
 	return $sql;
@@ -78,7 +345,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	
     function getGameInfo($gid){
 	$sql = "
-	   SELECT winner, dp.gameid, gp.colour, newcolour, original as hero, description, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.gold,  dp.raxkills, dp.courierkills, s.id as userid, s.user_level as admin, s.warn, s.warn_expire, s.banned,
+	   SELECT winner, dp.gameid, gp.colour, newcolour, original as hero, description, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.gold,  dp.raxkills, dp.courierkills, s.id as userid, s.user_level as admin, s.banned,
 	   item1, item2, item3, item4, item5, item6, spoofedrealm, dp.level,
 	   it1.icon as itemicon1, 
 	   it2.icon as itemicon2, 
@@ -96,7 +363,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   gp.left, 
 	   gp.name as name, 
 	   gp.ip as ip,
-	   b.name as banname 
+	   b.name as banname, g.alias_id
 	   FROM ".OSDB_DP." AS dp 
 	   LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid and dp.colour = gp.colour 
 	   LEFT JOIN ".OSDB_DG." AS dg ON dg.gameid = dp.gameid 
@@ -109,7 +376,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	   LEFT JOIN ".OSDB_ITEMS." as it4 ON it4.itemid = item4
 	   LEFT JOIN ".OSDB_ITEMS." as it5 ON it5.itemid = item5
 	   LEFT JOIN ".OSDB_ITEMS." as it6 ON it6.itemid = item6
-	   LEFT JOIN ".OSDB_STATS." as s ON (s.player) = (gp.name)
+	   LEFT JOIN ".OSDB_STATS." as s ON (s.player) = (gp.name) AND s.alias_id = g.alias_id
 	   WHERE dp.gameid='".(int)$gid."'
 	   GROUP by gp.name
 	   ORDER BY newcolour";
@@ -253,7 +520,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	SUM(neutralkills) as neutralkills, 
 	SUM(towerkills) as towerkills, 
 	SUM(raxkills) as raxkills, 
-	SUM(courierkills) as courierkills
+	SUM(courierkills) as courierkills, 
+	g.alias_id
 	FROM ".OSDB_DP." AS dp 
 	LEFT JOIN ".OSDB_HEROES." as b ON hero = heroid 
 	LEFT JOIN ".OSDB_DG." as dg ON dg.gameid = dp.gameid
@@ -388,7 +656,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	or (winner=2 and newcolour > 5)) 
 	AND b.`left`/g.duration >= $minPlayedRatio  then 'WON' when ((winner=2 AND newcolour < 6) 
 	or (winner=1 and newcolour > 5)) 
-	AND b.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as result 
+	AND b.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as result, 
+	g.alias_id 
 	FROM ".OSDB_DP." AS dp 
 	LEFT JOIN ".OSDB_GP." AS b ON b.gameid = dp.gameid 
 	AND dp.colour = b.colour 
@@ -425,7 +694,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	or (winner=2 and newcolour > 5)) 
 	AND gp.`left`/g.duration >= $minPlayedRatio  then 'WON' when ((winner=2 and newcolour < 6) 
 	or (winner=1 and newcolour > 5)) 
-	AND gp.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as outcome 
+	AND gp.`left`/g.duration >= $minPlayedRatio  then 'LOST' when  winner=0 then 'DRAW' else '$LEAVER' end as outcome, 
+	g.alias_id
 	FROM ".OSDB_DP." AS dp 
 	LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid and dp.colour = gp.colour 
 	LEFT JOIN ".OSDB_DG." AS dg ON dg.gameid = dp.gameid 
@@ -450,7 +720,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
     dp.creepdenies,	
 	dp.assists, 
 	dp.neutralkills,
-	dp.newcolour 
+	dp.newcolour, 
+	g.alias_id 
 			FROM ".OSDB_GP." as gp
 			LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid 
 			LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = g.id AND dp.colour = gp.colour 
@@ -486,7 +757,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
     dp.creepdenies,	
 	dp.assists, 
 	dp.neutralkills,
-	dp.newcolour 
+	dp.newcolour, 
+	g.alias_id 
 			FROM ".OSDB_GP." as gp
 			LEFT JOIN ".OSDB_GAMES." as g ON g.id = gp.gameid 
 			LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = g.id AND dp.colour = gp.colour 
@@ -520,7 +792,8 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 	MIN(`left`), 
 	MAX(`left`), 
 	AVG(`left`), 
-	SUM(`left`) 
+	SUM(`left`), 
+	g.alias_id 
 	FROM ".OSDB_GP." as gp
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
 	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 
@@ -534,7 +807,7 @@ if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 function GetMostPlayedHero($username, $limit = 1) {
    $username = strtolower($username);
    $sql = "SELECT SUM(`left`) AS timeplayed, original, description, 
-	COUNT(*) AS played 
+	COUNT(*) AS played, g.alias_id 
 	FROM ".OSDB_GP." as gp
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
 	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 
@@ -550,7 +823,7 @@ function GetMostPlayedHero($username, $limit = 1) {
 function GetMostKillsHero($username, $limit = 1) {
    $username = strtolower($username);
    $sql = "SELECT 
-	original, description, max(kills) as maxkills, g.id as gameid
+	original, description, max(kills) as maxkills, g.id as gameid, g.alias_id
 	FROM ".OSDB_DP." as dp
 	LEFT JOIN ".OSDB_GP." AS gp ON gp.gameid = dp.gameid AND dp.colour = gp.colour 
 	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
@@ -577,7 +850,7 @@ function GetMostDeathsHero($username, $limit = 1) {
 
 function GetMostAssistsHero($username, $limit = 1) {
    $username = strtolower($username);
-   $sql = "SELECT original, description, max(assists) as maxassists, g.id as gameid
+   $sql = "SELECT original, description, max(assists) as maxassists, g.id as gameid, g.alias_id
 	FROM ".OSDB_DP." AS a 
 	LEFT JOIN ".OSDB_GP." AS b ON b.gameid = a.gameid and a.colour = b.colour 
 	LEFT JOIN ".OSDB_HEROES." on hero = heroid 
@@ -591,7 +864,7 @@ function GetMostAssistsHero($username, $limit = 1) {
 
 function GetMostWinsHero($username, $limit = 1) {
    $username = strtolower($username);
-   $sql = "SELECT original, description, COUNT(*) as wins, g.id as gameid
+   $sql = "SELECT original, description, COUNT(*) as wins, g.id as gameid, g.alias_id
 	FROM ".OSDB_GP." as gp
 	LEFT JOIN ".OSDB_GAMES." as g ON g.id=gp.gameid 
 	LEFT JOIN ".OSDB_DP." as dp ON dp.gameid=g.id 

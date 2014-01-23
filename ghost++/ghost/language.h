@@ -1,21 +1,24 @@
-/*
-
-   Copyright [2008] [Trevor Hogan]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
-
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #ifndef LANGUAGE_H
@@ -107,8 +110,9 @@ public:
 	string ShortestLoadByPlayer( string user, string loadingtime );
 	string LongestLoadByPlayer( string user, string loadingtime );
 	string YourLoadingTimeWas( string loadingtime );
-	string HasPlayedDotAGamesWithThisBot( string user, string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string month, string year );
-	string HasntPlayedDotAGamesWithThisBot( string user, string month, string year );
+	string HasPlayedAliasGamesWithThisBot( string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills );
+	string HasPlayedAliasGamesWithThisBot2( string name, string totalgames, string totalwins, string totallosses, string draws, string totalkills, string totaldeaths, string totalcreepkills, string totalcreepdenies, string totalassists, string totalneutralkills, string totaltowerkills, string totalraxkills, string avgkills, string avgdeaths, string avgcreepkills, string avgcreepdenies, string avgassists, string avgneutralkills, string avgtowerkills, string avgraxkills, string month, string year, string alias );
+	string HasntPlayedAliasGamesWithThisBot( string user, string month, string year, string gamealias );
 	string WasKickedForReservedPlayer( string reserved );
 	string WasKickedForOwnerPlayer( string owner );
 	string WasKickedByPlayer( string user );
@@ -254,6 +258,194 @@ public:
 	string WaitForReconnectSecondsRemain( string seconds );
 	string WasUnrecoverablyDroppedFromGProxy( );
 	string PlayerReconnectedWithGProxy( string name );
+
+    //OH Lang CFG
+    string WrongContactBotOwner( );
+    string RanksNotLoaded( );
+    string SuccessfullyRegistered( );
+    string SuccessfullyConfirmedAccount( );
+    string WrongPassword( );
+    string WrongEMail( );
+    string NameAlreadyUsed( );
+    string NoAccountToConfirm( );
+    string BetPoints( string user, string points );
+    string SuccessfullyResetedStats( string user );
+    string NoRecordFoundForUser( string user );
+    string SuccessfullyStoredMessage( );
+    string NewMessages( string user, string amount );
+    string ErrorInboxEmpty( );
+    string SuccessfullyTypedPassword( string user );
+    string UserGotPenalityPoints( string user, string amount );
+    string UserGotNoPenalityPoints( string user );
+    string AddedPenalityPoints( string user, string admin, string amount );
+    string BannedUserForReachingTooManyPPoints( string user );
+    string FailedToAddPPoint();
+    string NotIPBanned();
+    string FoundIPBans( string result );
+    string ErrorBanningUserAlreadyPermBanned( string user );
+    string ErrorBanningUserAlreadyLongerBanned( string user );
+    string SuccessfullyBannedUser( string user, string server );
+    string SuccessfullyUpdatedBannedUser( string user, string server );
+    string SuccessfullyPermBannedUser( string user, string server );
+    string ChangedRankOfUser( string user, string levelname, string server );
+    string UserHasAHiddenAcc( string user );
+    string RankOfUser( string user, string time, string alias, string rank, string level, string levelname );
+    string RankOfUserWithoutLevel( string user, string time, string alias, string rank);
+    string StreakOfUser( string user, string time, string alias, string streak, string maxstreak, string maxlstreak);
+    string UserMutedByRCON( string user, string admin );
+    string UserUnMutedByRCON( string user, string admin );
+    string UserKickedByRCON( string user, string admin );
+    string InvalidName( );
+    string WrongInputUseALevel( );
+    string WrongInputInvalidLevel( );
+    string UserLevelCheck( string user, string level );
+    string InvalidNameTooShort( );
+    string NoPermissionToExecCommand( );
+    string TooMuchPPoints( );
+    string ErrorMissingReason( );
+    string ErrorBadInput( );
+    string BannedIPRange( string ip, string server );
+    string ErrorBanningWrongSuffix( string suffix );
+    string CheckBanTempUser( string user, string date, string expire, string remain, string reason );
+    string CheckBanPermUser( string user, string date, string reason );
+    string CheckBanNameBan( );
+    string ChangedStatusForVIPGames( string type );
+    string WrongOptionUserOnOff( );
+    string ChangedMinPlayedGames( string type, string limit );
+    string ErrorWrongInputForSayPlayer( );
+    string ErrorWrongInputForMessage( );
+    string ErrorMessageTooShort( );
+    string ErrorRegisterAbusePrevention( );
+    string WrongRegisterCommand( string command );
+    string WrongPassRegisterCommand( string pass );
+    string PassTooShortRegisterCommand( string pass );
+    string InvalidEmailRegisterCommand( string mail);
+    string ErrorWhispRegister( );
+    string NoMapAliasRecordFound( );
+    string PassProtAcc( );
+    string RemovedPassProtAcc( );
+    string NoPassProtAcc( );
+    string CurrentPoints( string user, string points);
+    string ErrorAlreadyBet( );
+    string UserBet( string user, string amount);
+    string BetATooHighAmount( string result);
+    string RemovingPlayerNotifyFF( string team );
+    string WaitForProperStatsSafe( );
+    string GameWillEndInTen( );
+    string WinnerSetTo( string team);
+    string AutoEndSpreadInterruptNotify( string seconds, string votes );
+    string VoteModeExpired( );
+    string AbsoluteVoteChoosen( string mode );
+    string AbsoluteVoteChoosenRandom( string mode );
+    string TopVoteChoosenRandom( string mode );
+    string UserMayBanned( string user );
+    string AutoEndHighSpread( string spread );
+    string AutoEndTooFewPlayers( );
+    string AutoEndToDraw( );
+    string AutoEndOneTeamRemain( );
+    string AutoEndSpreadNotify( string team, string votes );
+    string AutoEndEarlyDrawOne( );
+    string AutoEndEarlyDrawTwo( );
+    string AutoEndEarlyDrawThree( );
+    string FoundNoMatchWithPlayername( );
+    string SuccessfullyLetPlayerInsult( );
+    string FoundMultiplyMatches( );
+    string MessageTooLongChooseAMoreShorten( );
+    string DisallowedOnlyCountryCheckNotify( );
+    string DisallowedUnallowedCountryCheckNotify( );
+    string ErrorCountryDenyListIsntCleared( );
+    string ErrorCountryOnlyListIsntCleared( );
+    string EnabledDeniedOrLimitedCountries( string type, string countries );
+    string CountryKickExceptionPlayer( string user, string cc, string type, string levelname);
+    string KickedPlayerForDeniedCountry( string user);
+    string DeniedGarenaKickNotify( );
+    string KickedPlayerForDeniedGarena( string user);
+    string DeniedUser( string user);
+    string RefilledCookies( string user);
+    string MutedAllChatOfUser( string user, string admin);
+    string UnMutedAllChatOfUser( string user, string admin);
+    string SetWinnerByUser( string user, string team);
+    string UserAlreadyVotedForFF( );
+    string UserAlreadyVotedForDraw( );
+    string DisplayIgnoredPlayersForUser( string ignored );
+    string AlreadyMarkedAsAFK( );
+    string AlreadyMarkedAsFeeder( );
+    string AlreadyMarkedAsFullFeeder( );
+    string AlreadyMarkedXTimesWithHighPing( string times);
+    string DidNotFoundAlias( string alias );
+    string UsingDefaultAlias( string alias );
+    string CurrentVoteKickProcessUser( string user );
+    string CurrentVoteKickRunTime( string runtime, string timeleft );
+    string NotifyForAbusiveVotekick( );
+    string NotifyForCustomVotekickReason( );
+    string VoteKickedUserWhoWasntMarkedAsFeeder( string user );
+    string VoteKickFeederAbuseReason( );
+    string VoteKickedUserWhoWasMarkedAsFeederLevelOne( string user );
+    string ReminederForVotekickAFeederLevelOne( );
+    string VoteKickNotPossiblePlayerIsInAnotherTeam( string user );
+    string UnableToVotekickYourself( );
+    string UnableToVoteStartMissingPlayers( string players );
+    string UnableToVoteStartMissingVotesd( string votes );
+    string SuccessfullyVoteStarted( );
+    string UnableToVoteStartOwnerInGame( );
+    string UnableToVoteKickNotUsersTeam( );
+    string UserVotedForDraw( string user, string votes );
+    string UndrawNotify( );
+    string UserRecalledDrawVote( string user );
+    string ObserverTriesToDraw( );
+    string RemainFFTime( string remain );
+    string TeamForfeited( string team );
+    string StayToSafeStats( );
+    string UserForfeitedGame( string user );
+    string UserForfeitedGameNotify( string team, string votes, string votesneeded );
+    string NoOneHasForfeitedYet( );
+    string ErrorForfeitingNoTwoTeamMap( );
+    string UserWillObserveGame( string user );
+    string ErrorObserverGameAlreadyObserver( );
+    string UserWillNoLongerObserveGame( string user );
+    string ErrorRemovingPassProtectionInvalidOption( );
+    string ErrorBetInvalidAmount( );
+    string ErrorBetInvalidLogicalAmount( );
+    string ErrorBetAlreadyTooLate( );
+    string UserRequestedToPauseGame( string user );
+    string GamePauseNotify( );
+    string ErrorPausingAlreadyRequested( );
+    string UserRequestedToUnPauseGame( string user );
+    string ErrorUnPausingGameIsntPaused( );
+    string ErrorOneTeamHasNoPlayers( );
+    string ErrorNotATwoTeamMap( );
+    string UserAteACookie( string user );
+    string UserRemovedCookieNotify( string user );
+    string ErrorEatACookieNoCookieAvaible( );
+    string UserIgnoredPlayer( string user );
+    string UserUnIgnoredPlayer( string user );
+    string UserIgnoringAllPlayersNotify( );
+    string UserUnIgnoringAllPlayersNotify( );
+    string RuleTagNotify( );
+    string UserStartedVoteMute( string user, string target );
+    string UserStartedVoteMuteVotesNeeded( string team, string votes );
+    string UserStartedVoteMuteVoteExpire( string expire );
+    string UserStartedVoteGlobalMute( string user, string target );
+    string UserStartedVoteGlobalMuteVotesNeeded( );
+    string UserStartedVoteNotify( );
+    string SuccessfullyVoteMutedUser( string user );
+    string UserVotedForMute( string user, string target, string votes );
+    string UserVotedToModeNoVotesOnTeam( );
+    string UserVotedToModeNoVotesOnObserver( );
+    string ErrorVotingThereIsNoVote( );
+    string SuccessfullyInterruptedAutoEnd( );
+    string UserVotedForInterruptAutoEnd( string user, string votes );
+    string UserAlreadyVotedForIntteruptAutoEnd( );
+    string ErrorVotedAlreadyForMode( );
+    string ErrorInvalidModeWasVoted( );
+    string UserVotedForMode( string user, string mode );
+    string PlayersWhoDidntVoteForMode( string players );
+
+
+
+
+
+
 };
 
 #endif

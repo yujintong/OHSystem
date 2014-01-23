@@ -1,38 +1,29 @@
 <?php
-/*********************************************
-<!-- 
-*   	DOTA OPENSTATS
-*   
-*	Developers: Ivan.
-*	Contact: ivan.anta@gmail.com - Ivan
-*
-*	
-*	Please see http://openstats.iz.rs
-*	and post your webpage there, so I know who's using it.
-*
-*	Files downloaded from http://openstats.iz.rs
-*
-*	Copyright (C) 2010  Ivan
-*
-*
-*	This file is part of DOTA OPENSTATS.
-*
-* 
-*	 DOTA OPENSTATS is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    DOTA OPEN STATS is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with DOTA OPEN STATS.  If not, see <http://www.gnu.org/licenses/>
-*
--->
-**********************************************/
+/**
+ * Copyright [2013-2014] [OHsystem]
+ * 
+ * We spent a lot of time writing this code, so show some respect:
+ * - Do not remove this copyright notice anywhere (bot, website etc.)
+ * - We do not provide support to those who removed copyright notice
+ *
+ * OHSystem is free software: You can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This file is part of DOTA OPENSTATS.
+ * 
+ * You can contact the developers on: admin@ohsystem.net
+ * or join us directly here: http://ohsystem.net/forum/
+ * 
+ * Visit us also on http://ohsystem.net/ and keep track always of the latest
+ * features and changes.
+ * 
+ * 
+ * This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+ * Official GhostPP-Forum: http://ghostpp.com/
+*/
+
 if (!isset($website) ) {header('HTTP/1.1 404 Not Found'); die; }
 if (!isset($_SESSION["level"]) AND empty($_SESSION["level"]) ) $_SESSION["level"] = 0;
 $errors = "";
@@ -95,15 +86,15 @@ function add_event($event, $value = NULL, $callback = NULL)
 function FilterData($data) {
 
     if ( is_array($data) ) foreach( $data as $d ) {
-	$d = trim(htmlentities(strip_tags($d)));
+	$d = trim((strip_tags($d)));
 	$data[] = $d;
 	}
-	else $data = trim(htmlentities(strip_tags($data)));
+	else $data = trim((strip_tags($data)));
  
     if (get_magic_quotes_gpc())
         if ( !is_array($data) ) $data = stripslashes($data);
  
-    if ( !is_array($data) ) $data = htmlentities(trim($data));
+    if ( !is_array($data) ) $data = (trim($data));
  
     return $data;
 }
@@ -804,6 +795,9 @@ function DisplayGameFilter($year = "", $query = "games" ) {
 ?>
 <form action="" method="get">
 <input type="hidden" name="<?=$query?>" />
+<?php
+if ( isset($_GET["game_type"]) ) { ?><input type="hidden" name="game_type" value="<?=(int) $_GET["game_type"]?>" /><?php }
+?>
 <select name="m">
 
  <option value=""></option>
@@ -838,6 +832,76 @@ function DisplayGameFilter($year = "", $query = "games" ) {
 <input type="submit" value="Submit" class="menuButtons" />
 </form>
 <?php
+}
+
+function DisplayGameTypes( $GameAliases, $query = 'games', $ShowEmpty = 1, $anchor = '') {
+
+$qry = '';
+
+if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
+global $lang;
+
+if ( isset($_GET["uid"]) AND is_numeric($_GET["uid"]) ) $query.='&uid='.(int)$_GET["uid"];
+?>
+	<select name="alias" onchange="location.href=this.value">
+	<?php if ($ShowEmpty == 1) { ?>
+	<option value="<?=OS_HOME?>?<?=$query?><?=$qry?><?=$anchor?>"><?=$lang["choose_game_type"]?></option>
+	<?php } ?>
+	<?php 
+	if ( !empty($GameAliases) ) {
+	foreach ($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="<?=OS_HOME?>?<?=$query?>&game_type=<?=$Alias["alias_id"]?><?=$qry?><?=$anchor?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+	}
+	?>
+	</select>
+	<?php if ($ShowEmpty == 1) { ?>
+	<input type="button" class="menuButtons" onclick="location.href='<?=OS_HOME?>?<?=$query?>'" value="<?=$lang["show_all"]?>" />
+	<?php } ?>
+<?php
+}
+
+function DisplayGameTypesTop( $GameAliases) {
+
+$qry = '';
+
+if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
+
+if ( isset($_GET["m"]) AND isset($_GET["y"]) ) $qry = '&m='.(int)$_GET["m"].'&y='.(int)$_GET["y"].'';
+if ( isset($_GET["sort"]) ) $qry.= '&sort='.$_GET["sort"];
+if ( isset($_GET["L"]) ) $qry.= '&L='.substr($_GET["L"],0,1);
+if ( isset($_GET["country"]) ) $qry.= '&country='.substr($_GET["country"],0,2);
+global $lang;
+?>
+	<select name="game_type">
+	<?php 
+	if ( !empty($GameAliases) ) {
+	foreach ($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="<?=$Alias["alias_id"]?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+	}
+	?>
+	</select>
+	<input type="submit" value="Display" class="menuButtons" />
+<?php
+}
+
+function DisplayGameTypePlayer($GameAliases, $UserOtherGames, $Player){
+
+  if ( !empty($UserOtherGames) ) {
+  ?><select onchange="location.href='<?=OS_HOME?>'+this.value"><?php
+    foreach($GameAliases as $Alias) {
+	?>
+	<option <?=$Alias["selected"]?> value="?u=<?=$Player?>&game_type=<?=$Alias["alias_id"]?>"><?=$Alias["alias_name"]?></option>
+	<?php
+	}
+   ?></select><?php
+  }
+
 }
 
 function AutoLinkShort($text, $target = "" )
@@ -1254,10 +1318,16 @@ function OS_ShowItem( $itemID, $itemname, $icon = "", $w = '100', $imgw = '64', 
   }
 }
 
-function OS_ShowHero($heroID, $description = '', $icon, $w = '100', $imgw='64', $imgh='64' ) {
+function OS_ShowHero($heroID, $description = '', $icon, $w = '100', $imgw='64', $imgh='64', $link = 1 ) {
+ if ($link == 1) {
   ?>
   <a href="<?=OS_HOME?>?hero=<?=$heroID?>"><img <?=ShowToolTip("<div>".$description."</div>", OS_HOME.'img/heroes/'.$icon, $w, $imgw, $imgh)?> src="<?=OS_HOME?>img/heroes/<?=$icon?>" alt="hero" width="48" height="48" /></a>
   <?php
+  } else {
+  ?>
+  <img src="<?=OS_HOME?>img/heroes/<?=$icon?>" alt="hero" width="48" height="48" />
+  <?php
+  }
 }
 
 function OS_ShowLiveHero($heroID ) {
@@ -1307,40 +1377,9 @@ function OS_SortTopPlayers( $fieldName = 'sort' ) {
 <?php if (isset($_GET["sort"]) AND $_GET["sort"] == "streak" ) $sel = 'selected="selected"'; else $sel = ''; ?>
 	  <option <?=$sel?> value="streak"><?=$lang["streak"]?></option>
 	</select>
-	<input class="menuButtons" type="submit" value="<?=$lang["submit"]?>" />
 	 <?=OS_ComparePlayers( 'link' )?>
-	 <?=LettersLink("top", "L")?>
   </form>
   <?php
-}
-
-function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" ) {
-   	$countAlph = strlen($letters);
-	$return = "";
-	?>
-	<form action="" method="get">
-	<input type="hidden" name="<?=$page?>" />
-	<select name="<?=$qry?>">
-	<?php
-	for ($i = 0; $i <= ($countAlph-1); $i++) {
-	$abc = substr($letters,$i,1);
-	$return.="$abc";
-	//if ( !empty($abc) ) {
-	   
-	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
-	  $s = ''; else $s='selected="selected"';
-	  
-	  if ( isset($_GET[$qry]) AND $_GET[$qry] == '0' AND $abc == '0' ) $s='selected="selected"';
-	   ?>
-	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
-	   <?php
-	//   }
-	}
-	?>
-	</select>
-	<input type="submit" value="Display" class="menuButtons" />
-	</form>
-	<?php
 }
 
 function OS_TopUser($id, $player) {
@@ -1351,7 +1390,7 @@ function OS_SingleGameUser($id, $fullname, $name, $bestPlayer = '', $level = 1, 
 global $lang;
 $text = "<div><b>".$lang["best_player"]."</b> ".$fullname."</div>";
 ?>
-  <a href="<?=OS_HOME?>?u=<?=$id?>"><?=$fullname?></a> (<?=$level?>)
+  <a href="<?=OS_HOME?>?u=<?=$id?>"><?=$fullname?></a> <?php if ($level>=1) { ?>(<?=$level?>) <?php } ?>
   <?php if (strtolower($bestPlayer) == strtolower($name) ) { ?><img <?=ShowToolTip($text, OS_HOME.'img/'.$winnerIcon.'', 160, 50, 50)?> src="<?=OS_HOME?>img/<?=$winnerIcon?>" class="imgvalign" width="32" height="32" /> <?php } ?>
 <?php
 }
@@ -1561,7 +1600,7 @@ function OS_protected_icon( $protected = 0, $bnet = 0, $text = "Protected Accoun
   <?php
   }
 
-  if ( strlen($protected)>=1 ) {
+  if ( strlen($protected)>=1 AND $bnet>=1) {
   ?>
   <img <?php if ($tooltip==1) { ShowToolTip($text, OS_HOME.'img/protected.png', 170, 32, 32); } ?> src="<?=OS_HOME?>img/protected.png" class="<?=$class?>" width="<?=$w?>" height="<?=$h?>" alt="protected" />
   <?php
@@ -1896,21 +1935,29 @@ function OS_OpenChat() {
   if ( os_is_logged() AND $_SESSION["level"]>=9 ) {
   ?>
 <div id="chat_" style="display:none; margin-bottom:22px;">
-
-	<input type="text" value="" name="chattext" id="botCommand" size="80" style="height:26px;" /> 
-	<input id="l" type="button" value="Send chat message" class="menuButtons" onclick="OS_AdminRconExec('l')" />
 		
 <div>
-<a href="javascript:;" onclick="CommandHelp('!rcon saylobby <?=$_SESSION["username"]?> ')">[CHAT]</a>
-<a href="javascript:;" onclick="CommandHelp('!rcon lobbyteam <?=$_SESSION["username"]?> 0 ')">[LobbySentinel]</a>
-<a href="javascript:;" onclick="CommandHelp('!rcon lobbyteam <?=$_SESSION["username"]?> 1 ')">[LobbyScourge]</a>
-<a href="javascript:;" onclick="CommandHelp('!rcon from <?=$_SESSION["username"]?>')">[FROM]</a>
+<select name="" id="command_type" onchange="document.getElementById('display_command').value=this.value">
+   <option value="1">All Chat (Lobby)</option>
+   <option value="2">All Chat (Game)</option>
+   <option value="3">Chat:Sentinel</option>
+   <option value="4">Chat:Scourge</option>
+   <option value="5">From</option>
+</select>
+<input type="text" value="" name="chattext" id="botCommand" size="50" style="height:26px;" /> 
+	<input id="l" style="padding:6px;" type="button" value="Send" class="menuButtons" onclick="OS_AdminRconExec('l')" />
 <!--
+<a href="javascript:;" onclick="CommandHelp('Chat: All')">[ALL CHAT]</a>
+<a href="javascript:;" onclick="CommandHelp('Chat: Sentinel')">[Chat:Sentinel]</a>
+<a href="javascript:;" onclick="CommandHelp('Chat: Scourge')">[Chat:Scourge]</a>
+<a href="javascript:;" onclick="CommandHelp('From')">[FROM]</a>
 <a href="javascript:;" onclick="OS_GetGameIDRcon('<?=$_SESSION["username"]?>')">[Game]</a>
 <a href="javascript:;" onclick="CommandHelp('!rcon gameteam <?=$_SESSION["username"]?> 0 ')">[GameSentinel]</a>
 <a href="javascript:;" onclick="CommandHelp('!rcon gameteam <?=$_SESSION["username"]?> 1 ')">[GameScourge]</a>
 -->
 </div>
+
+<div><input type="hidden" disabled="disabled" value="" id="display_command" size="50" /></div>
 		
 </div>
   <?php
@@ -2079,8 +2126,6 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    
    if ( $FullForm == 1 ) {
    ?>
-   <form action="" method="get" >
-   
    <input type="hidden" <?php if ( !empty($Value) ) echo 'value="'.$Value.'"'; ?> name="<?=$Page?>" />
    <?php
    }
@@ -2097,9 +2142,48 @@ function OS_DisplayCountries( $field_name = 'country', $FullForm = 0, $Page = 't
    if ( $FullForm == 1 ) {
    ?>
    <input type="submit" value="Display" class="menuButtons" />
-   </form><?php
+   <?php
    }
    
+}
+
+function OS_AZ_Filter( $page = "bans", $qry = "L", $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" ) {
+   	$countAlph = strlen($letters);
+	$return = "";
+	?>
+	<input type="hidden" name="<?=$page?>" />
+	<?php if (isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) { ?>
+	<input type="hidden" name="country" value="<?=substr($_GET["country"],0,2)?>" />
+	<?php } ?>
+	
+	<?php if (isset($_GET["m"]) AND is_numeric($_GET["m"]) AND isset($mmm) ) { ?>
+	<input type="hidden" name="m" value="<?=(int)$_GET["m"]?>" />
+	<?php } ?>
+	
+	<?php if (isset($_GET["y"]) AND is_numeric($_GET["y"]) AND isset($mmm) ) { ?>
+	<input type="hidden" name="y" value="<?=(int)$_GET["y"]?>" />
+	<?php } ?>
+	
+	<select name="<?=$qry?>" <?php if($page=="bans") { ?>onchange="search_bans.value=this.value"<?php } ?>>
+	 <option value=""> &nbsp; </option>
+	<?php
+	for ($i = 0; $i <= ($countAlph-1); $i++) {
+	$abc = substr($letters,$i,1);
+	$return.="$abc";
+	//if ( !empty($abc) ) {
+	   
+	  if ( (isset($_GET[$page]) AND isset($_GET[$qry]) AND $_GET[$qry] != $abc) OR !isset($_GET[$qry]) )
+	  $s = ''; else $s='selected="selected"';
+	  
+	  if ( isset($_GET[$qry]) AND $_GET[$qry] == '0' AND $abc == '0' ) $s='selected="selected"';
+	   ?>
+	   <option <?=$s?> value="<?=strtoupper($abc)?>"><?=strtoupper($abc)?> &nbsp; </option>
+	   <?php
+	//   }
+	}
+	?>
+	</select>
+	<?php
 }
 
 function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
@@ -2109,7 +2193,6 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
  
  $endYear = date("Y");
  ?>
- <form action="" method="get" style="display:inline">
  <input type="hidden" name="<?=$page?>" />
  <select name="m">
     <?php for($i=1; $i<=12; $i++) { 
@@ -2127,8 +2210,6 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
 	<option <?=$s?> value="<?=$i?>"><?=($i)?></option>
 	<?php } ?>
  </select>
- <input type="submit" value="Display" class="menuButtons" />
- </form>
  <?php
 }
 ?>

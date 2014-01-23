@@ -10,8 +10,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$HomeKeywords = strtolower( os_strip_quotes($lang["game_archive"])).','.$HomeKeywords;
 	$MenuClass["games"] = "active";
 	
+	$sql = "";
+	
+	if ( OS_DEFAULT_MAP!='') $sqlQ = "AND (map) LIKE ('%".OS_DEFAULT_MAP."%') ";
+	else $sqlQ = '';
+
 	//Get date of first game
-	$sth = $db->prepare("SELECT * FROM ".OSDB_GAMES." WHERE id>=1 AND (map) LIKE ('%".OS_DEFAULT_MAP."%') 
+	$sth = $db->prepare("SELECT * FROM ".OSDB_GAMES." WHERE id>=1 $sqlQ
 	ORDER BY datetime ASC LIMIT 1");
 	
 	$result = $sth->execute();
@@ -33,6 +38,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 if ( isset($_GET["u"]) ) $id = safeEscape( (int) $_GET["u"] );
 	 else
 	 $id = safeEscape( (int) $_GET["uid"] );
+	 
+	 if ( isset($_GET["game_type"]) ) $sqlFilter.=" AND g.alias_id='".(int)$_GET["game_type"]."'";
 	 
 	 if ( isset($_GET["h"]) ) {
 	   $hero = safeEscape(strtoupper($_GET["h"]) );
@@ -97,19 +104,23 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   {
   //FILTER
   $filter  = "";
+
   unset($sth);
   if ( isset($_GET["m"]) AND is_numeric($_GET["m"]) AND $_GET["m"]<=12 AND $_GET["m"]>=1 ) {
   $m = safeEscape( (int) $_GET["m"] );
-  $filter.= "AND MONTH(datetime) = '".(int)$m."'";
+  $filter.= "AND MONTH(g.datetime) = '".(int)$m."'";
   }
   
   if ( isset($_GET["y"]) AND is_numeric($_GET["y"]) AND $_GET["y"]<=date("Y") AND $_GET["y"]>=1998 ) {
   $y = safeEscape( (int) $_GET["y"] );
-  $filter.= "AND YEAR(datetime) = '".(int)$y."'";
+  $filter.= "AND YEAR(g.datetime) = '".(int)$y."'";
   }
   
-  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." 
-  WHERE (map) LIKE ('%".OS_DEFAULT_MAP."%') AND duration>='".$MinDuration."' ".$filter." LIMIT 1");
+  if ( isset($_GET["game_type"]) AND is_numeric($_GET["game_type"]) )
+  $filter.=" AND g.alias_id = '".(int) $_GET["game_type"]."' ";
+  
+  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMES." as g
+  WHERE (g.map) LIKE ('%".OS_DEFAULT_MAP."%') AND g.duration>='".$MinDuration."' ".$filter." LIMIT 1");
   
   $result = $sth->execute();	  
   
@@ -125,6 +136,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  
     }
     $sth = $db->prepare( $sql  );
+
 	$result = $sth->execute();	  
 	$c=0;
     $GamesData = array();
@@ -145,6 +157,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$GamesData[$c]["ownername"]  = ($row["ownername"]);
 	$GamesData[$c]["duration"]  = ($row["duration"]);
 	$GamesData[$c]["creatorname"]  = ($row["creatorname"]);
+	
+	$GamesData[$c]["flag"]  = ($row["flag"]); 
 	
 	if ( isset($_GET["h"]) AND file_exists("img/heroes/".$_GET["h"].".gif") )
 	$GamesData[$c]["hero_history"]  = $_GET["h"].""; else $GamesData[$c]["hero_history"] = "";
@@ -180,6 +194,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   $GamesData[$c]["leaver"] = 0;
 	   $GamesData[$c]["left"] = "";
 	   }
+	
+	if ( !empty($row["flag"]) ) {
+	    if ( $row["flag"] == "winner" ) $GamesData[$c]["winner"]=1;  else
+		if ( $row["flag"] == "loser" )  $GamesData[$c]["winner"]=2; else 
+		 $row["winner"]=0;
+	}
 	
 	//echo $GamesData[$c]["leaver"];
 	
@@ -219,6 +239,22 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	header("location:".OS_HOME."?404&player");
 	die;
     }	
-	//$db->free($result);	
+	
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliasesGames = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliasesGames[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliasesGames[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliasesGames[$c]["selected"] = 'selected="selected"'; else $GameAliasesGames[$c]["selected"] = '';
+	 
+	 $c++;
+	}
+	
   }
 ?>

@@ -114,6 +114,9 @@ $ReportUserLink = '0';
 //After how much time a user can write next report
 $BanReportTime = '180';
 
+//Penalty points - expire time (in days)
+$PPExpireDays = '181';
+
 //How many games to update at once
 $updateGames = '50';
 //CronJob Update Games
@@ -189,7 +192,7 @@ $DailyPoints = '5';
 
 //** CUSTOM ADDINGS **//
 // Custom Mapname for maps who havent '%dota%' in the mapname.
-$DefaultMap = "dota";
+$DefaultMap = "";
 
 //Display online/offline players on top page (req. extra queries)
 $OnlineOfflineOnTopPage = '0';

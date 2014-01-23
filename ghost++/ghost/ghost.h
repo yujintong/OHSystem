@@ -1,21 +1,24 @@
-/*
-
-   Copyright [2008] [Trevor Hogan]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
-
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #ifndef GHOST_H
@@ -49,6 +52,8 @@ class CCallableFlameList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableGameDBInit;
+class CCallableDeniedNamesList;
+class CCallableAliasList;
 
 class CGHost
 {
@@ -106,6 +111,9 @@ public:
 	vector<string> m_Modes;
 	CCallableFlameList *m_CallableFlameList;
 	uint32_t m_LastFlameListUpdate;
+	CCallableAliasList *m_CallableAliasList;
+	uint32_t m_LastAliasListUpdate;
+        uint32_t m_LastDNListUpdate;
 	vector<string> m_Flames;
         CCallableAnnounceList *m_CallableAnnounceList;
         uint32_t m_LastAnnounceListUpdate;
@@ -118,6 +126,8 @@ public:
 	uint32_t m_LastGameUpdateTime;			// GetTime when the gamelist was last updated
 	CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
         CCallableGameDBInit *m_CallableHC;
+        CCallableDeniedNamesList *m_CallableDeniedNamesList;
+        vector<string> m_DeniedNamePartials;
 	double m_AutoHostMinimumScore;
 	double m_AutoHostMaximumScore;
 	bool m_AllGamesFinished;				// if all games finished (used when exiting nicely)
@@ -188,41 +198,50 @@ public:
 	bool m_DeathsByLeaverReduction;
 	uint32_t m_BotID;
 	bool m_StatsUpdate;
-        bool m_MessageSystem;
-        bool m_FunCommands;
-        bool m_BetSystem;
-        bool m_AccountProtection;
-        vector<string> m_Rules;
-        vector<string> m_Ranks;
-        bool m_Announce;
-        bool m_FountainFarmWarning;
-        string m_FountainFarmMessage;
-        bool m_AutoDenyUsers;
-        bool m_AllowVoteStart;
-        uint32_t m_VoteStartMinPlayers;
-        bool m_RanksLoaded;
-        bool m_FlameCheck;
-        string m_BotManagerName;
-        bool m_IngameVoteKick;
-        uint32_t m_LeaverAutoBanTime;
-        uint32_t m_FirstFlameBanTime;
-        uint32_t m_SecondFlameBanTime;
-        uint32_t m_SpamBanTime;
-        uint32_t m_VKAbuseBanTime;
-        bool m_VoteMuting;
-        uint32_t m_VoteMuteTime;
-        uint32_t m_AutoEndTime;
-        bool m_AllowHighPingSafeDrop;
-        uint32_t m_MinPauseLevel;
-        uint32_t m_MinScoreLimit;
-        bool m_AutobanAll;
-        string m_WC3ConnectAlias;
-        uint32_t m_LastHCUpdate;
-        uint32_t m_ReservedHostCounter;
-        vector<string> m_Insults;
-        bool m_ChannelBotOnly;
-        vector<string> m_LanRoomName;
-        string m_NonAllowedDonwloadMessage;
+    bool m_MessageSystem;
+    bool m_FunCommands;
+    bool m_BetSystem;
+    bool m_AccountProtection;
+    vector<string> m_Rules;
+    vector<string> m_Ranks;
+    bool m_Announce;
+    bool m_AnnounceHidden;
+    bool m_FountainFarmWarning;
+    string m_FountainFarmMessage;
+    bool m_AutoDenyUsers;
+    bool m_AllowVoteStart;
+    uint32_t m_VoteStartMinPlayers;
+    bool m_RanksLoaded;
+    bool m_FlameCheck;
+    string m_BotManagerName;
+    bool m_IngameVoteKick;
+    uint32_t m_LeaverAutoBanTime;
+    uint32_t m_FirstFlameBanTime;
+    uint32_t m_SecondFlameBanTime;
+    uint32_t m_SpamBanTime;
+    uint32_t m_VKAbuseBanTime;
+    bool m_VoteMuting;
+    uint32_t m_VoteMuteTime;
+    uint32_t m_AutoEndTime;
+    bool m_AllowHighPingSafeDrop;
+    uint32_t m_MinPauseLevel;
+    uint32_t m_MinScoreLimit;
+    bool m_AutobanAll;
+    string m_WC3ConnectAlias;
+    uint32_t m_LastHCUpdate;
+    uint32_t m_ReservedHostCounter;
+    vector<string> m_Insults;
+    bool m_ChannelBotOnly;
+    vector<string> m_LanRoomName;
+    string m_NonAllowedDonwloadMessage;
+    vector<string> m_Aliases;
+    bool m_VoteMode;
+    uint32_t m_MaxVotingTime;
+    bool m_RandomMode;
+    bool m_HideMessages;
+    bool m_DenieCountriesOnThisBot;
+    bool m_KickSlowDownloader;
+    bool m_VirtualBanLobby;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -254,13 +273,17 @@ public:
 	bool FlameCheck( string message );
 	void GetDeniedCountries( );
 	void LoadDatas( );
-        void LoadRules( );
-        void LoadRanks( );
-        virtual uint32_t GetNewHostCounter( );
-        void LoadInsult( );
-        virtual string GetTimeFunction( uint32_t type );
-        void ReadRoomData();
-        string GetRoomName(string RoomID);
+    void LoadRules( );
+    void LoadRanks( );
+    virtual uint32_t GetNewHostCounter( );
+    void LoadInsult( );
+    virtual string GetTimeFunction( uint32_t type );
+    void ReadRoomData();
+    string GetAliasName( uint32_t alias );
+    string GetRoomName(string RoomID);
+    uint32_t GetStatsAliasNumber( string alias );
+    string GetLODMode( string fullmode );
+    string GetMonthInWords( string month);
 };
 
 #endif

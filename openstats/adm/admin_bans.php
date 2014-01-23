@@ -97,12 +97,14 @@ $ip_part = "";
 //UPDATE COUNTRY
 if ( isset($_GET["update_countries"]) ) {
 
-   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_BANS." WHERE id>=1 AND country='' AND ip!='0.0.0.0' LIMIT 1");
+   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_BANS." WHERE id>=1 AND country='' AND ip NOT LIKE (':%') AND ip!='' LIMIT 1");
    $result = $sth->execute();
    $r = $sth->fetch(PDO::FETCH_NUM);
    $numrows = $r[0];
    
-   $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE id>=1 AND country='' AND ip!='0.0.0.0' LIMIT 100");
+   $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." 
+   WHERE id>=1 AND country='' AND ip NOT LIKE (':%') AND ip!='' 
+   ORDER BY RAND() LIMIT 100");
    $result = $sth->execute();
    
    $total = $sth->rowCount();
@@ -338,6 +340,11 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	  $reason   = EscapeStr( convEnt2(trim($_POST["reason"])));
 	  $ip       = EscapeStr( trim($_POST["ip"]));
 	  
+	  $country       = EscapeStr( trim($_POST["country"]));
+	  
+	  //Force set name to 'iprange'
+	  if ( substr($ip,0,1) == ":" ) $name  = 'iprange';
+	  
 	  if ( !empty($ip) AND $ip!='0.0.0.0') {
 	    $ipv = explode(".", $ip);
 		if ( count($ipv)>2 ) $ip_part = $ipv[0].".".$ipv[1];
@@ -457,6 +464,7 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	 $date       = ( $row["date"]);
 	 $expire       = ( $row["expiredate"]);
 	 $warn       = ( $row["warn"]);
+	 $country = $row["country"];
 	 $button = "Edit Ban";
 	 
 	  if ( isset($_GET["findip"]) ) {
@@ -469,6 +477,7 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	 
 	 } else { 
 	 $button = "Add Ban"; 
+	 $country = "";
 	 if ( $_SERVER["REQUEST_METHOD"] != "POST"  AND isset($_GET["confirm"]) ) {
 	   $button.=" <CONFIRM BAN>";
 	 }
@@ -576,6 +585,11 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	   <tr class="row">
 	     <td width="80"  class="padLeft">Penalty points:</td>
 		 <td><?php if (isset($_GET["add"]) ) $type="text"; else $type="hidden" ?><input type="<?=$type?>" size="1" value="<?=$warn?>" name="warn" /></td>
+	   </tr>
+	   
+	   <tr class="row">
+	     <td width="80"  class="padLeft">Country:</td>
+		 <td><input type="text" size="2" maxlength="2" value="<?=$country?>" name="country" /></td>
 	   </tr>
 	   
 	   <tr>
@@ -845,6 +859,8 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	
 	
    if ( empty($row["admin"]) ) $admin = '<span class="banned">[system]</span>'; else $admin = $row["admin"];
+   
+   $reason = str_replace( array("&amp;#039;", "&amp;quot;"), array("'", '"'), $row["reason"]);
    ?>
    <tr class="row" style="height:36px;">
      <td width="180" class="padLeft font12">
@@ -870,7 +886,10 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	 <a href="<?=OS_HOME?>adm/?bans&amp;edit=<?=$row["id"]?>"><img src="<?=OS_HOME?>adm/edit.png" alt="img" /></a>
 	 <a href="javascript:;" onclick="if (confirm('Delete ban?') ) { location.href='<?=OS_HOME?>adm/?bans&amp;del=<?=$row["id"]?>' }"><img src="<?=OS_HOME?>adm/del.png" alt="img" /></a>
 	 </td>
-	 <td width="180" class="overflow_hidden font12"><span title="<?=$row["reason"]?>"><?=stripslashes($row["reason"])?></span></td>
+	 <td width="180" class="overflow_hidden font12">
+	 <span title="<?=$reason?>"><?=stripslashes($reason)?></span>
+	 <div style="font-size:10px;"><?=$ip_part?></div>
+	 </td>
 	 <?php if ( isset($_GET["showPP"]) ) { ?>
 	 <td width="35" class="font12"><span title="<?=$row["warn"]?>"><?=$totalPP?></span></td>
 	 <?php } ?>

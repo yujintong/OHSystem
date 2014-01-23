@@ -131,6 +131,12 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $result = $sth->execute();
 	  if ( $sth->rowCount() >=1 AND !isset($_GET["edit"]) )  $errors.="<div>E-mail already taken</div>";
 	  
+	  $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." 
+	  WHERE (bnet_username) = ('".$bnet."') ");
+	  $result = $sth->execute();
+	  if ( $sth->rowCount() >=1 AND !isset($_GET["edit"]) )  $errors.="<div>Battle.net account already exists</div>";
+	  
+	  
 	  if ( empty($errors) ) {
 	  $sth = $db->prepare($sql);
 	  $result = $sth->execute();
@@ -178,10 +184,13 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	 $user_clan = $row["user_clan"];
 	 $user_pw =  $row["user_ppwd"];
 	 $admin_realm = $row["admin_realm"];
+	 $user_level_expire = $row["user_level_expire"];
 
 	 $button = "Edit User";
 	 } else { $button = "Add User"; $level = ""; $avatar  = ""; $www  = ""; $gender = ""; $bnet =""; 
-	 $user_bnet = ""; $user_realm = ""; $user_clan = ""; $user_pw = ""; $admin_realm = ""; }
+	 $user_bnet = ""; $user_realm = ""; $user_clan = ""; $user_pw = ""; $admin_realm = ""; 
+	 $user_level_expire = "";
+	 }
 	 ?>
 	 
 	 <form action="" method="post">
@@ -337,6 +346,24 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 		<?php if ($level>=10) $sel='selected="selected"'; else $sel = ""; ?>
 		   <option <?=$sel.$dis?> value="10"><?=$lang["member_root"]?></option>
 		 </select>
+		 
+		 Expire: <input name="user_leve_expire" id="expiredate" style="width: 180px; height: 28px;" type="text" value="<?=$user_level_expire?>" />
+		 <?php if (!empty($user_level_expire)) echo date( OS_DATE_FORMAT, strtotime($user_level_expire)); ?> ( YYYY-MM-DD H:i:s )
+<div class="padTop padBottom">
+	 Set: 
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600 )?>', 'expiredate')" >+1h</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*10 )?>', 'expiredate')" >+10h</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24 )?>', 'expiredate')" >+1 day</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*72 )?>', 'expiredate')" >+3 days</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24*7 )?>', 'expiredate')" >+7 days</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24*30 )?>', 'expiredate')" >+1 month</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24*90 )?>', 'expiredate')" >+3 months</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24*180 )?>', 'expiredate')" >+6 months</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24*30*12 )?>', 'expiredate')" >+1 year</a>
+<a href="javascript:;" class="menuButtons" onclick="SetDateField('<?=date("Y-m-d H:i:00", time()+3600*24*30*24 )?>', 'expiredate')" >+2 year</a>
+    		 <div>YYYY-MM-DD H:i:s (<b>Leave blank</b> if you do not want role expire)</div>
+	</div>
+		 
 		 <div class="padBottom"></div>
 		 </td>
 	   </tr>
@@ -417,10 +444,10 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
 		$from = $_SESSION["email"]; $fromName = $_SESSION["username"];
 		}
 		
-	      $message = "You have just received a message from ".$_SESSION["username"]."<br />Message: <br />";
-		  $message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />";
+	      $message = "You have just received a message from ".$_SESSION["username"]."<br />";
+		  //$message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />";
 		  $message.= ($text);
-		  $message.= "<br />~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />".OS_HOME."";
+		  $message.= "<br />___________________<br />".OS_HOME."";
 	      $mail  = new PHPMailer();
 	      $mail->CharSet = 'UTF-8';
 	      $mail->SetFrom($from, $fromName);
@@ -438,7 +465,7 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
     ?>
 	<div class="padBottom padTop" align="left" style="margin-left: 64px; border: 4px solid #ccc; padding: 10px;">
 	 <h2>Send Email</h2> <?=$errors?>
-	  <?php if (isset($MailSend) ) { ?><h2>Message was successfully sent</h2><?php } ?>
+	  <?php if (isset($MailSend) ) { ?><h2>Message was successfully sent</h2><?php } else { ?>
 	  <form action="" method="post">
 	  <div>Send to: <input size="35" type="text" name="name" disabled value="<?=$row["user_name"]?>" /> <?=$email?></div>
 	  <div>From: 
@@ -462,6 +489,7 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
 	  <a href="<?=OS_HOME?>adm/?users">&laquo; cancel</a>
 	  </div>
 	  </form>
+	  <?php } ?>
 	</div>
 	<?php
    } else echo "<h2>Wrong username</h2>";

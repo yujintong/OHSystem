@@ -1,21 +1,24 @@
-/*
-
-   Copyright [2008] [Trevor Hogan]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
-
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
 
 #ifndef GHOSTDB_H
@@ -30,6 +33,8 @@ class CCallableRegAdd;
 class CCallableStatsSystem;
 class CCallablePList;
 class CCallableFlameList;
+class CCallableAliasList;
+class CCallableDeniedNamesList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableBanCount;
@@ -99,6 +104,8 @@ public:
         virtual uint32_t penp( string name, string reason, string admin, uint32_t amount, string type );
         virtual vector<string> PList( string server );
         virtual vector<string> FlameList( );
+        virtual vector<string> AliasList( );
+        virtual vector<string> DeniedNamesList( );
 	 virtual vector<string> AnnounceList( );
         virtual vector<string> DCountryList( );
 	virtual uint32_t BanCount( string server );
@@ -107,7 +114,7 @@ public:
 	virtual uint32_t PWCheck( string user );
 	virtual uint32_t PassCheck( string user, string pass, uint32_t st );
 	virtual uint32_t pm( string user, string listener, uint32_t status, string message, string type );
-	virtual uint32_t BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country );
+	virtual uint32_t BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias );
 	virtual bool PUp( string name, uint32_t level, string realm, string user );
 	virtual bool BanRemove( string server, string user );
         virtual bool TBRemove( string server );
@@ -119,7 +126,7 @@ public:
 	virtual uint32_t GamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
 	virtual uint32_t GamePlayerCount( string name );
 	virtual CDBGamePlayerSummary *GamePlayerSummaryCheck( string name );
-        virtual CDBStatsPlayerSummary *StatsPlayerSummaryCheck( string name, string month, string year );
+        virtual CDBStatsPlayerSummary *StatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias );
         virtual CDBInboxSummary *InboxSummaryCheck( string name );
 	virtual uint32_t DotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec );
 	virtual uint32_t DotAPlayerAdd( uint32_t gameid, uint32_t colour, uint32_t kills, uint32_t deaths, uint32_t creepkills, uint32_t creepdenies, uint32_t assists, uint32_t gold, uint32_t neutralkills, string item1, string item2, string item3, string item4, string item5, string item6, string hero, uint32_t newcolour, uint32_t towerkills, uint32_t raxkills, uint32_t courierkills, uint32_t level );
@@ -142,6 +149,8 @@ public:
         virtual CCallablepm *Threadedpm( string user, string listener, uint32_t status, string message, string type );
 	virtual CCallablePList *ThreadedPList( string server );
         virtual CCallableFlameList *ThreadedFlameList( );
+        virtual CCallableAliasList *ThreadedAliasList( );
+        virtual CCallableDeniedNamesList *ThreadedDeniedNamesList( );
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
         virtual CCallableDCountryList *ThreadedDCountryList( );
         virtual CCallableStoreLog *ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin );
@@ -150,7 +159,7 @@ public:
         virtual CCallableBanCount *ThreadedBanCount( string server );
 	virtual CCallableBanCheck *ThreadedBanCheck( string server, string user, string ip );
         virtual CCallableBanCheck2 *ThreadedBanCheck2( string server, string user, string type );
-	virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country );
+	virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias );
         virtual CCallablePUp *ThreadedPUp( string name, uint32_t level, string realm, string user );
 	virtual CCallableBanRemove *ThreadedBanRemove( string server, string user );
 	virtual CCallableBanRemove *ThreadedBanRemove( string user );
@@ -158,11 +167,11 @@ public:
         virtual CCallableTBRemove *ThreadedTBRemove( string server );
 	virtual CCallableCommandList *ThreadedCommandList( );
 	virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
-        virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid );
+        virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias );
 	virtual CCallableGameUpdate *ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add );
 	virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
 	virtual CCallableGamePlayerSummaryCheck *ThreadedGamePlayerSummaryCheck( string name );
-        virtual CCallableStatsPlayerSummaryCheck *ThreadedStatsPlayerSummaryCheck( string name, string month, string year );
+        virtual CCallableStatsPlayerSummaryCheck *ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias );
 	virtual CCallableInboxSummaryCheck *ThreadedInboxSummaryCheck( string name );
 	virtual CCallableDotAGameAdd *ThreadedDotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec );
 	virtual CCallableDotAPlayerAdd *ThreadedDotAPlayerAdd( uint32_t gameid, uint32_t colour, uint32_t kills, uint32_t deaths, uint32_t creepkills, uint32_t creepdenies, uint32_t assists, uint32_t gold, uint32_t neutralkills, string item1, string item2, string item3, string item4, string item5, string item6, string hero, uint32_t newcolour, uint32_t towerkills, uint32_t raxkills, uint32_t courierkills, uint32_t level );
@@ -336,6 +345,32 @@ public:
         virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }
 };
 
+class CCallableAliasList : virtual public CBaseCallable
+{
+protected:
+        vector<string> m_Result;
+
+public:
+        CCallableAliasList( ) : CBaseCallable( ) { }
+        virtual ~CCallableAliasList( );
+
+        virtual vector<string> GetResult( )                                     { return m_Result; }
+        virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }
+};
+
+class CCallableDeniedNamesList : virtual public CBaseCallable
+{
+protected:
+        vector<string> m_Result;
+
+public:
+        CCallableDeniedNamesList( ) : CBaseCallable( ) { }
+        virtual ~CCallableDeniedNamesList( );
+
+        virtual vector<string> GetResult( )                                     { return m_Result; }
+        virtual void SetResult( vector<string> nResult )        { m_Result = nResult; }
+};
+
 class CCallableAnnounceList : virtual public CBaseCallable
 {
 protected:
@@ -476,10 +511,11 @@ protected:
 	string m_Reason;
 	uint32_t m_BanTime;
 	string m_Country;
+        uint32_t m_GameAlias;
 	uint32_t m_Result;
 
 public:
-	CCallableBanAdd( string nServer, string nUser, string nIP, string nGameName, string nAdmin, string nReason, uint32_t nBanTime, string nCountry ) : CBaseCallable( ), m_Server( nServer ), m_User( nUser ), m_IP( nIP ), m_GameName( nGameName ), m_Admin( nAdmin ), m_Reason( nReason ), m_BanTime( nBanTime ), m_Country( nCountry ), m_Result( 0 ) { }
+	CCallableBanAdd( string nServer, string nUser, string nIP, string nGameName, string nAdmin, string nReason, uint32_t nBanTime, string nCountry, uint32_t nGameAlias ) : CBaseCallable( ), m_Server( nServer ), m_User( nUser ), m_IP( nIP ), m_GameName( nGameName ), m_Admin( nAdmin ), m_Reason( nReason ), m_BanTime( nBanTime ), m_Country( nCountry ), m_GameAlias( nGameAlias ), m_Result( 0 ) { }
 	virtual ~CCallableBanAdd( );
 
 	virtual string GetServer( )				{ return m_Server; }
@@ -602,10 +638,11 @@ protected:
     vector<CDBBan *> m_Players;
     string m_GameName;
     uint32_t m_GameID;
+    uint32_t m_GameAlias;
     uint32_t m_Result;
     
 public:
-    CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName,uint32_t nGameID ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_GameID( nGameID ), m_Result( 0 ) { }
+    CCallableGameDBInit( vector<CDBBan *> nPlayers, string nGameName,uint32_t nGameID, uint32_t nGameAlias ) : CBaseCallable( ), m_Players( nPlayers ), m_GameName( nGameName ), m_GameID( nGameID ), m_GameAlias( nGameAlias), m_Result( 0 ) { }
     virtual ~CCallableGameDBInit( );
 
     virtual uint32_t GetResult( )				{ return m_Result; }
@@ -679,15 +716,17 @@ protected:
         string m_Name;
         string m_Month;
         string m_Year;
+        uint32_t m_GameAlias;
         CDBStatsPlayerSummary *m_Result;
 
 public:
-        CCallableStatsPlayerSummaryCheck( string nName, string nMonth, string nYear ) : CBaseCallable( ), m_Name( nName ), m_Month( nMonth ), m_Year( nYear ), m_Result( NULL ) { }
+        CCallableStatsPlayerSummaryCheck( string nName, string nMonth, string nYear, uint32_t nGameAlias ) : CBaseCallable( ), m_Name( nName ), m_Month( nMonth ), m_Year( nYear ), m_GameAlias( nGameAlias ), m_Result( NULL ) { }
         virtual ~CCallableStatsPlayerSummaryCheck( );
 
         virtual string GetName( )                                                               { return m_Name; }
         virtual string GetMonth( )                                                              { return m_Month; }
         virtual string GetYear( )                                                               { return m_Year; }
+        virtual uint32_t GetAlias( )                                                            { return m_GameAlias; }
         virtual CDBStatsPlayerSummary *GetResult( )                              { return m_Result; }
         virtual void SetResult( CDBStatsPlayerSummary *nResult ) { m_Result = nResult; }
 };

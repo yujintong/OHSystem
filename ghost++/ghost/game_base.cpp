@@ -1,23 +1,26 @@
-/*
- 
-   Copyright [2008] [Trevor Hogan]
- 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
- 
-       http://www.apache.org/licenses/LICENSE-2.0
- 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- 
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
- 
+/**
+* Copyright [2013-2014] [OHsystem]
+*
+* We spent a lot of time writing this code, so show some respect:
+* - Do not remove this copyright notice anywhere (bot, website etc.)
+* - We do not provide support to those who removed copyright notice
+*
+* OHSystem is free software: You can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* You can contact the developers on: admin@ohsystem.net
+* or join us directly here: http://ohsystem.net/forum/
+*
+* Visit us also on http://ohsystem.net/ and keep track always of the latest
+* features and changes.
+*
+*
+* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ghostpp.com/
 */
- 
+
 #include "ghost.h"
 #include "util.h"
 #include "config.h"
@@ -44,7 +47,7 @@
 // CBaseGame
 //
  
-CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter ) : m_GHost( nGHost ), m_SaveGame( nSaveGame ), m_HostCounter( nHostCounter ), m_Replay( NULL ), m_Exiting( false ), m_Saving( false ), m_HostPort( nHostPort ), m_GameState( nGameState ), m_VirtualHostPID( 255 ), m_FakePlayerPID( 255 ), m_GProxyEmptyActions( 0 ), m_GameName( nGameName ), m_LastGameName( nGameName ), m_VirtualHostName( m_GHost->m_VirtualHostName ), m_OwnerName( nOwnerName ), m_CreatorName( nCreatorName ), m_CreatorServer( nCreatorServer ), m_GameType( nGameType), m_HCLCommandString( nMap->GetMapDefaultHCL( ) ), m_RandomSeed( GetTicks( ) ), m_EntryKey( rand( ) ), m_Latency( m_GHost->m_Latency ), m_SyncLimit( m_GHost->m_SyncLimit ), m_SyncCounter( 0 ), m_GameTicks( 0 ), m_CreationTime( GetTime( ) ), m_LastPingTime( GetTime( ) ), m_LastRefreshTime( GetTime( ) ), m_LastDownloadTicks( GetTime( ) ), m_DownloadCounter( 0 ), m_LastDownloadCounterResetTicks( GetTime( ) ), m_LastAnnounceTime( 0 ), m_AnnounceInterval( 0 ), m_LastAutoStartTime( GetTime( ) ), m_AutoStartPlayers( 0 ), m_LastCountDownTicks( 0 ), m_CountDownCounter( 0 ), m_StartedLoadingTicks( 0 ), m_StartPlayers( 0 ), m_LastLagScreenResetTime( 0 ), m_LastActionSentTicks( 0 ), m_LastActionLateBy( 0 ), m_StartedLaggingTime( 0 ), m_LastLagScreenTime( 0 ), m_LastReservedSeen( GetTime( ) ), m_StartedKickVoteTime( 0 ), m_GameOverTime( 0 ), m_LastPlayerLeaveTicks( 0 ), m_MinimumScore( 0. ), m_MaximumScore( 0. ), m_SlotInfoChanged( false ), m_Locked( false ), m_RefreshMessages( m_GHost->m_RefreshMessages ), m_RefreshError( false ), m_RefreshRehosted( false ), m_MuteAll( false ), m_MuteLobby( false ), m_CountDownStarted( false ), m_GameLoading( false ), m_GameLoaded( false ), m_LoadInGame( nMap->GetMapLoadInGame( ) ), m_Lagging( false ), m_AutoSave( m_GHost->m_AutoSave ), m_MatchMaking( false ), m_LocalAdminMessages( m_GHost->m_LocalAdminMessages ), m_PauseReq( false ), m_PauseTicks ( 5 ), m_SendPauseInfo( false ), m_GameNoGarena( false ), m_LastInGameAnnounce( 0 )
+CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter ) : m_GHost( nGHost ), m_SaveGame( nSaveGame ), m_HostCounter( nHostCounter ), m_Replay( NULL ), m_Exiting( false ), m_Saving( false ), m_HostPort( nHostPort ), m_GameState( nGameState ), m_VirtualHostPID( 255 ), m_FakePlayerPID( 255 ), m_GProxyEmptyActions( 0 ), m_GameName( nGameName ), m_LastGameName( nGameName ), m_VirtualHostName( m_GHost->m_VirtualHostName ), m_OwnerName( nOwnerName ), m_CreatorName( nCreatorName ), m_CreatorServer( nCreatorServer ), m_GameType( nGameType), m_HCLCommandString( nMap->GetMapDefaultHCL( ) ), m_RandomSeed( GetTicks( ) ), m_EntryKey( rand( ) ), m_Latency( m_GHost->m_Latency ), m_SyncLimit( m_GHost->m_SyncLimit ), m_SyncCounter( 0 ), m_GameTicks( 0 ), m_CreationTime( GetTime( ) ), m_LastPingTime( GetTime( ) ), m_LastRefreshTime( GetTime( ) ), m_LastDownloadTicks( GetTime( ) ), m_DownloadCounter( 0 ), m_LastDownloadCounterResetTicks( GetTime( ) ), m_LastAnnounceTime( 0 ), m_AnnounceInterval( 0 ), m_LastAutoStartTime( GetTime( ) ), m_AutoStartPlayers( 0 ), m_LastCountDownTicks( 0 ), m_CountDownCounter( 0 ), m_StartedLoadingTicks( 0 ), m_StartPlayers( 0 ), m_LastLagScreenResetTime( 0 ), m_LastActionSentTicks( 0 ), m_LastActionLateBy( 0 ), m_StartedLaggingTime( 0 ), m_LastLagScreenTime( 0 ), m_LastReservedSeen( GetTime( ) ), m_StartedKickVoteTime( 0 ), m_GameOverTime( 0 ), m_LastPlayerLeaveTicks( 0 ), m_MinimumScore( 0. ), m_MaximumScore( 0. ), m_SlotInfoChanged( false ), m_Locked( false ), m_RefreshMessages( m_GHost->m_RefreshMessages ), m_RefreshError( false ), m_RefreshRehosted( false ), m_MuteAll( false ), m_MuteLobby( false ), m_CountDownStarted( false ), m_GameLoading( false ), m_GameLoaded( false ), m_LoadInGame( nMap->GetMapLoadInGame( ) ), m_AllowMapTrading( nMap->GetMapTradeAllowed() ), m_Lagging( false ), m_AutoSave( m_GHost->m_AutoSave ), m_MatchMaking( false ), m_LocalAdminMessages( m_GHost->m_LocalAdminMessages ), m_PauseReq( false ), m_PauseTicks ( 5 ), m_SendPauseInfo( false ), m_GameNoGarena( false ), m_LastInGameAnnounce( 0 )
 {
         m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, m_GameName, 1, m_GameType ) );
         m_Socket = new CTCPServer( );
@@ -83,8 +86,10 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_BreakAutoEndVotesNeeded = 0;
         m_BreakAutoEndVotes = 0;
         m_EndTicks = 0;
+        m_StartEndTicks = 0;
         m_CallableGameDBInit = NULL;
-        
+        m_VotedTimeStart = 0;
+        m_Voted = false;
         if( m_GHost->m_SaveReplays && !m_SaveGame )
                 m_Replay = new CReplay( );
  
@@ -224,6 +229,9 @@ CBaseGame :: ~CBaseGame( )
         for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
                 delete *i;
  
+        for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); ++i )
+                delete i->second;
+
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                 delete *i;
  
@@ -345,7 +353,7 @@ string CBaseGame :: GetDescription( )
         if( m_GameLoading || m_GameLoaded )
                 Description += " : " + UTIL_ToString( ( m_GameTicks / 1000 ) / 60 ) + "m";
         else
-                Description += " : " + UTIL_ToString( ( GetTime( ) - m_CreationTime ) / 60 ) + "m";
+                Description += " : " + UTIL_ToString( ( GetTime( ) - GetCreationTime( ) ) / 60 ) + "m";
  
         return Description;
 }
@@ -385,6 +393,15 @@ unsigned int CBaseGame :: SetFD( void *fd, void *send_fd, int *nfds )
                 }
         }
  
+        for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); ++i )
+        {
+          if( i->second->GetSocket( ) )
+          {
+            i->second->GetSocket( )->SetFD( (fd_set *)fd, (fd_set *)send_fd, nfds );
+            ++NumFDs;
+          }
+         }
+
         return NumFDs;
 }
  
@@ -615,6 +632,31 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         ++i;
         }
  
+        for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); )
+        {
+            if( i->second->Update( fd ) )
+            {
+                // flush the socket (e.g. in case a rejection message is queued)
+
+                if( i->second->GetSocket( ) )
+                    i->second->GetSocket( )->DoSend( (fd_set *)send_fd );
+
+                delete i->second;
+                m_BannedPlayers.erase( i++ );
+            }
+            else
+            {
+                CONSOLE_Print( "bannnnn ... " + UTIL_ToString( GetTicks( ) - i->first ) );
+                if( GetTicks( ) - i->first > 6000 )
+                {
+                    CONSOLE_Print( "deleting banned player..!" );
+                    i->second->SetDeleteMe( true );
+                }
+
+                i++;
+            }
+        }
+
         // create the virtual host player
  
         if( !m_GameLoading && !m_GameLoaded && GetSlotsAllocated() < m_Slots.size( ) )
@@ -681,7 +723,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 BYTEARRAY MapHeight;
                                 MapHeight.push_back( 0 );
                                 MapHeight.push_back( 0 );
-                                m_GHost->m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "Varlock", GetTime( ) - m_CreationTime, "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                                m_GHost->m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                                m_GHost->m_UDPSocket->Broadcast( 6113, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
                         }
                         else
                         {
@@ -689,7 +732,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
  
                                 uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
-                                m_GHost->m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "Varlock", GetTime( ) - m_CreationTime, m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                                m_GHost->m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                                m_GHost->m_UDPSocket->Broadcast( 6113, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
  
                         }
                 }
@@ -719,7 +763,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         // the game creation message will be sent on the next refresh
                 }
  
-                m_CreationTime = GetTime( );
+                SetCreationTime( GetTime( ) );
                 m_LastRefreshTime = GetTime( );
         }
  
@@ -891,7 +935,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // set announce
         if( m_GameLoaded && GetTime() - m_LastInGameAnnounce >= 420 && m_GHost->m_Announce )
         {
-                AnnounceEvent( (rand()%(m_GHost->m_AnnounceLines-1))+1 );
+                AnnounceEvent( rand()%(m_GHost->m_AnnounceLines-1) );
                 m_LastInGameAnnounce = GetTime();
         }
  
@@ -935,178 +979,151 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         break;
                                 }
                         }
- 
-                        if( GetTime( ) - (*i)->GetJoinTime( ) >= 5 && Level == 0 && GetTime( ) - (*i)->GetAnnounceTime( ) >= 1 )
-                        {
-                                if( m_GameType == 3 )
-                                {
-                                        if( (*i)->GetGames( ) < m_GHost->m_MinLimit && !IsReserved( (*i)->GetName() ) )
-                                        {
-                                                SendChat( (*i)->GetPID( ), "[INFO] You have to less games, you require at least 50 Games. You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
-                                                (*i)->SetAnnounceTime( );
-                                        }
-                                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && !IsReserved( (*i)->GetName() ) )
-                                        {
-                                                SendChat( (*i)->GetPID( ), "[INFO] Youre score is to low, you require at least a score of ["+UTIL_ToString((*i)->GetScore( ), 0)+"] You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
-                                                (*i)->SetAnnounceTime( );
-                                        }
-                                }
-                        }
- 
-                        if( GetTime( ) - (*i)->GetJoinTime( ) >= 15 && Level == 0 )
-                        {
-                                if( m_GameType == 4 )
-                                {
-                                        if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && !IsReserved( (*i)->GetName() ) )
-                                        {
-                                                string name=(*i)->GetName();
-                                                string realm=(*i)->GetJoinedRealm( );
-                                                if(m_GHost->m_AutoDenyUsers)
-                                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                (*i)->SetDeleteMe( true );
-                                                (*i)->SetLeftReason( "got kicked for not being registered." );
-                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                        }
-                                        else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && !IsReserved( (*i)->GetName() ) )
-                                        {
-                                                string name=(*i)->GetName();
-                                                string realm=(*i)->GetJoinedRealm( );
-                                                if(m_GHost->m_AutoDenyUsers)
-                                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                (*i)->SetDeleteMe( true );
-                                                (*i)->SetLeftReason( "got kicked because he does not have enough games." );
-                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                        }
-                                }
-                                else if( m_GameType == 3 )
-                                {
-                                        if( (*i)->GetGames( ) < m_GHost->m_MinLimit  && !IsReserved( (*i)->GetName() ) )
-                                        {
-                                                string name=(*i)->GetName();
-                                                string realm=(*i)->GetJoinedRealm( );
-                                                if(m_GHost->m_AutoDenyUsers)
-                                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                (*i)->SetDeleteMe( true );
-                                                (*i)->SetLeftReason( "got kicked because he does not have enough games." );
-                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                        }
-                                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit  && !IsReserved( (*i)->GetName() ) )
-                                        {
-                                                string name=(*i)->GetName();
-                                                string realm=(*i)->GetJoinedRealm( );
-                                                if(m_GHost->m_AutoDenyUsers)
-                                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                (*i)->SetDeleteMe( true );
-                                                (*i)->SetLeftReason( "got kicked because he does not have enough score points." );
-                                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                        }
-                                }
-                        }
-                }
-        }
- 
-        // kick players who didn't type the password within 20 seconds
-        // or 'downloading' when they are not allowed to.
-        if( !m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
-        {
-                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-                {
-                        if( (*i)->GetPasswordProt( ) && GetTime( ) - (*i)->GetJoinTime( ) >= 20 )
-                        {
-                                if(m_GHost->m_AutoDenyUsers)
-                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                (*i)->SetDeleteMe( true );
-                                (*i)->SetLeftReason( "was kicked for non typing the password." );
-                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                        }
-                        
-                        if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
-                            SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
-                            if( GetTicks( ) - (*i)->GetDownloadTicks( ) >= 3000) {
-                                if(m_GHost->m_AutoDenyUsers)
-                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                (*i)->SetDeleteMe( true );
-                                (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
-                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                        if( (*i)->GetChecked( ) <= 1 ) {
+
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 5 && Level == 0 && GetTime( ) - (*i)->GetAnnounceTime( ) >= 1 )
+                            {
+                                    if( m_GameType == 3 )
+                                    {
+                                            if( (*i)->GetGames( ) < m_GHost->m_MinLimit && !IsReserved( (*i)->GetName() ) )
+                                            {
+                                                    SendChat( (*i)->GetPID( ), "[INFO] You have to less games, you require at least 50 Games. You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
+                                                    (*i)->SetAnnounceTime( );
+                                            }
+                                            else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && !IsReserved( (*i)->GetName() ) )
+                                            {
+                                                    SendChat( (*i)->GetPID( ), "[INFO] Youre score is to low, you require at least a score of ["+UTIL_ToString((*i)->GetScore( ), 0)+"] You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
+                                                    (*i)->SetAnnounceTime( );
+                                            }
+                                    }
                             }
-                        }
-                }
-        }
  
-        // kick false countries
-        //Countrycheck
-        if( !m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
-        {
-                for( vector<CGamePlayer *> :: iterator k = m_Players.begin( ); k != m_Players.end( ); ++k )
-                {
- 
-                        uint32_t Level = 0;
-                        for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
-                        {
-                                if( (*i)->GetServer( ) == (*k)->GetSpoofedRealm( ) )
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 15 && Level == 0 && (*i)->GetChecked( ) == 0 )
+                            {
+                                    if( m_GameType == 4 )
+                                    {
+                                            if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && !IsReserved( (*i)->GetName() ) )
+                                            {
+                                                    if(m_GHost->m_AutoDenyUsers)
+                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                    (*i)->SetDeleteMe( true );
+                                                    (*i)->SetLeftReason( "got kicked for not being registered." );
+                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            }
+                                            else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && !IsReserved( (*i)->GetName() ) )
+                                            {
+                                                    if(m_GHost->m_AutoDenyUsers)
+                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                    (*i)->SetDeleteMe( true );
+                                                    (*i)->SetLeftReason( "got kicked because he does not have enough games." );
+                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            }
+                                    }
+                                    else if( m_GameType == 3 )
+                                    {
+                                            if( (*i)->GetGames( ) < m_GHost->m_MinLimit  && !IsReserved( (*i)->GetName() ) )
+                                            {
+                                                    if(m_GHost->m_AutoDenyUsers)
+                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                    (*i)->SetDeleteMe( true );
+                                                    (*i)->SetLeftReason( "got kicked because he does not have enough games." );
+                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            }
+                                            else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit  && !IsReserved( (*i)->GetName() ) )
+                                            {
+                                                    if(m_GHost->m_AutoDenyUsers)
+                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                    (*i)->SetDeleteMe( true );
+                                                    (*i)->SetLeftReason( "got kicked because he does not have enough score points." );
+                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            }
+                                    }
+                           
+                                    string CC = (*i)->GetCLetter( );
+
+                                    transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
+                                    bool unallowedcountry = false;
+                                    for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); )
+                                    {
+                                            if( *k == CC && m_DenieCountries )
+                                                    unallowedcountry = true;
+
+                                            if( *k != CC && m_LimitCountries )
+                                                    unallowedcountry = true;
+                                            k++;
+                                    }
+
+                                    for( vector<string> :: iterator k = m_GHost->m_DCountries.begin( ); k != m_GHost->m_DCountries.end( ); )
+                                    {
+                                            if( *k== CC )
+                                                    unallowedcountry = true;
+                                            k++;
+                                    }
+
+                                    if( m_GHost->m_DenieProxy )
+                                    {
+                                            if( CC == "a1" || CC == "a2")
+                                            {
+                                                    SendAllChat( "Autokicking ["+(*i)->GetName()+"] for joining with a Proxy." );
+                                                    if(m_GHost->m_AutoDenyUsers)
+                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                                    (*i)->SetDeleteMe( true );
+                                                    (*i)->SetLeftReason( "was kicked for joining with a proxy." );
+                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                            }
+                                    }
+
+                                    if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot )
+                                    {
+                                            SendAllChat( "Autokicking User ["+(*i)->GetName()+"] for joining with a denied country: " + CC );
+                                            if(m_GHost->m_AutoDenyUsers)
+                                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                            (*i)->SetDeleteMe( true );
+                                            (*i)->SetLeftReason( "was kicked for having a denied country." );
+                                            (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                            OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                    }
+                                    
+                                    (*i)->SetChecked( );
+                            }
+                            
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 20 ) {
+                                if( (*i)->GetPasswordProt( ) )
                                 {
-                                        Level = (*i)->IsLevel( (*k)->GetName( ) );
-                                        break;
-                                }
-                        }
-                        if( Level == 0 )
-                        {
-                                string CC = (*k)->GetCLetter( );
- 
-                                transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
-                                bool unallowedcountry = false;
-                                for( vector<string> :: iterator i = m_LimitedCountries.begin( ); i != m_LimitedCountries.end( ); )
-                                {
-                                        if( *i == CC && m_DenieCountries )
-                                                unallowedcountry = true;
- 
-                                        if( *i != CC && m_LimitCountries )
-                                                unallowedcountry = true;
-                                        i++;
-                                }
- 
-                                for( vector<string> :: iterator i = m_GHost->m_DCountries.begin( ); i != m_GHost->m_DCountries.end( ); )
-                                {
-                                        if( *i == CC )
-                                                unallowedcountry = true;
-                                        i++;
-                                }
- 
-                                if( m_GHost->m_DenieProxy )
-                                {
-                                        if( CC == "a1" )
-                                        {
-                                                SendAllChat( "Autokicking ["+(*k)->GetName()+"] for joining with a Proxy." );
-                                                if(m_GHost->m_AutoDenyUsers)
-                                                    m_Denied.push_back( (*k)->GetName( ) + " " + (*k)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                (*k)->SetDeleteMe( true );
-                                                (*k)->SetLeftReason( "was kicked for joining with a proxy." );
-                                                (*k)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                OpenSlot( GetSIDFromPID( (*k)->GetPID( ) ), false );
-                                        }
-                                }
- 
-                                if( unallowedcountry )
-                                {
-                                        SendAllChat( "Autokicking User ["+(*k)->GetName()+"] for joining with a denied country: " + CC );
                                         if(m_GHost->m_AutoDenyUsers)
-                                            m_Denied.push_back( (*k)->GetName( ) + " " + (*k)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                        (*k)->SetDeleteMe( true );
-                                        (*k)->SetLeftReason( "was kicked for having a denied country." );
-                                        (*k)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                        OpenSlot( GetSIDFromPID( (*k)->GetPID( ) ), false );
+                                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                        (*i)->SetDeleteMe( true );
+                                        (*i)->SetLeftReason( "was kicked for non typing the password." );
+                                        (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                        OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                                 }
-                        }
+                            }
+                            
+                            if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
+                                SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
+                                if( GetTime( ) - (*i)->GetJoinTime( ) >= 10 ) {
+                                    if(m_GHost->m_AutoDenyUsers)
+                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                    (*i)->SetDeleteMe( true );
+                                    (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
+                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                }
+                            }
+                            
+                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 21 ) {
+                                (*i)->SetChecked( );
+                            }
+                       }
                 }
         }
- 
-        // try to auto start every 10 seconds
+  
+        // try to auto start every 15 seconds
  
         if( !m_CountDownStarted && m_AutoStartPlayers != 0 && GetTime( ) - m_LastAutoStartTime >= 15 )
         {
@@ -1279,7 +1296,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                         {
-                                if( m_SyncCounter - (*i)->GetSyncCounter( ) > m_SyncLimit )
+                                if( m_SyncCounter - (*i)->GetSyncCounter( ) > m_SyncLimit && !(*i)->GetNoLag( ) )
                                 {
                                         (*i)->SetLagging( true );
                                         (*i)->SetStartedLaggingTicks( GetTicks( ) );
@@ -1346,10 +1363,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
                                         {
                                                 if( (*j)->GetLagging( ) )
-                                                {
-                                                        GAME_Print( 11, "", "", (*j)->GetName(), "", "stop" );
                                                         Send( *i, m_Protocol->SEND_W3GS_STOP_LAG( *j ) );
-                                                }
                                         }
  
                                         // send an empty update
@@ -1402,7 +1416,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 if( (*i)->GetLagging( ) && m_SyncCounter - (*i)->GetSyncCounter( ) < m_SyncLimit / 2 )
                                 {
                                         // stop the lag screen for this player
- 
+                                        GAME_Print( 11, "", "", (*i)->GetName(), "", "stop" );
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] stopped lagging on [" + (*i)->GetName( ) + "]" );
                                         SendAll( m_Protocol->SEND_W3GS_STOP_LAG( *i ) );
                                         (*i)->SetLagging( false );
@@ -1451,7 +1465,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         
          // expire the votestart
 
-        if( m_StartedVoteStartTime != 0 && GetTime( ) - m_StartedVoteStartTime >= 60 )
+        if( m_StartedVoteStartTime != 0 && GetTime( ) - m_StartedVoteStartTime >= 60 && ( !m_GameLoaded || !m_GameLoading) )
         {
                 CONSOLE_Print( "[GAME: " + m_GameName + "] votestart expired" );
                 SendAllChat( "Votestart expired (sixty seconds without pass)." );
@@ -1593,22 +1607,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
         }
 
-        // end countdown, default value 120 seconds (autoend function)
-        // the idea is to give the loosing side the option to break the autoend cooldown that they can continue playing
-        // the cooldown can be only breaked by 100% of the loosing side votes
-        if( m_EndGame && GetTicks() - m_EndTicks % 10000 == 0 && m_GHost->m_AutoEndTime != 0 && m_EndTicks != 0 )
-        {
-            if( GetTicks() - m_EndTicks % 30000 == 0 )
-                SendAllChat("[INFO] The game will end in ["+UTIL_ToString((m_GHost->m_AutoEndTime*1000-m_EndTicks)/1000)+"] seconds. There ["+UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes)+"] more needed to stop the autoend." );
-            if( GetTicks() - m_EndTicks >= (((m_GHost->m_AutoEndTime*60)*1000)-10000))
-            {
-                SendAllChat("[Info] The gameover timer started, the game will end in [10] seconds.");
-                string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
-                SendAllChat("[Info] The winner has been set to the ["+WinnerTeam+"]");
-                m_GameOverTime = GetTime();
-            }
-        }
-        
         if( GetTime( ) - m_LastLogDataUpdate >= 10 && m_GHost->m_LiveGames )
         {
  
@@ -1695,6 +1693,12 @@ void CBaseGame :: UpdatePost( void *send_fd )
         {
                 if( (*i)->GetSocket( ) )
                         (*i)->GetSocket( )->DoSend( (fd_set *)send_fd );
+        }
+
+        for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); ++i )
+        {
+            if( i->second->GetSocket( ) )
+                i->second->GetSocket( )->DoSend( (fd_set *)send_fd );
         }
 }
  
@@ -1788,7 +1792,9 @@ void CBaseGame :: SendAllChat( unsigned char fromPID, string message )
                 if( m_GameLoading || m_GameLoaded )
                 {
                         m_LogData = m_LogData + "3" + "\t" +  "bgm" + "\t" +  "Bot" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + message + "\n";
-                        GAME_Print( 1, MinString, SecString, "Bot", "", message );
+                        //sort out these message because the left process already display a message which is relating to the player (with player color)
+                        if(! message.find("left the game")!=string::npos ||! message.find("dropped")!=string::npos||! message.find("disconnected")!=string::npos||! message.find("has lost")!=string::npos )
+                                GAME_Print( 1, MinString, SecString, "Bot", "", message );
                 }
                 else
                 {
@@ -2049,13 +2055,19 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
  
                 SendChat( player, " " );
                 SendChat( player, " " );
-                SendChat( player, " OH-System                                      http://ohsystem.net/" );
+                SendChat( player, "OH-System                                      http://ohsystem.net/" );
                 SendChat( player, "GHost++                                         http://www.codelain.com/" );
                 SendChat( player, "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" );
                 SendChat( player, "     Game Name:                 " + m_GameName );
  
                 if( !m_HCLCommandString.empty( ) )
                         SendChat( player, "     HCL Command String:  " + m_HCLCommandString );
+                if( m_GHost->m_VoteMode ) {
+                    SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
+                }
+                if( m_GHost->m_AllowVoteStart ) {
+                    SendChat( player, "Use '!votestart' for an early beginning. ["+UTIL_ToString(m_GHost->m_VoteStartMinPlayers)+"] are at least required.");
+                }
         }
         else
         {
@@ -2082,7 +2094,14 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
  
                 in.close( );
         }
- 
+        if( m_GHost->m_OHBalance)
+            SendChat(player, "This is a balanced game, the slots will be balanced before the game will start.");
+        if( m_GHost->m_VoteMode ) {
+            SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
+        }
+        if( m_GHost->m_AllowVoteStart ) {
+            SendChat( player, "Use '!votestart' for an early beginning. ["+UTIL_ToString(m_GHost->m_VoteStartMinPlayers)+"] are at least required.");
+        }
  
 }
  
@@ -2119,6 +2138,31 @@ void CBaseGame :: SendEndMessage( )
         }
 }
  
+void CBaseGame :: SendBannedInfo( CPotentialPlayer *player, CDBBan *Ban )
+{
+  // send slot info to the banned player
+
+  vector<CGameSlot> Slots = m_Map->GetSlots( );
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 2, player->GetSocket( )->GetPort( ), player->GetExternalIP( ), Slots, m_RandomSeed, m_Map->GetMapGameType( ) == GAMETYPE_CUSTOM ? 3 : 0, m_Map->GetMapNumPlayers( ) ) );
+
+  BYTEARRAY IP;
+  IP.push_back( 0 );
+  IP.push_back( 0 );
+  IP.push_back( 0 );
+  IP.push_back( 0 );
+
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_PLAYERINFO( 1, m_VirtualHostName, IP, IP, string( ) ) );
+
+  // send a map check packet to the new player
+
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
+
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "Sorry, but you are currently banned." ) );
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Admin: " + Ban->GetAdmin( ) ) );
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Reason: " + Ban->GetReason( ) ) );
+  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
+}
+
 void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
 {
         CONSOLE_Print( "[GAME: " + m_GameName + "] deleting player [" + player->GetName( ) + "]: " + player->GetLeftReason( ) );
@@ -2207,7 +2251,6 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
         else
         {
                 // tell everyone about the player leaving
- 
                 SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( player->GetPID( ), player->GetLeftCode( ) ) );
         }
  
@@ -2250,8 +2293,14 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
                         m_CountDownStarted = false;
                         m_Balanced = false;
                 }
+                if( m_GHost->m_VoteMode && m_VotedTimeStart != 0 ) {
+                    m_VotedTimeStart = 0;
+                    m_Voted = false;
+                }
+                
                 if(m_GHost->m_AutoDenyUsers)
                         m_Denied.push_back( player->GetName( ) + " " + player->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                
         }
         
         m_KickVotePlayer.clear( );
@@ -2435,7 +2484,15 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 potential->SetDeleteMe( true );
                 return;
         }
- 
+        
+        // check if player has a denied word pharse
+        if( Level == 0 && HasDeniedWordPharse( joinPlayer->GetName( ) ) && m_GHost->m_DeniedNamePartials.size( ) != 0 ) {
+            CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but has a forbidden word parse." );
+            potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
+            potential->SetDeleteMe( true );
+            return;
+        }
+        
         // check if the new player's name is empty or too long
  
         string LowerName = joinPlayer->GetName( );
@@ -2444,10 +2501,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         if( joinPlayer->GetName( ).empty( ) || joinPlayer->GetName( ).size( ) > 15 || LowerName.find( " " ) != string::npos || LowerName.find( "|" ) != string::npos )
         {
                 // autoban the player for spoofing name
-                if( !m_GHost->m_BNETs.empty( ) )
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
-                else
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "Garena", joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
+                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "", m_GameAlias ) );
                     
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game with an invalid name of length " + UTIL_ToString( joinPlayer->GetName( ).size( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
@@ -2520,57 +2574,82 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
  
         if( m_GHost->m_BanMethod != 0 && !Reserved )
         {
-            CDBBan *Ban = IsBannedName( joinPlayer->GetName( ) );
-
-            if( Ban )
+            for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
             {
-                    if( m_GHost->m_BanMethod == 1 || m_GHost->m_BanMethod == 3 )
-                    {
-                            CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by name" );
-                            if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
-                            {
-                                    SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
-                                    SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
-                                    m_IgnoredNames.insert( joinPlayer->GetName( ) );
-                            }
-                            // let banned players "join" the game with an arbitrary PID then immediately close the connection
-                            // this causes them to be kicked back to the chat channel on battle.net
-                            if(m_GHost->m_AutoDenyUsers)
+                CDBBan *Ban = (*i)->IsBannedName( joinPlayer->GetName( ) );
+
+                if( Ban )
+                {
+                        if( m_GHost->m_BanMethod == 1 || m_GHost->m_BanMethod == 3 )
+                        {
+                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by name" );
+                                if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
+                                {
+                                        SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
+                                        m_IgnoredNames.insert( joinPlayer->GetName( ) );
+                                }
+                                // let banned players "join" the game with an arbitrary PID then immediately close the connection
+                                // this causes them to be kicked back to the chat channel on battle.net
+                                if(m_GHost->m_AutoDenyUsers)
+                                        m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                if(! m_GHost->m_VirtualBanLobby ) {
+                                    vector<CGameSlot> Slots = m_Map->GetSlots( );
+                                    potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                                    potential->SetDeleteMe( true );
+                                } else {
+                                     // let banned players "join" the game with virtual slots
+                                     // they will be given the admin and reason associated with their ban, and then kicked after a few seconds
+
+                                     CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                                     potentialCopy->SetBanned( );
+                                     potential->SetSocket( NULL );
+                                     potential->SetDeleteMe( true );
+                                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                                     SendBannedInfo( potentialCopy, Ban );
+                                }
+                                return;
+                        }
+                }
+
+                CDBBan *IPBan = (*i)->IsBannedIP( potential->GetExternalIPString( ) );
+                // Disabled, created laags if a player join
+                //if( !IPBan && !potential->GetSocket( )->GetHostName( ).empty( ) )
+                //        IPBan = (*i)->IsBannedIP( "h" + potential->GetSocket( )->GetHostName( ) );
+
+                if( IPBan )
+                {
+                        if( m_GHost->m_BanMethod == 2 || m_GHost->m_BanMethod == 3 )
+                        {
+                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by IP address" );
+
+                                if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
+                                {
+                                        SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
+                                        SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
+                                        m_IgnoredNames.insert( joinPlayer->GetName( ) );
+                                }
+
+                                // let banned players "join" the game with an arbitrary PID then immediately close the connection
+                                // this causes them to be kicked back to the chat channel on battle.net
+                                if(m_GHost->m_AutoDenyUsers)
                                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                            vector<CGameSlot> Slots = m_Map->GetSlots( );
-                            potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
-                            potential->SetDeleteMe( true );
-                            return;
-                    }
-            }
+                                if(! m_GHost->m_VirtualBanLobby ) {
+                                    vector<CGameSlot> Slots = m_Map->GetSlots( );
+                                    potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                                    potential->SetDeleteMe( true );
+                                } else {
+                                    CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                                    potentialCopy->SetBanned( );
+                                    potential->SetSocket( NULL );
+                                    potential->SetDeleteMe( true );
 
-            CDBBan *IPBan = IsBannedIP( potential->GetExternalIPString( ) );
-            // Disabled, created laags if a player join
-            //if( !IPBan && !potential->GetSocket( )->GetHostName( ).empty( ) )
-            //        IPBan = (*i)->IsBannedIP( "h" + potential->GetSocket( )->GetHostName( ) );
-
-            if( IPBan )
-            {
-                    if( m_GHost->m_BanMethod == 2 || m_GHost->m_BanMethod == 3 )
-                    {
-                            CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by IP address" );
-
-                            if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
-                            {
-                                    SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
-                                    SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
-                                    m_IgnoredNames.insert( joinPlayer->GetName( ) );
-                            }
-
-                            // let banned players "join" the game with an arbitrary PID then immediately close the connection
-                            // this causes them to be kicked back to the chat channel on battle.net
-                            if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                            vector<CGameSlot> Slots = m_Map->GetSlots( );
-                            potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
-                            potential->SetDeleteMe( true );
-                            return;
-                    }
+                                    m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                                    SendBannedInfo( potentialCopy, Ban );
+                                }
+                                return;
+                        }
+                }
             }
         }
  
@@ -2719,30 +2798,25 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         {
                 for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
                 {
-                        if( (*i)->GetServer( ) == JoinedRealm || JoinedRealm.empty() )
-                        {
-                                CDBBan *Ban = (*i)->IsBannedName( joinPlayer->GetName( ) );
- 
-                                if( Ban )
-                                {
-                                        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is using a banned name" );
-                                        SendAllChat( m_GHost->m_Language->HasBannedName( joinPlayer->GetName( ) ) );
-                                        SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths( ) ) );
-                                        if(m_GHost->m_AutoDenyUsers)
-                                            m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                        break;
-                                }
-                        }
- 
-                        CDBBan *Ban = (*i)->IsBannedIP( potential->GetExternalIPString( ) );
-                        // disabled, created laggs on the join event
-                        //if( !Ban && !potential->GetSocket( )->GetHostName( ).empty( ) )
-                        //        Ban = (*i)->IsBannedIP( "h" + potential->GetSocket( )->GetHostName( ) );
+                        CDBBan *Ban = (*i)->IsBannedName( joinPlayer->GetName( ) );
+
                         if( Ban )
                         {
-                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is using a banned IP address" );
-                                SendAllChat( m_GHost->m_Language->HasBannedIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), Ban->GetName( ) ) );
+                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is using a banned name" );
+                                SendAllChat( m_GHost->m_Language->HasBannedName( joinPlayer->GetName( ) ) );
                                 SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths( ) ) );
+                                if(m_GHost->m_AutoDenyUsers)
+                                    m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                break;
+                        }
+ 
+                        CDBBan *IPBan = (*i)->IsBannedIP( potential->GetExternalIPString( ) );
+
+                        if( IPBan )
+                        {
+                                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is using a banned IP address" );
+                                SendAllChat( m_GHost->m_Language->HasBannedIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
+                                SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
                                 if(m_GHost->m_AutoDenyUsers)
                                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                                 break;
@@ -2771,7 +2845,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 m_Pairedpms.push_back( Pairedpm( joinPlayer->GetName( ), m_GHost->m_DB->Threadedpm( joinPlayer->GetName( ), string(), 0, string(), "join" ) ) );
  
         // check win perc
-         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "" ) ) );
+         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
  
         // cookie for reserved players
         if( Level >= 3 && m_GHost->m_FunCommands)
@@ -2818,7 +2892,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
  
-        GAME_Print( 4, "", "", joinPlayer->GetName(), "", JoinedRealm );
+        GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
         if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
             SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
         else  
@@ -2983,6 +3057,17 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
         {
                 SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+        }
+        // abort the countdown if there was one in progress
+        if( m_CountDownStarted )
+        {
+                SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
+                m_CountDownStarted = false;
+                m_Balanced = false;
+        }
+        if( m_GHost->m_VoteMode && m_VotedTimeStart != 0 ) {
+            m_VotedTimeStart = 0;
+            m_Voted = false;
         }
 }
  
@@ -3602,19 +3687,16 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
             case 0x50 : n += 6; break;
             case 0x51 :
               n += 10;
- 
-               SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
-               SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
-               player->SetDeleteMe( true );
-               player->SetLeftReason( "was kicked by host" );
-               player->SetLeftCode( PLAYERLEAVE_LOST );
-               if(! m_GHost->m_BNETs.empty() )
-                       m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
-               else
-                       m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "Garena", player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
-                   
+              if( !m_AllowMapTrading ) {
+                SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
+                SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
+                player->SetDeleteMe( true );
+                player->SetLeftReason( "was kicked by host" );
+                player->SetLeftCode( PLAYERLEAVE_LOST );
+                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "", m_GameAlias ) );
                delete action;
                return false;
+             }
             break;
             case 0x52 : Failed = true; break;
             case 0x53 : Failed = true; break;
@@ -3939,7 +4021,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                                         CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
                                         // Hide password protection
                                         string LMessage = chatPlayer->GetMessage( );
-                                        if( LMessage.substr( 1, 2 ) != "pw" || LMessage.substr( 1, 4 ) != "pass" || LMessage.substr( 1, 8 ) != "password" || LMessage.substr( 1, 2 ) != "ac" )
+                                        if( ( LMessage.substr( 1, 1 ) != "p" && LMessage.substr( 1, 4) != "ping" ) && LMessage.substr( 1, 2 ) != "ac" )
                                         {
                                                 m_LogData = m_LogData + "1" + "\t" + "l" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + chatPlayer->GetMessage() + "\n";
                                                 GAME_Print( 9, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
@@ -4277,7 +4359,7 @@ void CBaseGame :: EventPlayerPongToHost( CGamePlayer *player, uint32_t pong )
         // also don't kick anyone if the game is loading or loaded - this could happen because we send pings during loading but we stop sending them after the game is loaded
         // see the Update function for where we send pings
  
-        if( !m_GameLoading && !m_GameLoaded && !player->GetDeleteMe( ) && !player->GetReserved( ) && player->GetNumPings( ) >= 3 && player->GetPing( m_GHost->m_LCPings ) > m_GHost->m_AutoKickPing )
+        if( !m_GameLoading && !m_GameLoaded && !player->GetDeleteMe( ) && !player->GetReserved( ) && player->GetNumPings( ) >= 3 && player->GetPing( m_GHost->m_LCPings ) > m_GHost->m_AutoKickPing && player->GetLevel() < 1 )
         {
                 // send a chat message because we don't normally do so when a player leaves the lobby
  
@@ -4408,9 +4490,16 @@ void CBaseGame :: EventGameStarted( )
  
         for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
                 delete *i;
- 
+
         m_Potentials.clear( );
- 
+
+        // delete any banned players that are still hanging around
+
+         for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); ++i )
+            delete i->second;
+
+         m_BannedPlayers.clear( );
+
         // set initial values for replay
  
         if( m_Replay )
@@ -4508,7 +4597,7 @@ void CBaseGame :: EventGameStarted( )
             m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
         }
         
-        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter );
+        m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter, m_GameAlias );
 }
  
 void CBaseGame :: EventGameLoaded( )
@@ -5884,7 +5973,8 @@ void CBaseGame :: StartCountDown( bool force )
                         string NotPinged;
                         string NotSpoofChecked;
                         string NotPassword;
- 
+                        string NotVoted;
+                        
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                         {
                                 if( !(*i)->GetReserved( ) && (*i)->GetNumPings( ) < 3 )
@@ -5913,6 +6003,14 @@ void CBaseGame :: StartCountDown( bool force )
                                         else
                                                NotPassword += ", " + (*i)->GetName( );
                                 }
+                                
+                                if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
+                                    SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
+                                    if( NotVoted.empty( ) )
+                                            NotVoted = (*i)->GetName( );
+                                     else
+                                            NotVoted += ", " + (*i)->GetName( );
+                                }
  
                         }
  
@@ -5939,7 +6037,25 @@ void CBaseGame :: StartCountDown( bool force )
                                 OHFixedBalance( );
                                 m_Balanced = true;
                         }
- 
+                        
+                        if( m_GHost->m_VoteMode &&! m_Voted ) {
+                            if(m_ModesToVote.size() != 0 ) {
+                                if(! NotVoted.empty())
+                                    SendAllChat( "Players who not voted yet: " + NotVoted );
+                                if( m_VotedTimeStart != 0) {
+                                    if( m_GHost->m_RandomMode ) {
+                                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                                    } else {
+                                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the top voted mode will be taken." );
+                                    }
+                                } else {
+                                    StartVoteMode( );
+                                }
+                                return;
+                            } else {
+                                CONSOLE_Print( "[ERROR] Mode Voting was enabled but didn't found any modes to vote.");
+                            }
+                        }
                         // if no problems found start the game
  
                         if( StillDownloading.empty( ) && NotSpoofChecked.empty( ) && NotPinged.empty( ) && NotPassword.empty( ) && ( m_Balanced || ( !m_Balanced && !m_GHost->m_OHBalance ) ) )
@@ -5993,6 +6109,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 string NotPinged;
                 string NotSpoofChecked;
                 string NotPassword;
+                string NotVoted;
  
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                 {
@@ -6021,6 +6138,13 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                                  else
                                         NotPassword += ", " + (*i)->GetName( );
                         }
+                        if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
+                            SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
+                            if( NotVoted.empty( ) )
+                                    NotVoted = (*i)->GetName( );
+                             else
+                                    NotVoted += ", " + (*i)->GetName( );
+                        }
                 }
  
                 if( !NotPinged.empty( ) )
@@ -6046,6 +6170,25 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                 {
                         OHFixedBalance( );
                         m_Balanced = true;
+                }
+                
+                if( m_GHost->m_VoteMode &&! m_Voted ) {
+                    if(m_ModesToVote.size() != 0 ) {
+                        if(! NotVoted.empty())
+                            SendAllChat( "Players who not voted yet: " + NotVoted );
+                        if( m_VotedTimeStart != 0) {
+                            if( m_GHost->m_RandomMode ) {
+                                SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                            } else {
+                                SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the top voted mode will be taken." );
+                            }
+                        } else {
+                            StartVoteMode( );
+                        }
+                        return;
+                    } else {
+                        CONSOLE_Print( "[ERROR] Mode Voting was enabled but didn't found any modes to vote.");
+                    }
                 }
  
                 // if no problems found start the game
@@ -6195,6 +6338,25 @@ bool CBaseGame :: IsDenied( string username, string ip )
         return false;
 }
  
+bool CBaseGame :: HasDeniedWordPharse( string username ) {
+    UTIL_Replace(username, "13", "B");
+    UTIL_Replace(username, "1", "i");
+    UTIL_Replace(username, "3", "e");
+    UTIL_Replace(username, "4", "a");
+    transform( username.begin( ), username.end( ), username.begin( ), ::tolower );
+    bool kick = false;
+    for( vector<string> :: iterator i = m_GHost->m_DeniedNamePartials.begin( ); i != m_GHost->m_DeniedNamePartials.end( ); i++ ) {
+        string pharse = *i;
+        if( !username.find( pharse ) != string :: npos )
+            continue;
+        else {
+            kick = true;
+            break;
+        }
+    }
+    return kick;
+}
+
 bool CBaseGame :: is_digits( const std::string &str )
 {
         return str.find_first_not_of("0123456789") == std::string::npos;
@@ -6203,16 +6365,39 @@ bool CBaseGame :: is_digits( const std::string &str )
 void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString, string Player1, string Player2, string message )
 {
         string StorePacket;
+        uint32_t CreateTime = GetTime( ) - GetCreationTime( );
+        string SeString = UTIL_ToString( CreateTime % 60 );
+        string MiString = UTIL_ToString( CreateTime / 60 );
+        string LTime = "";
+        string GTime = "";
+        if(! m_GameLoaded ) {
+            if( MiString.size( ) == 1 )
+                    MiString.insert( 0, "0" );
+
+            if( SeString.size( ) == 1 )
+                    SeString.insert( 0, "0" );
+            LTime = MiString + ":" + SeString;
+        } else {
+            SeString = UTIL_ToString( ( m_GameTicks / 1000 ) % 60 );
+            MiString = UTIL_ToString( ( m_GameTicks / 1000 ) / 60 );
+            if( MiString.size( ) == 1 )
+                    MiString.insert( 0, "0" );
+
+            if( SeString.size( ) == 1 )
+                    SeString.insert( 0, "0" );
+            GTime = MiString + ":" + SeString;
+        }
+ 
         if( type == 0 || type == 3 || type == 4 || type == 9 )
         {
                 if( type == 0 )
-                        StorePacket = "<div class=\"lobbychat\"><span class=\"bot\">Bot</span> "+message+"</div>";
+                        StorePacket = "<div class=\"lobbychat\"><span class=\"time\">"+LTime+"</span><span class=\"bot\">Bot</span> "+message+"</div>";
                 if( type == 3 )
-                        StorePacket = "<div class=\"lobbyleave\"><span class=\"lobbyplayer\">"+Player1+"</span> "+message+"</div>";
+                        StorePacket = "<div class=\"lobbyleave\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span> "+message+"</div>";
                 if( type == 4 )
-                        StorePacket = "<div class=\"lobbyjoin\"><span class=\"lobbyplayer\">"+Player1+"</span> joined the game from "+message+"</div>";
+                        StorePacket = "<div class=\"lobbyjoin\"><span class=\"time\">"+LTime+"</span><span class=\"lobbyplayer\">"+Player1+"</span>"+message+"</div>";
                 if( type == 9 )
-                        StorePacket = "<div class=\"lobbychat\"><span class=\"player\">"+Player1+" </span>"+message+"</div>";
+                        StorePacket = "<div class=\"lobbychat\"><span class=\"time\">"+LTime+"</span><span class=\"player\">"+Player1+" </span>"+message+"</div>";
  
                 m_LobbyLog.push_back( StorePacket );
         }
@@ -6220,25 +6405,28 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
         {
                 string PSiD = "0";
                 CGamePlayer *Player = GetPlayerFromName( Player1, true );
-                if( Player )
-                        PSiD = UTIL_ToString( GetSIDFromPID( Player->GetPID( ) ) );
+                if( Player ) {
+                    int pid = GetSIDFromPID( Player->GetPID( ) );
+                    pid++;
+                    PSiD = UTIL_ToString( pid );
+                }
  
                 if( type == 1 )
-                         StorePacket = "<div class=\"gamechat\"><span class=\"bot\">Bot</span> "+message+"</div>";
+                         StorePacket = "<div class=\"gamechat\"><span class=\"time\">"+GTime+"</span><span class=\"bot\">Bot</span> "+message+"</div>";
                 else if( type == 2 )
-                        StorePacket = "<div class=\"gameleave\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"gameleave\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 5 )
-                        StorePacket = "<div class=\"sentinelchat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"sentinelchat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 6 )
-                        StorePacket = "<div class=\"scourgechat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"scourgechat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 7 )
-                        StorePacket = "<div class=\"gamechat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"gamechat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 8 )
-                        StorePacket = "<div class=\"obschat\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
+                        StorePacket = "<div class=\"obschat\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"</div>";
                 else if( type == 10 )
-                        StorePacket = "<div class=\"systemchat\"><span class=\"system\">System</span> "+message+"</div>";
+                        StorePacket = "<div class=\"systemchat\"><span class=\"time\">"+GTime+"</span><span class=\"system\">System</span> "+message+"</div>";
                 else if( type == 11 )
-                        StorePacket = "<div class=\"lagevent\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"ed lagging</div>";
+                        StorePacket = "<div class=\"lagevent\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> "+message+"ed lagging</div>";
                 else
                         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
  
@@ -6250,33 +6438,40 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 string VSiD = "0";
                 CGamePlayer *Player = GetPlayerFromName( Player1, true );
                 CGamePlayer *VPlayer = GetPlayerFromName( Player2, true );
-                if( Player )
-                        PSiD = UTIL_ToString( GetSIDFromPID( Player->GetPID( ) ) );
-                if( VPlayer )
-                        PSiD = UTIL_ToString( GetSIDFromPID( VPlayer->GetPID( ) ) );
+                if( Player ) {
+                    int pid = GetSIDFromPID( Player->GetPID( ) );
+                    pid++;
+                    PSiD = UTIL_ToString( pid );
+                }
+                
+                if( VPlayer ) {
+                    int pid = GetSIDFromPID( VPlayer->GetPID( ) );
+                    pid++;
+                    VSiD = UTIL_ToString( pid );
+                }
  
                 if( type == 12 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> denied <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 13 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> drew a first blood on <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> drew a first blood on <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 131 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a double kill.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a double kill.</div>";
                 else if( type == 132 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a tripple kill.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a tripple kill.</div>";
                 else if( type == 133 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got an ultra kill.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got an ultra kill.</div>";
                 else if( type == 134 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a rampage.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> got a rampage.</div>";
                 else if( type == 14 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 15 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> was killed by the creeps or suicided.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> was killed by the creeps or suicided.</div>";
                 else if( type == 16 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"sentinel\">Sentinel</span></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"sentinel\">Sentinel</span></div>";
                 else if( type == 17 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"scourge\">Scourge</span></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed by the <span class=\"scourge\">Scourge</span></div>";
                 else if( type == 18 )
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> assisted to kill <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> assisted to kill <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                 else if( type == 19 )
                 {
                         string Type;
@@ -6285,7 +6480,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> level "+Level+" Tower.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> level "+Level+" Tower.</div>";
                 }
                 else if( type == 20 )
                 {
@@ -6295,7 +6490,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Tower.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Tower.</div>";
                 }
                 else if( type == 21 )
                 {
@@ -6305,7 +6500,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Tower.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Tower.</div>";
                 }
                 else if( type == 22 )
                 {
@@ -6315,7 +6510,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket ="<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> "+Level+" Rax.</div>";
+                        StorePacket ="<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> killed a "+Type+" <span class=\""+Player2+"\">"+Player2+"</span> "+Level+" Rax.</div>";
                 }
                 else if( type == 23 )
                 {
@@ -6325,7 +6520,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Rax.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"sentinel\">Sentinel</span> killed a "+Type+" <span class=\"scourge\">Scourge</span> level "+Level+" Rax.</div>";
                 }
                 else if( type == 24 )
                 {
@@ -6335,29 +6530,29 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                         SS >> message;
                         SS << Type;
                         SS << Level;
-                        StorePacket = "<div class=\"system\"><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Rax.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"scourge\">Scourge</span> killed a "+Type+" <span class=\"sentinel\">Sentinel</span> level "+Level+" Rax.</div>";
                 }
                 else if( type == 25 )
                 {
                         if( message == "req" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> requested a swap with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> requested a swap with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                         else if( message == "succ" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> successfully swapped with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> successfully swapped with <a href=\"?u="+Player2+"\"><span class=\"slot"+VSiD+"\">"+Player2+"</span></a></div>";
                         else
                                 CONSOLE_Print( "Unknown Swap Packet was send: " + message );
                 }
                 else if( type == 26 )
-                        StorePacket = "<div class=\"system\"><span class=\"scourge\">Scourge's</span> Throne is now on "+message+"%.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"scourge\">Scourge's</span> Throne is now on "+message+"%.</div>";
                 else if( type == 27 )
-                        StorePacket = "<div class=\"system\"><span class=\"sentinel\">Sentinel's</span> Tree of Life is now on "+message+"%.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\"sentinel\">Sentinel's</span> Tree of Life is now on "+message+"%.</div>";
                 else if( type == 28 )
-                        StorePacket = "<div class=\"system\"><span class=\""+Player1+"\">"+Player1+"</span> killed Roshan.</div>";
+                        StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><span class=\""+Player1+"\">"+Player1+"</span> killed Roshan.</div>";
                 else if( type == 29 )
                 {
                         if( message == "pick" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> picked up Aegis.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> picked up Aegis.</div>";
                         else if( message == "drop" )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> dropped Aegis.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> dropped Aegis.</div>";
                         else
                                 CONSOLE_Print( "Unknown Aegis Packet was send: " + message );
                 }
@@ -6378,9 +6573,9 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                                 CONSOLE_Print( "Bad Input for RuneType: "+message );
  
                         if( type == 30 )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> stored a <span=\"rune\">"+Rune+"</span> Rune.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> stored a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
                         else if( type == 31 )
-                                StorePacket = "<div class=\"system\"><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> used a <span=\"rune\">"+Rune+"</span> Rune.</div>";
+                                StorePacket = "<div class=\"system\"><span class=\"time\">"+GTime+"</span><a href=\"?u="+Player1+"\"><span class=\"slot"+PSiD+"\">"+Player1+"</span></a> used a <span class=\"rune\">"+Rune+"</span> Rune.</div>";
                 }
                 else
                         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
@@ -6394,23 +6589,29 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
  
 void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
 {
-        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-        {
-               
-                uint32_t Level = 0;
-                for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
-                {
-                        if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) )
-                        {
-                                Level = (*k)->IsLevel( (*i)->GetName( ) );
-                                break;
-                        }
-                }
- 
-                if( Level <= 1 )
-                        SendChat( (*i)->GetPID( ), "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
-        }
-//      SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+    if( m_GHost->m_Announces.size( ) != 0 && m_GHost->m_Announces.size() >= RandomNumber ) {
+        if( m_GHost->m_AnnounceHidden ) {
+            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+            {
+
+                    uint32_t Level = 0;
+                    for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+                    {
+                            if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) )
+                            {
+                                    Level = (*k)->IsLevel( (*i)->GetName( ) );
+                                    break;
+                            }
+                    }
+
+                    if( Level <= 1 )
+                            SendChat( (*i)->GetPID( ), "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+            }
+        } else
+          SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+    } else {
+        CONSOLE_Print("[Error] Announce event failed, make sure you have set an announce.");
+    }
 }
  
 string CBaseGame :: GetColoredName( string defaultname )
@@ -6434,50 +6635,6 @@ string CBaseGame :: GetColoredName( string defaultname )
         return "";
 }
 
-CDBBan *CBaseGame :: IsBannedName( string name )
-{
-        transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
- 
-        // todotodo: optimize this - maybe use a map?
- 
-        for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
-        {
-                if( (*i)->GetName( ) == name )
-                        return *i;
-        }
- 
-        return NULL;
-}
- 
-CDBBan *CBaseGame :: IsBannedIP( string ip )
-{
-        transform( ip.begin( ), ip.end( ), ip.begin( ), ::tolower ); //transform in case it's a hostname
-        for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
-        {
-                if( (*i)->GetIP( )[0] == ':' )
-                {
-                        string BanIP = (*i)->GetIP( ).substr( 1 );
-                        int len = BanIP.length( );
- 
-                        if( ip.length( ) >= len && ip.substr( 0, len ) == BanIP )
-                        {
-                                return *i;
-                        }
-                        else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && ip.length( ) >= 3 && ip[0] == 'h' && ip.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
-                        {
-                                return *i;
-                        }
-                }
- 
-                if( (*i)->GetIP( ) == ip )
-                {
-                        return *i;
-                }
-        }
- 
-        return NULL;
-}
-
 string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
 {
         uint32_t HostCounterID = hostcounter >> 28;
@@ -6496,4 +6653,59 @@ string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
             JoinedRealm = "Garena";
         
         return JoinedRealm;
+}
+
+void CBaseGame :: StartVoteMode( ) {
+    m_VotedTimeStart = GetTime( );
+    SendAllChat( "The voting for a mode has started. You can vote with '!vote X'. Votes to mode:");
+    string Modes;
+    uint32_t c = 1;
+    for( vector<string> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
+        Modes += "["+UTIL_ToString(c)+": "+*i+"] ";
+        
+        if( c == 4 ) {
+            SendAllChat(Modes);
+            Modes.clear();
+        }
+        c++;
+    }
+    SendAllChat(Modes);
+}
+
+void CBaseGame :: GetVotingModes( string allmodes ) {
+    vector<string> m_AllModes;
+    transform( allmodes.begin( ), allmodes.end( ), allmodes.begin( ), ::tolower );
+    string SingleMode;
+    stringstream SS;
+    SS << allmodes;
+    while( SS >> SingleMode )
+    {
+            m_AllModes.push_back( SingleMode );
+    }
+    uint32_t ModeAmount = m_AllModes.size( )-1;
+    
+    if( ModeAmount < 6) {
+        for( vector<string> :: iterator i = m_AllModes.begin( ); i != m_AllModes.end( ); ++i ) {
+            m_ModesToVote.push_back( *i );
+        }
+        m_ModesToVote.push_back( "random" );
+    } else {
+        //get unique random numbers to pick for the diffrent modes
+        string Numbers;
+        for( int i = 0; i < 6; ++i ) {
+            uint32_t newNumber = rand( ) % ModeAmount;
+            while( Numbers.find( UTIL_ToString(newNumber) ) != string :: npos ) {
+                     newNumber = rand( ) % ModeAmount;
+            }
+            Numbers += UTIL_ToString(newNumber)+" ";
+        }
+        string SingleNumber;
+        stringstream SS;
+        SS << Numbers;
+        while( SS >> SingleNumber )
+        {
+                m_ModesToVote.push_back( m_AllModes[UTIL_ToUInt32(SingleNumber)] );
+        }
+        m_ModesToVote.push_back( "random" );
+    }
 }
