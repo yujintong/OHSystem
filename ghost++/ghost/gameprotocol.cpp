@@ -71,7 +71,7 @@ CIncomingJoinPlayer *CGameProtocol :: RECEIVE_W3GS_REQJOIN( BYTEARRAY data )
 		if( !Name.empty( ) && data.size( ) >= Name.size( ) + 30 )
 		{
 			BYTEARRAY InternalIP = BYTEARRAY( data.begin( ) + Name.size( ) + 26, data.begin( ) + Name.size( ) + 30 );
-			return new CIncomingJoinPlayer( HostCounter, EntryKey, string( Name.begin( ), Name.end( ) ), InternalIP );
+            return new CIncomingJoinPlayer( HostCounter, EntryKey, string( Name.begin( ), Name.end( ) ), InternalIP, 0, false, 0, "??" );
 		}
 	}
 
@@ -966,7 +966,7 @@ BYTEARRAY CGameProtocol :: EncodeSlotInfo( vector<CGameSlot> &slots, uint32_t ra
 // CIncomingJoinPlayer
 //
 
-CIncomingJoinPlayer :: CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP ) : m_HostCounter( nHostCounter ), m_EntryKey( nEntryKey ), m_Name( nName ), m_InternalIP( nInternalIP )
+CIncomingJoinPlayer :: CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP, uint32_t nGames, bool nRegistered, uint32_t nScore, string nCC ) : m_HostCounter( nHostCounter ), m_EntryKey( nEntryKey ), m_Name( nName ), m_InternalIP( nInternalIP ), m_Games( nGames ), m_Registered( nRegistered ), m_Score( nScore ), m_CC( nCC )
 {
 
 }
