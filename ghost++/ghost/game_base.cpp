@@ -1296,7 +1296,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
                         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                         {
-                                if( m_SyncCounter - (*i)->GetSyncCounter( ) > m_SyncLimit )
+                                if( m_SyncCounter - (*i)->GetSyncCounter( ) > m_SyncLimit && !(*i)->GetNoLag( ) )
                                 {
                                         (*i)->SetLagging( true );
                                         (*i)->SetStartedLaggingTicks( GetTicks( ) );

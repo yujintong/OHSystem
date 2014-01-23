@@ -4519,6 +4519,23 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SendChat(player, m_GHost->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ) ;
             }
         }
+
+        //
+        // !NOLAG
+        //
+
+        else if( Command == "nolag" && GetTime( ) - player->GetStatsDotASentTime( ) >= 5 )
+        {
+            player->SetNoLag( !player->GetNoLag( ) );
+
+            if( player->GetNoLag( ) )
+                SendAllChat( "No lag has been enabled for player [" + player->GetName( ) + "]." );
+            else
+                SendAllChat( "No lag has been disabled for player [" + player->GetName( ) + "]." );
+
+            player->SetStatsDotASentTime( GetTime( ) );
+        }
+
         return HideCommand;
 }
  

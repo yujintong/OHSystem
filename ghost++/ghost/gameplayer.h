@@ -158,7 +158,7 @@ private:
 	uint32_t m_PauseTried;
 	string m_CLetter;
 	string m_Country;
-        bool m_Silence;
+    bool m_Silence;
 	bool m_ForcedGproxy;
 	bool m_HasLeft;
 	bool m_AFKMarked;
@@ -167,15 +167,16 @@ private:
 	uint32_t m_VKTimes;
 	uint32_t m_HighPingTimes;
 	uint32_t m_AnnounceTime;
-        uint32_t m_Level;
-        string m_LevelName;
-        bool m_StartVoted;
-        bool m_GlobalChatMuted;
-        string m_InsultM;
-        uint32_t m_DownloadTicks;
-        uint32_t m_Checked;
-        bool m_VotedForInterruption;
-        uint32_t m_VotedMode;
+    uint32_t m_Level;
+    string m_LevelName;
+    bool m_StartVoted;
+    bool m_GlobalChatMuted;
+    string m_InsultM;
+    uint32_t m_DownloadTicks;
+    uint32_t m_Checked;
+    bool m_VotedForInterruption;
+    uint32_t m_VotedMode;
+    bool m_NoLag;                // if the player wants to ignore lag screen
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -237,8 +238,8 @@ public:
 	bool GetUsedPause( )					{ return m_UsedPause; }
 	uint32_t GetPauseTried( )				{ return m_PauseTried; }
 	string GetCLetter( )					{ return m_CLetter; }
-        string GetCountry( )					{ return m_Country; }
-        bool GetSilence( )                                              { return m_Silence; }
+    string GetCountry( )					{ return m_Country; }
+    bool GetSilence( )                                              { return m_Silence; }
 	bool GetForcedGproxy( )						{ return m_ForcedGproxy; }
 	bool GetLeft( )							{ return m_HasLeft; }
 	bool GetAFKMarked( )						{ return m_AFKMarked; }
@@ -247,15 +248,16 @@ public:
 	uint32_t GetVKTimes( )						{ return m_VKTimes; }
 	uint32_t GetHighPingTimes( )					{ return m_HighPingTimes; }
 	uint32_t GetAnnounceTime( )					{ return m_AnnounceTime; }
-        uint32_t GetLevel( )                                            { return m_Level; }
-        string GetLevelName( )                                          { return m_LevelName; }
-        bool GetStartVote( )                                            { return m_StartVoted; }
-        bool GetGlobalChatMuted( )                                      { return m_GlobalChatMuted; }
-        string GetInsultM( )                                            { return m_InsultM; }
-        uint32_t GetDownloadTicks( )                                    { return m_DownloadTicks; }
-        uint32_t GetChecked( )                                              { return m_Checked; }
-        bool GetVotedForInterruption( )                                        { return m_VotedForInterruption; }
-        uint32_t GetVotedMode( )                                                { return m_VotedMode; }
+    uint32_t GetLevel( )                                            { return m_Level; }
+    string GetLevelName( )                                          { return m_LevelName; }
+    bool GetStartVote( )                                            { return m_StartVoted; }
+    bool GetGlobalChatMuted( )                                      { return m_GlobalChatMuted; }
+    string GetInsultM( )                                            { return m_InsultM; }
+    uint32_t GetDownloadTicks( )                                    { return m_DownloadTicks; }
+    uint32_t GetChecked( )                                              { return m_Checked; }
+    bool GetVotedForInterruption( )                                        { return m_VotedForInterruption; }
+    uint32_t GetVotedMode( )                                                { return m_VotedMode; }
+    bool GetNoLag( )              { return m_NoLag; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
@@ -294,11 +296,11 @@ public:
 	void SetCookie( uint32_t nCookies )											{ m_Cookies = nCookies; }
 	void SetLeftMessageSent( bool nLeftMessageSent )								{ m_LeftMessageSent = nLeftMessageSent; }
 	void SetGProxyDisconnectNoticeSent( bool nGProxyDisconnectNoticeSent )			{ m_GProxyDisconnectNoticeSent = nGProxyDisconnectNoticeSent; }
-        void SetUsedPause( bool nUsedPause )                    	        	        		{ m_UsedPause = nUsedPause; }
-        void SetPauseTried( )			        	        	               { m_PauseTried += 1; }
+    void SetUsedPause( bool nUsedPause )                    	        	        		{ m_UsedPause = nUsedPause; }
+    void SetPauseTried( )			        	        	               { m_PauseTried += 1; }
 	void SetCLetter( string nCLetter )							{ m_CLetter = nCLetter; }
-        void SetCountry( string nCountry )                                                      { m_Country = nCountry; }
-        void SetSilence( bool nSilence )                                                                                { m_Silence = nSilence; }
+    void SetCountry( string nCountry )                                                      { m_Country = nCountry; }
+    void SetSilence( bool nSilence )                                                                                { m_Silence = nSilence; }
 	void SetForcedGproxy( bool nForcedGproxy )									{ m_ForcedGproxy = nForcedGproxy; }
 	void SetLeft( bool nHasLeft )											{ m_HasLeft = nHasLeft; }
 	void SetAFKMarked( bool nAFKMarked )										{ m_AFKMarked = nAFKMarked; }
@@ -307,22 +309,23 @@ public:
 	void SetVKTimes( )												{ m_VKTimes += 1; }
 	void SetHighPingTimes( )											{ m_HighPingTimes += 1; }
 	void SetAnnounceTime( )											{ m_AnnounceTime = GetTime(); }
-        void SetLevel( uint32_t nLevel )                                                                        { m_Level = nLevel; }
-        void SetLevelName( string nLevelName )                                                                    { m_LevelName = nLevelName; }
-        void SetStartVote( bool nVoted )                                                                        { m_StartVoted = nVoted; }
+    void SetLevel( uint32_t nLevel )                                                                        { m_Level = nLevel; }
+    void SetLevelName( string nLevelName )                                                                    { m_LevelName = nLevelName; }
+    void SetStartVote( bool nVoted )                                                                        { m_StartVoted = nVoted; }
 	string GetNameTerminated( );
 	uint32_t GetPing( bool LCPing );
 	bool GetIsIgnoring( string username );
 	void Ignore( string username );
 	void UnIgnore( string username );
-        void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
-        void SetInsultM( string nInsultM )                                                                              { m_InsultM = nInsultM; }
-        void SetDownloadTicks( uint32_t nTicks )                                                                        { m_DownloadTicks = nTicks; }                                       
-        void SetChecked( )                                                                                              { m_Checked++; }
+    void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             { m_GlobalChatMuted = nGlobalChatMuted; }
+    void SetInsultM( string nInsultM )                                                                              { m_InsultM = nInsultM; }
+    void SetDownloadTicks( uint32_t nTicks )                                                                        { m_DownloadTicks = nTicks; }
+    void SetChecked( )                                                                                              { m_Checked++; }
 	void AddLoadInGameData( BYTEARRAY nLoadInGameData )								{ m_LoadInGameData.push( nLoadInGameData ); }
-        void SetVotedForInterruption ( bool nVoted )                                                                    { m_VotedForInterruption = nVoted; }
-        void SetVotedMode( uint32_t nVotedMode )                                                                        { m_VotedMode = nVotedMode;} 
-        
+    void SetVotedForInterruption ( bool nVoted )                                                                    { m_VotedForInterruption = nVoted; }
+    void SetVotedMode( uint32_t nVotedMode )                                                                        { m_VotedMode = nVotedMode;}
+    void SetNoLag( bool nNoLag )                          { m_NoLag = nNoLag; }
+
 	// processing functions
 
 	// AFK detection
