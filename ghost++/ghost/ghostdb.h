@@ -945,9 +945,9 @@ public:
 	string GetReason( )		{ return m_Reason; }
 	string GetExpire( )             { return m_ExpireDate; }
 	string GetMonths( )             { return m_Months; }
-        string GetDays( )             { return m_Days; }
-        string GetHours( )             { return m_Hours; }
-        string GetMinutes( )             { return m_Minutes; }
+    string GetDays( )             { return m_Days; }
+    string GetHours( )             { return m_Hours; }
+    string GetMinutes( )             { return m_Minutes; }
 };
 
 //
