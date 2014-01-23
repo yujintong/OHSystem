@@ -646,8 +646,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             }
             else
             {
-                CONSOLE_Print( "bannnnn ... " + UTIL_ToString( GetTicks( ) - i->first ) );
-                if( GetTicks( ) - i->first > 6000 )
+                if( GetTicks( ) - i->first > ( m_GHost->m_VirtualLobbyTime/1000) )
                 {
                     CONSOLE_Print( "deleting banned player..!" );
                     i->second->SetDeleteMe( true );
@@ -2138,29 +2137,34 @@ void CBaseGame :: SendEndMessage( )
         }
 }
  
-void CBaseGame :: SendBannedInfo( CPotentialPlayer *player, CDBBan *Ban )
+void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type )
 {
-  // send slot info to the banned player
+    // send slot info to the banned player
 
-  vector<CGameSlot> Slots = m_Map->GetSlots( );
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 2, player->GetSocket( )->GetPort( ), player->GetExternalIP( ), Slots, m_RandomSeed, m_Map->GetMapGameType( ) == GAMETYPE_CUSTOM ? 3 : 0, m_Map->GetMapNumPlayers( ) ) );
+    vector<CGameSlot> Slots = m_Map->GetSlots( );
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 2, player->GetSocket( )->GetPort( ), player->GetExternalIP( ), Slots, m_RandomSeed, m_Map->GetMapGameType( ) == GAMETYPE_CUSTOM ? 3 : 0, m_Map->GetMapNumPlayers( ) ) );
 
-  BYTEARRAY IP;
-  IP.push_back( 0 );
-  IP.push_back( 0 );
-  IP.push_back( 0 );
-  IP.push_back( 0 );
+    BYTEARRAY IP;
+    IP.push_back( 0 );
+    IP.push_back( 0 );
+    IP.push_back( 0 );
+    IP.push_back( 0 );
 
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_PLAYERINFO( 1, m_VirtualHostName, IP, IP, string( ) ) );
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_PLAYERINFO( 1, m_VirtualHostName, IP, IP, string( ) ) );
 
-  // send a map check packet to the new player
+    // send a map check packet to the new player
 
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
+    if(1==type) {
+        //Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths()
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are currently unable to join the game. You are banned." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Name:   " + Ban->GetName() + "@" + Ban->GetServer() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Date:   " + Ban->GetDate() + "(Remain: " + Ban->GetMonths() + ")" ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Reason: " + Ban->GetReason( ) ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_CustomVirtualLobbyInfoBanText ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
+    }
 
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "Sorry, but you are currently banned." ) );
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Admin: " + Ban->GetAdmin( ) ) );
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Reason: " + Ban->GetReason( ) ) );
-  player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
 }
 
 void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
@@ -2593,7 +2597,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                 // this causes them to be kicked back to the chat channel on battle.net
                                 if(m_GHost->m_AutoDenyUsers)
                                         m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                if(! m_GHost->m_VirtualBanLobby ) {
+                                if(! m_GHost->m_VirtualLobby ) {
                                     vector<CGameSlot> Slots = m_Map->GetSlots( );
                                     potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
                                     potential->SetDeleteMe( true );
@@ -2606,7 +2610,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                      potential->SetSocket( NULL );
                                      potential->SetDeleteMe( true );
                                      m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                                     SendBannedInfo( potentialCopy, Ban );
+                                     SendVirtualLobbyInfo( potentialCopy, Ban, 1 );
                                 }
                                 return;
                         }
@@ -2634,7 +2638,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                 // this causes them to be kicked back to the chat channel on battle.net
                                 if(m_GHost->m_AutoDenyUsers)
                                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                if(! m_GHost->m_VirtualBanLobby ) {
+                                if(! m_GHost->m_VirtualLobby ) {
                                     vector<CGameSlot> Slots = m_Map->GetSlots( );
                                     potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
                                     potential->SetDeleteMe( true );
@@ -2645,7 +2649,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                     potential->SetDeleteMe( true );
 
                                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                                    SendBannedInfo( potentialCopy, Ban );
+                                    SendVirtualLobbyInfo( potentialCopy, Ban, 1 );
                                 }
                                 return;
                         }
