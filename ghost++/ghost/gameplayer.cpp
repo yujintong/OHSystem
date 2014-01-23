@@ -40,7 +40,7 @@
 // CPotentialPlayer
 //
 
-CPotentialPlayer :: CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket ) : m_Protocol( nProtocol ), m_Game( nGame ), m_Socket( nSocket ), m_DeleteMe( false ), m_Error( false ), m_IncomingJoinPlayer( NULL ), m_IncomingGarenaUser( NULL )
+CPotentialPlayer :: CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket ) : m_Protocol( nProtocol ), m_Game( nGame ), m_Socket( nSocket ), m_DeleteMe( false ), m_Error( false ), m_IncomingJoinPlayer( NULL ), m_IncomingGarenaUser( NULL ), m_Banned( false )
 {
 
 }
@@ -184,7 +184,7 @@ void CPotentialPlayer :: ProcessPackets( )
 				delete m_IncomingJoinPlayer;
 				m_IncomingJoinPlayer = m_Protocol->RECEIVE_W3GS_REQJOIN( Packet->GetData( ) );
 
-				if( m_IncomingJoinPlayer )
+                if( m_IncomingJoinPlayer && !m_Banned)
 					m_Game->EventPlayerJoined( this, m_IncomingJoinPlayer );
 
 				// don't continue looping because there may be more packets waiting and this parent class doesn't handle them

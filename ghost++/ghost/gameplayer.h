@@ -52,7 +52,8 @@ protected:
 	string m_ErrorString;
 	CIncomingJoinPlayer *m_IncomingJoinPlayer;
 	CIncomingGarenaUser *m_IncomingGarenaUser;
-        string m_RoomName;
+    string m_RoomName;
+    bool m_Banned;
 
 public:
 	CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket );
@@ -68,11 +69,12 @@ public:
 	virtual CIncomingJoinPlayer *GetJoinPlayer( )	{ return m_IncomingJoinPlayer; }
 	virtual CIncomingGarenaUser *GetGarenaUser( )	{ return m_IncomingGarenaUser; }
 	virtual BYTEARRAY GetGarenaIP( );
-        string GetRoomName( )                                           { return m_RoomName; }
+    string GetRoomName( )                                           { return m_RoomName; }
 
 	virtual void SetSocket( CTCPSocket *nSocket )	{ m_Socket = nSocket; }
 	virtual void SetDeleteMe( bool nDeleteMe )		{ m_DeleteMe = nDeleteMe; }
 	virtual void SetGarenaUser( CIncomingGarenaUser *nIncomingGarenaUser ) { m_IncomingGarenaUser = nIncomingGarenaUser; }
+    virtual void SetBanned( )            { m_Banned = true; }
 
 	// processing functions
 
