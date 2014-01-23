@@ -1093,58 +1093,58 @@ private:
 	uint32_t m_Maxlosingstreak;
 	uint32_t m_Zerodeaths;
 	string m_Realm;
-        uint32_t m_Leaves;
+    uint32_t m_Leaves;
 	uint32_t m_ALLCount;
 	uint32_t m_RankCount;
 	uint32_t m_ForcedGproxy;
-        bool m_Hidden;
-        string m_Country;
-        string m_CountryCode;
-        uint32_t m_Role;
+    bool m_Hidden;
+    string m_Country;
+    string m_CountryCode;
+    uint32_t m_Role;
 
 public:
-        CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, uint32_t nForcedGproxy, bool nHidden, string nCountry, string nCountryCode, uint32_t nRole );
-        ~CDBStatsPlayerSummary( );
+    CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, uint32_t nForcedGproxy, bool nHidden, string nCountry, string nCountryCode, uint32_t nRole );
+    ~CDBStatsPlayerSummary( );
 
-        uint32_t GetID( )                                     { return m_ID; }
+    uint32_t GetID( )                                     { return m_ID; }
 	string GetPlayer( )					{ return m_Player; }
-        string GetPlayerLower( )                                     { return m_Playerlower; }
-        double GetScore( )                                     { return m_Score; }
-        uint32_t GetGames( )                                     { return m_Games; }
-        uint32_t GetWins( )                                     { return m_Wins; }
-        uint32_t GetLosses( )                                     { return m_Losses; }
-        uint32_t GetDraw( )                                     { return m_Draw; }
-        uint32_t GetKills( )                                     { return m_Kills; }
-        uint32_t GetDeaths( )                                     { return m_Deaths; }
-        uint32_t GetAssists( )                                     { return m_Assists; }
-        uint32_t GetCreeps( )                                     { return m_Creeps; }
-        uint32_t GetDenies( )                                     { return m_Denies; }
-        uint32_t GetNeutrals( )                                     { return m_Neutrals; }
-        uint32_t GetTowers( )                                     { return m_Towers; }
-        uint32_t GetRax( )                                     { return m_Rax; }
-        uint32_t GetStreak( )                                     { return m_Streak; }
-        uint32_t GetMaxStreak( )                                     { return m_Maxstreak; }
-        uint32_t GetLosingStreak( )                                     { return m_Losingstreak; }
-        uint32_t GetMaxLosingStreak( )                                     { return m_Maxlosingstreak; }
-        uint32_t GetZeroDeaths( )                                     { return m_Zerodeaths; }
+    string GetPlayerLower( )                                     { return m_Playerlower; }
+    double GetScore( )                                     { return m_Score; }
+    uint32_t GetGames( )                                     { return m_Games; }
+    uint32_t GetWins( )                                     { return m_Wins; }
+    uint32_t GetLosses( )                                     { return m_Losses; }
+    uint32_t GetDraw( )                                     { return m_Draw; }
+    uint32_t GetKills( )                                     { return m_Kills; }
+    uint32_t GetDeaths( )                                     { return m_Deaths; }
+    uint32_t GetAssists( )                                     { return m_Assists; }
+    uint32_t GetCreeps( )                                     { return m_Creeps; }
+    uint32_t GetDenies( )                                     { return m_Denies; }
+    uint32_t GetNeutrals( )                                     { return m_Neutrals; }
+    uint32_t GetTowers( )                                     { return m_Towers; }
+    uint32_t GetRax( )                                     { return m_Rax; }
+    uint32_t GetStreak( )                                     { return m_Streak; }
+    uint32_t GetMaxStreak( )                                     { return m_Maxstreak; }
+    uint32_t GetLosingStreak( )                                     { return m_Losingstreak; }
+    uint32_t GetMaxLosingStreak( )                                     { return m_Maxlosingstreak; }
+    uint32_t GetZeroDeaths( )                                     { return m_Zerodeaths; }
 	string GetRealm( )						{ return m_Realm; }
 	uint32_t GetLeaves( )						{ return m_Leaves; }
 	string GetRank( )						{ return "#"+UTIL_ToString(m_RankCount+1)+"/"+UTIL_ToString(m_ALLCount); }
 	bool GetForcedGproxy( )						{ return m_ForcedGproxy; }
-        bool GetHidden( )                                               { return m_Hidden; }
-        string GetCountry( )                                            { return m_Country; }
-        string GetCountryCode( )                                        { return m_CountryCode; }
-        uint32_t GetRole( )                                             { return m_Role; }
+    bool GetHidden( )                                               { return m_Hidden; }
+    string GetCountry( )                                            { return m_Country; }
+    string GetCountryCode( )                                        { return m_CountryCode; }
+    uint32_t GetRole( )                                             { return m_Role; }
 
-        float GetAvgKills( )                            { return m_Games > 0 ? (float)m_Kills / m_Games : 0; }
-        float GetAvgDeaths( )                           { return m_Games > 0 ? (float)m_Deaths / m_Games : 0; }
-        float GetAvgCreeps( )                       { return m_Games > 0 ? (float)m_Creeps / m_Games : 0; }
-        float GetAvgDenies( )                      { return m_Games > 0 ? (float)m_Denies / m_Games : 0; }
-        float GetAvgAssists( )                          { return m_Games > 0 ? (float)m_Assists / m_Games : 0; }
-        float GetAvgNeutrals( )                     { return m_Games > 0 ? (float)m_Neutrals / m_Games : 0; }
-        float GetAvgTowers( )                       { return m_Games > 0 ? (float)m_Towers / m_Games : 0; }
-        float GetAvgRax( )                         { return m_Games > 0 ? (float)m_Rax / m_Games : 0; }
-        float GetWinPerc( )                         { return m_Wins > 0 ? (float)(m_Wins*100) / ( m_Wins+m_Losses ) : 0; }
+    float GetAvgKills( )                            { return m_Games > 0 ? (float)m_Kills / m_Games : 0; }
+    float GetAvgDeaths( )                           { return m_Games > 0 ? (float)m_Deaths / m_Games : 0; }
+    float GetAvgCreeps( )                       { return m_Games > 0 ? (float)m_Creeps / m_Games : 0; }
+    float GetAvgDenies( )                      { return m_Games > 0 ? (float)m_Denies / m_Games : 0; }
+    float GetAvgAssists( )                          { return m_Games > 0 ? (float)m_Assists / m_Games : 0; }
+    float GetAvgNeutrals( )                     { return m_Games > 0 ? (float)m_Neutrals / m_Games : 0; }
+    float GetAvgTowers( )                       { return m_Games > 0 ? (float)m_Towers / m_Games : 0; }
+    float GetAvgRax( )                         { return m_Games > 0 ? (float)m_Rax / m_Games : 0; }
+    float GetWinPerc( )                         { return m_Wins > 0 ? (float)(m_Wins*100) / ( m_Wins+m_Losses ) : 0; }
 	float GetLeavePerc( )				{ return m_Games > 0 ? (float)(m_Leaves*100) / ( m_Games ) : 0; }
 };
 
@@ -1158,11 +1158,11 @@ private:
 	string m_Message;
 
 public:
-        CDBInboxSummary( string nUser, string nMessage );
+    CDBInboxSummary( string nUser, string nMessage );
 	~CDBInboxSummary( );
 
-        string GetUser( )                                     { return m_User; }
-        string GetMessage( )                                     { return m_Message; }
+    string GetUser( )                                     { return m_User; }
+    string GetMessage( )                                     { return m_Message; }
 };
 
 //
