@@ -969,7 +969,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
             {
-                if( (*i)->GetChecked == 0 ) {
+                if( (*i)->GetChecked( ) == 0 ) {
 
                     if( GetTime( ) - (*i)->GetJoinTime( ) >= 20 ) {
                         if( (*i)->GetPasswordProt( ) )
@@ -2822,6 +2822,19 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
  
+        // we have a slot for the new player
+        // make room for them by deleting the virtual host player if we have to
+
+        if( GetSlotsAllocated( ) >= m_Slots.size() - 1 || EnforcePID == m_VirtualHostPID )
+                DeleteVirtualHost( );
+
+        // turning the CPotentialPlayer into a CGamePlayer is a bit of a pain because we have to be careful not to close the socket
+        // this problem is solved by setting the socket to NULL before deletion and handling the NULL case in the destructor
+        // we also have to be careful to not modify the m_Potentials vector since we're currently looping through it
+        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] joined the game" );
+        CGamePlayer *TempPlayer =  NULL;
+        CGamePlayer *Player = new CGamePlayer( potential, m_SaveGame ? EnforcePID : GetNewPID( ), JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
+
         // check if the new player's name is banned but only if bot_banmethod is 0
         // this is because if bot_banmethod is 0 we need to wait to announce the ban until now because they could have been rejected because the game was full
         // this would have allowed the player to spam the chat by attempting to join the game multiple times in a row
