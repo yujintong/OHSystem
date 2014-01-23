@@ -137,7 +137,7 @@ CGame :: ~CGame( )
                                         if(1==LeftSec.size())
                                             LeftSec="0"+LeftSec;
 
-                                        Reason += "0"+LeftMin+":"+LeftSec + "/0" + EndMin+":"+EndSec;
+                                        Reason += LeftMin+":"+LeftSec + "/" + EndMin+":"+EndSec;
                                     }
                                         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, m_GHost->m_LeaverAutoBanTime, "", m_GameAlias  ) );
                                 }
