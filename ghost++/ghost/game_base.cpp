@@ -453,6 +453,12 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         Player->SetCountry( StatsPlayerSummary->GetCountry());
                                         Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
                                 }
+                                CIncomingJoinPlayer *joinPlayer = GetPlayerFromName( i->first, true );
+                                if( joinPlayer ) {
+                                    joinPlayer->SetScore( StatsPlayerSummary->GetScore());
+                                    joinPlayer->SetCLetter( StatsPlayerSummary->GetCountryCode());
+                                    joinPlayer->SetGames( StatsPlayerSummary->GetGames( ) );
+                                }
                         }
  
                         m_GHost->m_DB->RecoverCallable( i->second );
@@ -966,161 +972,41 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // warn all players who joined with to less games
  
         // kick players within 15 seconds who dont have enough games
-        if( !m_CountDownStarted && ( m_GameType == 4 || ( m_GHost->m_HighGame && m_GameType == 3 ) ) && !m_GameLoading && !m_GameLoaded )
+        if( !m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
         {
-                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-                {
-                        uint32_t Level = 0;
-                        for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+            {
+                if( (*i)->GetChecked == 0 ) {
+
+                    if( GetTime( ) - (*i)->GetJoinTime( ) >= 20 ) {
+                        if( (*i)->GetPasswordProt( ) )
                         {
-                                if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) )
-                                {
-                                        Level = (*k)->IsLevel( (*i)->GetName( ) );
-                                        break;
-                                }
+                                if(m_GHost->m_AutoDenyUsers)
+                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                (*i)->SetDeleteMe( true );
+                                (*i)->SetLeftReason( "was kicked for non typing the password." );
+                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                         }
-                        if( (*i)->GetChecked( ) <= 1 ) {
+                    }
 
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 5 && Level == 0 && GetTime( ) - (*i)->GetAnnounceTime( ) >= 1 )
-                            {
-                                    if( m_GameType == 3 )
-                                    {
-                                            if( (*i)->GetGames( ) < m_GHost->m_MinLimit && !IsReserved( (*i)->GetName() ) )
-                                            {
-                                                    SendChat( (*i)->GetPID( ), "[INFO] You have to less games, you require at least 50 Games. You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
-                                                    (*i)->SetAnnounceTime( );
-                                            }
-                                            else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && !IsReserved( (*i)->GetName() ) )
-                                            {
-                                                    SendChat( (*i)->GetPID( ), "[INFO] Youre score is to low, you require at least a score of ["+UTIL_ToString((*i)->GetScore( ), 0)+"] You will be kicked in ["+UTIL_ToString( 10-( GetTime()-(*i)->GetJoinTime( ) ) )+"] seconds." );
-                                                    (*i)->SetAnnounceTime( );
-                                            }
-                                    }
-                            }
- 
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 15 && Level == 0 && (*i)->GetChecked( ) == 0 )
-                            {
-                                    if( m_GameType == 4 )
-                                    {
-                                            if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && !IsReserved( (*i)->GetName() ) )
-                                            {
-                                                    if(m_GHost->m_AutoDenyUsers)
-                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                    (*i)->SetDeleteMe( true );
-                                                    (*i)->SetLeftReason( "got kicked for not being registered." );
-                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                            }
-                                            else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && !IsReserved( (*i)->GetName() ) )
-                                            {
-                                                    if(m_GHost->m_AutoDenyUsers)
-                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                    (*i)->SetDeleteMe( true );
-                                                    (*i)->SetLeftReason( "got kicked because he does not have enough games." );
-                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                            }
-                                    }
-                                    else if( m_GameType == 3 )
-                                    {
-                                            if( (*i)->GetGames( ) < m_GHost->m_MinLimit  && !IsReserved( (*i)->GetName() ) )
-                                            {
-                                                    if(m_GHost->m_AutoDenyUsers)
-                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                    (*i)->SetDeleteMe( true );
-                                                    (*i)->SetLeftReason( "got kicked because he does not have enough games." );
-                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                            }
-                                            else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit  && !IsReserved( (*i)->GetName() ) )
-                                            {
-                                                    if(m_GHost->m_AutoDenyUsers)
-                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                    (*i)->SetDeleteMe( true );
-                                                    (*i)->SetLeftReason( "got kicked because he does not have enough score points." );
-                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                            }
-                                    }
-                           
-                                    string CC = (*i)->GetCLetter( );
+                    if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
+                        SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
+                        if( GetTime( ) - (*i)->GetJoinTime( ) >= 10 ) {
+                            if(m_GHost->m_AutoDenyUsers)
+                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                            (*i)->SetDeleteMe( true );
+                            (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
+                            (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                            OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                        }
+                    }
 
-                                    transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
-                                    bool unallowedcountry = false;
-                                    for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); )
-                                    {
-                                            if( *k == CC && m_DenieCountries )
-                                                    unallowedcountry = true;
-
-                                            if( *k != CC && m_LimitCountries )
-                                                    unallowedcountry = true;
-                                            k++;
-                                    }
-
-                                    for( vector<string> :: iterator k = m_GHost->m_DCountries.begin( ); k != m_GHost->m_DCountries.end( ); )
-                                    {
-                                            if( *k== CC )
-                                                    unallowedcountry = true;
-                                            k++;
-                                    }
-
-                                    if( m_GHost->m_DenieProxy )
-                                    {
-                                            if( CC == "a1" || CC == "a2")
-                                            {
-                                                    SendAllChat( "Autokicking ["+(*i)->GetName()+"] for joining with a Proxy." );
-                                                    if(m_GHost->m_AutoDenyUsers)
-                                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                                    (*i)->SetDeleteMe( true );
-                                                    (*i)->SetLeftReason( "was kicked for joining with a proxy." );
-                                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                            }
-                                    }
-
-                                    if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot )
-                                    {
-                                            SendAllChat( "Autokicking User ["+(*i)->GetName()+"] for joining with a denied country: " + CC );
-                                            if(m_GHost->m_AutoDenyUsers)
-                                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                            (*i)->SetDeleteMe( true );
-                                            (*i)->SetLeftReason( "was kicked for having a denied country." );
-                                            (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                            OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                    }
-                                    
-                                    (*i)->SetChecked( );
-                            }
-                            
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 20 ) {
-                                if( (*i)->GetPasswordProt( ) )
-                                {
-                                        if(m_GHost->m_AutoDenyUsers)
-                                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                        (*i)->SetDeleteMe( true );
-                                        (*i)->SetLeftReason( "was kicked for non typing the password." );
-                                        (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                        OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                }
-                            }
-                            
-                            if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
-                                SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
-                                if( GetTime( ) - (*i)->GetJoinTime( ) >= 10 ) {
-                                    if(m_GHost->m_AutoDenyUsers)
-                                        m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                    (*i)->SetDeleteMe( true );
-                                    (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
-                                    (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                    OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                                }
-                            }
-                            
-                            if( GetTime( ) - (*i)->GetJoinTime( ) >= 21 ) {
-                                (*i)->SetChecked( );
-                            }
-                       }
+                    if( GetTime( ) - (*i)->GetJoinTime( ) >= 21 ) {
+                        (*i)->SetChecked( );
+                    }
                 }
+            }
         }
   
         // try to auto start every 15 seconds
@@ -2156,14 +2042,35 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
     // send a map check packet to the new player
 
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are currently unable to join the game." ) );
     if(1==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are currently unable to join the game. You are banned." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned!" ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Name:   " + Ban->GetName() + "@" + Ban->GetServer()) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Date:   " + Ban->GetDate() + "(Remain: " + Ban->GetMonths() + ")" ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Reason: " + Ban->GetReason( ) ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_CustomVirtualLobbyInfoBanText ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
+    } else if(2==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+m_GHost->m_MinLimit+"]") );
+    } else if(3==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of score." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+m_GHost->m_MinScoreLimit+"]") );
+    } else if(4==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least to be registered on the statspage." ) );
+    } else if(5==type) 6{
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+m_GHost->m_MinVIPGames+"]") );
+    } else if(6==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least a safelisted spot." ) );
+    } else if(7==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a Proxy and this is forbidden on this server." ) );
+    } else if(8==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a banned country." ) );
     }
+
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
 
 }
 
@@ -2657,6 +2564,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             }
         }
  
+        // check basic player values
+         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
+
         if( m_MatchMaking && m_AutoStartPlayers != 0 && !m_Map->GetMapMatchMakingCategory( ).empty( ) && m_Map->GetMapOptions( ) & MAPOPT_FIXEDPLAYERSETTINGS )
         {
                 // matchmaking is enabled
@@ -2667,20 +2577,138 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
  
+        if( m_GameType == 3 )
+        {
+                if( joinPlayer->GetGames( ) < m_GHost->m_MinLimit && !Reserved )
+                {
+                    if(m_GHost->m_AutoDenyUsers)
+                        m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                    CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                    potentialCopy->SetBanned( );
+                    potential->SetSocket( NULL );
+                    potential->SetDeleteMe( true );
+
+                    m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                    SendVirtualLobbyInfo( potentialCopy, NULL, 2 );
+                    return;
+                }
+                else if( m_GHost->m_MinScoreLimit != 0 && joinPlayer->GetScore( ) < m_GHost->m_MinScoreLimit && !Reserved )
+                {
+                    if(m_GHost->m_AutoDenyUsers)
+                        m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                    CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                    potentialCopy->SetBanned( );
+                    potential->SetSocket( NULL );
+                    potential->SetDeleteMe( true );
+
+                    m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                    SendVirtualLobbyInfo( potentialCopy, NULL, 3 );
+                    return;
+                }
+        }
+        if( m_GameType == 4 )
+        {
+                if( m_GHost->m_RegVIPGames && !joinPlayer->GetRegistered( ) && !Reserved )
+                {
+                    if(m_GHost->m_AutoDenyUsers)
+                        m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                    CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                    potentialCopy->SetBanned( );
+                    potential->SetSocket( NULL );
+                    potential->SetDeleteMe( true );
+
+                    m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                    SendVirtualLobbyInfo( potentialCopy, NULL, 4 );
+                    return;
+                }
+                else if( joinPlayer->GetGames( ) < m_GHost->m_MinVIPGames  && !Reserved )
+                {
+                        if(m_GHost->m_AutoDenyUsers)
+                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                        CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                        potentialCopy->SetBanned( );
+                        potential->SetSocket( NULL );
+                        potential->SetDeleteMe( true );
+
+                        m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                        SendVirtualLobbyInfo( potentialCopy, NULL, 5 );
+                        return;
+                }
+        }
+
         if( m_GameType == 5 )
         {
                 if( !Reserved )
                 {
                         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
-                        vector<CGameSlot> Slots = m_Map->GetSlots( );
-                        potential->Send( m_Protocol->SEND_W3GS_SLOTINFOJOIN( 1, potential->GetSocket( )->GetPort( ), potential->GetExternalIP( ), Slots, 0, m_Map->GetMapLayoutStyle( ), m_Map->GetMapNumPlayers( ) ) );
+                        CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                        potentialCopy->SetBanned( );
+                        potential->SetSocket( NULL );
                         potential->SetDeleteMe( true );
+
+                        m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                        SendVirtualLobbyInfo( potentialCopy, NULL, 6 );
                         return;
                 }
                 else
                         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] joined with " + LevelName + " Status." );
         }
- 
+
+
+        string CC = joinPlayer->GetCLetter( );
+        transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
+        bool unallowedcountry = false;
+        for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); )
+        {
+                if( *k == CC && m_DenieCountries )
+                        unallowedcountry = true;
+
+                if( *k != CC && m_LimitCountries )
+                        unallowedcountry = true;
+                k++;
+        }
+
+        for( vector<string> :: iterator k = m_GHost->m_DCountries.begin( ); k != m_GHost->m_DCountries.end( ); )
+        {
+                if( *k== CC )
+                        unallowedcountry = true;
+                k++;
+        }
+
+        if( m_GHost->m_DenieProxy && !Reserved)
+        {
+                if( CC == "a1" || CC == "a2")
+                {
+                        if(m_GHost->m_AutoDenyUsers)
+                            m_Denied.push_back( joinPlayer->GetName( ) + " " + joinPlayer->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
+
+                        CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                        potentialCopy->SetBanned( );
+                        potential->SetSocket( NULL );
+                        potential->SetDeleteMe( true );
+
+                        m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                        SendVirtualLobbyInfo( potentialCopy, NULL, 7 );
+                        return;
+                }
+        }
+
+        if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && !Reserved )
+        {
+                if(m_GHost->m_AutoDenyUsers)
+                    m_Denied.push_back( joinPlayer->GetName( ) + " " + joinPlayer->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+                CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
+                CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+                potentialCopy->SetBanned( );
+                potential->SetSocket( NULL );
+                potential->SetDeleteMe( true );
+
+                m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+                SendVirtualLobbyInfo( potentialCopy, NULL, 8 );
+                return;
+        }
+
         // try to find a slot
  
         unsigned char SID = 255;
@@ -2847,10 +2875,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         // check if the user has a new message
         if( m_GHost->m_MessageSystem ) 
                 m_Pairedpms.push_back( Pairedpm( joinPlayer->GetName( ), m_GHost->m_DB->Threadedpm( joinPlayer->GetName( ), string(), 0, string(), "join" ) ) );
- 
-        // check win perc
-         m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
- 
+  
         // cookie for reserved players
         if( Level >= 3 && m_GHost->m_FunCommands)
                 Player->SetCookie( 3 );

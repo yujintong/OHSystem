@@ -163,15 +163,28 @@ private:
 	uint32_t m_EntryKey;
 	string m_Name;
 	BYTEARRAY m_InternalIP;
+    uint32_t m_Games;
+    bool m_Registered;
+    double m_Score;
+    string m_CC;
 
 public:
-	CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP );
+    CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP, uint32_t nGames, bool nRegistered, double nScore, string nCC );
 	~CIncomingJoinPlayer( );
 
 	uint32_t GetHostCounter( )	{ return m_HostCounter; }
 	uint32_t GetEntryKey( )		{ return m_EntryKey; }
 	string GetName( )			{ return m_Name; }
 	BYTEARRAY GetInternalIP( )	{ return m_InternalIP; }
+    bool GetGames( )            { return m_Games; }
+    bool GetRegistered( )       { return m_Registered; }
+    double GetScore( )          { return m_Score; }
+    string GetCLetter( )        { return m_CC; }
+
+    void SetGames( uint32_t nGames )        { m_Games = nGames; }
+    void SetRegistered( bool nRegsistered)  { m_Registered = nRegsistered; }
+    void SetScore( double nScore )          { m_Score = nScore; }
+    void SetCLetter( string nCC )           { m_CC = nCC; }
 };
 
 //
