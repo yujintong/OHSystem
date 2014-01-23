@@ -646,7 +646,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             }
             else
             {
-                if( GetTicks( ) - i->first > ( m_GHost->m_VirtualLobbyTime*1000) )
+                CONSOLE_Print( "bannnnn ... " + UTIL_ToString( GetTicks( ) - i->first ) );
+                if( GetTicks( ) - i->first > ( m_GHost->m_VirtualLobbyTime * 1000 ) )
                 {
                     CONSOLE_Print( "deleting banned player..!" );
                     i->second->SetDeleteMe( true );
@@ -2157,7 +2158,7 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
     if(1==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are currently unable to join the game. You are banned." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Name:   " + Ban->GetName() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Name:   " + Ban->GetName() + "@" + Ban->GetServer()) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Date:   " + Ban->GetDate() + "(Remain: " + Ban->GetMonths() + ")" ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    Reason: " + Ban->GetReason( ) ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_CustomVirtualLobbyInfoBanText ) );
@@ -2648,7 +2649,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                     potential->SetDeleteMe( true );
 
                                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                                    SendVirtualLobbyInfo( potentialCopy, Ban, 1 );
+                                    SendVirtualLobbyInfo( potentialCopy, IPBan, 1 );
                                 }
                                 return;
                         }
