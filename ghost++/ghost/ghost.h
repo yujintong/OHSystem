@@ -241,7 +241,9 @@ public:
     bool m_HideMessages;
     bool m_DenieCountriesOnThisBot;
     bool m_KickSlowDownloader;
-    bool m_VirtualBanLobby;
+    bool m_VirtualLobby;
+    uint32_t m_VirtualLobbyTime;
+    string m_CustomVirtualLobbyInfoBanText;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

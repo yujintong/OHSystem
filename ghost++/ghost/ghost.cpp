@@ -1573,7 +1573,9 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_HideMessages = CFG->GetInt( "oh_hideleavermessages", 1 ) == 0 ? false : true;
     m_DenieCountriesOnThisBot = CFG->GetInt( "oh_deniedcountries", 1 ) == 0 ? false : true;
     m_KickSlowDownloader = CFG->GetInt("oh_kickslowdownloader", 1 ) == 0 ? false :  true;
-    m_VirtualBanLobby = CFG->GetInt("oh_virtualbanlobby", 1 ) == 0 ? false : true;
+    m_VirtualLobby = CFG->GetInt("oh_virtuallobby", 1 ) == 0 ? false : true;
+    m_VirtualLobbyTime = CFG->GetInt("oh_virtuallobbytime", 20);
+    m_CustomVirtualLobbyInfoBanText = CFG->GetString("oh_virtuallobbybantext", string( ));
 }
 
 void CGHost :: ExtractScripts( )
