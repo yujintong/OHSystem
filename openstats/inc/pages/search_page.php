@@ -2,10 +2,35 @@
 
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$DefaultGameType = 1;
+	$currentYear  = date("Y", time() );
+    $currentMonth = date("n", time() );
+	$sqlCurrentDate = " AND `month` = '".$currentMonth."' AND `year` = '".$currentYear."'";
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+
       $s = safeEscape( $_GET["search"]);
-	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ? LIMIT 1");
+	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ?  AND alias_id = ? $sqlCurrentDate LIMIT 1");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
+	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
 	  $result = $sth->execute();
 	  $r = $sth->fetch(PDO::FETCH_NUM);
 	  $numrows = $r[0];
@@ -15,11 +40,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $draw_pagination = 1;
 	  
 	  
-	  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE (player) LIKE ? 
-	  ORDER BY score DESC
+	  $sth = $db->prepare("SELECT id, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip 
+	  FROM ".OSDB_STATS." WHERE (player) LIKE ? AND alias_id = ? $sqlCurrentDate
+	  ORDER BY id DESC, score DESC
 	  LIMIT $offset, $rowsperpage");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
+	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
 	  $result = $sth->execute();
 	  
 	$c=0;
