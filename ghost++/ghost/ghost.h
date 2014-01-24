@@ -247,6 +247,7 @@ public:
     bool m_SimpleAFKScript;
     uint32_t m_APMAllowedMinimum;
     uint32_t m_APMMaxAfkWarnings;
+    string m_Website;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

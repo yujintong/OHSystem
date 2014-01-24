@@ -1579,6 +1579,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_SimpleAFKScript = CFG->GetInt("oh_simpleafksystem", 1 ) == 0 ? false :  true;
     m_APMAllowedMinimum = CFG->GetInt("oh_apmallowedminimum", 20);
     m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
+    m_Website = CFG->GetString("oh_general_domain", "http://ohsystem.net/" );
 }
 
 void CGHost :: ExtractScripts( )

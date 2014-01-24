@@ -2112,12 +2112,18 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinVIPGames )+"]") );
     } else if(6==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least a safelisted spot." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about your status on: "+m_GHost->m_Website ) );
     } else if(7==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a Proxy and this is forbidden on this server." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about a vouching: "+m_GHost->m_Website ) );
     } else if(8==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a banned country." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about a vouching: "+m_GHost->m_Website ) );
+    } else if(9==type) {
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are forced to use gproxy." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about your status on: "+m_GHost->m_Website ) );
     }
 
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
@@ -2711,7 +2717,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
 
 
-        string CC = joinPlayer->GetCLetter( );
+        string CC = TempPlayer->GetCLetter( );
         transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
         bool unallowedcountry = false;
         for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); )
@@ -2763,6 +2769,20 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
                 SendVirtualLobbyInfo( potentialCopy, NULL, 8 );
                 return;
+        }
+
+        if( !TempPlayer->GetGProxy( ) && TempPlayer->GetForcedGproxy( ) )
+        {
+            if(m_GHost->m_AutoDenyUsers)
+                m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
+            CPotentialPlayer *potentialCopy = new CPotentialPlayer( m_Protocol, this, potential->GetSocket( ) );
+            potentialCopy->SetBanned( );
+            potential->SetSocket( NULL );
+            potential->SetDeleteMe( true );
+
+            m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
+            SendVirtualLobbyInfo( potentialCopy, NULL, 9 );
+            return;
         }
 
         // try to find a slot
@@ -2961,18 +2981,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 SendAllChat( "Player ["+joinPlayer->GetName( )+"] got kicked for joining from Garena." );
                 Player->SetDeleteMe( true );
                 Player->SetLeftReason( "was kicked for joining from Garena." );
-                Player->SetLeftCode( PLAYERLEAVE_LOBBY );
-                Player->SetLeftMessageSent( true );
-                return;
-        }
- 
-        if( !Player->GetGProxy( ) && Player->GetForcedGproxy( ) )
-        {
-                if(m_GHost->m_AutoDenyUsers)
-                    m_Denied.push_back( joinPlayer->GetName( ) + " " + Player->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                SendAllChat( "Player ["+joinPlayer->GetName( )+"] got kicked for joining without GProxy, but is forced to." );
-                Player->SetDeleteMe( true );
-                Player->SetLeftReason( "was kicked for not using GProxy but is forced to." );
                 Player->SetLeftCode( PLAYERLEAVE_LOBBY );
                 Player->SetLeftMessageSent( true );
                 return;
