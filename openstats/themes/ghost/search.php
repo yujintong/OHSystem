@@ -15,7 +15,8 @@ if ( isset($SearchData) AND !empty($SearchData) ) {
    <div style="margin-top: 20px;">
 	<table>
 	<tr>
-	 <th width="220" class="padLeft"><?=$lang["player_name"]?></th>
+	 <th width="180" class="padLeft"><?=$lang["player_name"]?></th>
+	 <th width="90" class="padLeft"><?=$lang["game_type"]?></th>
 	 <th width="90"><?=$lang["score"]?></th>
 	 <th width="90"><?=$lang["games"]?></th>
 	 <th width="180"><?=$lang["kda"]?></th>
@@ -24,12 +25,13 @@ if ( isset($SearchData) AND !empty($SearchData) ) {
 	foreach ($SearchData as $Search) {
 	?>
 	<tr class="row">
-	  <td width="220" class="padLeft font12">
+	  <td width="180" class="padLeft font12">
 	  <?php if (isset($Search["letter"]) ) { ?>
 	  <img  <img <?=ShowToolTip($Search["country"], OS_HOME.'img/flags/'.strtoupper($Search["letter"]).".gif", 130, 21, 15)?>  class="imgvalign" width="21" height="15" src="<?=OS_HOME?>img/flags/<?=$Search["letter"]?>.gif" alt="" />
 	  <?php } ?>
 	  <a href="<?=OS_HOME?>?u=<?=$Search["id"]?>"><?=$Search["player"]?></a>
 	  </td>
+	  <td width="90" class="font12"><?=$GameAliases[ $Search["alias_id"] ]["alias_name"] ?></td>
 	  <td width="90" class="font12"><?=$Search["score"]?></td>
 	  <td width="90" class="font12"><?=$Search["games"]?></td>
 	  <td width="180" class="font12">

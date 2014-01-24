@@ -9,7 +9,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$DefaultGameType = 1;
 	$currentYear  = date("Y", time() );
     $currentMonth = date("n", time() );
-	$sqlCurrentDate = " AND `month` = '".$currentMonth."' AND `year` = '".$currentYear."'";
 	$c = 0;
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
 	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
@@ -27,7 +26,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 
       $s = safeEscape( $_GET["search"]);
-	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ?  AND alias_id = ? $sqlCurrentDate LIMIT 1");
+	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ?  AND alias_id = ? LIMIT 1");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
 	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
@@ -40,8 +39,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $draw_pagination = 1;
 	  
 	  
-	  $sth = $db->prepare("SELECT id, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip 
-	  FROM ".OSDB_STATS." WHERE (player) LIKE ? AND alias_id = ? $sqlCurrentDate
+	  $sth = $db->prepare("SELECT MAX(id) as id, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip, alias_id
+	  FROM ".OSDB_STATS." WHERE (player) LIKE ? AND alias_id = ? 
+	  GROUP BY player
 	  ORDER BY id DESC, score DESC
 	  LIMIT $offset, $rowsperpage");
 	  
@@ -66,6 +66,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$SearchData[$c]["country"]  = "Reserved";
 	}
 	$SearchData[$c]["id"]        = (int)($row["id"]);
+	$SearchData[$c]["alias_id"]  = (($row["alias_id"])-1);
 	$SearchData[$c]["player"]  = ($row["player"]);
 	$SearchData[$c]["score"]  = number_format($row["score"],0);
 	$SearchData[$c]["games"]  = number_format($row["games"],0);
