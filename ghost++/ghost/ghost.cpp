@@ -1576,6 +1576,9 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_VirtualLobby = CFG->GetInt("oh_virtuallobby", 1 ) == 0 ? false : true;
     m_VirtualLobbyTime = CFG->GetInt("oh_virtuallobbytime", 20);
     m_CustomVirtualLobbyInfoBanText = CFG->GetString("oh_virtuallobbybantext", string( ));
+    m_SimpleAFKScript = CFG->GetInt("oh_detailedafksystem", 1 ) == 0 ? false :  true;
+    m_APMAllowedMinimum = CFG->GetInt("oh_apmallowedminimum", 20);
+    m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
 }
 
 void CGHost :: ExtractScripts( )

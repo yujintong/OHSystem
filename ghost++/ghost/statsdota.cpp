@@ -47,8 +47,8 @@ CStatsDOTA :: CStatsDOTA( CBaseGame *nGame ) : CStats( nGame ), m_Winner( 0 ), m
 		m_LeaverDeaths[i] = 0;
 		m_AssistsOnLeaverKills[i] = 0;
 		m_DeathsByLeaver[i] = 0;
-                m_LatestKill[i] = 0;
-                m_KillCounter[i] = 0;   //The killcounter for checking as double kill etc (not the general kills of a player.)
+        m_LatestKill[i] = 0;
+        m_KillCounter[i] = 0;   //The killcounter for checking as double kill etc (not the general kills of a player.)
 	}
 	m_FirstBlood = false;
 }

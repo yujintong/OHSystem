@@ -90,6 +90,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
         m_CallableGameDBInit = NULL;
         m_VotedTimeStart = 0;
         m_Voted = false;
+        m_PartTime = 7;
         if( m_GHost->m_SaveReplays && !m_SaveGame )
                 m_Replay = new CReplay( );
  
@@ -864,14 +865,15 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
  
         // kick AFK players
  
-        if( m_GameLoaded && ( GetTicks( ) - m_LastProcessedTicks > 30000 ) ) {
-                m_LastProcessedTicks = GetTicks( );
+        if( m_GameLoaded && ( GetTicks( ) - m_LastProcessedTicks > 10000 ) ) {
  
                 uint32_t TimeNow = GetTime( );
                 uint32_t TimeLimit = 300;
  
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
                 {
+                    if( m_GHost->m_SimpleAFKScript )
+                    {
                         uint32_t TimeActive = (*i)->GetTimeActive();
                         if( TimeActive > 0 && ( ( (*i)->GetAFKMarked( ) && ( (TimeNow - TimeActive ) > ( TimeLimit - 180 ) ) ) || ( !(*i)->GetAFKMarked( ) && ( (TimeNow - TimeActive ) > ( TimeLimit - 120 ) ) ) ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
                         {
@@ -882,7 +884,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         (*i)->SetDeleteMe( true );
                                         (*i)->SetLeftReason( "was kicked by anti-afk" );
                                         (*i)->SetLeftCode( PLAYERLEAVE_LOST );
-                                        break;
+                                        continue;
                                 }
                                 else
                                 {
@@ -892,16 +894,56 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 }
                         }
  
-                        if( TimeActive > 0 && ( (TimeNow - TimeActive ) > TimeLimit ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
+                        if( TimeActive > 0 && ( (TimeNow - TimeActive ) > ( TimeLimit-60) ) && (*i)->GetAFKMarked( ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
                         {
                                 SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for being afk more than 5 minutes." );
                                 (*i)->SetTimeActive( GetTime( ) );
                                 (*i)->SetDeleteMe( true );
                                 (*i)->SetLeftReason( "was kicked by anti-afk" );
                                 (*i)->SetLeftCode( PLAYERLEAVE_LOST );
-                                break;
+                                continue;
                         }
+                    } else {
+                        if( m_PartTime == 7 )
+                            m_PartTime = 1;
+
+                        if( m_PartTime >= 1 && m_PartTime <= 6) {
+                            if( m_PartTime == 1 )
+                                (*i)->SetFirstActionsForFirstPart( (*i)->GetActions( ) );
+                            else if( m_PartTime == 2 )
+                                (*i)->SetFirstActionsForSecondPart( (*i)->GetActions( ) );
+                            else if( m_PartTime == 3 )
+                                (*i)->SetFirstActionsForThirdPart( (*i)->GetActions( ) );
+                            else if( m_PartTime == 4 )
+                                (*i)->SetFirstActionsForFourthPart( (*i)->GetActions( ) );
+                            else if( m_PartTime == 5 )
+                                (*i)->SetFirstActionsForFifthPart( (*i)->GetActions( ) );
+                            else if( m_PartTime == 6 )
+                                (*i)->SetFirstActionsForSixthPart( (*i)->GetActions( ) );
+                            else
+                                CONSOLE_Print("[INFO] Something gone wrong on the APM based afk system. Please report this.");
+
+                            if( m_GameLoadedTime >= 300 ) {
+                                uint32_t APM = (*i)->GetFirstActionsForFirstPart( )+(*i)->GetFirstActionsForSecondPart( )+(*i)->GetFirstActionsForThirdPart( )+(*i)->GetFirstActionsForFourthPart( )+(*i)->GetFirstActionsForFifthPart( )+(*i)->GetFirstActionsForSixthPart( );
+                                if( GetTime( ) - (*i)->GetLastAFKWarn() >= 20 && APM < m_GHost->m_APMAllowedMinimum ) {
+                                    if( (*i)->GetAFKWarnings <= m_GHost->m_APMMaxAfkWarnings ) {
+                                        SendAllChat( "[ANTI-AFK] Player ["+(*i)->GetName()+"] has been marked as AFK. His APM is only ["+UTIL_ToString(APM)+"]" );
+                                        SendChat((*i)->GetPID( ), "[ANTI-AFK] You need as minimum ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"], or you will be kicked on ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings)+"] more warnings.");
+                                    } else {
+                                        SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for having an APM of ["+UTIL_ToString(APM)+"] which was ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings)+"] lower than ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"]" );
+                                        (*i)->SetDeleteMe( true );
+                                        (*i)->SetLeftReason( "was kicked by anti-afk" );
+                                        (*i)->SetLeftCode( PLAYERLEAVE_LOST );
+                                        continue;
+                                    }
+
+                                    (*i)->SetLastAFKWarn();
+                                }
+                            }
+                        }
+                    }
                 }
+                m_LastProcessedTicks = GetTicks( );
         }
  
         // send gameloaded info
@@ -3583,6 +3625,8 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + player->GetName( ) + "] finished loading in " + UTIL_ToString( (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) + " seconds" );
  
         player->SetTimeActive( GetTime( ) );
+        player->SetActions();
+
         if( m_LoadInGame )
         {
                 // send any buffered data to the player now
@@ -3819,8 +3863,10 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
       }
  
  
-      if( PlayerActivity )
+      if( PlayerActivity ) {
         player->SetTimeActive( GetTime( ) );
+        player->SetActions();
+      }
     }
   }
   m_Actions.push( action );
@@ -3985,6 +4031,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 {
                          // AFK detection
                         player->SetTimeActive( GetTime( ) );
+                        player->SetActions();
  
                         // relay the chat message to other players
  
