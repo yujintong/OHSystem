@@ -2083,13 +2083,13 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), ">>>>>> You are banned! <<<<<<" ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Name:   " + Ban->GetName() + "@" + Ban->GetServer()) );
         string Remain = "";
-        if( Ban->GetMonths() != "0" )
+        if( Ban->GetMonths() != "0" && Ban->GetMonths() != "" )
             Remain += Ban->GetMonths() +"m, ";
-        if( Ban->GetDays() != "0" )
+        if( Ban->GetDays() != "0" && Ban->GetDays() != "")
             Remain += Ban->GetDays() +"d, ";
-        if( Ban->GetHours() != "0" )
+        if( Ban->GetHours() != "0" && Ban->GetHours() != "")
             Remain += Ban->GetHours() +"h, ";
-        if( Ban->GetMinutes() != "0" )
+        if( Ban->GetMinutes() != "0" && Ban->GetMinutes() != "")
             Remain += Ban->GetMinutes() +"m ";
         if(! Remain.empty() )
             player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Date:   " + Ban->GetDate() + " (Remain: " + Remain + ")" ) );
