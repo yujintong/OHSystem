@@ -926,9 +926,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             if( m_GameLoadedTime >= 300 ) {
                                 uint32_t APM = (*i)->GetFirstActionsForFirstPart( )+(*i)->GetFirstActionsForSecondPart( )+(*i)->GetFirstActionsForThirdPart( )+(*i)->GetFirstActionsForFourthPart( )+(*i)->GetFirstActionsForFifthPart( )+(*i)->GetFirstActionsForSixthPart( );
                                 if( GetTime( ) - (*i)->GetLastAFKWarn() >= 20 && APM < m_GHost->m_APMAllowedMinimum ) {
-                                    if( (*i)->GetAFKWarnings <= m_GHost->m_APMMaxAfkWarnings ) {
+                                    if( (*i)->GetAFKWarnings( ) <= m_GHost->m_APMMaxAfkWarnings ) {
                                         SendAllChat( "[ANTI-AFK] Player ["+(*i)->GetName()+"] has been marked as AFK. His APM is only ["+UTIL_ToString(APM)+"]" );
-                                        SendChat((*i)->GetPID( ), "[ANTI-AFK] You need as minimum ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"], or you will be kicked on ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings)+"] more warnings.");
+                                        SendChat((*i)->GetPID( ), "[ANTI-AFK] You need as minimum ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"], or you will be kicked on ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings( ))+"] more warnings.");
                                     } else {
                                         SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for having an APM of ["+UTIL_ToString(APM)+"] which was ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings)+"] lower than ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"]" );
                                         (*i)->SetDeleteMe( true );
@@ -937,7 +937,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         continue;
                                     }
 
-                                    (*i)->SetLastAFKWarn();
+                                    (*i)->SetLastAFKWarning();
                                 }
                             }
                         }
