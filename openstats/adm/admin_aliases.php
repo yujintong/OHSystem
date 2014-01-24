@@ -1,7 +1,6 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
-$field_name = "oh_badwords";
 
 if ( isset($_POST["submit_gt"]) ) {
    $words = strip_tags( trim( $_POST["bad_words"] ) );
@@ -11,6 +10,16 @@ if ( isset($_POST["submit_gt"]) ) {
 $alias_name = "";
 $alias_id = "";
 $button = "Add";
+    
+	if ( isset($_GET["reset"]) AND is_numeric($_GET["reset"]) ) {
+	  $alias = (int) $_GET["reset"];
+	  
+	  $upd = $db->prepare("UPDATE ".OSDB_GAMES." SET stats=0 WHERE alias_id = '".$alias."' ");
+	  $result = $upd->execute();
+	  $upd2 = $db->prepare("DELETE FROM ".OSDB_STATS." WHERE alias_id = '".$alias."' ");
+	  $result = $upd2->execute();
+	}
+
 
     if ( isset($_GET["default"]) AND is_numeric($_GET["default"]) ) {
 	
@@ -58,8 +67,6 @@ if ( isset($_GET["edit"]) ) {
 	$alias_name = $row["alias_name"];
 	$alias_id = $row["alias_id"];
 }
-
-$badwords = OS_get_custom_field(1, $field_name);
 ?>
 <div align="center"> 
 <h2>Game Types</h2>
@@ -69,6 +76,7 @@ $badwords = OS_get_custom_field(1, $field_name);
   <th width="50">Alias ID</th>
   <th width="220">Name</th>
   <th>Action</th>
+  <th></th>
 </tr>
 <?php
 	//GAME TYPES/ALIASES (dota, lod)
@@ -85,7 +93,7 @@ $badwords = OS_get_custom_field(1, $field_name);
 	 <tr>
 	   <td><?=$row["alias_id"]?></td>
 	   <td><?=$row["alias_name"]?></td>
-	   <td>
+	   <td width="230">
 	   <a class="menuButtons" href="<?=OS_HOME?>adm/?aliases&amp;edit=<?=$row["alias_id"]?>">Edit</a>
 	   <a class="menuButtons" onclick="if(confirm('Delete this game type?')) { location.href='<?=OS_HOME?>adm/?aliases&amp;delete=<?=$row["alias_id"]?>' }" href="javascript:;">Delete</a>
 	   <?php if ($row["default_alias"] == 0) { ?>
@@ -93,6 +101,12 @@ $badwords = OS_get_custom_field(1, $field_name);
 	   <?php } else { ?>
 	   <span style="color: green; font-weight:bold;">Default</span>
 	   <?php } ?>
+	   </td>
+	   <td>
+	     <a href="javascript:;" onclick="if(confirm('Reset stats for this game type? WARNING: This will delete some records from stats?')){ location.href='<?=OS_HOME?>adm/?aliases&reset=<?=$row["alias_id"]?>'  }">Reset stats</a>
+		 <?php if (isset($_GET["reset"]) AND $_GET["reset"] == $row["alias_id"] ) { ?>
+		 <span style="color:red;margin-left:10px;">Done!</span>
+		 <?php } ?>
 	   </td>
 	 </tr>
 	 <?php

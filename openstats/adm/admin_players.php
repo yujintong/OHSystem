@@ -5,8 +5,20 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 
       //$sth = $db->prepare("UPDATE ".OSDB_STATS." SET points = '50' WHERE points>=20000");
 	  //$result = $sth->execute();
-	  
+	   
 	include("../inc/countries.php");  
+	
+	if ( isset($_GET["disable_gproxy"]) AND strlen($_GET["disable_gproxy"])>=2 ) {
+	  $player = strip_tags( $_GET["disable_gproxy"] );
+      $sth = $db->prepare("UPDATE ".OSDB_STATS." SET forced_gproxy = '0' WHERE player='".$player."' ");
+	  $result = $sth->execute();
+	}
+	
+	if ( isset($_GET["gproxy"]) AND strlen($_GET["gproxy"])>=2 ) {
+	  $player = strip_tags( $_GET["gproxy"] );
+      $sth = $db->prepare("UPDATE ".OSDB_STATS." SET forced_gproxy = '1' WHERE player='".$player."' ");
+	  $result = $sth->execute();
+	}
 ?>
 
 <div align="center" class="padBottom">
@@ -44,7 +56,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 <?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'server.eurobattle.net') $s='selected="selected"'; else $s=''; ?>
 			<option <?=$s?> value="server.eurobattle.net">server.eurobattle.net</option>
 <?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'WC3Connect') $s='selected="selected"'; else $s=''; ?>
-			<option <?=$s?> value="WC3Connect">OH Connect</option>
+			<option <?=$s?> value="OHConnect">OH Connect</option>
 <?php if (isset($_GET["realm"]) AND $_GET["realm"] == 'garena') $s='selected="selected"'; else $s=''; ?>
 			<option <?=$s?> value="garena">Garena</option>
 		  </select>
@@ -175,6 +187,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'banned' )   $sql.=' AND banned>=1 '; 
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'safelist' ) $sql.=' AND user_level=2 OR user_level=3'; 
   if ( isset($_GET["sort"])   AND $_GET["sort"] == 'hidden' )   $sql.=" AND hide>=1"; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'gproxy' )   $sql.=" AND forced_gproxy>=1"; 
   
   
   if ( isset($_GET["realm"])   AND !empty($_GET["realm"]) )   $sql.=" AND realm = '".strip_tags($_GET["realm"])."' "; 
@@ -216,6 +229,7 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players">All Players</a>
   <?php } ?>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=points">Sort by Points</a>
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=gproxy">GProxy</a>
   
   <?php
     //SHOW ALL PLAYER IPs
@@ -321,10 +335,10 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
     <tr>
 	  <th width="160" class="padLeft">Player</th>
 	  <th width="95" class="padLeft">Realm</th>
-	  <th width="100">Score</th>
-	  <th width="100">Games (W/L/<span style="color:red">Left</span>)</th>
-	  <th width="100">Points</th>
 	  <th width="165">Action</th>
+	  <th width="80">Score</th>
+	  <th width="125">Games (W/L/<span style="color:red">Left</span>)</th>
+	  <th width="100">Points</th>
 	  <th class="padLeft">Status</th>
 	</tr>
     <?php
@@ -361,30 +375,16 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	if ( $row["banned"] >= 1 )   $banned = '<img width="16" height="16" src="del.png" alt="" class="imgvalign"/>  <span style="color:red">Banned</span>'; else $banned = "";
 	
 	if ( $row["leaver"]>=1 ) $col='red'; else $col = '#000';
+	
+	if ( $row["forced_gproxy"] >= 1 ) $GProxy = '(G)'; else $GProxy = ''; 
 	?>
 	<tr class="row">
 	  <td><img <?=ShowToolTip($Country , OS_HOME.'img/flags/'.$Letter.'.gif', 130, 21, 15)?> class="imgvalign" width="21" height="15" src="<?=OS_HOME?>img/flags/<?=$Letter?>.gif" alt="" /> 
-	  <a target="_blank" href="<?=OS_HOME?>?u=<?=$row["id"]?>"><?=$row["player"]?></a>
+	  <a target="_blank" href="<?=OS_HOME?>?u=<?=$row["id"]?>"><?=$row["player"]?></a> <?=$GProxy?>
 	  
 	  </td>
 	  <td><?=($row["realm"])?></td>
-	  <td><b><?=number_format($row["score"],0)?></b></td>
-	  <td><b><?=$row["games"]?></b> (<?=$row["wins"]?> / <?=$row["losses"]?> / <span style="color:<?=$col?>"><?=$row["leaver"]?></span>)</td>
-	  <td>
-	  <?=number_format($row["points"],0)?> <a href="javascript:;" onclick="showhide('po_<?=$row["id"]?>')">[+]</a>
-	  <div id="po_<?=$row["id"]?>" style="display:none;">
-	  <form action="" method="get">
-	  <input type="hidden" name="players" />
-	  <input type="hidden" name="id" value="<?=$row["id"]?>" />
-	  <?php if (isset($_GET["page"]) AND is_numeric($_GET["page"]) ) { ?>
-	  <input type="hidden" name="page" value="<?=(int) $_GET["page"]?>" />
-	  <?php } ?>
-	  <?php if (!OS_IsRoot()) $dis = "disabled"; else $dis = ""; ?>
-	  <input <?=$dis?> type="text" size="10" value="<?=$row["points"]?>" name="points" />
-	  <input <?=$dis?> type="submit" value="save" class="menuButtons" />
-	  </form>
-	  </div>
-	  </td>
+	  
 	  <td>
 	  <a href="javascript:;" onclick="showhide('o_<?=$row["id"]?>')">[+] edit</a>
 	  
@@ -401,6 +401,12 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	  <div><?=$row["player"]?></div>
 	  
 	  <div>
+	  <?php if (empty($GProxy)) { ?>
+	  <a class="menuButtons" href="javascript:;" onclick="if (confirm('Force user to use GProxy?') ) { location.href='<?=OS_HOME?>adm/?players&amp;gproxy=<?=$row["player"]?><?=$p?>' }">&raquo; GProxy</a>
+	  <?php } else { ?>
+	  <a class="menuButtons" href="javascript:;" onclick="if (confirm('Disable GProxy?') ) { location.href='<?=OS_HOME?>adm/?players&amp;disable_gproxy=<?=$row["player"]?><?=$p?>' }">&raquo; Disable GProxy</a>
+	  <?php } ?>
+	  
 	  <?php if (!empty($is_admin) ) { ?>
 	  <a class="menuButtons" href="javascript:;" onclick="if (confirm('Remove admin?') ) { location.href='<?=OS_HOME?>adm/?players&amp;remove_admin=<?=$row["player"]?><?=$p?>' }">&raquo; Remove admin</a>
 	  <?php } else { ?>
@@ -424,6 +430,24 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	   <div>
 	   <a class="menuButtons" href="javascript:;" onclick="if (confirm('Add Penalty points?') ) { location.href='<?=OS_HOME?>adm/?pp&amp;addpp=<?=$row["player"]?>' }">&raquo; Add PP</a></div>
 	   
+	  </div>
+	  </td>
+	  
+	  <td><b><?=number_format($row["score"],0)?></b></td>
+	  <td><b><?=$row["games"]?></b> (<?=$row["wins"]?> / <?=$row["losses"]?> / <span style="color:<?=$col?>"><?=$row["leaver"]?></span>)</td>
+	  <td>
+	  <?=number_format($row["points"],0)?> <a href="javascript:;" onclick="showhide('po_<?=$row["id"]?>')">[+]</a>
+	  <div id="po_<?=$row["id"]?>" style="display:none;">
+	  <form action="" method="get">
+	  <input type="hidden" name="players" />
+	  <input type="hidden" name="id" value="<?=$row["id"]?>" />
+	  <?php if (isset($_GET["page"]) AND is_numeric($_GET["page"]) ) { ?>
+	  <input type="hidden" name="page" value="<?=(int) $_GET["page"]?>" />
+	  <?php } ?>
+	  <?php if (!OS_IsRoot()) $dis = "disabled"; else $dis = ""; ?>
+	  <input <?=$dis?> type="text" size="10" value="<?=$row["points"]?>" name="points" />
+	  <input <?=$dis?> type="submit" value="save" class="menuButtons" />
+	  </form>
 	  </div>
 	  </td>
 	  <td>

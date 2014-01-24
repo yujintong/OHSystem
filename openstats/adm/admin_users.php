@@ -3,6 +3,27 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 $errors = "";
 if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else $s=""; 
 
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+
 ?>
 <div align="center" class="padBottom">
 	 <form action="" method="get">
@@ -75,6 +96,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $user_realm = strip_tags( $_POST["user_realm"]);
 	  $user_clan  = strip_tags( $_POST["user_clan"]);
 	  $admin_realm  = strip_tags( $_POST["admin_realm"]);
+	  $alias_id   = strip_tags($_POST["alias_id"]);
 	  $sql_update_pw = "";
 	  
 	  $user_bnet = safeEscape( $_POST["user_bnet"]);
@@ -116,11 +138,11 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $time = date( "Y-m-d H:i:s", time() );
 	  
 	  if ( isset($_GET["edit"]) ) $sql = "UPDATE ".OSDB_USERS." SET 
-	  user_name= '".$name."', user_email = '".$email."', user_level = '".$level."', user_website = '".$www."', user_avatar = '".$avatar."', user_gender = '".$gender."', bnet_username = '".$bnet."', user_bnet = '".$user_bnet."', user_realm = '".$user_realm."', user_clan = '".$user_clan."', admin_realm = '".$admin_realm."'
+	  user_name= '".$name."', alias_id = '".$alias_id."', user_email = '".$email."', user_level = '".$level."', user_website = '".$www."', user_avatar = '".$avatar."', user_gender = '".$gender."', bnet_username = '".$bnet."', user_bnet = '".$user_bnet."', user_realm = '".$user_realm."', user_clan = '".$user_clan."', admin_realm = '".$admin_realm."'
 	  $sql_update_pw 
 	  WHERE user_id ='".$id."' LIMIT 1 ";
 	  
-	  if ( isset($_GET["add"]) ) $sql = "INSERT INTO ".OSDB_USERS."(user_name, user_email, user_password, password_hash, user_joined, bnet_username, user_bnet, user_realm, user_clan) VALUES('".$name."', '".$email."', '".$password_db."', '".$hash."', '".time()."', '".$bnet."', '".$user_bnet."', '".$user_realm."', '".$user_clan."')";
+	  if ( isset($_GET["add"]) ) $sql = "INSERT INTO ".OSDB_USERS."(user_name, alias_id, user_email, user_password, password_hash, user_joined, bnet_username, user_bnet, user_realm, user_clan) VALUES('".$name."', '".$alias_id."', '".$email."', '".$password_db."', '".$hash."', '".time()."', '".$bnet."', '".$user_bnet."', '".$user_realm."', '".$user_clan."')";
 	  
 	  $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." WHERE (user_name) = ('".$name."') AND user_id!='".$id."' ");
 	  $result = $sth->execute();
@@ -173,6 +195,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	 $result = $sth->execute();
 	 $row = $sth->fetch(PDO::FETCH_ASSOC);
 	 $name       = ( $row["user_name"]);
+	 $alias_id   = $row["alias_id"];
 	 $email      = ( $row["user_email"]);
 	 $level      = ( $row["user_level"]);
 	 $avatar     = ( $row["user_avatar"]);
@@ -206,6 +229,26 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	     <td width="80" class="padLeft">Name:</td>
 		 <td><input name="name" style="width: 380px; height: 28px;" type="text" value="<?=$name ?>" /></td>
 	   </tr>
+	   
+	   <tr class="row">
+	     <td width="80" class="padLeft">Game Type:</td>
+		 <td>
+		 <select name="alias_id">
+		   <option value="0">All Games</option>
+		   <?php
+		   foreach($GameAliases as $gt) {
+		   if ( isset($_GET["edit"]) AND $alias_id == $gt["alias_id"]) 
+		   $s='selected="selected"'; else $s="";
+		   ?>
+		   <option <?=$s?> value="<?=$gt["alias_id"]?>"><?=$gt["alias_name"]?></option>
+		   <?php
+		   }
+		   ?>
+		 </select>
+		 </td>
+	   </tr>
+	   
+	   
 	   <tr class="row">
 	     <td width="80" class="padLeft">Battle.net account:</td>
 		 <td><input name="bnet" style="width: 380px; height: 28px;" type="text" value="<?=$bnet ?>" /></td>

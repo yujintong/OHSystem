@@ -2,6 +2,27 @@
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 $errors = "";
 
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+
 if (( isset($_GET["del"]) OR isset($_GET["edit"]) OR isset($_GET["add"]) ) AND $_SESSION["level"]<=9 ) {
 	  ?>
 	  <div align="center">
@@ -95,6 +116,23 @@ if (( isset($_GET["del"]) OR isset($_GET["edit"]) OR isset($_GET["add"]) ) AND $
 	     <td width="80" class="padLeft">Name:</td>
 		 <td><input name="name" style="width: 380px; height: 28px;" type="text" value="<?=$name ?>" /></td>
 	   </tr>
+	   
+	   <tr class="row">
+	     <td width="80" class="padLeft">Game Type:</td>
+		 <td>
+		 <select name="alias_id">
+		   <option value="0">All Games</option>
+		   <?php
+		   foreach($GameAliases as $gt) {
+		   ?>
+		   <option value="<?=$gt["alias_id"]?>"><?=$gt["alias_name"]?></option>
+		   <?php
+		   }
+		   ?>
+		 </select>
+		 </td>
+	   </tr>
+	   
 	   <tr class="row">
 	     <td width="80"  class="padLeft">Server:</td>
 		 <td>
@@ -160,14 +198,34 @@ if (( isset($_GET["del"]) OR isset($_GET["edit"]) OR isset($_GET["add"]) ) AND $
 	$sql.=' AND user_level = '.$sort.'';
   }
   
+  if ( isset($_GET["game_type"]) AND is_numeric($_GET["game_type"]) ) {
+    $alias_id = (int) $_GET["game_type"];
+	$sql.=' AND alias_id = '.$alias_id.'';
+  }
+  
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_level>=1 $sql");
   $result = $sth->execute();
   $r = $sth->fetch(PDO::FETCH_NUM);
   $numrows = $r[0];
-  $result_per_page = 40;
+  $result_per_page = 50;
 ?>
 <div align="center">
-<div class="padBottom padTop"><a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;add">[+] Add Admin</a></div>
+<div class="padBottom padTop">
+<a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;add">[+] Add Admin</a>
+<select name="alias_id" onchange="location.href='<?=OS_HOME?>adm/?admins&game_type='+this.value">
+<option value="">All Games</option>
+<?php
+foreach($GameAliases as $gt) {
+
+if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $gt["alias_id"] )
+$s='selected="selected"'; else $s = "";
+?>
+<option <?=$s?> value="<?=$gt["alias_id"]?>"><?=$gt["alias_name"]?></option>
+<?php
+}
+?>
+</select>
+</div>
 
 <div>
 <a class="menuButtons" href="<?=OS_HOME?>adm/?admins">Show All</a>
@@ -197,15 +255,27 @@ if (( isset($_GET["del"]) OR isset($_GET["edit"]) OR isset($_GET["add"]) ) AND $
    <table>
     <tr>
 	  <th width="150" class="padLeft">Admin</th>
-	  <th width="100">Action</th>
+	  <th width="100">Game Type</th>
+	  <th width="60">Action</th>
 	  <th width="180">Access/Level</th>
 	  <th>Server</th>
 	  <th>Email</th>
 	</tr>
    <?php
-   while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { ?>
+   while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
+   	if ($row["user_level_expire"] != '0000-00-00 00:00:00' AND !empty($row["user_level_expire"]) )
+	$expire = '<b>Expire:</b> '.date( "d.m.Y, H:i", strtotime($row["user_level_expire"]) );
+	else $expire = "";
+   ?>
    <tr class="row" style="height:30px;">
      <td width="150" class="padLeft font12"><a href="<?=OS_HOME?>adm/?users&amp;edit=<?=$row["user_id"]?>"><?=$row["user_name"]?></a></td>
+	 <td width="100" class="padLeft font12">
+	 <?php
+	 if ( $row["alias_id"]<=0 ) echo "All Games"; else {
+	 echo $GameAliases[ ($row["alias_id"]-1) ]["alias_name"];
+	 }
+	 ?>
+	 </td>
 	 <td width="100" class="font12">
 	 <a href="<?=OS_HOME?>adm/?users&amp;edit=<?=$row["user_id"]?>"><img src="<?=OS_HOME?>adm/edit.png" alt="img" /></a>
 	 <a href="javascript:;" onclick="if (confirm('Delete Admin?') ) { location.href='<?=OS_HOME?>adm/?users&amp;del=<?=$row["user_id"]?>&amp;n=<?=$row["user_name"]?>' }"><img src="<?=OS_HOME?>adm/del.png" alt="img" /></a>
@@ -213,6 +283,7 @@ if (( isset($_GET["del"]) OR isset($_GET["edit"]) OR isset($_GET["add"]) ) AND $
 	 <td width="180" class="overflow_hidden font12">
 	 <?=OS_IsUserGameAdmin( $row["user_level"] )?>
 	 <?=OS_ShowUserRole( $row["user_level"] )?> ( <?=$row["user_level"]?> )
+	 <div><?=$expire?></div>
 	 </td>
 	 <td class="overflow_hidden font12"><span title="<?=$row["admin_realm"]?>"><?=stripslashes($row["admin_realm"])?></span></td>
 	 <td><?=$row["user_email"]?></td>

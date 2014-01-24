@@ -493,6 +493,7 @@ DROP TABLE IF EXISTS `oh_users`;
 CREATE TABLE IF NOT EXISTS `oh_users` (
   `user_id` mediumint(8) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(60) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `bnet_username` varchar(30) NOT NULL,
   `user_bnet` tinyint(1) NOT NULL,
   `user_password` varchar(100) NOT NULL,
