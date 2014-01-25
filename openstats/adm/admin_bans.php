@@ -4,6 +4,63 @@ $errors = "";
 $message = "";
 $ip_part = "";
 
+//THIS CODE BELOW WILL BAN ENTIRE COUNTRY FROM STATS TABLE BY GIVEN COUNTRY CODE (EG. IT)
+if ( isset($_GET["code"]) AND strlen($_GET["code"]) == 2 ) {
+
+    $code = strtoupper($_GET["code"]);
+    $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE country_code = '$code' AND banned = 0 ");
+    $result = $sth->execute();
+	
+	$sql="INSERT INTO ".OSDB_BANS."(name, server, reason, ip, ip_part, admin, gamename, date, expiredate, country) VALUES";
+	$time = date("Y-m-d H:i:s", time() );
+	$Total = 0;
+	$AllIP = array();
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	   	$ipv = explode(".", $row["ip"]);
+		if ( count($ipv)>2 ) {
+		$ip_part = $ipv[0].".".$ipv[1];
+		if ( strlen($ipv[1])<=2) $ip_part.=".";
+		$AllIP[] = $ip_part;
+		//$sql.=" ('iprange [".strtoupper($code)."]', 'europe.battle.net', '".strtoupper($code)."',  ':$ip_part', '$ip_part', 'Server', 'All', '$time', '0000-00-00 00:00:00', '".strtoupper($code)."'),";
+		
+		
+		}
+	}
+	
+	$IPAddr = array_unique($AllIP);
+	 foreach($IPAddr as $ip) {
+	 $Total++;  
+	 $sql.=" ('iprange [".strtoupper($code)."]', 'europe.battle.net', '".strtoupper($code)."',  ':$ip', '$ip', 'Server', 'All', '$time', '0000-00-00 00:00:00', '".strtoupper($code)."'),";
+	 }
+	 
+	if ( isset($_GET["exec"]) ) {
+		$upd = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 1 WHERE country_code = '$code' AND banned = 0 ");
+        $result = $upd->execute();
+	}
+	 
+	if ($Total>=1) {
+	$sql = substr($sql,0, -1);
+	?><textarea style="margin: 2px; width: 892px; height: 134px;"><?=$sql?></textarea>
+	<div><a href="<?=OS_HOME?>adm/?bans&amp;code=<?=$_GET["code"]?>&amp;exec">Execute SQL</a> (Total: <?=$Total?> records) </div>
+	<?php
+	if ( isset($_GET["exec"]) ) {
+	$sth = $db->prepare($sql);
+    $result = $sth->execute();
+	?>
+	<b>Query successfully executed!</b> 
+	<a href="<?=OS_HOME?>adm/?bans&amp;code=<?=$_GET["code"]?>">REFRESH</a>
+	<?php
+	}
+	} else {
+	?>
+	<div>No results.</div>
+	<?php
+	}
+	
+	
+	}
+	
+	 
 	 if ( file_exists("../inc/geoip/geoip.inc") ) {
 	 include("../inc/geoip/geoip.inc");
 	 $GeoIPDatabase = geoip_open("../inc/geoip/GeoIP.dat", GEOIP_STANDARD);
@@ -181,14 +238,17 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	   <tr>
 	    <td>
 		<?php if ( !isset($_GET["duplicate"]) ) { ?>
-	    <a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;add">[+] Add Ban</a> 
+	    <a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;add">[+]Add Ban</a> 
 		<a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;duplicate">Duplicate bans</a>
 		<?php } else { ?>
 		<a class="menuButtons" href="<?=OS_HOME?>adm/?bans">Show All bans</a>
 		<?php } ?>
-		<a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;addcountry">[+] Ban Country</a> 
+		<a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;addcountry">[+]Ban Country</a> 
 		<div>
-
+		<?php if (isset($_GET["check_ip_range"]) ) $check_ip_range = strip_tags($_GET["check_ip_range"]); else 
+		$check_ip_range = "";
+		?>
+        <input type="text" name="check_ip_range" value="<?=$check_ip_range?>" size="10" /> <input type="submit" value="IP Range check" />
 		</div>
 		 </td>
 		<td>
@@ -201,6 +261,12 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 		 <?php } else { ?>
 		 <a class="menuButtons" href="<?=OS_HOME?>adm/?bans<?=$p?>">Hide PP</a>
 		 <?php } ?>
+		 <div>
+		 <?php if (isset($_GET["code"]) AND strlen($_GET["code"]) == 2 ) $code = $_GET["code"]; else $code =""; ?>
+		 <input type="text" size="2" name="country_code" id="cc" value="<?=$code?>" /> 
+		 <input type="button" value="Create qry" onclick="location.href='<?=OS_HOME?>adm/?bans&code='+cc.value" />
+		 Create ban sql query by country code (from stats table).
+		 </div>
 		 </td>
 	   </tr>
 	 </table>
@@ -347,7 +413,8 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	  
 	  if ( !empty($ip) AND $ip!='0.0.0.0') {
 	    $ipv = explode(".", $ip);
-		if ( count($ipv)>2 ) $ip_part = $ipv[0].".".$ipv[1];
+		if ( count($ipv)>=2 ) $ip_part = $ipv[0].".".$ipv[1];
+		$ip_part = str_replace(":", "", $ip_part);
 	  } else $ip_part = "";
 	  
 	  $admin    = safeEscape( trim($_POST["admin"]));
@@ -611,7 +678,7 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
   
   	//CHECK IP RANGE
 	
-	if ( isset($_GET["ip_range"]) AND strlen($_GET["ip_range"]) >= 4 ) {
+	if ( isset($_GET["ip_range"]) AND strlen($_GET["ip_range"]) >= 4 AND empty($_GET["check_ip_range"]) ) {
 	  $ipr = trim( strip_tags( $_GET["ip_range"] ) );
 	  $errors = "";
 	  $iprange = explode(".", $ipr);
@@ -759,6 +826,12 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
   } else {
    $sql = "";
    $search_bans= "";
+  }
+  
+  if ( isset($_GET["check_ip_range"]) ) {
+  
+    $check_ip_range = strip_tags( trim($_GET["check_ip_range"]));
+	$sql = " AND ip = ':".$check_ip_range."' ";
   }
   
   if ( !isset($_GET["duplicate"])  ) {

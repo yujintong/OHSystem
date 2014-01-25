@@ -3,8 +3,26 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 $errors = "";
 if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else $s=""; 
 
-      //$sth = $db->prepare("UPDATE ".OSDB_STATS." SET points = '50' WHERE points>=20000");
-	  //$result = $sth->execute();
+	//GAME TYPES/ALIASES (dota, lod)
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
 	   
 	include("../inc/countries.php");  
 	
@@ -312,10 +330,11 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	}
 	else {
 	
-  $groupBy = 'GROUP BY player';  
+  //$groupBy = 'GROUP BY player';  
   $groupBy = '';
-  $where = " AND `month` = '".date("n")."' AND `year` = '".date("Y")."' ";
-	
+  $where = '';
+  if (!isset($_GET["search_users"])) $where = " AND `month` = '".date("n")."' AND `year` = '".date("Y")."' ";
+  //else { $groupBy = 'GROUP BY player';   }
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy ");
   $result = $sth->execute();
   $r = $sth->fetch(PDO::FETCH_NUM);
@@ -326,16 +345,17 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
   $SHOW_TOTALS = 1;
   include('pagination.php');
   
-  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy 
+  $sth = $db->prepare("SELECT id, ip, user_level, banned, player, leaver, forced_gproxy, realm, wins, points, score, games, losses, alias_id, month, year
+  FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy 
   ORDER BY $ord LIMIT $offset, $rowsperpage");
   $result = $sth->execute();
   ?>
   
    <table>
     <tr>
-	  <th width="160" class="padLeft">Player</th>
-	  <th width="95" class="padLeft">Realm</th>
-	  <th width="165">Action</th>
+	  <th width="160" class="padLeft">Player/Game Type</th>
+	  <th width="95" class="padLeft">Realm/Date</th>
+	  <th width="240">Action</th>
 	  <th width="80">Score</th>
 	  <th width="125">Games (W/L/<span style="color:red">Left</span>)</th>
 	  <th width="100">Points</th>
@@ -381,9 +401,18 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	<tr class="row">
 	  <td><img <?=ShowToolTip($Country , OS_HOME.'img/flags/'.$Letter.'.gif', 130, 21, 15)?> class="imgvalign" width="21" height="15" src="<?=OS_HOME?>img/flags/<?=$Letter?>.gif" alt="" /> 
 	  <a target="_blank" href="<?=OS_HOME?>?u=<?=$row["id"]?>"><?=$row["player"]?></a> <?=$GProxy?>
-	  
+	  <?php
+	  if (isset($_GET["search_users"]) AND !empty( $GameAliases[($row["alias_id"]-1)]["alias_name"] ) ) {
+	  ?>
+	  <div><?=$GameAliases[($row["alias_id"]-1)]["alias_name"]?></div>
+	  <?php
+	  }
+	  ?>
 	  </td>
-	  <td><?=($row["realm"])?></td>
+	  <td>
+	  <?=($row["realm"])?>
+	  <div><b><?=getMonthName( strtolower($row["month"]) )?>, <?=$row["year"]?></b></div>
+	  </td>
 	  
 	  <td>
 	  <a href="javascript:;" onclick="showhide('o_<?=$row["id"]?>')">[+] edit</a>
@@ -395,6 +424,8 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	 &nbsp; <a class="menuButtons" title="Show All Player IP Address" href="<?=OS_HOME?>adm/?players&amp;player=<?=$row["player"]?>&amp;show=ips">All IPs</a> 
 	  
 	 <a target="_blank" class="menuButtons" title="Show IP Range" href="<?=OS_HOME?>adm/?bans&amp;ip_range=<?=$ip_part?>&amp;show=all">IP Range</a>
+	 
+	 <a target="_blank" class="menuButtons" title="Check IP Range" href="<?=OS_HOME?>adm/?bans&amp;check_ip_range=<?=$ip_part?>">Check</a>
 	 <?php } ?>
 	  <div id="o_<?=$row["id"]?>" style="display:none;">
 	  
