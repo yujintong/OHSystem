@@ -828,7 +828,7 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
    $search_bans= "";
   }
   
-  if ( isset($_GET["check_ip_range"]) ) {
+  if ( !empty($_GET["check_ip_range"]) ) {
   
     $check_ip_range = strip_tags( trim($_GET["check_ip_range"]));
 	$sql = " AND ip = ':".$check_ip_range."' ";
