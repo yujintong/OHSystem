@@ -87,8 +87,8 @@ if ( isset($_GET["code"]) AND strlen($_GET["code"]) == 2 ) {
 		 echo $row["player_name"]." - ".$row["points"]."<br />";
 		 
 		 if ( !empty($row["player_name"]) ) {
-		 $upd = $db->prepare("UPDATE ".OSDB_STATS." SET penalty = '".$row["points"]."' WHERE player = '".$row["player_name"]."' ");
-		 $result = $upd->execute();
+		 //$upd = $db->prepare("UPDATE ".OSDB_STATS." SET penalty = '".$row["points"]."' WHERE player = '".$row["player_name"]."' ");
+		 //$result = $upd->execute();
 		 }
 		}
    }
@@ -476,7 +476,7 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	  $sql2 = "INSERT INTO ".OSDB_GO."(player_name, reason, offence_time, offence_expire, pp, admin) 
 	  VALUES('".$name."', '".$reason."', '".$time."', '".$expire."', '".$warn."', '".$admin."' )";
 	  
-	  $sql3 = "UPDATE ".OSDB_STATS." SET penalty = penalty+'".$warn."' WHERE player = '".$name."' LIMIT 1";
+	  //$sql3 = "UPDATE ".OSDB_STATS." SET penalty = penalty+'".$warn."' WHERE player = '".$name."' LIMIT 1";
 	  }
 	  
 	  }
