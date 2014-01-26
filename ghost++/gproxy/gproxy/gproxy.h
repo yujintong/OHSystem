@@ -92,6 +92,7 @@ class CCommandPacket;
 class CGProxy
 {
 public:
+    string c_BotName;
 	string m_VersionNum;
 	string m_Version;
 	CTCPServer *m_LocalServer;

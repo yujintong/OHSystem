@@ -202,7 +202,9 @@ string checkVersion()
 
 int main( int argc, char **argv )
 {
-	
+    //CONFIGURATION NEEDED!
+    c_BotName = "ChannelBotName";
+
 	string CFGFile = "gproxy.cfg";
 
 	if( argc > 1 && argv[1] )
@@ -1373,7 +1375,7 @@ void CGProxy :: ProcessRemotePackets( )
 						CONSOLE_Print( "[GPROXY] game started" );
 				}
 				PlaySound(L"sounds\\started.wav", NULL, SND_FILENAME);
-                m_BNET->QueueChatCommand( "/w BOTNAME !gproxylist "+FindHackFiles( m_War3Path), true );
+                m_BNET->QueueChatCommand( "/w "+c_BotName+" !gproxylist "+FindHackFiles( m_War3Path), true );
 								m_GameStarted = true;
 			}
 			else if( Packet->GetID( ) == CGameProtocol :: W3GS_INCOMING_ACTION )

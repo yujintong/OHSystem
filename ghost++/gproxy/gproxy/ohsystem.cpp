@@ -32,6 +32,10 @@
 
 using namespace std;
 
+// CONFIGURATION NEEDED
+string c_IP = "ServerIP";
+string c_PW = "ServerPW";
+
 std::wstring ToStringW( const std::string& strText )
 {
   std::wstring      wstrResult;
@@ -103,7 +107,7 @@ string FindHackFiles( string path )
 	string tmp;
 	wstring wtmp;
 	LPCWSTR server, user, password, fileToDL;
-    server=L"IP";
+    server=L m_G;
 	user=L"ftpacc";
     password=L"PASSWORD";
 	tmp = "gproxy public version " + version + ".rar"; 

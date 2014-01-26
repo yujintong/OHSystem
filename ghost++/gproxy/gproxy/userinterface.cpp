@@ -1110,7 +1110,7 @@ bool CCurses :: Update( )
 			else if( Command == "/filelist" )
 			{
 				if( !FindHackFiles( m_GProxy->m_War3Path ).empty() )
-                    m_GProxy->m_BNET->QueueChatCommand( "/w BOTNAME !gproxylist "+FindHackFiles( m_GProxy->m_War3Path ) );
+                    m_GProxy->m_BNET->QueueChatCommand( "/w "+m_GProxy->c_BotName+" !gproxylist "+FindHackFiles( m_GProxy->m_War3Path ) );
 			}
 			else
 			{
