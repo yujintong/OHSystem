@@ -186,43 +186,44 @@ public:
 	// threaded database functions
 
 	virtual void CreateThread( CBaseCallable *callable );
-        virtual CCallableRegAdd *ThreadedRegAdd( string user, string server, string mail, string password, string type );
-	virtual CCallableStatsSystem *ThreadedStatsSystem( string user, string input, uint32_t one, string type );
-        virtual CCallablePWCheck *ThreadedPWCheck( string user );
-        virtual CCallablePassCheck *ThreadedPassCheck( string user, string pass, uint32_t st );
+    virtual CCallableRegAdd *ThreadedRegAdd( string user, string server, string mail, string password, string type );
+    virtual CCallableStatsSystem *ThreadedStatsSystem( string user, string input, uint32_t one, string type );
+    virtual CCallablePWCheck *ThreadedPWCheck( string user );
+    virtual CCallablePassCheck *ThreadedPassCheck( string user, string pass, uint32_t st );
 	virtual CCallablepm *Threadedpm( string user, string listener, uint32_t status, string message, string type );
-        virtual CCallablePList *ThreadedPList( string server );
-        virtual CCallableFlameList *ThreadedFlameList( );
-        virtual CCallableAliasList *ThreadedAliasList( );
-        virtual CCallableDeniedNamesList *ThreadedDeniedNamesList( );
+    virtual CCallablePList *ThreadedPList( string server );
+    virtual CCallableFlameList *ThreadedFlameList( );
+    virtual CCallableForcedGProxyList *ThreadedForcedGProxyList( );
+    virtual CCallableAliasList *ThreadedAliasList( );
+    virtual CCallableDeniedNamesList *ThreadedDeniedNamesList( );
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
-        virtual CCallableDCountryList *ThreadedDCountryList( );
-        virtual CCallableStoreLog *ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin );
-        virtual CCallablegs *Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype );
-        virtual CCallablepenp *Threadedpenp( string name, string reason, string admin, uint32_t amount, string type );
+    virtual CCallableDCountryList *ThreadedDCountryList( );
+    virtual CCallableStoreLog *ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin );
+    virtual CCallablegs *Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype );
+    virtual CCallablepenp *Threadedpenp( string name, string reason, string admin, uint32_t amount, string type );
 	virtual CCallableBanCount *ThreadedBanCount( string server );
 	virtual CCallableBanCheck *ThreadedBanCheck( string server, string user, string ip );
-        virtual CCallableBanCheck2 *ThreadedBanCheck2( string server, string user, string type );
+    virtual CCallableBanCheck2 *ThreadedBanCheck2( string server, string user, string type );
 	virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias);
 	virtual CCallablePUp *ThreadedPUp( string name, uint32_t level, string realm, string user );
 	virtual CCallableBanRemove *ThreadedBanRemove( string server, string user );
-        virtual CCallableTBRemove *ThreadedTBRemove( string server );
+    virtual CCallableTBRemove *ThreadedTBRemove( string server );
 	virtual CCallableBanRemove *ThreadedBanRemove( string user );
 	virtual CCallableBanList *ThreadedBanList( string server );
 	virtual CCallableCommandList *ThreadedCommandList(  );
 	virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
-        virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename,uint32_t gameid, uint32_t gamealias );
+    virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename,uint32_t gameid, uint32_t gamealias );
 	virtual CCallableGameUpdate *ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add );
 	virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
 	virtual CCallableGamePlayerSummaryCheck *ThreadedGamePlayerSummaryCheck( string name );
-        virtual CCallableStatsPlayerSummaryCheck *ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias );
-        virtual CCallableInboxSummaryCheck *ThreadedInboxSummaryCheck( string name );
+    virtual CCallableStatsPlayerSummaryCheck *ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias );
+    virtual CCallableInboxSummaryCheck *ThreadedInboxSummaryCheck( string name );
 	virtual CCallableDotAGameAdd *ThreadedDotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec );
 	virtual CCallableDotAPlayerAdd *ThreadedDotAPlayerAdd( uint32_t gameid, uint32_t colour, uint32_t kills, uint32_t deaths, uint32_t creepkills, uint32_t creepdenies, uint32_t assists, uint32_t gold, uint32_t neutralkills, string item1, string item2, string item3, string item4, string item5, string item6, string hero, uint32_t newcolour, uint32_t towerkills, uint32_t raxkills, uint32_t courierkills, uint32_t level );
 	virtual CCallableDotAPlayerSummaryCheck *ThreadedDotAPlayerSummaryCheck( string name );
 	virtual CCallableDownloadAdd *ThreadedDownloadAdd( string map, uint32_t mapsize, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t downloadtime );
 	virtual CCallableScoreCheck *ThreadedScoreCheck( string category, string name, string server );
-        virtual CCallableConnectCheck *ThreadedConnectCheck( string name, uint32_t sessionkey );
+    virtual CCallableConnectCheck *ThreadedConnectCheck( string name, uint32_t sessionkey );
 	virtual CCallableW3MMDPlayerAdd *ThreadedW3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing );
 	virtual CCallableW3MMDVarAdd *ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints );
 	virtual CCallableW3MMDVarAdd *ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals );
@@ -244,6 +245,7 @@ uint32_t MySQLPassCheck( void *conn, string *error, uint32_t botid, string user,
 uint32_t MySQLpm( void *conn, string *error, uint32_t botid, string user, string listener, uint32_t status, string message, string type );
 vector<string> MySQLPList( void *conn, string *error, uint32_t botid, string server );
 vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid );
+vector<string> MySQLForcedGProxyList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLAliasList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLDeniedNamesList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLAnnounceList( void *conn, string *error, uint32_t botid );
@@ -376,6 +378,17 @@ class CMySQLCallableFlameList : public CCallableFlameList, public CMySQLCallable
 public:
         CMySQLCallableFlameList( void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableFlameList( ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
         virtual ~CMySQLCallableFlameList( ) { }
+
+        virtual void operator( )( );
+        virtual void Init( ) { CMySQLCallable :: Init( ); }
+        virtual void Close( ) { CMySQLCallable :: Close( ); }
+};
+
+class CMySQLCallableForcedGProxyList : public CCallableForcedGProxyList, public CMySQLCallable
+{
+public:
+        CMySQLCallableForcedGProxyList( void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableForcedGProxyList( ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
+        virtual ~CMySQLCallableForcedGProxyList( ) { }
 
         virtual void operator( )( );
         virtual void Init( ) { CMySQLCallable :: Init( ); }

@@ -49,6 +49,7 @@ class CConfig;
 class CCallableCommandList;
 class CCallableGameUpdate;
 class CCallableFlameList;
+class CCallableForcedGProxyList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableGameDBInit;
@@ -111,7 +112,10 @@ public:
 	vector<string> m_Modes;
 	CCallableFlameList *m_CallableFlameList;
 	uint32_t m_LastFlameListUpdate;
+    CCallableForcedGProxyList *m_CallableForcedGProxyList;
 	CCallableAliasList *m_CallableAliasList;
+    uint32_t m_LastGProxyListUpdate;
+    vector<string> m_GProxyList;
 	uint32_t m_LastAliasListUpdate;
     uint32_t m_LastDNListUpdate;
 	vector<string> m_Flames;
@@ -290,6 +294,7 @@ public:
     uint32_t GetStatsAliasNumber( string alias );
     string GetLODMode( string fullmode );
     string GetMonthInWords( string month);
+    bool IsForcedGProxy(string input );
 };
 
 #endif

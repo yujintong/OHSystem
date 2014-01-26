@@ -374,15 +374,16 @@ CGHost :: CGHost( CConfig *CFG )
 	m_FinishedGames = 0;
 	m_CallableGameUpdate = NULL;
 	m_CallableFlameList = NULL;
-        m_CallableAliasList = NULL;
+    m_CallableForcedGProxyList = NULL;
+    m_CallableAliasList = NULL;
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
-        m_CallableDeniedNamesList = NULL;
-        m_CallableHC = NULL;
+    m_CallableDeniedNamesList = NULL;
+    m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
-        m_RanksLoaded = true;
-        m_ReservedHostCounter = 0;
+    m_RanksLoaded = true;
+    m_ReservedHostCounter = 0;
 	string DBType = CFG->GetString( "db_type", "mysql" );
 	CONSOLE_Print( "[GHOST] opening primary database" );
 
@@ -463,6 +464,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastCommandListTime = GetTime( );
 	m_LastGameUpdateTime  = GetTime( );
 	m_LastFlameListUpdate = 0;
+    m_LastGProxyListUpdate=0;
     m_LastAliasListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
     m_LastDNListUpdate = 0;
@@ -1202,6 +1204,21 @@ bool CGHost :: Update( long usecBlock )
                 m_DB->RecoverCallable( m_CallableAliasList );
                 delete m_CallableAliasList;
                 m_CallableAliasList = NULL;
+        }
+
+        // refresh forcedgproxy list all 24 hours
+        if( !m_CallableForcedGProxyList && ( GetTime( ) - m_LastGProxyListUpdate >= 86400 || m_LastGProxyListUpdate == 0 ) )
+        {
+            m_CallableForcedGProxyList = m_DB->ThreadedAliasList( );
+            m_LastGProxyListUpdate = GetTime( );
+        }
+
+        if( m_CallableForcedGProxyList && m_CallableForcedGProxyList->GetReady( ))
+        {
+                m_GProxyList = m_CallableForcedGProxyList->GetResult( );
+                m_DB->RecoverCallable( m_CallableForcedGProxyList );
+                delete m_CallableForcedGProxyList;
+                m_CallableForcedGProxyList = NULL;
         }
 
         // refresh denied names list all 60 minutes
@@ -2173,4 +2190,34 @@ string CGHost :: GetMonthInWords( string month ) {
         return "December";
     else
         return "unknown";
+}
+
+bool CGHost :: IsForcedGProxy( string input ) {
+    transform( input.begin( ), input.end( ), input.begin( ), ::tolower );
+
+    for( vector<string> :: iterator i = m_GProxyList.begin( ); i != m_GProxyList.end( ); ++i )
+    {
+        if( *i[0] == ':' )
+        {
+            string BanIP = *i.substr( 1 );
+            int len = BanIP.length( );
+
+            if( input.length( ) >= len && input.substr( 0, len ) == BanIP )
+            {
+                return true;
+            }
+            else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && input.length( ) >= 3 && input[0] == 'h' && input.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
+            {
+
+                return true;
+            }
+        }
+
+        if( *i == input )
+        {
+                return true;
+        }
+    }
+
+    return false;
 }

@@ -159,7 +159,6 @@ private:
 	string m_CLetter;
 	string m_Country;
     bool m_Silence;
-	bool m_ForcedGproxy;
 	bool m_HasLeft;
 	bool m_AFKMarked;
 	bool m_SafeDrop;
@@ -249,7 +248,6 @@ public:
 	string GetCLetter( )					{ return m_CLetter; }
     string GetCountry( )					{ return m_Country; }
     bool GetSilence( )                                              { return m_Silence; }
-	bool GetForcedGproxy( )						{ return m_ForcedGproxy; }
 	bool GetLeft( )							{ return m_HasLeft; }
 	bool GetAFKMarked( )						{ return m_AFKMarked; }
 	bool GetSafeDrop( )						{ return m_SafeDrop; }
@@ -319,7 +317,6 @@ public:
 	void SetCLetter( string nCLetter )							{ m_CLetter = nCLetter; }
     void SetCountry( string nCountry )                                                      { m_Country = nCountry; }
     void SetSilence( bool nSilence )                                                                                { m_Silence = nSilence; }
-	void SetForcedGproxy( bool nForcedGproxy )									{ m_ForcedGproxy = nForcedGproxy; }
 	void SetLeft( bool nHasLeft )											{ m_HasLeft = nHasLeft; }
 	void SetAFKMarked( bool nAFKMarked )										{ m_AFKMarked = nAFKMarked; }
 	void SetSafeDrop( bool nSafeDrop )										{ m_SafeDrop = nSafeDrop; }

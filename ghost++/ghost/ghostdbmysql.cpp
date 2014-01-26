@@ -276,6 +276,20 @@ CCallableFlameList *CGHostDBMySQL :: ThreadedFlameList( )
         return Callable;
 }
 
+CCallableForcedGProxyList *CGHostDBMySQL :: ThreadedForcedGProxyList( )
+{
+        void *Connection = GetIdleConnection( );
+
+        if( !Connection )
+                ++m_NumConnections;
+
+        CCallableForcedGProxyList *Callable = new CMySQLCallableForcedGProxyList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+        CreateThread( Callable );
+        ++m_OutstandingCallables;
+        m_Name.push_back( "flame" );
+        return Callable;
+}
+
 CCallableAliasList *CGHostDBMySQL :: ThreadedAliasList( )
 {
         void *Connection = GetIdleConnection( );
@@ -1235,6 +1249,40 @@ vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid )
         }
 
         return FlameList;
+}
+
+vector<string> MySQLForcedGProxyList( void *conn, string *error, uint32_t botid )
+{
+        vector<string> ForcedGProxyList;
+        string Query = "SELECT `player`, `ip` FROM oh_gproxy;";
+
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+        else
+        {
+                MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+                if( Result )
+                {
+                        vector<string> Row = MySQLFetchRow( Result );
+
+                        while( !Row.empty( ) )
+                        {
+                            if(! Row[0].empty( ) )
+                                ForcedGProxyList.push_back( Row[0] );
+                            if(! Row[1].empty( ) )
+                                ForcedGProxyList.push_back( Row[1] );
+
+                            Row = MySQLFetchRow( Result );
+                        }
+
+                        mysql_free_result( Result );
+                }
+                else
+                        *error = mysql_error( (MYSQL *)conn );
+        }
+
+        return ForcedGProxyList;
 }
 
 vector<string> MySQLAliasList( void *conn, string *error, uint32_t botid )
@@ -2227,12 +2275,12 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         else if( EscMonth.empty() && EscYear.empty())
             Condition += "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
         else if( EscMonth == "0" && EscYear == "0" && alias == 0 )
-            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide`, `country`, `country_code`, `ingame_role` FROM oh_stats WHERE `player_lower` = '" + EscName + "';";
+            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `hide`, `country`, `country_code`, `ingame_role` FROM oh_stats WHERE `player_lower` = '" + EscName + "';";
         else if( EscMonth == "0" && EscYear == "0" && alias != 0 )
-            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `forced_gproxy`, `hide`, `country`, `country_code`, `ingame_role` FROM oh_stats WHERE `player_lower` = '" + EscName + "' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
+            Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `hide`, `country`, `country_code`, `ingame_role` FROM oh_stats WHERE `player_lower` = '" + EscName + "' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
    
         if( Query.empty() )
-            Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `forced_gproxy`, `hide`, `country`, `country_code`, `ingame_role` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
+            Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `hide`, `country`, `country_code`, `ingame_role` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
         
         
         
@@ -2246,7 +2294,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 {
                         vector<string> Row = MySQLFetchRow( Result );
 
-                        if( Row.size( ) == 28 )
+                        if( Row.size( ) == 27 )
                         {
                                 uint32_t id = UTIL_ToUInt32( Row[0] );
                                 string player = Row[1];
@@ -2269,31 +2317,30 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                                 uint32_t losingstreak = UTIL_ToUInt32( Row[18] );
                                 uint32_t maxlosingstreak = UTIL_ToUInt32( Row[19] );
                                 uint32_t zerodeaths = UTIL_ToUInt32( Row[20] );
-				string realm = Row[21];
-				uint32_t leaves = UTIL_ToUInt32( Row[22] );
-				uint32_t forcedgproxy = UTIL_ToUInt32( Row[23] );
-                                bool hiddenacc = UTIL_ToUInt32( Row[24] );
-                                string country = Row[25];
-                                string countryCode= Row[26];
-                                uint32_t role = UTIL_ToUInt32(Row[27]);
-				uint32_t allcount = 0;
-				uint32_t rankcount = 0;
-				if( score > 0 )
-				{
-                    string ALLQuery = "SELECT COUNT(*) FROM oh_stats WHERE alias_id='"+UTIL_ToString(alias)+"';";
-                    string CountQuery = "SELECT COUNT(*) FROM oh_stats WHERE score > '"+UTIL_ToString(score, 0)+"' AND alias_id='"+UTIL_ToString(alias)+"';";
-        				if( mysql_real_query( (MYSQL *)conn, ALLQuery.c_str( ), ALLQuery.size( ) ) != 0 )
-                				*error = mysql_error( (MYSQL *)conn );
-        				else
-        				{
-                				MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
-				                if( Result )
-				                {
-                        				vector<string> Row = MySQLFetchRow( Result );
-				                        if( Row.size( ) == 1 )
-								allcount = UTIL_ToUInt32( Row[0] );
-						}
-					}
+                                string realm = Row[21];
+                                uint32_t leaves = UTIL_ToUInt32( Row[22] );
+                                bool hiddenacc = UTIL_ToUInt32( Row[23] );
+                                string country = Row[24];
+                                string countryCode= Row[25];
+                                uint32_t role = UTIL_ToUInt32(Row[26]);
+                                uint32_t allcount = 0;
+                                uint32_t rankcount = 0;
+                                if( score > 0 )
+                                {
+                                    string ALLQuery = "SELECT COUNT(*) FROM oh_stats WHERE alias_id='"+UTIL_ToString(alias)+"';";
+                                    string CountQuery = "SELECT COUNT(*) FROM oh_stats WHERE score > '"+UTIL_ToString(score, 0)+"' AND alias_id='"+UTIL_ToString(alias)+"';";
+                                        if( mysql_real_query( (MYSQL *)conn, ALLQuery.c_str( ), ALLQuery.size( ) ) != 0 )
+                                                *error = mysql_error( (MYSQL *)conn );
+                                        else
+                                        {
+                                                MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+                                                if( Result )
+                                                {
+                                                        vector<string> Row = MySQLFetchRow( Result );
+                                                        if( Row.size( ) == 1 )
+                                                    allcount = UTIL_ToUInt32( Row[0] );
+                                            }
+                                        }
                                         if( mysql_real_query( (MYSQL *)conn, CountQuery.c_str( ), CountQuery.size( ) ) != 0 )
                                                 *error = mysql_error( (MYSQL *)conn );
                                         else
@@ -2306,11 +2353,11 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                                                                 rankcount = UTIL_ToUInt32( Row[0] );
                                                 }
                                         }
-				}
-                                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, forcedgproxy, hiddenacc, country, countryCode, role );
+                                }
+                                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, role );
                         }
                         //else
-                        //        *error = "error checking statsplayersummary [" + name + "] - row doesn't have 27 columns";
+                        //        *error = "error checking statsplayersummary [" + name + "] - row doesn't have 26 columns";
 
                         mysql_free_result( Result );
                 }
@@ -2798,6 +2845,17 @@ void CMySQLCallableFlameList :: operator( )( )
 
         Close( );
 }
+
+void CMySQLCallableForcedGProxyList :: operator( )( )
+{
+        Init( );
+
+        if( m_Error.empty( ) )
+                m_Result = MySQLForcedGProxyList( m_Connection, &m_Error, m_SQLBotID );
+
+        Close( );
+}
+
 
 void CMySQLCallableAliasList :: operator( )( )
 {

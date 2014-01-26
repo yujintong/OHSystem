@@ -449,7 +449,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                                 Player->SetGames( StatsPlayerSummary->GetGames( ) );
                                         }
                                         Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
-                                        Player->SetForcedGproxy( StatsPlayerSummary->GetForcedGproxy( ) );
                                         Player->SetScore( StatsPlayerSummary->GetScore());
                                         Player->SetCountry( StatsPlayerSummary->GetCountry());
                                         Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
@@ -2080,7 +2079,7 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are currently unable to join the game." ) );
     if(1==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), ">>>>>> You are banned! <<<<<<" ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "   >>>>>> You are banned! <<<<<<" ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Name:      " + Ban->GetName() + "@" + Ban->GetServer()) );
         string Remain = "";
         if( Ban->GetMonths() != "0" && Ban->GetMonths() != "" )
@@ -2771,7 +2770,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
 
-        if( !TempPlayer->GetGProxy( ) && TempPlayer->GetForcedGproxy( ) )
+        if( !TempPlayer->GetGProxy( ) && ( m_GHost->IsForcedGProxy(joinPlayer->GetName( )) || m_GHost->IsForcedGProxy(potential->GetExternalIPString( )) ) )
         {
             if(m_GHost->m_AutoDenyUsers)
                 m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
