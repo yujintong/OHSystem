@@ -1209,7 +1209,7 @@ bool CGHost :: Update( long usecBlock )
         // refresh forcedgproxy list all 24 hours
         if( !m_CallableForcedGProxyList && ( GetTime( ) - m_LastGProxyListUpdate >= 86400 || m_LastGProxyListUpdate == 0 ) )
         {
-            m_CallableForcedGProxyList = m_DB->ThreadedAliasList( );
+            m_CallableForcedGProxyList = m_DB->ThreadedForcedGProxyList( );
             m_LastGProxyListUpdate = GetTime( );
         }
 
@@ -2197,9 +2197,10 @@ bool CGHost :: IsForcedGProxy( string input ) {
 
     for( vector<string> :: iterator i = m_GProxyList.begin( ); i != m_GProxyList.end( ); ++i )
     {
-        if( *i[0] == ':' )
+        string BanIP = *i;
+        if( BanIP[0] == ':' )
         {
-            string BanIP = *i.substr( 1 );
+            BanIP = BanIP.substr( 1 );
             int len = BanIP.length( );
 
             if( input.length( ) >= len && input.substr( 0, len ) == BanIP )
