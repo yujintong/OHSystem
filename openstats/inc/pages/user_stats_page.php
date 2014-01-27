@@ -607,16 +607,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   "pp" => '1',
 		   "admin" => $admin
             ));
-	  
-	       }
-								 
-								 
+	  					 
 			OS_AddLog($_SESSION["username"], "[os_moderator] Banned: $PlayerName ");
 		    header("location: ".OS_HOME."?u=".$uid."&mcp");
 		    die();
-		   
-		}
-		
+		 }
+		 
 		//Other players on same IP range
 		if ( !empty( $PlayerName ) ) {
 		
@@ -681,7 +677,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		      }
 		   
 		}
-		
 	}
 
 	//Hook js
