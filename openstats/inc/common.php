@@ -2337,9 +2337,10 @@ function ShowModeratorPanel( $UserData ) {
 	<h3>User IP Addresses</h3>
 	<table style="font-size:12px;">
 	 <tr>
-	   <th>Player</th>
-	   <th>IP</th>
-	   <th>Gamename</th>
+	   <th width="180">Player</th>
+	   <th width="120">IP</th>
+	   <th width="250">Gamename</th>
+	   <th>Date</th>
 	 </tr>
 	<?php
     if (!empty($UserIPAddr)) foreach ($UserIPAddr as $uip) {
@@ -2348,6 +2349,7 @@ function ShowModeratorPanel( $UserData ) {
 	  <td><a href="<?=OS_HOME?>?u=<?=$uip["name"]?>"><?=$uip["name"]?></a></td>
 	  <td><?=$uip["ip"]?></td>
 	  <td><a href="<?=OS_HOME?>?game=<?=$uip["gameid"]?>"><?=$uip["gamename"]?></a></td>
+	  <td><?=$uip["datetime"]?></td>
 	</tr>
 	<?php
     }
@@ -2360,9 +2362,10 @@ function ShowModeratorPanel( $UserData ) {
 	<h3>Shared IP</h3>
 	<table style="font-size:12px;">
 	 <tr>
-	   <th>Player</th>
-	   <th>IP</th>
-	   <th>Gamename</th>
+	   <th width="180">Player</th>
+	   <th width="120">IP</th>
+	   <th width="250">Gamename</th>
+	   <th>Date</th>
 	 </tr>
 	<?php
     if (!empty($OtherIPAddr)) foreach ($OtherIPAddr as $uip) {
@@ -2371,6 +2374,7 @@ function ShowModeratorPanel( $UserData ) {
 	  <td><a href="<?=OS_HOME?>?u=<?=$uip["name"]?>"><?=$uip["name"]?></a></td>
 	  <td><?=$uip["ip"]?></td>
 	  <td><a href="<?=OS_HOME?>?game=<?=$uip["gameid"]?>"><?=$uip["gamename"]?></a></td>
+	  <td><?=$uip["datetime"]?></td>
 	</tr>
 	<?php
     }
@@ -2385,5 +2389,4 @@ function ShowModeratorPanel( $UserData ) {
 	<?php
  
   }
-}
-?>
+}?>

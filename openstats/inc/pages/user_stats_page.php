@@ -642,7 +642,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   }
 		   
 		   //Show all user IPs
-			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, gp.gameid 
+			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, g.datetime, gp.gameid 
 			 FROM ".OSDB_GP." as gp
 			 LEFT JOIN ".OSDB_GAMES." as g on g.id = gp.gameid
 			 WHERE name = '".$PlayerName."' GROUP BY ip ORDER BY id DESC LIMIT 50");
@@ -655,14 +655,15 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 			  $UserIPAddr[$c]["name"] = $row["name"];
 			  $UserIPAddr[$c]["gameid"] = $row["gameid"];
 			  $UserIPAddr[$c]["gamename"] = $row["gamename"];
+			  $UserIPAddr[$c]["datetime"] =  date( OS_DATE_FORMAT, strtotime($row["datetime"]) );
 			  $c++;
 		      }
 			
 			
-			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, gp.gameid 
+			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, g.datetime, gp.gameid 
 			 FROM ".OSDB_GP." as gp
 			 LEFT JOIN ".OSDB_GAMES." as g on g.id = gp.gameid
-			 WHERE name!= '".$PlayerName."' AND ip LIKE '".$ip_part."%'
+			 WHERE name!= '".$PlayerName."' AND ip LIKE '".$ip_part.".%'
 			 GROUP BY gp.name ORDER BY gp.id DESC LIMIT 50");
 			 $result = $sth->execute();
 		     $OtherIPAddr = array();
@@ -673,6 +674,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 			  $OtherIPAddr[$c]["name"] = $row["name"];
 			  $OtherIPAddr[$c]["gameid"] = $row["gameid"];
 			  $OtherIPAddr[$c]["gamename"] = $row["gamename"];
+			  $OtherIPAddr[$c]["datetime"] =  date( OS_DATE_FORMAT, strtotime($row["datetime"]) );
 			  $c++;
 		      }
 		   
