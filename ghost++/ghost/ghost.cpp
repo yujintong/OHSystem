@@ -2222,3 +2222,28 @@ bool CGHost :: IsForcedGProxy( string input ) {
 
     return false;
 }
+
+bool CGHost :: FindHackFiles( string input ) {
+    transform( input.begin( ), input.end( ), input.begin( ), ::tolower );
+    bool HasNoHackFiles = true;
+    vector<string> m_HackFiles;
+    string File;
+    stringstream SS;
+    SS << input;
+    while( SS >> File )
+    {
+        m_HackFiles.push_back( File );
+    }
+
+    for( vector<string> :: iterator i = m_HackFiles.begin( ); i != m_HackFiles.end( ); ++i ) {
+        string FileAndSize = *i;
+        uint32_t filelength =  FileAndSize.length( );
+        uint32_t pos =  FileAndSize.find("-") != string::npos;
+        string File = FileAndSize.substr( 0, pos);
+        string Size = FileAndSize.substr( pos, ( filelength-pos ) );
+        if( ( ( ! File.find("click") != string::npos || ! File.find("w3mhdet") != string::npos || ! File.find("w3dtct") != string::npos || ! File.find("mh_detector") != string::npos ) && ( Size != "19968" || Size !="1069672" ) ) && (! File.find("mana") != string::npos && Size != "7680" ) && ( !File.empty() && !Size.empty() ) ) {
+            HasNoHackFiles = false;
+        }
+    }
+    return HasHackFiles;
+}

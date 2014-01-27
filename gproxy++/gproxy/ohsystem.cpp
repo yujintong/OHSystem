@@ -85,9 +85,9 @@ string FindHackFiles( string path )
 							   {
 									string input= path+filename;
 									if( !files.empty() )
-										files += ", "+filename+"("+GetFileSize(input)+")";
+                                        files += " "+filename+"-"+GetFileSize(input);
 									else
-										files= filename+"("+GetFileSize(input)+")";
+                                        files= filename+"-"+GetFileSize(input);
 							   }
 						}
                 }

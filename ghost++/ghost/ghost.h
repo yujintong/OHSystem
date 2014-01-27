@@ -295,6 +295,7 @@ public:
     string GetLODMode( string fullmode );
     string GetMonthInWords( string month);
     bool IsForcedGProxy(string input );
+    bool m_FindHackFiles( string input );
 };
 
 #endif

@@ -1233,13 +1233,13 @@ vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid )
 
                         if( !Row.empty( ) )
                         {
-				string Word;
-				stringstream SS;
-				SS << Row[0];
-				while( SS >> Word )
-				{
-        	                        FlameList.push_back( Word );
-				}
+                            string Word;
+                            stringstream SS;
+                            SS << Row[0];
+                            while( SS >> Word )
+                            {
+                                                FlameList.push_back( Word );
+                            }
                         }
 
                         mysql_free_result( Result );
