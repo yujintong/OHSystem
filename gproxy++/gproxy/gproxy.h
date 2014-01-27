@@ -141,7 +141,6 @@ public:
 	string m_HostName;
 	bool m_SendInfo;
 
-	//some chev variables
 	string ProtectPassword;
 
 	CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, string protectPassword );

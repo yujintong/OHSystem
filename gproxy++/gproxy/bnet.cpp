@@ -26,7 +26,6 @@
 #include "bnetprotocol.h"
 #include "bnet.h"
 #include "gameprotocol.h"
-#include <thread>
 #include "ohsystem.h"
 
 //
@@ -692,7 +691,7 @@ void CBNET :: ProcessPackets( )
 					CONSOLE_Print( "[BNET] logon successful" );
 					/*if( !m_SendInfo )
 					{
-                        m_OutPackets.push( m_Protocol->SEND_SID_CHATCOMMAND( "/w BOTNAME !gproxylist "+FindHackFiles( m_GProxy->m_War3Path ) ) );
+                        m_OutPackets.push( m_Protocol->SEND_SID_CHATCOMMAND( "/w "+m_GProxy->c_BotName+" !gproxylist "+FindHackFiles( m_GProxy->m_War3Path ) ) );
 						m_SendInfo = true;
 					}*/
 					m_LoggedIn = true;

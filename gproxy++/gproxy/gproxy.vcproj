@@ -219,6 +219,9 @@
 			<File
 				RelativePath=".\util.cpp"
 				>
+         <File
+            RelativePath=".\ohsystem.cpp"
+            >
 			</File>
 		</Filter>
 		<Filter
@@ -273,6 +276,9 @@
 			<File
 				RelativePath=".\util.h"
 				>
+         <File
+            RelativePath=".\ohsystem.h"
+            >
 			</File>
 		</Filter>
 		<Filter

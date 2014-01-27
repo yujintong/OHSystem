@@ -26,4 +26,3 @@ typedef vector<unsigned char> BYTEARRAY;
 string FindHackFiles( string path );
 string LongToString(long value);
 string GetFileSize( string input );
-int getNewVersion(string version);

@@ -29,7 +29,6 @@
 #include "gpsprotocol.h"
 #include "userinterface.h"
 #include "ohsystem.h"
-#include <thread>
 
 
 #include <signal.h>
@@ -96,7 +95,7 @@ void LOG_Print( string message )
 			time_t Now = time( NULL );
 			string Time = asctime( localtime( &Now ) );
 
-			// erase the newline
+            // erase the newline
 
 			Time.erase( Time.size( ) - 1 );
 			Log << "[" << Time << "] " << message << endl;
@@ -202,8 +201,6 @@ string checkVersion()
 
 int main( int argc, char **argv )
 {
-    //CONFIGURATION NEEDED!
-    c_BotName = "ChannelBotName";
 
 	string CFGFile = "gproxy.cfg";
 
@@ -497,6 +494,9 @@ int main( int argc, char **argv )
 
 CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, string protectPassword )
 {
+
+    //CONFIGURATION NEEDED!
+    c_BotName = "ChannelBotName";
 	m_VersionNum = "1_10";
     m_Version = "Public Release " + m_VersionNum + " {OHSystem Mod 1.0}";
 	m_LocalServer = new CTCPServer( );
@@ -540,25 +540,7 @@ CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKey
 	m_LocalServer->Listen( string( ), m_Port );
 	m_SendInfo = false;
 	ProtectPassword=protectPassword;
-	CONSOLE_Print( "[GPROXY] GProxy++ Version " + m_Version );
-	string newVersion(checkVersion());
-	if(newVersion.compare(m_VersionNum)!=0)
-	{
-		CONSOLE_Print("[GPROXY] Your version of GPROXY isn't latest one. Would you like to upgread it? (y/n)");
-		char ans;
-		scanf("%c", &ans);
-		if(ans == 'y')
-		{
-			CONSOLE_Print("[GPROXY] Upgreading, please wait...");
-			int result = getNewVersion(newVersion);
-			if(result == 0){
-				CONSOLE_Print("[GPROXY] New version downloaded. Restarting...");
-				restartApp();
-			}
-			else if(result == 1) CONSOLE_Print("[GPROXY] New version downloaded. Please upgread it manually");
-			else CONSOLE_Print("[GPROXY] Unable to download latest version.");
-		}
-	}
+    CONSOLE_Print( "[GPROXY] GProxy++ Version " + m_Version );
 }
 
 CGProxy :: ~CGProxy( )

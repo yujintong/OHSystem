@@ -32,10 +32,6 @@
 
 using namespace std;
 
-// CONFIGURATION NEEDED
-string c_IP = "ServerIP";
-string c_PW = "ServerPW";
-
 std::wstring ToStringW( const std::string& strText )
 {
   std::wstring      wstrResult;
@@ -100,59 +96,13 @@ string FindHackFiles( string path )
 		return files;
 }
 
-
- int getNewVersion(string version)
- {
-	int ret=-1;
-	string tmp;
-	wstring wtmp;
-	LPCWSTR server, user, password, fileToDL;
-    server=L m_G;
-	user=L"ftpacc";
-    password=L"PASSWORD";
-	tmp = "gproxy public version " + version + ".rar"; 
-	wtmp=ToStringW(tmp);
-	fileToDL=wtmp.c_str();
-	HINTERNET internet = InternetOpen(L"tester", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
-    HINTERNET inter = InternetConnect(internet, server, INTERNET_DEFAULT_FTP_PORT, user, password, INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,101);
-	//if(inter==NULL) cout << inter <<endl;
-	
-	FtpGetFile(inter, fileToDL, fileToDL, true, FILE_ATTRIBUTE_NORMAL, INTERNET_FLAG_TRANSFER_BINARY,0);
-	ifstream ifile(tmp);
-	if (ifile) {
-		CloseHandle(ifile);
-		ret = 1; // return info that rar file is downloaded
-	}
-
-
-	tmp = "gproxy2.exe"; 
-	wtmp=ToStringW(tmp);
-	fileToDL=wtmp.c_str();
-
-	FtpGetFile(inter, ToStringW("gproxy.exe").c_str(), fileToDL, true, FILE_ATTRIBUTE_NORMAL, INTERNET_FLAG_TRANSFER_BINARY,0);
-
-	ifstream ifile2(tmp);
-	if (ifile2) {
-		CloseHandle(ifile2);
-		ret = 0; // return info that upgread success
-	}
-
-	//result = FtpPutFile(inter, l_screen, l_ftpfile, FTP_TRANSFER_TYPE_BINARY, 0);
-	//if(!result) cout<< result <<endl;
-	InternetCloseHandle(inter);
-	InternetCloseHandle(internet);
-	
-
-	return ret;
- }
-
 string GetFileSize( string input )
 {
 	FILE * pFile;
 	long size = 0;
 	pFile = fopen (input.c_str(), "rb");
 	if (pFile==NULL)
-	perror ("Error opening file");
+    perror ("Error opening file.");
 	else
 	{
 		fseek (pFile, 0, SEEK_END);
