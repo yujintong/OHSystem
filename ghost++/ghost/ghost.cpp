@@ -2245,5 +2245,5 @@ bool CGHost :: FindHackFiles( string input ) {
             HasNoHackFiles = false;
         }
     }
-    return HasHackFiles;
+    return HasNoHackFiles;
 }
