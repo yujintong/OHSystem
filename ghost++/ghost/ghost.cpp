@@ -2241,7 +2241,7 @@ bool CGHost :: FindHackFiles( string input ) {
         uint32_t pos =  FileAndSize.find("-") != string::npos;
         string File = FileAndSize.substr( 0, pos);
         string Size = FileAndSize.substr( pos, ( filelength-pos ) );
-        if( ( ( ! File.find("click") != string::npos || ! File.find("w3mhdet") != string::npos || ! File.find("w3dtct") != string::npos || ! File.find("mh_detector") != string::npos ) && ( Size != "19968" || Size !="1069672" ) ) && (! File.find("mana") != string::npos && Size != "7680" ) && ( !File.empty() && !Size.empty() ) ) {
+        if( Size != "19968" && Size !="1069672" && Size != "7680" && !Size.empty() ) {
             HasNoHackFiles = false;
         }
     }
