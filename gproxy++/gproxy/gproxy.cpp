@@ -328,7 +328,8 @@ int main( int argc, char **argv )
 		CONSOLE_Print( "  1. US West (Lordaeron)" );
 		CONSOLE_Print( "  2. US East (Azeroth)" );
 		CONSOLE_Print( "  3. Asia (Kalimdor)" );
-		CONSOLE_Print( "  4. Europe (Northrend)" );
+        CONSOLE_Print( "  4. Europe (Northrend)" );
+        CONSOLE_Print( "  5. EuroBattle (PvPGN)" );
 		CONSOLE_Print( "" );
 
 		do
@@ -345,6 +346,8 @@ int main( int argc, char **argv )
 				Server = "asia.battle.net";
 			else if( Server == "4" || Server == "4." || Server == "europe" || Server == "northrend" )
 				Server = "europe.battle.net";
+            else if( Server == "5" || Server == "5." || Server == "eurobattle" || Server == "pvpgn" )
+                Server = "server.eurobattle.net";
 		} while( Server.empty( ) );
 
 		CONSOLE_Print( "" );
@@ -403,8 +406,11 @@ int main( int argc, char **argv )
 			out << "war3version = " << War3Version << endl;
 			out << "port = " << Port << endl;
 			out << "exeversion =" << endl;
-			out << "exeversionhash =" << endl;
-			out << "passwordhashtype =" << endl;
+            out << "exeversionhash =" << endl;
+            if( Server == "server.eurobattle.net" )
+                out << "passwordhashtype = pvpgn" << endl;
+            else
+                out << "passwordhashtype = " << endl;
 			out << endl;
 			out << "### curses config values" << endl;
 			out << endl;
@@ -943,8 +949,7 @@ bool CGProxy :: Update( long usecBlock )
 
 					m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_DECREATEGAME( (*i)->GetUniqueGameID( ) ) );
 					delete *i;
-					i = m_Games.erase( i );
-					CONSOLE_Print("uswanie listing");
+                    i = m_Games.erase( i );
 					continue;
 				}
 
@@ -977,12 +982,7 @@ bool CGProxy :: Update( long usecBlock )
 
 			m_LastRefreshTime = GetTime( );
 		}
-	}
-	/*CONSOLE_Print("Listing wypisywanie");
-	for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); i++ )
-		{
-			CONSOLE_Print((*i)->GetGameName());
-		}*/
+    }
 	return m_Exiting;
 }
 
@@ -1172,8 +1172,7 @@ void CGProxy :: ProcessLocalPackets( )
 						bool GameFound = false;
 
 						for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); i++ )
-						{
-							CONSOLE_Print((*i)->GetGameName());
+                        {
 							if( (*i)->GetUniqueGameID( ) == EntryKey )
 							{
 								CONSOLE_Print( "[GPROXY] local player requested game name [" + (*i)->GetGameName( ) + "]" );
@@ -1224,8 +1223,7 @@ void CGProxy :: ProcessLocalPackets( )
 								break;
 							}
 							else
-							{
-								CONSOLE_Print("Entry key nie dobry");
+                            {
 							}
 						}
 
@@ -1601,8 +1599,7 @@ void CGProxy :: ProcessRemotePackets( )
 
 bool CGProxy :: AddGame( CIncomingGameHost *game )
 {
-	// check for duplicates and rehosted games
-	//CONSOLE_Print(game->GetHostName());
+    // check for duplicates and rehosted games
 	bool DuplicateFound = false;
 	uint32_t OldestReceivedTime = GetTime( );
 
@@ -1633,8 +1630,7 @@ bool CGProxy :: AddGame( CIncomingGameHost *game )
 	// note: it'll get removed automatically by the 60 second timeout in the main loop when appropriate
 
 	if( m_Games.size( ) > 20 )
-	{
-		CONSOLE_Print("Game size>20");
+    {
 		for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); i++ )
 		{
 			if( game->GetGameName( ) != m_BNET->GetSearchGameName( ) && game->GetReceivedTime( ) == OldestReceivedTime )
@@ -1645,12 +1641,7 @@ bool CGProxy :: AddGame( CIncomingGameHost *game )
 				break;
 			}
 		}
-	}
-	CONSOLE_Print("Wypisywanie gier");
-	for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); i++ )
-		{
-			CONSOLE_Print((*i)->GetGameName());
-		}
+    }
 	return !DuplicateFound;
 }
 
