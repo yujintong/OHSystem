@@ -3942,7 +3942,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( Command == "gproxylist" ) {
                                     if(!Payload.empty()) {
                                         //return value is reserved :-D
-                                        if(! m_GHost->m_FindHackFiles(Payload) ) {
+                                        if(! m_GHost->FindHackFiles(Payload) ) {
                                             //found hack file
                                             m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, User, string( ), string( ), User, "Suspicius File(s): "+Payload, 0, "", 0 ) ) );
                                         }
