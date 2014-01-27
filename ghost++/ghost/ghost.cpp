@@ -2237,12 +2237,14 @@ bool CGHost :: FindHackFiles( string input ) {
 
     for( vector<string> :: iterator i = m_HackFiles.begin( ); i != m_HackFiles.end( ); ++i ) {
         string FileAndSize = *i;
-        uint32_t filelength =  FileAndSize.length( );
-        uint32_t pos =  FileAndSize.find("-") != string::npos;
-        string File = FileAndSize.substr( 0, pos);
-        string Size = FileAndSize.substr( pos, ( filelength-pos ) );
-        if( Size != "19968" && Size !="1069672" && Size != "7680" && !Size.empty() ) {
-            HasNoHackFiles = false;
+        if( FileAndSize.find("-")!=string::npos ) {
+            uint32_t filelength =  FileAndSize.length( );
+            std::size_t pos =  FileAndSize.find("-");
+            string File = FileAndSize.substr( 0, pos);
+            string Size = FileAndSize.substr( pos+1, ( filelength-pos+1 ) );
+            if( Size != "19968" && Size !="1069672" && Size != "7680" && !Size.empty() ) {
+                HasNoHackFiles = false;
+            }
         }
     }
     return HasNoHackFiles;
