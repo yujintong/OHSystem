@@ -342,6 +342,25 @@ if ($BanIPUpdate == 1) {
 	   $result = $sth->execute();  
       }
    }
+   
+   
+	//REMOVE EXPIRED PP
+	if ($PPExpireDays>=1) {
+	$sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GO." WHERE offence_time<=NOW() - INTERVAL $PPExpireDays DAY");
+	$result = $sth->execute();
+	$r = $sth->fetch(PDO::FETCH_NUM);
+	$Total = $r[0];
+
+   	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND $Total>=1 ) {
+	   $sth = $db->prepare("DELETE FROM ".OSDB_GO." WHERE offence_time<=NOW() - INTERVAL $PPExpireDays DAY");
+	   $result = $sth->execute();
+       $cron_data = 'DAEMON: Expired PP <b>'.$Total.'</b>';
+	   $sth = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	   $result = $sth->execute();  
+    }
+	
+	}
  
  
    

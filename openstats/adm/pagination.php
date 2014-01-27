@@ -36,6 +36,7 @@ if ( isset($_GET["country"]) ) $prefix.="&amp;country=".substr($_GET["country"],
 
 if ( isset($_GET["player"]) ) $prefix.="&amp;player=".($_GET["player"]);
 if ( isset($_GET["realm"]) ) $prefix.="&amp;realm=".($_GET["realm"]);
+if ( isset($_GET["gproxy"]) ) $prefix.="?gproxy";
 
 if ( isset($_GET["show"]) ) {
    if ($_GET["show"] == "unparsed") $prefix.="&amp;show=unparsed";

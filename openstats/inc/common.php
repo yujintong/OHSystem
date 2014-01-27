@@ -2212,4 +2212,14 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
  </select>
  <?php
 }
+
+function OS_AdminTools( $userID = "", $PlayerName = "" ) {
+  if ( OS_is_admin() ) {
+  ?>
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;add=<?=$PlayerName?>" target="_blank">Ban User</a> 
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?pp&amp;addpp=<?=$PlayerName?>" target="_blank">Add PP</a>
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;player=<?=$PlayerName?>&amp;show=ips" target="_blank">All IPs</a>
+  <?php  
+  }
+}
 ?>

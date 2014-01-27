@@ -28,7 +28,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
     <td  class="padLeft">
 	<?=$User["realm"]?>
 	</td>
-	<td>
+	<td style="font-size:12px; text-align:right">
+	<?=OS_AdminTools($User["id"], $User["player"])?>
 	</td>
    </tr>
    <?php if (isset($User["OtherStats"]) ) { ?>

@@ -344,6 +344,18 @@ CREATE TABLE IF NOT EXISTS `oh_geoip` (
   KEY `ip_integer` (`ip_start_int`,`ip_end_int`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `oh_gproxy`;
+CREATE TABLE IF NOT EXISTS `oh_gproxy` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player` varchar(30) NOT NULL,
+  `ip` varchar(20) NOT NULL,
+  `added` datetime NOT NULL,
+  `added_by` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `player` (`player`),
+  KEY `ip` (`ip`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `oh_heroes`;
 CREATE TABLE IF NOT EXISTS `oh_heroes` (
   `heroid` varchar(4) NOT NULL,

@@ -23,7 +23,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	</ul>
   </li>
   <li><a href="<?=OS_HOME?>adm/?games">Games</a></li>
-  <li><a href="<?=OS_HOME?>adm/?players">Players</a></li>
+  <li>
+  <a href="<?=OS_HOME?>adm/?players">Players</a>
+  <ul>
+    <li><a href="<?=OS_HOME?>adm/?players">All Players</a></li>
+    <li><a href="<?=OS_HOME?>adm/?gproxy">GProxy Players</a></li>
+  </ul>
+  </li>
   <li><a href="<?=OS_HOME?>adm/?posts">Posts</a></li>
   <li><a href="<?=OS_HOME?>adm/?comments">Comments</a></li>
   <li><a href="<?=OS_HOME?>adm/?users">Members</a></li>
