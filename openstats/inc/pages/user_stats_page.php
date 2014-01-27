@@ -78,6 +78,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserAliasID = ($row["alias_id"]);
 	
 	$PlayerName = $UserData[$c]["player"];
+	$UserData[$c]["banid"]  = ($rowban["id"]);
 	$UserData[$c]["banname"]  = ($rowban["name"]);
 	$UserData[$c]["bandate"]  = date($DateFormat, strtotime($rowban["date"]));
 	$UserData[$c]["bandate_raw"]  = ($rowban["date"]);
@@ -124,13 +125,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 	
 	$UserData[$c]["hide"]  = ($row["hide"]);
-	if ( os_is_logged() AND $_SESSION["level"]>=9 AND $row["hide"] == 1 ) {
+	if ( os_is_logged() AND $_SESSION["level"]>=7 AND $row["hide"] == 1 ) {
 	$UserData[$c]["hide"] = 0;
 	$UserData[$c]["admin_info"] = 1;
 	}
 	
 	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
-	
 	$UserData[$c]["GameAdmin"]  = ($row["user_level"]);
 	
 	//Don't show ban on safelisted user, because they are not really banned!
@@ -555,6 +555,133 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 //$GameAliases[$c]["selected"] = 'selected="selected"'; 
 	 
 	 $c++;
+	}
+	
+	//MODERATE USER
+	if ( os_is_logged() AND $_SESSION["level"]>=5 AND isset($_GET["mcp"]) ) {
+	  
+	    $uid = safeEscape( (int) $_GET["u"] );
+	    $HomeTitle.=" :: Moderator Control Panel";
+		
+		//REMOVE BAN
+		if ( isset($_GET["rban"]) AND is_numeric($_GET["rban"]) ) {
+		
+		$upd = $db->prepare("DELETE FROM ".OSDB_BANS." WHERE id='".(int)$_GET["rban"]."' ");
+	    $result = $upd->execute();
+		OS_AddLog($_SESSION["username"], "[os_moderator] Removed Ban: $PlayerName ");
+		header("location: ".OS_HOME."?u=".$uid."&mcp");
+		die();
+		}
+		
+		//ADD BAN
+		if ( isset($_POST["add_ban"]) AND !empty($PlayerName) ) {
+		 
+		   $expire = strip_tags($_POST["expire"]);
+		   $reason = strip_tags($_POST["reason"]);
+		   $game = strip_tags($_POST["game"]);
+		   $country = $UserData[0]["letter"];
+		   $realm   = $UserData[0]["realm"];
+		   $ip      = $UserData[0]["ip"];
+		   $ip_part = OS_GetIpRange( $ip );
+		   $admin = $_SESSION["username"];
+		   $time = date("Y-m-d H:i:s", time() );
+		   
+		   $db->insert( OSDB_BANS, array(
+		   "name" => $PlayerName,
+		   "server" => $realm,
+		   "reason" => $reason,
+		   "ip" => $ip,
+		   "ip_part" => $ip_part,
+		   "admin" => $admin,
+		   "gamename" => $game,
+		   "date" => $time,
+		   "expiredate" => $expire,
+		   "country" => $country
+             ));
+		   
+		   $db->insert( OSDB_GO, array(
+		   "player_name" => $PlayerName,
+		   "reason" => $reason,
+		   "offence_time" => $time,
+		   "offence_expire" => '0000-00-00 00:00:00',
+		   "pp" => '1',
+		   "admin" => $admin
+            ));
+	  
+	       }
+								 
+								 
+			OS_AddLog($_SESSION["username"], "[os_moderator] Banned: $PlayerName ");
+		    header("location: ".OS_HOME."?u=".$uid."&mcp");
+		    die();
+		   
+		}
+		
+		//Other players on same IP range
+		if ( !empty( $PlayerName ) ) {
+		
+		   $ip      = $UserData[0]["ip"];
+		   $ip_part = OS_GetIpRange( $ip );
+		   
+		   $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE ip_part LIKE '".$ip_part."' LIMIT 50");
+		   $result = $sth->execute();
+		   $UserIPRange = array();
+	       $c = 0;
+	       while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+		    $UserIPRange[$c]["id"] = $row["id"];
+			$UserIPRange[$c]["name"] = $row["name"];
+			$UserIPRange[$c]["ip"] = $row["ip"];
+			$UserIPRange[$c]["ip_part"] = $row["ip_part"];
+			$UserIPRange[$c]["country"] = $row["country"];
+			$UserIPRange[$c]["date"] = date( OS_DATE_FORMAT, strtotime($row["date"]));
+			$UserIPRange[$c]["admin"] = $row["admin"];
+			$UserIPRange[$c]["gamename"] = $row["gamename"];
+			$UserIPRange[$c]["reason"] = $row["reason"];
+			$UserIPRange[$c]["expiredate"] = date( OS_DATE_FORMAT, strtotime($row["expiredate"]));
+			
+			if(empty($row["expiredate"]) OR $row["expiredate"] == "0000-00-00 00:00:00")
+			$UserIPRange[$c]["expiredate"] = '<span class="perm_ban">Permanent</span>';
+			
+			$c++;
+		   }
+		   
+		   //Show all user IPs
+			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, gp.gameid 
+			 FROM ".OSDB_GP." as gp
+			 LEFT JOIN ".OSDB_GAMES." as g on g.id = gp.gameid
+			 WHERE name = '".$PlayerName."' GROUP BY ip ORDER BY id DESC LIMIT 50");
+			 $result = $sth->execute();
+		     $UserIPAddr = array();
+	         $c = 0;
+	          while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+		      $UserIPAddr[$c]["id"] = $row["id"];
+			  $UserIPAddr[$c]["ip"] = $row["ip"];
+			  $UserIPAddr[$c]["name"] = $row["name"];
+			  $UserIPAddr[$c]["gameid"] = $row["gameid"];
+			  $UserIPAddr[$c]["gamename"] = $row["gamename"];
+			  $c++;
+		      }
+			
+			
+			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, gp.gameid 
+			 FROM ".OSDB_GP." as gp
+			 LEFT JOIN ".OSDB_GAMES." as g on g.id = gp.gameid
+			 WHERE name!= '".$PlayerName."' AND ip LIKE '".$ip_part."%'
+			 GROUP BY gp.name ORDER BY gp.id DESC LIMIT 50");
+			 $result = $sth->execute();
+		     $OtherIPAddr = array();
+	         $c = 0;
+	          while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+		      $OtherIPAddr[$c]["id"] = $row["id"];
+			  $OtherIPAddr[$c]["ip"] = $row["ip"];
+			  $OtherIPAddr[$c]["name"] = $row["name"];
+			  $OtherIPAddr[$c]["gameid"] = $row["gameid"];
+			  $OtherIPAddr[$c]["gamename"] = $row["gamename"];
+			  $c++;
+		      }
+		   
+		}
+		
 	}
 
 	//Hook js
