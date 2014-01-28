@@ -283,7 +283,7 @@ public:
 	virtual void SendAllActions( );
 	virtual void SendWelcomeMessage( CGamePlayer *player );
 	virtual void SendEndMessage( );
-    virtual void SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type );
+    virtual void SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type, bool gproxy );
 
 	// events
 	// note: these are only called while iterating through the m_Potentials or m_Players vectors
