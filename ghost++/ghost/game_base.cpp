@@ -2059,7 +2059,7 @@ void CBaseGame :: SendEndMessage( )
         }
 }
  
-void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type )
+void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type, bool gproxy )
 {
     // send slot info to the banned player
 
@@ -2098,6 +2098,8 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
             player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Game:      " + Ban->GetGameName() ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Reason:     " + Ban->GetReason( ) ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_CustomVirtualLobbyInfoBanText ) );
+        if(gproxy && Remain.empty())
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can also use our GProxy and be able to join the games!" ) );
     } else if(2==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinLimit )+"]") );
@@ -2116,10 +2118,14 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a Proxy and this is forbidden on this server." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about a vouching: "+m_GHost->m_Website ) );
+        if(gproxy)
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can also use our GProxy and be able to join the games!" ) );
     } else if(8==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a banned country." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about a vouching: "+m_GHost->m_Website ) );
+        if(gproxy)
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can also use our GProxy and be able to join the games!" ) );
     } else if(9==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are forced to use gproxy." ) );
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about your status on: "+m_GHost->m_Website ) );
@@ -2577,7 +2583,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                      potential->SetSocket( NULL );
                                      potential->SetDeleteMe( true );
                                      m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                                     SendVirtualLobbyInfo( potentialCopy, Ban, 1 );
+                                     SendVirtualLobbyInfo( potentialCopy, Ban, 1, TempPlayer->GetGProxy( ) );
                                 }
                                 return;
                         }
@@ -2616,7 +2622,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                                     potential->SetDeleteMe( true );
 
                                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                                    SendVirtualLobbyInfo( potentialCopy, IPBan, 1 );
+                                    SendVirtualLobbyInfo( potentialCopy, IPBan, 1, TempPlayer->GetGProxy( ) );
                                 }
                                 return;
                         }
@@ -2646,7 +2652,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     potential->SetDeleteMe( true );
 
                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                    SendVirtualLobbyInfo( potentialCopy, NULL, 2 );
+                    SendVirtualLobbyInfo( potentialCopy, NULL, 2, TempPlayer->GetGProxy( ) );
                     return;
                 }
                 else if( m_GHost->m_MinScoreLimit != 0 && TempPlayer->GetScore( ) < m_GHost->m_MinScoreLimit && !Reserved )
@@ -2659,7 +2665,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     potential->SetDeleteMe( true );
 
                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                    SendVirtualLobbyInfo( potentialCopy, NULL, 3 );
+                    SendVirtualLobbyInfo( potentialCopy, NULL, 3, TempPlayer->GetGProxy( ) );
                     return;
                 }
         }
@@ -2675,7 +2681,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     potential->SetDeleteMe( true );
 
                     m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                    SendVirtualLobbyInfo( potentialCopy, NULL, 4 );
+                    SendVirtualLobbyInfo( potentialCopy, NULL, 4, TempPlayer->GetGProxy( ) );
                     return;
                 }
                 else if( TempPlayer->GetGames( ) < m_GHost->m_MinVIPGames  && !Reserved )
@@ -2688,7 +2694,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                         potential->SetDeleteMe( true );
 
                         m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                        SendVirtualLobbyInfo( potentialCopy, NULL, 5 );
+                        SendVirtualLobbyInfo( potentialCopy, NULL, 5, TempPlayer->GetGProxy( ) );
                         return;
                 }
         }
@@ -2708,7 +2714,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                         potential->SetDeleteMe( true );
 
                         m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                        SendVirtualLobbyInfo( potentialCopy, NULL, 6 );
+                        SendVirtualLobbyInfo( potentialCopy, NULL, 6, TempPlayer->GetGProxy( ) );
                         return;
                 }
                 else
@@ -2736,7 +2742,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 k++;
         }
 
-        if( m_GHost->m_DenieProxy && !Reserved)
+        if( m_GHost->m_DenieProxy && !Reserved && !TempPlayer->GetGProxy( ) )
         {
                 if( CC == "a1" || CC == "a2")
                 {
@@ -2750,12 +2756,12 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                         potential->SetDeleteMe( true );
 
                         m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                        SendVirtualLobbyInfo( potentialCopy, NULL, 7 );
+                        SendVirtualLobbyInfo( potentialCopy, NULL, 7, TempPlayer->GetGProxy( ) );
                         return;
                 }
         }
 
-        if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && !Reserved )
+        if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && !Reserved && !TempPlayer->GetGProxy( ) )
         {
                 if(m_GHost->m_AutoDenyUsers)
                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );
@@ -2766,7 +2772,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 potential->SetDeleteMe( true );
 
                 m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-                SendVirtualLobbyInfo( potentialCopy, NULL, 8 );
+                SendVirtualLobbyInfo( potentialCopy, NULL, 8,TempPlayer->GetGProxy( ) );
                 return;
         }
 
@@ -2780,7 +2786,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             potential->SetDeleteMe( true );
 
             m_BannedPlayers.insert( pair<uint32_t, CPotentialPlayer*>( GetTicks( ), potentialCopy ) );
-            SendVirtualLobbyInfo( potentialCopy, NULL, 9 );
+            SendVirtualLobbyInfo( potentialCopy, NULL, 9, 0 );
             return;
         }
 
