@@ -252,6 +252,7 @@ public:
     uint32_t m_APMAllowedMinimum;
     uint32_t m_APMMaxAfkWarnings;
     string m_Website;
+    uint32_t m_DisconnectAutoBanTime;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

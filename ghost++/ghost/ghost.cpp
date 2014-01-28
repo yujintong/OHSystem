@@ -1569,7 +1569,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_FlameCheck = CFG->GetInt("oh_flamecheck", 0) == 0 ? false : true;
     m_BotManagerName = CFG->GetString( "oh_general_botmanagername", "PeaceMaker" );
     m_IngameVoteKick = CFG->GetInt("oh_ingamevotekick", 1) == 0 ? false : true;
-    m_LeaverAutoBanTime = CFG->GetInt("oh_leaverautobantime", 86400);
+    m_LeaverAutoBanTime = CFG->GetInt("oh_leaverautobantime", 259200);
+    m_DisconnectAutoBanTime = CFG->GetInt("oh_disconnectautobantime", 86400);
     m_FirstFlameBanTime = CFG->GetInt("oh_firstflamebantime", 172800 );
     m_SecondFlameBanTime = CFG->GetInt("oh_secondflamebantime", 345600);
     m_SpamBanTime = CFG->GetInt("oh_spambantime", 172800 );

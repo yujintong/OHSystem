@@ -123,7 +123,12 @@ CGame :: ~CGame( )
                                         Counter++;
                                 if( Counter <= 2 && VictimLevel <= 2 )
                                 {
-                                    string Reason = "left at ";
+                                    uint32_t BanTime = m_GHost->m_DisconnectAutoBanTime;
+                                    string Reason = "disconnected at";
+                                    if((*i)->GetLeftReason( ).find("left")!=string::npos) {
+                                        Reason = "left at ";
+                                        BanTime = m_GHost->m_LeaverAutoBanTime;
+                                    }
 
                                     if( EndTime < 300 ) {
                                         Reason += UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
@@ -139,7 +144,7 @@ CGame :: ~CGame( )
 
                                         Reason += LeftMin+":"+LeftSec + "/" + EndMin+":"+EndSec;
                                     }
-                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, m_GHost->m_LeaverAutoBanTime, "", m_GameAlias  ) );
+                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, BanTime, "", m_GameAlias  ) );
                                 }
                         }
                 }
