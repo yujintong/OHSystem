@@ -58,6 +58,7 @@ $lang["recent_news"]    = "Vergangene News";
     
 $lang["profile"]         = "Profile";  
 $lang["admin_panel"]     = "Admin Bereich";  
+$lang["moderator_panel"] = "Moderator Bereich";
 $lang["logout"]          = "Abmelden &times; ";  
 $lang["login_register"]  = "Anmelden/Registrieren";  
 $lang["login_fb_info"]   = "Klick auf den obrigen Button um sich via FB einzuloggen";  

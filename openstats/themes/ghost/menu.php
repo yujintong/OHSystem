@@ -84,6 +84,9 @@ if ( !isset($s) ) $s = $lang["search_players"];
 	 <?php if ( OS_CanAccessAdminPanel() ) { ?>
 	    <li><a href="<?=OS_HOME?>adm/"><b><?=$lang["admin_panel"]?></b></a></li>
 	    <?php } ?>
+	<?php if ( OS_is_moderator() ) { ?>
+	    <li><a href="<?=OS_HOME?>?moderator"><b><?=$lang["moderator_panel"]?></b></a></li>
+	<?php } ?>
 		 <li><a href="<?=OS_HOME?>?profile"><?=$lang["profile"]?></a></li>
 <?php if (isset($_SESSION["phpbb"]) ) { ?>
        <li><a href="<?=OS_HOME?>?logout&amp;sid=<?=$_SESSION["sid"]?>"><?=$lang["logout"]?></a></li>

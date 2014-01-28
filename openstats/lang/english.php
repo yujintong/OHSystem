@@ -54,6 +54,7 @@ $lang["recent_news"]    = "Recent News";
 
 $lang["profile"]         = "Profile";
 $lang["admin_panel"]     = "Admin Panel";
+$lang["moderator_panel"] = "Moderator Panel";
 $lang["logout"]          = "Logout &times; ";
 $lang["login_register"]  = "Login/Register";
 $lang["login_fb_info"]   = "Click on the button above to sign in with your FB account";

@@ -26,6 +26,13 @@ if ( isset($_GET["fame"]) )     $prefix.="?fame";
 if ( isset($_GET["shame"]) )     $prefix.="?shame";
 if ( isset($_GET["livegames"]) )     $prefix.="?livegames";
 
+if ( isset($_GET["moderator"]) )   {  
+  $prefix.="?moderator";
+  
+  if ( isset($_GET["option"]) ) $prefix.="&amp;option=".$_GET["option"];
+
+}
+
 if ( isset($_GET["post_id"]) ) {
   $strana = "&amp;page=";
   $prefix.="?post_id=".safeEscape((int)$_GET["post_id"]);

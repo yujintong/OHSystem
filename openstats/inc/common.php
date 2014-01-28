@@ -1241,6 +1241,7 @@ function OS_is_home_page() {
    AND !isset($_GET["guides"])
    AND !isset($_GET["action"])
    AND !isset($_GET["live_games"])
+   AND !isset($_GET["moderator"])
                             ) 
    {
     return true;
@@ -2213,8 +2214,12 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
  <?php
 }
 
+function OS_is_moderator() {
+  if ( isset($_SESSION["level"]) AND $_SESSION["level"]>=5 ) return true;
+}
+
 function OS_AdminTools( $userID = "", $PlayerName = "" ) {
-  if ( isset($_SESSION["level"]) AND $_SESSION["level"]>=5 ) {
+  if ( OS_is_moderator() ) {
   ?>
    <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$userID?>&amp;mcp">Moderator CP</a> 
   <?php
@@ -2256,6 +2261,8 @@ function ShowModeratorPanel( $UserData ) {
 	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*30 )?>">+1 month</option>
 	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*60 )?>">+2 months</option>
 	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*90 )?>">+3 months</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*180 )?>">+6 months</option>
+	   <option value="0000-00-00 00:00:00">[permanent]</option>
 	  </select>
 		
 	  </td>

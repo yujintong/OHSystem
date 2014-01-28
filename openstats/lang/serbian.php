@@ -53,6 +53,7 @@ $lang["recent_news"]    = "Poslednje vesti";
 
 $lang["profile"]         = "Profil";
 $lang["admin_panel"]     = "Admin Panel";
+$lang["moderator_panel"] = "Moderator Panel";
 $lang["logout"]          = "Odjavi se &times; ";
 $lang["login_register"]  = "Prijava/Registracija";
 $lang["login_fb_info"]   = "Klikni na dugme iznad da se prijaviš sa tvojim FB nalogom";

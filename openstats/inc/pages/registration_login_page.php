@@ -3,6 +3,12 @@
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 unset($_SESSION["email_send"]);
 $MenuClass["profile"] = "active"; 
+
+   $UserIP = $_SERVER["REMOTE_ADDR"];
+   if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+   $UserIP = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+   }
+   
 //LOGOUT
 if ( isset($_GET["logout"]) AND is_logged() ) {
   require_once(OS_PLUGINS_DIR.'index.php');
@@ -201,7 +207,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 		 "code"         =>$code,
 		 "user_joined" => time(),
 		 "user_last_login" => time(),
-		 "user_ip" => $_SERVER["REMOTE_ADDR"],
+		 "user_ip" => $UserIP,
 		 
 		 ), 
 		     "user_email = '".$email."'");
@@ -342,8 +348,8 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	include("inc/geoip/geoip.inc");
 	$GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
 	$GeoIP = 1;
-	$Letter  = geoip_country_code_by_addr($GeoIPDatabase, $_SERVER["REMOTE_ADDR"]);
-	$Country = geoip_country_name_by_addr($GeoIPDatabase, $_SERVER["REMOTE_ADDR"]);
+	$Letter  = geoip_country_code_by_addr($GeoIPDatabase, $UserIP);
+	$Country = geoip_country_name_by_addr($GeoIPDatabase, $UserIP);
 	
 	 geoip_close($GeoIPDatabase);
 	}
@@ -358,7 +364,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	"user_joined" => (int) time(),
 	"user_location" => $location,
 	"user_level" => 0,
-	"user_ip" => $_SERVER["REMOTE_ADDR"],
+	"user_ip" => $UserIP,
 	"can_comment" => 1,
 	"code" => $code
                                  ));
