@@ -25,7 +25,7 @@ endif
 
 CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I../bncsutil/src/
 
-OBJS = bncsutilinterface.o bnet.o bnetprotocol.o commandpacket.o config.o gameprotocol.o gproxy.o gpsprotocol.o socket.o util.o userinterface.o
+OBJS = bncsutilinterface.o bnet.o bnetprotocol.o commandpacket.o config.o gameprotocol.o gproxy.o gpsprotocol.o socket.o util.o userinterface.o ohsystem.o
 COBJS =
 PROGS = ./gproxy++
 
@@ -48,13 +48,14 @@ $(COBJS): %.o: %.c
 all: $(PROGS)
 
 bncsutilinterface.o: gproxy.h util.h bncsutilinterface.h
-bnet.o: gproxy.h util.h config.h socket.h commandpacket.h bncsutilinterface.h bnetprotocol.h bnet.h gameprotocol.h
+bnet.o: gproxy.h util.h config.h socket.h commandpacket.h bncsutilinterface.h bnetprotocol.h bnet.h gameprotocol.h ohsystem.h
 bnetprotocol.o: gproxy.h util.h bnetprotocol.h
 commandpacket.o: gproxy.h commandpacket.h
 config.o: gproxy.h config.h
 gameprotocol.o: gproxy.h util.h gameprotocol.h
-gproxy.o: gproxy.h util.h config.h socket.h commandpacket.h bnetprotocol.h bnet.h gameprotocol.h gpsprotocol.h
+gproxy.o: gproxy.h util.h config.h socket.h commandpacket.h bnetprotocol.h bnet.h gameprotocol.h gpsprotocol.h ohsystem.h
 gpsprotocol.o: gproxy.h util.h gpsprotocol.h
 socket.o: gproxy.h util.h socket.h
 util.o: gproxy.h util.h
 userinterface.o: gproxy.h userinterface.h
+ohsystem.o: ohsystem.h dirent.h gproxy.h bnet.h bnetprotocol.h
