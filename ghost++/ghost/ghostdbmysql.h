@@ -199,7 +199,7 @@ public:
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
     virtual CCallableDCountryList *ThreadedDCountryList( );
     virtual CCallableStoreLog *ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin );
-    virtual CCallablegs *Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype );
+    virtual CCallablegs *Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias );
     virtual CCallablepenp *Threadedpenp( string name, string reason, string admin, uint32_t amount, string type );
 	virtual CCallableBanCount *ThreadedBanCount( string server );
 	virtual CCallableBanCheck *ThreadedBanCheck( string server, string user, string ip );
@@ -251,7 +251,7 @@ vector<string> MySQLDeniedNamesList( void *conn, string *error, uint32_t botid )
 vector<string> MySQLAnnounceList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLDCountryList( void *conn, string *error, uint32_t botid );
 uint32_t MySQLStoreLog( void *conn, string *error, uint32_t botid, uint32_t chatid, string game, vector<string> admin );
-uint32_t MySQLgs( void *conn, string *error, uint32_t botid, uint32_t chatid, string gn, uint32_t st, uint32_t gametype );
+uint32_t MySQLgs( void *conn, string *error, uint32_t botid, uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias );
 uint32_t MySQLpenp( void *conn, string *error, uint32_t botid, string name, string reason, string admin, uint32_t amount, string type );
 uint32_t MySQLBanCount( void *conn, string *error, uint32_t botid, string server );
 CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server, string user, string ip );
@@ -453,7 +453,7 @@ public:
 class CMySQLCallablegs : public CCallablegs, public CMySQLCallable
 {
 public:
-        CMySQLCallablegs( uint32_t nChatID, string nGN, uint32_t nST, uint32_t nGameType, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallablegs( nChatID, nGN, nST, nGameType ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
+        CMySQLCallablegs( uint32_t nChatID, string nGN, uint32_t nST, uint32_t nGameType, uint32_t nGameAlias, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallablegs( nChatID, nGN, nST, nGameType, nGameAlias ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
         virtual ~CMySQLCallablegs( ) { }
 
         virtual void operator( )( );

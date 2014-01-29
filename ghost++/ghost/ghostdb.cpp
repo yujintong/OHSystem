@@ -330,7 +330,7 @@ CCallableStoreLog *CGHostDB :: ThreadedStoreLog( uint32_t chatid, string game, v
         return NULL;
 }
 
-CCallablegs *CGHostDB :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype )
+CCallablegs *CGHostDB :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
 {
         return NULL;
 }

@@ -157,7 +157,7 @@ public:
 	virtual CCallableAnnounceList *ThreadedAnnounceList( );
     virtual CCallableDCountryList *ThreadedDCountryList( );
     virtual CCallableStoreLog *ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin );
-    virtual CCallablegs *Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype );
+    virtual CCallablegs *Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias );
     virtual CCallablepenp *Threadedpenp( string name, string reason, string admin, uint32_t amount, string type );
     virtual CCallableBanCount *ThreadedBanCount( string server );
 	virtual CCallableBanCheck *ThreadedBanCheck( string server, string user, string ip );
@@ -432,11 +432,12 @@ protected:
         uint32_t m_ChatID;
         string m_GN;
         uint32_t m_ST;
-	uint32_t m_GameType;
+        uint32_t m_GameType;
+        uint32_t m_GameAlias;
         uint32_t m_Result;
 
 public:
-        CCallablegs( uint32_t nChatID, string nGN, uint32_t nST, uint32_t nGameType ) : CBaseCallable( ), m_ChatID( nChatID ), m_GN( nGN ), m_ST( nST ), m_GameType( nGameType ), m_Result( 0 ) { }
+        CCallablegs( uint32_t nChatID, string nGN, uint32_t nST, uint32_t nGameType, uint32_t nGameAlias ) : CBaseCallable( ), m_ChatID( nChatID ), m_GN( nGN ), m_ST( nST ), m_GameType( nGameType ), m_GameAlias( nGameAlias ), m_Result( 0 ) { }
         virtual ~CCallablegs( );
 };
 

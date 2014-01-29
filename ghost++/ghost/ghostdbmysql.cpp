@@ -360,14 +360,14 @@ CCallableStoreLog *CGHostDBMySQL :: ThreadedStoreLog( uint32_t chatid, string ga
         return Callable;
 }
 
-CCallablegs *CGHostDBMySQL :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype )
+CCallablegs *CGHostDBMySQL :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
 {
         void *Connection = GetIdleConnection( );
 
         if( !Connection )
                 ++m_NumConnections;
 
-        CCallablegs *Callable =new CMySQLCallablegs( chatid, gn, st, gametype, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+        CCallablegs *Callable =new CMySQLCallablegs( chatid, gn, st, gametype, gamealias, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
         CreateThread( Callable );
         ++m_OutstandingCallables;
         m_Name.push_back( "gs" );
@@ -1471,18 +1471,18 @@ uint32_t MySQLStoreLog( void *conn, string *error, uint32_t botid, uint32_t chat
         return RowID;
 }
 
-uint32_t MySQLgs( void *conn, string *error, uint32_t botid, uint32_t chatid, string gn, uint32_t st, uint32_t gametype )
+uint32_t MySQLgs( void *conn, string *error, uint32_t botid, uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
 {
         uint32_t RowID = 0;
         string EscGN = MySQLEscapeString( conn, gn );
         if( st == 1 ) {
-                string CRQuery = "INSERT INTO oh_game_status ( `botid`, `gameid`, `gamestatus`, `gamename`, `gametime`, `gametype` ) VALUES ( '" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( chatid ) + "', 1, '" + EscGN + "', CURRENT_TIMESTAMP( ), '" + UTIL_ToString( gametype ) + "'  );";
+            string CRQuery = "INSERT INTO oh_game_status ( `botid`, `gameid`, `gamestatus`, `gamename`, `gametime`, `gametype`, `alias_id` ) VALUES ( '" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( chatid ) + "', 1, '" + EscGN + "', CURRENT_TIMESTAMP( ), '" + UTIL_ToString( gametype ) + "', '"+UTIL_ToString(gamealias)+"'  );";
                 if( mysql_real_query( (MYSQL *)conn, CRQuery.c_str( ), CRQuery.size( ) ) != 0 )
                         *error = mysql_error( (MYSQL *)conn );
                 else
                         RowID = mysql_insert_id( (MYSQL *)conn );
         } else if( st == 2 ) {
-                string UQuery = "UPDATE oh_game_status SET `gamestatus`='" + UTIL_ToString( st ) + "', `gametime` = CURRENT_TIMESTAMP( ) WHERE `gameid` = '" + UTIL_ToString( chatid ) + "' AND `botid` = '" + UTIL_ToString( botid ) + "';";
+            string UQuery = "UPDATE oh_game_status SET `gamestatus`='" + UTIL_ToString( st ) + "', `gametime` = CURRENT_TIMESTAMP( ), alias_Id ='"+UTIL_ToString(gamealias)+"' WHERE `gameid` = '" + UTIL_ToString( chatid ) + "' AND `botid` = '" + UTIL_ToString( botid ) + "';";
                 if( mysql_real_query( (MYSQL *)conn, UQuery.c_str( ), UQuery.size( ) ) != 0 )
                         *error = mysql_error( (MYSQL *)conn );
                 else
@@ -2911,7 +2911,7 @@ void CMySQLCallablegs :: operator( )( )
         Init( );
 
         if( m_Error.empty( ) )
-                MySQLgs( m_Connection, &m_Error, m_SQLBotID, m_ChatID, m_GN, m_ST, m_GameType );
+                MySQLgs( m_Connection, &m_Error, m_SQLBotID, m_ChatID, m_GN, m_ST, m_GameType, m_GameAlias );
 
         Close( );
 }
