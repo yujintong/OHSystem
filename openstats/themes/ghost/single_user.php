@@ -197,6 +197,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
   <?=OS_DisplayPPBar( $PenaltyData[0]["total"] )?>
   <?php if ($PenaltyData[0]["total"] >=1 ) {  ?>
+  <a name="pp"></a>
   <table>
     <tr>
 	  <th width="60"><?=$lang["pp"]?></th>
@@ -209,7 +210,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  foreach ( $PenaltyData as $PP ) {
 	?>
 	</tr>
-	  <td width="60"><b>+<?=$PP["pp"]?></b></td>
+	  <td width="60"><b>+<?=$PP["pp"]?></b> <?php OS_ToolRemovePP( $PP["id"] ) ?></td>
 	  <td width="190"><?=$PP["reason"]?></td>
 	  <td><?=$PP["admin"]?></td>
 	  <td><?=$PP["date"]?></td>

@@ -2218,6 +2218,14 @@ function OS_is_moderator() {
   if ( isset($_SESSION["level"]) AND $_SESSION["level"]>=5 ) return true;
 }
 
+function OS_ToolRemovePP( $id ) {
+  if ( OS_is_moderator() AND isset($_GET["u"]) AND is_numeric($_GET["u"]) ) {
+    ?>
+	<a href="javascript:;" onclick="if(confirm('Remove PP?')) { location.href='<?=OS_HOME?>?u=<?=(int)$_GET["u"]?>&amp;removepp=<?=$id?>' }">&times;</a>
+	<?php
+  }
+}
+
 function OS_AdminTools( $userID = "", $PlayerName = "" ) {
   if ( OS_is_moderator() ) {
   ?>

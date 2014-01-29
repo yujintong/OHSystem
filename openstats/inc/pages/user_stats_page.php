@@ -1,6 +1,15 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
+	
+	//Remove PP
+	if ( isset($_GET["removepp"]) AND isset($_GET["u"]) AND is_numeric($_GET["u"]) AND is_numeric($_GET["removepp"])  ) {
+			 $sth = $db->prepare("DELETE FROM ".OSDB_GO." WHERE id = '".(int)$_GET["removepp"]."' ");
+			 $result = $sth->execute();
+			 header("location: ".OS_HOME."?u=".(int) $_GET["u"]."#pp");
+			 die();
+	}
+
    	//GAME TYPES/ALIASES (dota, lod)
     $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
 	$result = $sth->execute();
@@ -8,6 +17,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$c = 0;
 
     $uid = safeEscape( (int) $_GET["u"] );
+	
 	
 	$year  = date("Y");
 	$month = date("n");
