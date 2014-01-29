@@ -144,7 +144,7 @@ CGame :: ~CGame( )
 
                                         Reason += LeftMin+":"+LeftSec + "/" + EndMin+":"+EndSec;
                                     }
-                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, BanTime, "", m_GameAlias  ) );
+                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, BanTime, ""  ) );
                                 }
                         }
                 }
@@ -1606,7 +1606,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 if( Matches == 0 )
                                                         SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                                 else if( Matches == 1 )
-                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, 0, "", m_GameAlias ) ) );
+                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, 0, "" ) ) );
                                                 else
                                                         SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                                         }
@@ -1618,7 +1618,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 if( Matches == 0 )
                                                         SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                                 else if( Matches == 1 )
-                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, 0, LastMatch->GetCLetter( ), m_GameAlias ) ) );
+                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, 0, LastMatch->GetCLetter( ) ) ) );
                                                 else
                                                         SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                                         }
@@ -1734,7 +1734,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                                         else if( Matches == 1 )
                                                                         {
                                                                              if( Level >= 7 || ( Level == 5 ||  Level == 6 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
-                                                                                     m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "", m_GameAlias ) ) );
+                                                                                     m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "" ) ) );
                                                                              else
                                                                                  SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
                                                                         }
@@ -1751,7 +1751,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                                         else if( Matches == 1 )
                                                                         {
                                                                                 if( Level >= 7 || ( Level == 5 ||  Level == 6 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
-                                                                                         m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ), m_GameAlias ) ) );
+                                                                                         m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ) ) ) );
                                                                                 else
                                                                                         SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
 
@@ -1864,7 +1864,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         if( Payload.empty( ) )
                                                 Payload = "Leaver";
  
-                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 0, "", m_GameAlias ) ) );
+                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 0, "" ) ) );
                                 }
                                 else
                                         SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
@@ -1879,7 +1879,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             if( Payload.empty( ) )
                                 Payload = "Leaver";
 
-                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 432000, "", m_GameAlias ) ) );
+                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 432000, "" ) ) );
                         }
  
                         //
@@ -3297,7 +3297,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
                 player->SetVKTimes( );
                 if( player->GetVKTimes( ) == 8 )
-                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "", m_GameAlias ) ) );
+                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "" ) ) );
                 else if( player->GetVKTimes( ) == 5 )
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( player->GetName( ), "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
                 else if( player->GetVKTimes( ) >= 2 )

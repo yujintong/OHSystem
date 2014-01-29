@@ -204,7 +204,7 @@ public:
 	virtual CCallableBanCount *ThreadedBanCount( string server );
 	virtual CCallableBanCheck *ThreadedBanCheck( string server, string user, string ip );
     virtual CCallableBanCheck2 *ThreadedBanCheck2( string server, string user, string type );
-	virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias);
+    virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country );
 	virtual CCallablePUp *ThreadedPUp( string name, uint32_t level, string realm, string user );
 	virtual CCallableBanRemove *ThreadedBanRemove( string server, string user );
     virtual CCallableTBRemove *ThreadedTBRemove( string server );
@@ -256,7 +256,7 @@ uint32_t MySQLpenp( void *conn, string *error, uint32_t botid, string name, stri
 uint32_t MySQLBanCount( void *conn, string *error, uint32_t botid, string server );
 CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server, string user, string ip );
 string MySQLBanCheck2( void *conn, string *error, uint32_t botid, string server, string user, string type );
-uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias );
+uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country );
 bool MySQLPUp( void *conn, string *error, uint32_t botid, string name, uint32_t level, string realm, string user );
 bool MySQLBanRemove( void *conn, string *error, uint32_t botid, string server, string user );
 bool MySQLTBRemove( void *conn, string *error, uint32_t botid, string server );
@@ -509,7 +509,7 @@ public:
 class CMySQLCallableBanAdd : public CCallableBanAdd, public CMySQLCallable
 {
 public:
-	CMySQLCallableBanAdd( string nServer, string nUser, string nIP, string nGameName, string nAdmin, string nReason, uint32_t nBanTime, string nCountry, uint32_t nGameAlias, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableBanAdd( nServer, nUser, nIP, nGameName, nAdmin, nReason, nBanTime, nCountry, nGameAlias ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
+    CMySQLCallableBanAdd( string nServer, string nUser, string nIP, string nGameName, string nAdmin, string nReason, uint32_t nBanTime, string nCountry, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableBanAdd( nServer, nUser, nIP, nGameName, nAdmin, nReason, nBanTime, nCountry ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
 	virtual ~CMySQLCallableBanAdd( ) { }
 
 	virtual void operator( )( );

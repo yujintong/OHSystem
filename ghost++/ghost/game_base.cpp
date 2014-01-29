@@ -2477,7 +2477,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         if( joinPlayer->GetName( ).empty( ) || joinPlayer->GetName( ).size( ) > 15 || LowerName.find( " " ) != string::npos || LowerName.find( "|" ) != string::npos )
         {
                 // autoban the player for spoofing name
-                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "", m_GameAlias ) );
+                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
                     
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game with an invalid name of length " + UTIL_ToString( joinPlayer->GetName( ).size( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
@@ -3793,7 +3793,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                 player->SetDeleteMe( true );
                 player->SetLeftReason( "was kicked by host" );
                 player->SetLeftCode( PLAYERLEAVE_LOST );
-                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "", m_GameAlias ) );
+                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
                delete action;
                return false;
              }

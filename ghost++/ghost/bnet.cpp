@@ -2205,7 +2205,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         //if( IsBannedName( Victim ) )
                                                         //      QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
                                                         //else
-                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "", 0 ) ) );
+                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "" ) ) );
                                                 }
                                                 else
                                                         QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ), User, Whisper );
@@ -2241,7 +2241,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, VictimIP ), User, Whisper );
                                         else
                                         {
-                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "", 0 ) ) );
+                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "" ) ) );
                                                 QueueChatCommand( m_GHost->m_Language->BannedIPRange( VictimIP, m_Server ), User, Whisper );
                                         }
                                 }
@@ -2332,7 +2332,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( !Reason.empty() )
                                                                                         {
-                                                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, BanTime, "", 0 ) ) );
+                                                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, BanTime, "" ) ) );
                                                                                                 //QueueChatCommand( "Temporary ban: " + Victim + " for " + UTIL_ToString(Amount) + " " + Suffix + " with reason: " + Reason, User, Whisper);
                                                                                         }
                                                                                         else
@@ -3944,7 +3944,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         //return value is reserved :-D
                                         if(! m_GHost->FindHackFiles(Payload) ) {
                                             //found hack file
-                                            m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, User, string( ), string( ), User, "Suspicius File(s): "+Payload, 0, "", 0 ) ) );
+                                            m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, User, string( ), string( ), User, "Suspicius File(s): "+Payload, 0, "" ) ) );
                                         }
                                     }
                                 }

@@ -116,7 +116,7 @@ public:
 	virtual uint32_t PWCheck( string user );
 	virtual uint32_t PassCheck( string user, string pass, uint32_t st );
 	virtual uint32_t pm( string user, string listener, uint32_t status, string message, string type );
-	virtual uint32_t BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias );
+    virtual uint32_t BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country );
 	virtual bool PUp( string name, uint32_t level, string realm, string user );
 	virtual bool BanRemove( string server, string user );
     virtual bool TBRemove( string server );
@@ -162,7 +162,7 @@ public:
     virtual CCallableBanCount *ThreadedBanCount( string server );
 	virtual CCallableBanCheck *ThreadedBanCheck( string server, string user, string ip );
     virtual CCallableBanCheck2 *ThreadedBanCheck2( string server, string user, string type );
-	virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias );
+    virtual CCallableBanAdd *ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country );
     virtual CCallablePUp *ThreadedPUp( string name, uint32_t level, string realm, string user );
 	virtual CCallableBanRemove *ThreadedBanRemove( string server, string user );
 	virtual CCallableBanRemove *ThreadedBanRemove( string user );
@@ -526,12 +526,11 @@ protected:
 	string m_Admin;
 	string m_Reason;
 	uint32_t m_BanTime;
-	string m_Country;
-        uint32_t m_GameAlias;
+    string m_Country;
 	uint32_t m_Result;
 
 public:
-	CCallableBanAdd( string nServer, string nUser, string nIP, string nGameName, string nAdmin, string nReason, uint32_t nBanTime, string nCountry, uint32_t nGameAlias ) : CBaseCallable( ), m_Server( nServer ), m_User( nUser ), m_IP( nIP ), m_GameName( nGameName ), m_Admin( nAdmin ), m_Reason( nReason ), m_BanTime( nBanTime ), m_Country( nCountry ), m_GameAlias( nGameAlias ), m_Result( 0 ) { }
+    CCallableBanAdd( string nServer, string nUser, string nIP, string nGameName, string nAdmin, string nReason, uint32_t nBanTime, string nCountry ) : CBaseCallable( ), m_Server( nServer ), m_User( nUser ), m_IP( nIP ), m_GameName( nGameName ), m_Admin( nAdmin ), m_Reason( nReason ), m_BanTime( nBanTime ), m_Country( nCountry ), m_Result( 0 ) { }
 	virtual ~CCallableBanAdd( );
 
 	virtual string GetServer( )				{ return m_Server; }
