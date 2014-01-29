@@ -892,8 +892,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                         (*i)->SetAFKMarked( true );
                                 }
                         }
- 
-                        if( TimeActive > 0 && ( (TimeNow - TimeActive ) > ( TimeLimit-60) ) && (*i)->GetAFKMarked( ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
+                        else if( TimeActive > 0 && ( (TimeNow - TimeActive ) > ( TimeLimit-60) ) && (*i)->GetAFKMarked( ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
                         {
                                 SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for being afk more than 5 minutes." );
                                 (*i)->SetTimeActive( GetTime( ) );
