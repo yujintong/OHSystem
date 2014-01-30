@@ -124,7 +124,7 @@ CGame :: ~CGame( )
                                 if( Counter <= 2 && VictimLevel <= 2 )
                                 {
                                     uint32_t BanTime = m_GHost->m_DisconnectAutoBanTime;
-                                    string Reason = "disconnected at";
+                                    string Reason = "disconnected at ";
                                     if((*i)->GetLeftReason( ).find("left")!=string::npos) {
                                         Reason = "left at ";
                                         BanTime = m_GHost->m_LeaverAutoBanTime;
