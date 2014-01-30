@@ -1512,10 +1512,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_SyncLimit = CFG->GetInt( "bot_synclimit", 50 );
 	m_VoteKickAllowed = CFG->GetInt( "bot_votekickallowed", 1 ) == 0 ? false : true;
 	m_VoteKickPercentage = CFG->GetInt( "bot_votekickpercentage", 100 );
-	LoadDatas();
-    LoadRules();
-    LoadRanks();
-    ReadRoomData();
 	if( m_VoteKickPercentage > 100 )
 	{
 		m_VoteKickPercentage = 100;
@@ -1542,7 +1538,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_NoGarena = CFG->GetInt( "oh_nogarena", 0 ) == 0 ? false : true;
 	m_CheckIPRange = CFG->GetInt( "oh_checkiprangeonjoin", 0 ) == 0 ? false : true;
 	m_DenieProxy = CFG->GetInt( "oh_proxykick", 0 ) == 0 ? false : true;
-	m_LiveGames = CFG->GetInt( "oh__general_livegames", 1 ) == 0 ? false : true;
+    m_LiveGames = CFG->GetInt( "oh_general_livegames", 1 ) == 0 ? false : true;
     m_MinFF = CFG->GetInt( "oh_minff", 20 );
     m_MinimumLeaverKills = CFG->GetInt( "antifarm_minkills", 3 );
     m_MinimumLeaverDeaths = CFG->GetInt( "antifarm_mindeaths", 3 );
@@ -1599,11 +1595,15 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
     m_Website = CFG->GetString("oh_general_domain", "http://ohsystem.net/" );
     m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
+    LoadDatas();
+    LoadRules();
+    LoadRanks();
+    ReadRoomData();
 }
 
 void CGHost :: ExtractScripts( )
 {
-	string PatchMPQFileName = m_Warcraft3Path + "War3Patch.mpq";
+    string PatchMPQFileName = m_Warcraft3Path + "War3Patch.mpq";
 	HANDLE PatchMPQ;
 
 	if( SFileOpenArchive( PatchMPQFileName.c_str( ), 0, MPQ_OPEN_FORCE_MPQ_V1, &PatchMPQ ) )
@@ -1624,7 +1624,7 @@ void CGHost :: ExtractScripts( )
 
 				if( SFileReadFile( SubFile, SubFileData, FileLength, &BytesRead ) )
 				{
-					CONSOLE_Print( "[GHOST] extracting Scripts\\common.j from MPQ file to [" + m_MapCFGPath + "common.j]" );
+                    CONSOLE_Print( "[GHOST] extracting Scripts\\common.j from MPQ file to [" + m_MapCFGPath + "common.j]" );
 					UTIL_FileWrite( m_MapCFGPath + "common.j", (unsigned char *)SubFileData, BytesRead );
 				}
 				else
