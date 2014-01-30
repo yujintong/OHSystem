@@ -1550,8 +1550,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_StatsUpdate = CFG->GetInt( "oh_general_updatestats", 1 ) == 0 ? false : true;
     m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
     m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
-    if( m_FunCommands )
-        LoadInsult( );
     m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
     m_AccountProtection = CFG->GetInt("oh_general_accountprotection", 1 ) == 0 ? false : true;
     m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
@@ -1599,6 +1597,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     LoadRules();
     LoadRanks();
     ReadRoomData();
+    if( m_FunCommands )
+        LoadInsult( );
 }
 
 void CGHost :: ExtractScripts( )
