@@ -176,8 +176,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   <a href="<?=OS_HOME?>?moderator&amp;option=addban&amp;edit=<?=$ban["id"]?>">edit</a> | 
 		   <a href="javascript:;" onclick="if(confirm('Delete Ban?')) { location.href='<?=OS_HOME?>?moderator&amp;option=bans&amp;delete=<?=$ban["id"]?><?php if (!empty($Page)) { ?>&amp;page=<?=$Page?><?php } ?>&amp;player=<?=$ban["name"]?>' }">X</a></td>
 		   <td width="160">
-		   <?=$ban["expiredate"]?>
-		   <div><?=OS_ExpireDateRemain( $ban["expiredate"] ) ?></div>
+		   <?php if ($ban["expiredate_db"]!='0000-00-00 00:00:00') { ?>
+		   <div><?=OS_ExpireDateRemain( $ban["expiredate_db"] ) ?></div>
+		   <div><?=$ban["expiredate"]?></div>
+		   <?php } else { ?><div class="perm_ban">Permanent</div><?php } ?>
 		   </td>
 		   <td width="190"><?=$ban["gamename"]?></td>
 		   <td><?=$ban["server"]?></td>

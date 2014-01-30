@@ -2253,7 +2253,7 @@ function ShowModeratorPanel( $UserData ) {
   }
  ?></h2>
  <hr />
-
+<?php OS_Mod_DisplayUserLevel( $UserData[0]["user_level"], $UserData[0]["user_level_expire"] );?>
  <form action="" method="post">
  <table>
     <tr>
@@ -2404,4 +2404,23 @@ function ShowModeratorPanel( $UserData ) {
 	<?php
  
   }
-}?>
+}
+
+function OS_Mod_DisplayUserLevel( $level = "", $expire = "" ) {
+  if ( $level>=1 ) {
+  
+  OS_IsUserGameAdmin( $level ); 
+  echo "<b>".OS_ShowUserRole( $level )."</b>";
+  
+  if ( $expire!='0000-00-00 00:00:00' ) {
+    global $lang;
+    ?>
+	- <?=OS_ExpireDateRemain( $expire ) ?> (<?=date( OS_DATE_FORMAT, strtotime($expire))?>)
+	<?php
+  } else {
+  ?> (Never Expire)<?php
+  }
+  
+  }
+}
+?>

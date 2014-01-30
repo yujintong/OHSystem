@@ -226,12 +226,13 @@ if (!isset($_GET["option"])) {
 	$BansData[$c]["name"] = $row["name"];
 	$BansData[$c]["ip"] = $row["ip"];
 	$BansData[$c]["ip_part"] = $row["ip_part"];
-	$BansData[$c]["country"] = $row["country"];
+	$BansData[$c]["country"] = $Country;
 	$BansData[$c]["date"] = date( OS_DATE_FORMAT, strtotime($row["date"]));
 	$BansData[$c]["gamename"] = $row["gamename"];
 	$BansData[$c]["admin"] = $row["admin"];
 	$BansData[$c]["reason"] = $row["reason"];
 	$BansData[$c]["expiredate"] = date( OS_DATE_FORMAT, strtotime($row["expiredate"]));
+	$BansData[$c]["expiredate_db"] = $row["expiredate"];
 
     $c++;
    }
@@ -258,7 +259,7 @@ if (!isset($_GET["option"])) {
 	
 	    $player_name     = safeEscape( trim( strtolower($_POST["player_name"])));
 	    $pp   = (int)( trim($_POST["pp"]));
-	    $reason   = EscapeStr( convEnt2(trim($_POST["reason"])));
+	    $reason   = EscapeStr( (trim($_POST["reason"])));
 	    $admin    = $_SESSION["username"];
 		$time = date("Y-m-d H:i:s", time() );
 		

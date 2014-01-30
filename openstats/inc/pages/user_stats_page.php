@@ -6,6 +6,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	if ( isset($_GET["removepp"]) AND isset($_GET["u"]) AND is_numeric($_GET["u"]) AND is_numeric($_GET["removepp"])  ) {
 			 $sth = $db->prepare("DELETE FROM ".OSDB_GO." WHERE id = '".(int)$_GET["removepp"]."' ");
 			 $result = $sth->execute();
+			 OS_AddLog($_SESSION["username"], "[os_moderator] Removed PP: <a href='".OS_HOME."?u=".$_GET["u"]."'>#".$_GET["u"]."</a> ");
 			 header("location: ".OS_HOME."?u=".(int) $_GET["u"]."#pp");
 			 die();
 	}
@@ -140,14 +141,26 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["admin_info"] = 1;
 	}
 	
-	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
-	$UserData[$c]["GameAdmin"]  = ($row["user_level"]);
+	//CHECK BNET USERNAME
+	$sth2 = $db->prepare("SELECT * FROM ".OSDB_USERS." as u 
+	WHERE LOWER(bnet_username) = '".strtolower($PlayerName)."' AND user_bnet>=1 ");
+	$result = $sth2->execute();
+    $row2 = $sth2->fetch(PDO::FETCH_ASSOC);
+    $UserData[0]["user_bnet"] = $row2["user_bnet"];
+	$UserData[0]["bnet_username"] = $row2["bnet_username"];
+	$UserData[0]["user_ppwd"] = $row2["user_ppwd"];
+	$UserData[0]["user_level_expire"] = $row2["user_level_expire"];
+	$row["user_level"] = $row2["user_level"];
+	$UserData[0]["user_level"] = $row2["user_level"];
 	
 	//Don't show ban on safelisted user, because they are not really banned!
 	if ( $row["user_level"]>1 ) {
 	$UserData[$c]["banned"] = 0;
 	$UserData[$c]["banname"] ="";
 	}
+	
+	if ( strtotime($rowban["expiredate"]) <=time() ) $UserData[$c]["banned"]  = 0;
+	$UserData[$c]["GameAdmin"]  = ($row["user_level"]);
 	
 	//Check if user have some privileges.
 	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
@@ -318,17 +331,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 	else $UserData[0]["totalstayratio"] = 0;
 	
-	
-	
-	//CHECK BNET USERNAME
-	
-	$sth = $db->prepare("SELECT * FROM ".OSDB_USERS." as u 
-	WHERE LOWER(bnet_username) = '".strtolower($PlayerName)."' AND user_bnet>=1 ");
-	$result = $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
-    $UserData[0]["user_bnet"] = $row["user_bnet"];
-	$UserData[0]["bnet_username"] = $row["bnet_username"];
-	$UserData[0]["user_ppwd"] = $row["user_ppwd"];
 
     //LONGEST, FASTEST GAME WON
 	if ( !empty($PlayerName) ) {
@@ -629,7 +631,37 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   $ip      = $UserData[0]["ip"];
 		   $ip_part = OS_GetIpRange( $ip );
 		   
-		   $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE ip_part LIKE '".$ip_part."' LIMIT 50");
+		   //Show all user IPs
+			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, g.datetime, gp.gameid 
+			 FROM ".OSDB_GP." as gp
+			 LEFT JOIN ".OSDB_GAMES." as g on g.id = gp.gameid
+			 WHERE name = '".$PlayerName."' GROUP BY ip ORDER BY id DESC LIMIT 50");
+			 $result = $sth->execute();
+		     $UserIPAddr = array();
+			 $AllUserIPS = array();
+	         $c = 0;
+	          while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+		      $UserIPAddr[$c]["id"] = $row["id"];
+			  $UserIPAddr[$c]["ip"] = $row["ip"];
+			  $UserIPAddr[$c]["name"] = $row["name"];
+			  $UserIPAddr[$c]["gameid"] = $row["gameid"];
+			  $UserIPAddr[$c]["gamename"] = $row["gamename"];
+			  $UserIPAddr[$c]["datetime"] =  date( OS_DATE_FORMAT, strtotime($row["datetime"]) );
+			  $AllUserIPS[]=OS_GetIpRange($row["ip"]);
+			  $c++;
+		      }
+			  
+			$AllUserIPS = array_unique($AllUserIPS);
+			$sql = "";
+			if ( count($AllUserIPS)>1 ) {
+			$sql = " OR (";
+             foreach($AllUserIPS as $UserIP) {
+			    $sql.="  ip_part LIKE '".$UserIP."' OR ip LIKE (':".$UserIP."%') OR ";
+			 }
+			 $sql = substr( $sql, 0, strlen($sql)-3 ).")";
+            }
+           //Banned players on the same IP range 			
+		   $sth = $db->prepare("SELECT * FROM ".OSDB_BANS." WHERE ip_part LIKE '".$ip_part."' $sql LIMIT 50");
 		   $result = $sth->execute();
 		   $UserIPRange = array();
 	       $c = 0;
@@ -650,24 +682,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 			
 			$c++;
 		   }
-		   
-		   //Show all user IPs
-			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, g.datetime, gp.gameid 
-			 FROM ".OSDB_GP." as gp
-			 LEFT JOIN ".OSDB_GAMES." as g on g.id = gp.gameid
-			 WHERE name = '".$PlayerName."' GROUP BY ip ORDER BY id DESC LIMIT 50");
-			 $result = $sth->execute();
-		     $UserIPAddr = array();
-	         $c = 0;
-	          while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-		      $UserIPAddr[$c]["id"] = $row["id"];
-			  $UserIPAddr[$c]["ip"] = $row["ip"];
-			  $UserIPAddr[$c]["name"] = $row["name"];
-			  $UserIPAddr[$c]["gameid"] = $row["gameid"];
-			  $UserIPAddr[$c]["gamename"] = $row["gamename"];
-			  $UserIPAddr[$c]["datetime"] =  date( OS_DATE_FORMAT, strtotime($row["datetime"]) );
-			  $c++;
-		      }
+			  
 			
 			
 			 $sth = $db->prepare("SELECT gp.id, gp.ip, gp.name, g.gamename, g.datetime, gp.gameid 
