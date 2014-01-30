@@ -253,6 +253,7 @@ public:
     uint32_t m_APMMaxAfkWarnings;
     string m_Website;
     uint32_t m_DisconnectAutoBanTime;
+    string m_SharedFilesPath;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );

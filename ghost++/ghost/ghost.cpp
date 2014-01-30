@@ -1598,6 +1598,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_APMAllowedMinimum = CFG->GetInt("oh_apmallowedminimum", 20);
     m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
     m_Website = CFG->GetString("oh_general_domain", "http://ohsystem.net/" );
+    m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
 }
 
 void CGHost :: ExtractScripts( )
@@ -1954,7 +1955,7 @@ void CGHost :: LoadDatas( )
 
 void CGHost :: LoadRules( )
 {
-    string File = "rules.txt";
+    string File = m_SharedFilesPath + "rules.txt";
     string line;
     ifstream myfile(File.c_str());
     m_Rules.clear();
@@ -1985,7 +1986,7 @@ uint32_t CGHost :: GetNewHostCounter( )
 void CGHost :: LoadRanks( )
 {
     //TODO Fix if the file is empty, dont check levels else there is a crash
-    string File = "ranks.txt";
+    string File = m_SharedFilesPath + "ranks.txt";
     ifstream in;
     in.open( File.c_str() );
     m_Ranks.clear();
@@ -2018,7 +2019,7 @@ void CGHost :: LoadRanks( )
 void CGHost :: LoadInsult()
 {
     //TODO Fix if the file is empty, dont check levels else there is a crash
-    string File = "insult.txt";
+    string File = m_SharedFilesPath + "insult.txt";
     ifstream in;
     in.open( File.c_str() );
     m_Insults.clear();
@@ -2077,7 +2078,7 @@ string CGHost :: GetRoomName (string RoomID)
 
 void CGHost :: ReadRoomData()
 {
-	string file = "rooms.txt";
+    string file = m_SharedFilesPath + "rooms.txt";
 	ifstream in;
 	in.open( file.c_str( ) );
 	m_LanRoomName.clear();
