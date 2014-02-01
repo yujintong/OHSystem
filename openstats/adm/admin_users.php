@@ -75,6 +75,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
     if ( isset($_POST["edit_user"]) ) {
 	  $name     = safeEscape( $_POST["name"]);
 	  $bnet     = safeEscape( $_POST["bnet"]);
+	  $bnet     = strtolower($bnet);
 	  $email   = safeEscape( $_POST["email"]);
 	  //if not root admin do not change access level
 	  if ( $_SESSION["level"] <=9) {

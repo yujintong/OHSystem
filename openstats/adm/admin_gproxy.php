@@ -39,7 +39,7 @@ if (!empty($Info)) echo $Info;
   
     if ( isset($_POST["add_record"]) ) {
 	
-	  $player = strip_tags( trim($_POST["player"]));
+	  $player = strip_tags( strtolower(trim($_POST["player"])));
 	  $ip = strip_tags( trim($_POST["ip"]));
 	  
 	  if ( strlen($player)<=2 AND strlen($ip)<=2 ) $error.="<div>At least one field must be filled</div>";

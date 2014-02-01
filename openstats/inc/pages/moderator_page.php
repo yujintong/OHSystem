@@ -89,7 +89,7 @@ if (!isset($_GET["option"])) {
    
         $result = $sth->execute();
 		$row = $sth->fetch(PDO::FETCH_ASSOC);
-		$BanPlayer = $row["name"];
+		$BanPlayer = strtolower($row["name"]);
 		$BanAdmin = $row["admin"];
 		$BanServer = $row["server"];
 		$BanReason = $row["reason"];
@@ -355,6 +355,8 @@ if (!isset($_GET["option"])) {
    
    }
    
+   
+   //DISPLAY ROLES
    if ( isset($_GET["option"]) AND $_GET["option"] == "roles" ) {
     $sql = "";
 	$orderby = 'user_level DESC';
@@ -382,7 +384,7 @@ if (!isset($_GET["option"])) {
 	
    $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." 
    WHERE user_id>=1 AND user_level>=2 $sql
-   ORDER BY $orderby
+   ORDER BY $orderby, FIELD(user_id, 72, 1) DESC
    LIMIT $offset, $rowsperpage");
     $result = $sth->execute();
 	$RoleData = array();
@@ -401,6 +403,53 @@ if (!isset($_GET["option"])) {
    }
    
    }
+   
+   
+   
+   //SEARCH IP ADDRESS
+    if ( isset($_GET["option"]) AND $_GET["option"] == "ip" ) {
+	$IPSearch = "";
+	$IPData = array();
+	if ( isset($_GET["search_ip"]) AND strlen($_GET["search_ip"])>=4 ) {
+	
+	   $ip = strip_tags( $_GET["search_ip"] );
+	   $ip = str_replace(":", "", $ip);
+	   $ip_part = OS_GetIpRange( $ip );
+	   
+	   $IPSearch = $ip;
+	   
+    $sth = $db->prepare( "SELECT * FROM ".OSDB_BANS." WHERE id>=1 AND 
+	(ip LIKE '".$ip."' OR ip LIKE ('".$ip_part."%') OR ip_part LIKE ('".$ip_part."%') ) LIMIT 150" );
+    $result = $sth->execute();
+	
+	$c = 0;
+     while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
+	 $IPData[$c]["id"] =  $row["id"];
+	 $IPData[$c]["server"] =  $row["server"];
+	 $IPData[$c]["name"] =  $row["name"];
+	 $IPData[$c]["ip"] =  $row["ip"];
+	 $IPData[$c]["country"] =  $row["country"];
+	 $IPData[$c]["date"] =  date( OS_DATE_FORMAT, strtotime($row["date"]));
+	 $IPData[$c]["gamename"] =  $row["gamename"];
+	 
+	if ( !empty( $IPData[$c]["gamename"] ) AND strstr($IPData[$c]["gamename"], "#") ) {
+	
+	  $gn = explode("#", $IPData[$c]["gamename"]);
+	  
+	  if ( isset($gn[1]) AND is_numeric($gn[1]) )
+	  $IPData[$c]["gamename"] = $gn[0].' <a href="'.OS_HOME.'?game='. $gn[1].'#'.$row["name"].'">#'.$gn[1].'</a>';
+	}
+	 
+	 $IPData[$c]["admin"] =  $row["admin"];
+	 if (empty($row["admin"])) $IPData[$c]["admin"] = '<span style="color:#C90B00">[system]</span>';
+	 $IPData[$c]["reason"] =  $row["reason"];
+	 $IPData[$c]["expiredate"] =  $row["expiredate"];
+	 $c++;
+	 }
+	
+	}
+	
+	}
    
    
    if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
