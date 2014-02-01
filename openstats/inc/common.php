@@ -1241,6 +1241,7 @@ function OS_is_home_page() {
    AND !isset($_GET["guides"])
    AND !isset($_GET["action"])
    AND !isset($_GET["live_games"])
+   AND !isset($_GET["premium"])
    AND !isset($_GET["moderator"])
                             ) 
    {
@@ -2057,6 +2058,7 @@ function OS_DisplayPPStatus( $pp = 0 ) {
    if ( $pp>=4 AND $pp<=7 ) { $icon = "hot.png"; $status = "Hot"; }
    if ( $pp>=8 ) { $icon = "critical.gif";  $status = "Critical"; }
    if ( $pp>=11 ) { $icon = "critical.gif"; $status = "Very Critical"; }
+   if ( $pp>=18 ) { $icon = "critical.gif"; $status = "Very Critical: Perm Ban"; }
    ?>
    <img src="<?=OS_HOME?>img/pp/<?=$icon?>" alt="cool" width="24" height="24" class="imgvalign padLeft" /> <b>Status:</b> <?=$status?>
    <?php
@@ -2064,7 +2066,7 @@ function OS_DisplayPPStatus( $pp = 0 ) {
 
 function OS_DisplayPPBar( $total = 0 ) {
   $bar = $total;
-  if ( $bar>=20 ) $bar = 20;
+  if ( $bar>=19 ) $bar = 19;
   ?>
   <div style="width:200px; border: 1px solid #616161; border-radius: 4px; height:24px; margin-left:8px; float:left;">
   <?php if ($total>=1) { ?>

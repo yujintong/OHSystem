@@ -61,6 +61,23 @@ if (!isset($_GET["option"])) {
     $r = $sth->fetch(PDO::FETCH_NUM);
     $TotalRankedUsers = number_format($r[0]);
 	
+	
+	 $sth = $db->prepare("SELECT * FROM ".OSDB_CUSTOM_FIELDS." 
+	 WHERE field_id = 1 AND field_name = 'oh_country_ban'");
+	 $result = $sth->execute();
+	 
+	 $row = $sth->fetch(PDO::FETCH_ASSOC);
+	 $BC = $row["field_value"];
+	 if (!isset($Countries)) include("inc/countries.php");
+	 $BannedCountry = explode(" ", $BC);
+	 
+	$CountryList = "";
+	foreach ( $BannedCountry as $banned) {
+			 
+	if ( isset($Countries[$banned]) )
+	$CountryList.="<div> (".$banned.") ".$Countries[$banned]."</div>";
+	}
+	
 }
 
     if ( isset($_GET["option"]) AND $_GET["option"] == "addban" ) {
@@ -335,6 +352,53 @@ if (!isset($_GET["option"])) {
 	$PPData[$c]["admin"] = $row["admin"];
     $c++;	
     }
+   
+   }
+   
+   if ( isset($_GET["option"]) AND $_GET["option"] == "roles" ) {
+    $sql = "";
+	$orderby = 'user_level DESC';
+	if ( isset($_GET["sort"]) ) {
+	  
+	  if ($_GET["sort"] == 'expire') {
+	   
+	$orderby = 'user_level_expire ASC';
+	$sql.=" AND user_level_expire!='0000-00-00 00:00:00' ";
+	  
+	  }
+	  
+	}
+	
+    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_id>=1 AND user_level>=2 $sql" );
+    $result = $sth->execute();
+    $r = $sth->fetch(PDO::FETCH_NUM);
+    $numrows = $r[0];
+	$HomeTitle ="User Roles :: MODERATOR";
+    $result_per_page = 50;
+    $draw_pagination = 0;
+    $SHOW_TOTALS = 1;
+    include('inc/pagination.php');
+    $draw_pagination = 1;
+	
+   $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." 
+   WHERE user_id>=1 AND user_level>=2 $sql
+   ORDER BY $orderby
+   LIMIT $offset, $rowsperpage");
+    $result = $sth->execute();
+	$RoleData = array();
+	$c = 0;
+
+    while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
+    $RoleData[$c]["id"] = $row["user_id"];
+	$RoleData[$c]["user_name"] = $row["user_name"];
+    $RoleData[$c]["bnet_username"] = $row["bnet_username"];
+	$RoleData[$c]["user_email"] = $row["user_email"];
+	$RoleData[$c]["user_joined"] = $row["user_joined"];
+	$RoleData[$c]["user_level"] = $row["user_level"];
+	$RoleData[$c]["user_level_expire"] = $row["user_level_expire"];
+	$RoleData[$c]["user_ip"] = $row["user_ip"];
+	$c++;
+   }
    
    }
    

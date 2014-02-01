@@ -11,12 +11,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<form action="" method="get">
 	<table>
 	<tr>
-	  <td>
+	  <td style="font-size:13px;">
 	   <a href="<?=OS_HOME?>?moderator" class="menuButtons">Dashboard</a> &middot; 
 	   <a href="<?=OS_HOME?>?moderator&amp;option=addban" class="menuButtons">Add ban</a>
 	   <a href="<?=OS_HOME?>?moderator&amp;option=bans" class="menuButtons">Bans</a> &middot; 
 	   <a href="<?=OS_HOME?>?moderator&amp;option=pp&amp;add" class="menuButtons">Add PP</a>
-	   <a href="<?=OS_HOME?>?moderator&amp;option=pp" class="menuButtons">Penalty Points</a>
+	   <a href="<?=OS_HOME?>?moderator&amp;option=pp" class="menuButtons">Penalty Points</a> &middot; 
+	   <a href="<?=OS_HOME?>?moderator&amp;option=roles" class="menuButtons">Roles</a>
 	 </td>
 	 <td>
 	 <?php if ( isset($_GET["option"]) AND $_GET["option"] == "pp" ) { ?>
@@ -53,6 +54,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		    <td width="100">Total Players:</td>
 			<td><a href="<?=OS_HOME?>?top"><?=$TotalRankedUsers ?></a></td>
 		  </tr>
+		  
+		  <tr>
+		    <td width="140">Banned Countries:</td>
+			<td>
+			<?=$CountryList?>
+			</td>
+		  </tr>
+		  
 		</table>
 		<div style="margin-top:220px;">&nbsp;</div>
 		<?php } ?>
@@ -258,6 +267,46 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		?>
 		
 
+		<?php
+		if ( isset($_GET["option"]) AND $_GET["option"] == "roles" AND !empty($RoleData) ) {
+		 ?>
+		 <table style="font-size:13px;">
+		   <tr>
+		     <th>Username</th>
+			 <th>Bnet</th>
+			 <th><a href="<?=OS_HOME?>?moderator&amp;option=roles">Role</a></th>
+			 <th><a href="<?=OS_HOME?>?moderator&amp;option=roles&amp;sort=expire">Expire</a></th>
+		   </tr>
+		   <?php foreach ($RoleData as $data) {
+		   if ($data["user_level_expire"] != '0000-00-00 00:00:00' AND !empty($data["user_level_expire"]) )
+		   $expire = ' ('.date( "d.m.Y", strtotime($data["user_level_expire"]) ).")";
+		   else $expire = ""; 
+		   
+		   ?>
+		   <tr>
+		    <td width="150"><a href="<?=OS_HOME?>?member=<?=$data["id"]?>"><?=$data["user_name"]?></a></td>
+			<td width="180">
+			<img src="<?=OS_HOME?>img/bnet.png" width="16" class="imgvalign" />
+			<a target="_blank" href="<?=OS_HOME?>?u=<?=$data["bnet_username"]?>"><?=$data["bnet_username"]?></a>
+			</td>
+			<td width="180">
+			<?=OS_IsUserGameAdmin( $data["user_level"] )?> 
+			<?=OS_ShowUserRole( $data["user_level"] )?> ( <?=$data["user_level"]?> )</td>
+			<td>
+     <?php if ($data["user_level_expire"]!='0000-00-00 00:00:00') { ?>	 
+	 <?=OS_ExpireDateRemain($data["user_level_expire"])?>
+	 <?php } else { ?>never<?php } ?>
+	  <?=$expire?>
+			</td>
+		   </tr>
+		   <?php
+		   }
+		   ?>
+		 </table>
+		 <?php
+		 include('inc/pagination.php');
+		} 
+?>
     <script type="text/javascript">
 	function toggle(source) {
     checkboxes = document.getElementsByName('checkbox[]');
