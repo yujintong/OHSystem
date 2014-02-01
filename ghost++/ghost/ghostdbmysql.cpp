@@ -1186,11 +1186,7 @@ vector<string> MySQLPList( void *conn, string *error, uint32_t botid, string ser
         string EscServer = MySQLEscapeString( conn, server );
 
         vector<string> PList;
-        string Query = "";
-        if( EscServer == "Garena" )
-                Query = "SELECT `bnet_username`, `user_level` FROM oh_users WHERE `user_bnet` >= '1' AND `admin_realm` = 'Garena' OR `admin_realm` = 'WC3Connect'";
-        else
-                Query = "SELECT `bnet_username`, `user_level` FROM oh_users WHERE `user_bnet` >= '1' AND `admin_realm` = '" + EscServer + "'";
+        string Query = "SELECT `bnet_username`, `user_level` FROM oh_users WHERE `user_bnet` >= '1' AND ( user_level_expire > NOW( ) OR user_level_expire = '0000-00-00 00:00:00' OR user_level_expire = '' ) AND `admin_realm` = '" + EscServer + "'";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
@@ -1860,73 +1856,72 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
 bool MySQLPUp( void *conn, string *error, uint32_t botid, string name, uint32_t level, string realm, string user )
 {
 	bool Success = false;
-        transform( user.begin( ), user.end( ), user.begin( ), ::tolower );
+    transform( user.begin( ), user.end( ), user.begin( ), ::tolower );
 	transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
 	string EscName = MySQLEscapeString( conn, name );
-        string EscRealm = MySQLEscapeString( conn, realm );
-        string EscUser = MySQLEscapeString( conn, user );
+    string EscRealm = MySQLEscapeString( conn, realm );
+    string EscUser = MySQLEscapeString( conn, user );
 	uint32_t time = 31120000;
 	if( level == 6 || level == 5 )
 		time = 15551000;
 	if( level == 3 || level == 2 )
 		time = 2592000;
 
-        if( EscRealm == "Garena")
-        {
-            string CQuery = "SELECT `user_level` from `oh_users` WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = 'Garena';";
-            if( mysql_real_query( (MYSQL *)conn, CQuery.c_str( ), CQuery.size( ) ) != 0 )
-                    *error = mysql_error( (MYSQL *)conn );
-            else
-            {
-                    MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
-
-                    if( Result )
-                    {
-                            vector<string> Row = MySQLFetchRow( Result );
-                            if( Row.size( ) == 1 )
-                            {
-                                string Query = "UPDATE `oh_users` SET `user_level` = '" + UTIL_ToString( level ) + "', `expire_date` = 'FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(time) + ")' WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = 'Garena';";
-                                if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
-                                        *error = mysql_error( (MYSQL *)conn );
-                                else
-                                        Success = true;          
-                                return true;
-                            } else
-                                return false;
-                            
-                            mysql_free_result( Result );
-                    }
-            }
-
-        }
-
-	string CQuery = "SELECT `user_level` from `oh_users` WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = '" + EscRealm + "';";
+    if( EscRealm == "Garena")
+    {
+        string CQuery = "SELECT `user_level` from `oh_users` WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = 'Garena';";
         if( mysql_real_query( (MYSQL *)conn, CQuery.c_str( ), CQuery.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
         else
-	{
+        {
                 MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
 
                 if( Result )
                 {
                         vector<string> Row = MySQLFetchRow( Result );
-
-                        if( Row.size( ) == 0 )
-				return false;
+                        if( Row.size( ) == 1 )
+                        {
+                            string Query = "UPDATE `oh_users` SET `user_level` = '" + UTIL_ToString( level ) + "', `expire_date` = 'FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(time) + ")' WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = 'Garena';";
+                            if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                                    *error = mysql_error( (MYSQL *)conn );
+                            else
+                                    Success = true;
+                            return true;
+                        } else
+                            return false;
 
                         mysql_free_result( Result );
                 }
-	}
+        }
+
+    }
+
+	string CQuery = "SELECT `user_level` from `oh_users` WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = '" + EscRealm + "';";
+    if( mysql_real_query( (MYSQL *)conn, CQuery.c_str( ), CQuery.size( ) ) != 0 )
+            *error = mysql_error( (MYSQL *)conn );
+    else
+    {
+        MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+        if( Result )
+        {
+            vector<string> Row = MySQLFetchRow( Result );
+
+            if( Row.size( ) == 0 )
+                return false;
+
+            mysql_free_result( Result );
+        }
+    }
 
 	string Query = "UPDATE `oh_users` SET `user_level` = '" + UTIL_ToString( level ) + "', `expire_date` = 'FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(time) + ")' WHERE `bnet_username` = '" + EscName + "' AND `admin_realm` = '" + EscRealm + "';";
 
 	if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
-                *error = mysql_error( (MYSQL *)conn );
+            *error = mysql_error( (MYSQL *)conn );
         else
-                Success = true;
+             Success = true;
 
         return Success;
-
 }
 
 bool MySQLBanRemove( void *conn, string *error, uint32_t botid, string server, string user )

@@ -2775,7 +2775,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 return;
         }
 
-        if( !TempPlayer->GetGProxy( ) && ( m_GHost->IsForcedGProxy(joinPlayer->GetName( )) || m_GHost->IsForcedGProxy(potential->GetExternalIPString( )) ) )
+        if( !TempPlayer->GetGProxy( ) && !Reserved && ( m_GHost->IsForcedGProxy(joinPlayer->GetName( )) || m_GHost->IsForcedGProxy(potential->GetExternalIPString( )) ) )
         {
             if(m_GHost->m_AutoDenyUsers)
                 m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( )+20 ) );

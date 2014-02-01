@@ -1206,8 +1206,8 @@ bool CGHost :: Update( long usecBlock )
                 m_CallableAliasList = NULL;
         }
 
-        // refresh forcedgproxy list all 24 hours
-        if( !m_CallableForcedGProxyList && ( GetTime( ) - m_LastGProxyListUpdate >= 86400 || m_LastGProxyListUpdate == 0 ) )
+        // refresh forcedgproxy list all 30 minutes
+        if( !m_CallableForcedGProxyList && ( GetTime( ) - m_LastGProxyListUpdate >= 1800 || m_LastGProxyListUpdate == 0 ) )
         {
             m_CallableForcedGProxyList = m_DB->ThreadedForcedGProxyList( );
             m_LastGProxyListUpdate = GetTime( );
