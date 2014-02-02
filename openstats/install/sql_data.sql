@@ -323,6 +323,7 @@ DROP TABLE IF EXISTS `oh_game_status`;
 CREATE TABLE IF NOT EXISTS `oh_game_status` (
   `botid` smallint(6) NOT NULL,
   `gameid` smallint(6) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `gametime` datetime NOT NULL,
   `gamename` varchar(30) NOT NULL,
   `gamestatus` tinyint(3) NOT NULL,
