@@ -2256,6 +2256,7 @@ function ShowModeratorPanel( $UserData ) {
  ?></h2>
  <hr />
 <?php OS_Mod_DisplayUserLevel( $UserData[0]["user_level"], $UserData[0]["user_level_expire"] );?>
+ <div><a href="<?=OS_HOME?>?moderator&amp;option=pp&amp;add=<?=$UserData[0]["player"]?>" class="menuButtons" >Add Penalty Points</a></div>
  <form action="" method="post">
  <table>
     <tr>

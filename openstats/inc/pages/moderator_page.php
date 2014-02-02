@@ -271,6 +271,9 @@ if (!isset($_GET["option"])) {
 	  $PP_Value = $row["pp"];
 	} else { $PP_PlayerName = ""; $PP_Reason = ""; $PP_Value="1"; }
 	
+	if ( isset($_GET["add"]) AND !empty($_GET["add"]) ) 
+	$PP_PlayerName = trim( strip_tags($_GET["add"]) );
+	
 	//PP POST FORM
 	if ( isset($_POST["add_pp"]) ) {
 	
