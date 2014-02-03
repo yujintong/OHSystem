@@ -10,6 +10,8 @@ $button = "Add record";
 if (!empty($_GET["search"])) $search = strip_tags( trim($_GET["search"]));
 else $search= "";
 
+if (!isset($s)) $s ="";
+
 if ( isset($_GET["delete"]) AND is_numeric($_GET["delete"]) ) {
   $del = (int)$_GET["delete"];
   $sth = $db->prepare("DELETE FROM ".OSDB_GPROXY." WHERE id = '".$del."' ");
