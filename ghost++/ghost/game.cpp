@@ -207,6 +207,9 @@ CGame :: ~CGame( )
  
         for( vector<PairedSS> :: iterator i = m_PairedSSs.begin( ); i != m_PairedSSs.end( ); ++i )
                 m_GHost->m_Callables.push_back( i->second );
+
+        for( vector<PairedRegAdd> :: iterator i = m_PairedRegAdds.begin( ); i != m_PairedRegAdds.end( ); ++i )
+                m_GHost->m_Callables.push_back( i->second );
  
         for( vector<CDBBan *> :: iterator i = m_DBBans.begin( ); i != m_DBBans.end( ); ++i )
                 delete *i;
@@ -800,6 +803,37 @@ bool CGame :: Update( void *fd, void *send_fd )
                         ++i;
         }
  
+        for( vector<PairedRegAdd> :: iterator i = m_PairedRegAdds.begin( ); i != m_PairedRegAdds.end( ); )
+        {
+                if( i->second->GetReady( ) )
+                {
+                        CGamePlayer *Player = GetPlayerFromName( i->second->GetUser( ), true );
+                        uint32_t Result = i->second->GetResult( );
+                        if( Player ) {
+                            if( Result == 1 )
+                                    SendChat( Player, m_GHost->m_Language->SuccessfullyRegistered() );
+                            else if( Result == 2 )
+                                    SendChat( Player,m_GHost->m_Language->SuccessfullyRegistered() );
+                            else if( Result == 3 )
+                                    SendChat( Player,m_GHost->m_Language->WrongPassword() );
+                            else if( Result == 4 )
+                                    SendChat( Player,m_GHost->m_Language->WrongEMail() );
+                            else if( Result == 5 )
+                                    SendChat( Player,m_GHost->m_Language->NameAlreadyUsed( ) );
+                            else if( Result == 6 )
+                                    SendChat( Player,m_GHost->m_Language->NoAccountToConfirm( ) );
+                            else
+                                    SendChat( Player,m_GHost->m_Language->WrongContactBotOwner( ) );
+                        }
+
+                        m_GHost->m_DB->RecoverCallable( i->second );
+                        delete i->second;
+                        i = m_PairedRegAdds.erase( i );
+                }
+                else
+                        ++i;
+        }
+
         if( m_ForfeitTime != 0 && GetTime( ) - m_ForfeitTime >= 5 )
         {
                 // kick everyone on forfeit team
@@ -4439,7 +4473,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTERESULT
         //
-        else if( ( Command == "voteresult" || Command == "vr" ) && m_GHost->m_VoteMode && m_Voted ) {
+        else if( ( Command == "voteresult" || Command == "vr" )  ) {
             uint32_t c = 0;
             uint32_t mode1 = 0;
             uint32_t mode2 = 0;
@@ -4515,6 +4549,60 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SendAllChat( "No lag has been disabled for player [" + player->GetName( ) + "]." );
 
             player->SetStatsDotASentTime( GetTime( ) );
+        }
+
+        //
+        // !REG
+        // !REGISTRATION
+        //
+        else if( ( Command == "reg" || Command == "registration" || Command == "verify" || Command == "confirm" ) && !Payload.empty( ) )
+        {
+                string type = "";
+                if( Command == "reg" || Command == "registration" )
+                        type = "r";
+                else if( Command == "verify" || Command == "confirm" )
+                        type = "c";
+
+                string Mail;
+                string Password;
+                stringstream SS;
+                SS << Payload;
+                SS >> Mail;
+
+                if( !SS.eof( ) )
+                {
+                        getline( SS, Password );
+                        string :: size_type Start = Password.find_first_not_of( " " );
+
+                        if( Start != string :: npos )
+                                Password = Password.substr( Start );
+                }
+                else
+                {
+                        SendChat( player, m_GHost->m_Language-> WrongRegisterCommand( Command ) );
+                        return;
+                }
+                if( Whisper )
+                {
+                        if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
+                        {
+                                if( Password.find( " " ) != string::npos )
+                                        SendChat( player, m_GHost->m_Language->WrongPassRegisterCommand( Password ) );
+                                else if( Password.length() > 2 )
+                                {
+                                    m_PairedRegAdds.push_back( PairedRegAdd( string( ), m_GHost->m_DB->ThreadedRegAdd( player->GetName( ), m_Server, Mail, Password, type ) ) );
+                                }
+                                else
+                                        SendChat( player, m_GHost->m_Language->PassTooShortRegisterCommand( Password ) );
+                        }
+                        else
+                                SendChat( player, m_GHost->m_Language->InvalidEmailRegisterCommand( Mail) );
+                }
+                else
+                        SendChat( player, m_GHost->m_Language->ErrorWhispRegister( ) );
+
+                return true;
+
         }
 
         return HideCommand;
