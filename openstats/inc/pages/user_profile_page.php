@@ -221,6 +221,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		$ProfileData[$c]["hide"]  = ($row["hide"]);
 		
 		$ProfileData[$c]["hide_stats"] = 1;
+		$ProfileData[0]["sel_hide"] = "";
+		$ProfileData[0]["sel_show"] = "";
 		
 		if ( $row["hide"] == 1 ) $ProfileData[$c]["sel_hide"] = 'selected="selected"';
 		else $ProfileData[$c]["sel_show"] = 'selected="selected"';
