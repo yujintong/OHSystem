@@ -28,6 +28,8 @@ $errors = "";
 		<!--
 		<a href="javascript:;" class="menuButtons" onclick="SetDateField('[os_', 'sl')" >OpenStats</a>
 		-->
+		<a class="menuButtons" href="<?=OS_HOME?>adm/?admin_logs=&search_logs=%5Bos_moderator%5D">Moderators</a>
+		<a class="menuButtons" href="<?=OS_HOME?>adm/?admin_logs=&search_logs=%5Bos_cron%5D">CRON</a>
 		<a class="menuButtons" href="<?=OS_HOME?>adm/?admin_logs=&search_logs=%5Bos_">OpenStats</a>
 		<a href="javascript:;" class="menuButtons" onclick="SetDateField('unban', 'sl')" >Unban</a>
 		<a href="javascript:;" class="menuButtons" onclick="SetDateField('tban', 'sl')" >Tban</a>
