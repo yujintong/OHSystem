@@ -126,13 +126,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	if ( $row["month"] != date("m") OR $row["year"]!= date("Y") ) {
 	
-	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
-	 WHERE player = '".$row["player"]."' AND alias_id = '".$UserAliasID."' 
-	 ORDER BY id DESC LIMIT 1");
-	 $result3 = $sth3->execute();
-	 $row3 = $sth3->fetch(PDO::FETCH_ASSOC);
+	 //$sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
+	 //WHERE player = '".$row["player"]."' AND alias_id = '".$UserAliasID."' 
+	// ORDER BY id DESC LIMIT 1");
+	 //$result3 = $sth3->execute();
+	 //$row3 = $sth3->fetch(PDO::FETCH_ASSOC);
 	 
-	 $UserData[$c]["OtherStats"]  = ($row3["id"]);
+	 //$UserData[$c]["OtherStats"]  = ($row3["id"]);
 	}
 	
 	$UserData[$c]["hide"]  = ($row["hide"]);
@@ -538,13 +538,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	//Check other game types
 	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  
-	WHERE player = :player AND `month` = '".$month."' AND year = '".$year."' AND alias_id != '".$UserAliasID."' LIMIT 1");
+	WHERE player = :player AND `month` = '".$month."' AND year = '".$year."' AND alias_id = '".$UserAliasID."' AND id>".$UserData[0]["id"]." LIMIT 1");
 	$sth->bindValue(':player', $PlayerName, PDO::PARAM_STR);  
 	$result = $sth->execute();
 	$row = $sth->fetch(PDO::FETCH_ASSOC);
 	
 	$UserOtherGames["id"] = $row["id"];
-	
+
 	//GAME TYPES/ALIASES (dota, lod)
 	
     $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");

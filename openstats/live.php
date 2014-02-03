@@ -653,7 +653,7 @@ function HighlightKeyword($str, $search) {
 
 	$player = HighlightKeyword($row["player"], $search);
 	 ?>
-	 <div><a href="<?=OS_HOME?>?u=<?=$row["id"]?>"><?=$player?></a></div>
+	 <div><a href="<?=OS_HOME?>?u=<?=$row["player"]?>"><?=$player?></a></div>
 	 <?php
 	}
 	?>

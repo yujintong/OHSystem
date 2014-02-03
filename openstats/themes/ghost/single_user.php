@@ -33,10 +33,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<?=OS_AdminTools($User["id"], $User["player"])?>
 	</td>
    </tr>
-   <?php if (isset($User["OtherStats"]) ) { ?>
+   <?php if (isset($UserOtherGames["id"]) ) { ?>
    <tr>
    <td  class="padLeft">
-   <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$User["OtherStats"]?>"><?=$lang["most_recent_stats"]?></a></td>
+   <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$UserOtherGames["id"]?>"><?=$lang["most_recent_stats"]?></a></td>
    <td></td>
    </tr>
    <?php } ?>
