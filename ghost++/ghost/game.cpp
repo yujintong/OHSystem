@@ -4577,29 +4577,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         if( Start != string :: npos )
                                 Password = Password.substr( Start );
                 }
-                else
+
+                if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
                 {
-                        SendChat( player, m_GHost->m_Language-> WrongRegisterCommand( Command ) );
-                        return;
-                }
-                if( Whisper )
-                {
-                        if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
+                        if( Password.find( " " ) != string::npos )
+                                SendChat( player, m_GHost->m_Language->WrongPassRegisterCommand( Password ) );
+                        else if( Password.length() > 2 )
                         {
-                                if( Password.find( " " ) != string::npos )
-                                        SendChat( player, m_GHost->m_Language->WrongPassRegisterCommand( Password ) );
-                                else if( Password.length() > 2 )
-                                {
-                                    m_PairedRegAdds.push_back( PairedRegAdd( string( ), m_GHost->m_DB->ThreadedRegAdd( player->GetName( ), m_Server, Mail, Password, type ) ) );
-                                }
-                                else
-                                        SendChat( player, m_GHost->m_Language->PassTooShortRegisterCommand( Password ) );
+                            m_PairedRegAdds.push_back( PairedRegAdd( string( ), m_GHost->m_DB->ThreadedRegAdd( player->GetName( ), player->GetSpoofedRealm(), Mail, Password, type ) ) );
                         }
                         else
-                                SendChat( player, m_GHost->m_Language->InvalidEmailRegisterCommand( Mail) );
+                                SendChat( player, m_GHost->m_Language->PassTooShortRegisterCommand( Password ) );
                 }
                 else
-                        SendChat( player, m_GHost->m_Language->ErrorWhispRegister( ) );
+                        SendChat( player, m_GHost->m_Language->InvalidEmailRegisterCommand( Mail) );
 
                 return true;
 
