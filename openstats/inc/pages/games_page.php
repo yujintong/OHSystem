@@ -220,7 +220,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$GamesData[$c]["hero"]  = strtoupper($row["hero"]);   
     if ( empty($row["hero"])  ) $GamesData[$c]["hero"] = "blank";
 	
-	if ( !file_exists("img/heroes/".$GamesData[$c]["hero"].".gif") ) $GamesData[$c]["hero"]  = "blank";
+	if ( @!file_exists("img/heroes/".$GamesData[$c]["hero"].".gif") ) $GamesData[$c]["hero"]  = "blank";
 	
 	}
 	else $GamesData[$c]["hero"]  = "blank";

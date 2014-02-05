@@ -49,6 +49,7 @@ class CConfig;
 class CCallableCommandList;
 class CCallableGameUpdate;
 class CCallableFlameList;
+class CCallableForcedGProxyList;
 class CCallableAnnounceList;
 class CCallableDCountryList;
 class CCallableGameDBInit;
@@ -88,20 +89,20 @@ public:
 	string m_AutoHostOwner;
 	string m_AutoHostServer;
 	uint32_t m_AutoHostGameType;
-        uint32_t m_MinVIPGames;
-        uint32_t m_RegVIPGames;
+    uint32_t m_MinVIPGames;
+    uint32_t m_RegVIPGames;
 	bool m_OHBalance;
-        bool m_HighGame;
-        uint32_t m_MinLimit;
+    bool m_HighGame;
+    uint32_t m_MinLimit;
 	bool m_ObserverFake;
 	uint32_t m_MinFF;
 	bool m_NoGarena;
 	bool m_CheckIPRange;
-        bool m_DenieProxy;
+    bool m_DenieProxy;
 	bool m_LiveGames;
-        uint32_t m_MinPlayerAutoEnd;
-        uint32_t m_MaxAllowedSpread;
-        bool m_EarlyEnd;
+    uint32_t m_MinPlayerAutoEnd;
+    uint32_t m_MaxAllowedSpread;
+    bool m_EarlyEnd;
 	uint32_t m_AutoHostMaximumGames;		// maximum number of games to auto host
 	uint32_t m_AutoHostAutoStartPlayers;	// when using auto hosting auto start the game when this many players have joined
 	uint32_t m_LastAutoHostTime;			// GetTime when the last auto host was attempted
@@ -111,23 +112,26 @@ public:
 	vector<string> m_Modes;
 	CCallableFlameList *m_CallableFlameList;
 	uint32_t m_LastFlameListUpdate;
+    CCallableForcedGProxyList *m_CallableForcedGProxyList;
 	CCallableAliasList *m_CallableAliasList;
+    uint32_t m_LastGProxyListUpdate;
+    vector<string> m_GProxyList;
 	uint32_t m_LastAliasListUpdate;
-        uint32_t m_LastDNListUpdate;
+    uint32_t m_LastDNListUpdate;
 	vector<string> m_Flames;
-        CCallableAnnounceList *m_CallableAnnounceList;
-        uint32_t m_LastAnnounceListUpdate;
+    CCallableAnnounceList *m_CallableAnnounceList;
+    uint32_t m_LastAnnounceListUpdate;
 	uint32_t m_AnnounceLines;
-        vector<string> m_Announces;
-        CCallableDCountryList *m_CallableDCountryList;
-        uint32_t m_LastDCountryUpdate;
-        vector<string> m_DCountries;
+    vector<string> m_Announces;
+    CCallableDCountryList *m_CallableDCountryList;
+    uint32_t m_LastDCountryUpdate;
+    vector<string> m_DCountries;
 	CCallableCommandList *m_CallableCommandList;			// threaded database command list in progress
 	uint32_t m_LastGameUpdateTime;			// GetTime when the gamelist was last updated
 	CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
-        CCallableGameDBInit *m_CallableHC;
-        CCallableDeniedNamesList *m_CallableDeniedNamesList;
-        vector<string> m_DeniedNamePartials;
+    CCallableGameDBInit *m_CallableHC;
+    CCallableDeniedNamesList *m_CallableDeniedNamesList;
+    vector<string> m_DeniedNamePartials;
 	double m_AutoHostMinimumScore;
 	double m_AutoHostMaximumScore;
 	bool m_AllGamesFinished;				// if all games finished (used when exiting nicely)
@@ -145,8 +149,8 @@ public:
 	string m_MapCFGPath;					// config value: map cfg path
 	string m_GameLogFilePath;
 	string m_ColoredNamePath;
-        bool m_GameLogging;
-        uint32_t m_GameLoggingID;
+    bool m_GameLogging;
+    uint32_t m_GameLoggingID;
 	string m_SaveGamePath;					// config value: savegame path
 	string m_MapPath;						// config value: map path
 	bool m_SaveReplays;						// config value: save replays
@@ -244,6 +248,12 @@ public:
     bool m_VirtualLobby;
     uint32_t m_VirtualLobbyTime;
     string m_CustomVirtualLobbyInfoBanText;
+    bool m_SimpleAFKScript;
+    uint32_t m_APMAllowedMinimum;
+    uint32_t m_APMMaxAfkWarnings;
+    string m_Website;
+    uint32_t m_DisconnectAutoBanTime;
+    string m_SharedFilesPath;
         
 	CGHost( CConfig *CFG );
 	~CGHost( );
@@ -286,6 +296,8 @@ public:
     uint32_t GetStatsAliasNumber( string alias );
     string GetLODMode( string fullmode );
     string GetMonthInWords( string month);
+    bool IsForcedGProxy(string input );
+    bool FindHackFiles( string input );
 };
 
 #endif

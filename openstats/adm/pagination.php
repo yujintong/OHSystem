@@ -30,12 +30,14 @@ if ( isset($_GET["find_leavers"]) )        $prefix.="&amp;find_leavers";
 if ( isset($_GET["admin_logs"]) )    $prefix.="?admin_logs";
 if ( isset($_GET["pp"]) )            $prefix.="?pp";
 if ( isset($_GET["geoip"]) )         $prefix.="?geoip";
+if ( isset($_GET["duplicate"]) )     $prefix.="&amp;duplicate";
 if ( isset($_GET["letter"]) ) $prefix.="&amp;letter=".substr($_GET["letter"],0,2);
 
 if ( isset($_GET["country"]) ) $prefix.="&amp;country=".substr($_GET["country"],0,2);
 
 if ( isset($_GET["player"]) ) $prefix.="&amp;player=".($_GET["player"]);
 if ( isset($_GET["realm"]) ) $prefix.="&amp;realm=".($_GET["realm"]);
+if ( isset($_GET["gproxy"]) ) $prefix.="?gproxy";
 
 if ( isset($_GET["show"]) ) {
    if ($_GET["show"] == "unparsed") $prefix.="&amp;show=unparsed";

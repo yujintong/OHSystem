@@ -105,6 +105,11 @@ vector<string> CGHostDB :: FlameList( )
         return vector<string>( );
 }
 
+vector<string> CGHostDB :: ForcedGProxyList( )
+{
+        return vector<string>( );
+}
+
 vector<string> CGHostDB :: AliasList( )
 {
         return vector<string>( );
@@ -140,7 +145,7 @@ string CGHostDB :: BanCheck2( string server, string user, string type )
         return "";
 }
 
-uint32_t CGHostDB :: BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias )
+uint32_t CGHostDB :: BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
 {
 	return false;
 }
@@ -295,6 +300,11 @@ CCallableFlameList *CGHostDB :: ThreadedFlameList( )
         return NULL;
 }
 
+CCallableForcedGProxyList *CGHostDB :: ThreadedForcedGProxyList( )
+{
+        return NULL;
+}
+
 CCallableAliasList *CGHostDB :: ThreadedAliasList( )
 {
         return NULL;
@@ -320,7 +330,7 @@ CCallableStoreLog *CGHostDB :: ThreadedStoreLog( uint32_t chatid, string game, v
         return NULL;
 }
 
-CCallablegs *CGHostDB :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype )
+CCallablegs *CGHostDB :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
 {
         return NULL;
 }
@@ -345,7 +355,7 @@ CCallableBanCheck2 *CGHostDB :: ThreadedBanCheck2( string server, string user, s
         return NULL;
 }
 
-CCallableBanAdd *CGHostDB :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country, uint32_t gamealias )
+CCallableBanAdd *CGHostDB :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
 {
 	return NULL;
 }
@@ -511,6 +521,11 @@ CCallablePList :: ~CCallablePList( )
 }
 
 CCallableFlameList :: ~CCallableFlameList( )
+{
+
+}
+
+CCallableForcedGProxyList :: ~CCallableForcedGProxyList( )
 {
 
 }
@@ -731,8 +746,8 @@ CDBGamePlayerSummary :: ~CDBGamePlayerSummary( )
 // CDBStatsPlayerSummary
 //
 
-CDBStatsPlayerSummary :: CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, uint32_t nForcedGproxy, bool nHidden, string nCountry, string nCountryCode, uint32_t nRole )
-    : m_ID( nID ), m_Player( nPlayer ), m_Playerlower( nPlayerlower ), m_Score( nScore ), m_Games( nGames ), m_Wins( nWins ), m_Losses( nLosses ), m_Draw( nDraw ), m_Kills( nKills ), m_Deaths( nDeaths ), m_Assists( nAssists ), m_Creeps( nCreeps ), m_Denies( nDenies ), m_Neutrals( nNeutrals ), m_Towers( nTowers ), m_Rax( nRax ), m_Streak( nStreak ), m_Maxstreak( nMaxstreak ), m_Losingstreak( nLosingstreak ), m_Maxlosingstreak( nMaxlosingstreak ), m_Zerodeaths( nZerodeaths ), m_Realm( nRealm ), m_Leaves( nLeaves ), m_ALLCount( nALLCount ), m_RankCount( nRankCount ), m_ForcedGproxy( nForcedGproxy ), m_Hidden( nHidden ), m_Country( nCountry ), m_CountryCode( nCountryCode ), m_Role( nRole )
+CDBStatsPlayerSummary :: CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, bool nHidden, string nCountry, string nCountryCode )
+    : m_ID( nID ), m_Player( nPlayer ), m_Playerlower( nPlayerlower ), m_Score( nScore ), m_Games( nGames ), m_Wins( nWins ), m_Losses( nLosses ), m_Draw( nDraw ), m_Kills( nKills ), m_Deaths( nDeaths ), m_Assists( nAssists ), m_Creeps( nCreeps ), m_Denies( nDenies ), m_Neutrals( nNeutrals ), m_Towers( nTowers ), m_Rax( nRax ), m_Streak( nStreak ), m_Maxstreak( nMaxstreak ), m_Losingstreak( nLosingstreak ), m_Maxlosingstreak( nMaxlosingstreak ), m_Zerodeaths( nZerodeaths ), m_Realm( nRealm ), m_Leaves( nLeaves ), m_ALLCount( nALLCount ), m_RankCount( nRankCount ), m_Hidden( nHidden ), m_Country( nCountry ), m_CountryCode( nCountryCode )
 {
 
 }

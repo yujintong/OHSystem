@@ -2,10 +2,34 @@
 
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
+	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliases = array();
+	$DefaultGameType = 1;
+	$currentYear  = date("Y", time() );
+    $currentMonth = date("n", time() );
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliases[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliases[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliases[$c]["selected"] = 'selected="selected"'; else $GameAliases[$c]["selected"] = '';
+	 
+	 if ( !isset($_GET["game_type"]) AND $row["default_alias"] == 1) {
+	 $GameAliases[$c]["selected"] = 'selected="selected"';
+	 $DefaultGameType = $row["alias_id"];
+	 }
+	 
+	 $c++;
+	}
+
       $s = safeEscape( $_GET["search"]);
-	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ? LIMIT 1");
+	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ?  AND alias_id = ? LIMIT 1");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
+	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
 	  $result = $sth->execute();
 	  $r = $sth->fetch(PDO::FETCH_NUM);
 	  $numrows = $r[0];
@@ -15,11 +39,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $draw_pagination = 1;
 	  
 	  
-	  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." WHERE (player) LIKE ? 
-	  ORDER BY score DESC
+	  $sth = $db->prepare("SELECT MAX(id) as id, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip, alias_id
+	  FROM ".OSDB_STATS." WHERE (player) LIKE ? AND alias_id = ? 
+	  GROUP BY player
+	  ORDER BY id DESC, score DESC
 	  LIMIT $offset, $rowsperpage");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
+	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
 	  $result = $sth->execute();
 	  
 	$c=0;
@@ -39,6 +66,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$SearchData[$c]["country"]  = "Reserved";
 	}
 	$SearchData[$c]["id"]        = (int)($row["id"]);
+	$SearchData[$c]["alias_id"]  = (($row["alias_id"])-1);
 	$SearchData[$c]["player"]  = ($row["player"]);
 	$SearchData[$c]["score"]  = number_format($row["score"],0);
 	$SearchData[$c]["games"]  = number_format($row["games"],0);

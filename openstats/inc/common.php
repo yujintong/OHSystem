@@ -1241,6 +1241,8 @@ function OS_is_home_page() {
    AND !isset($_GET["guides"])
    AND !isset($_GET["action"])
    AND !isset($_GET["live_games"])
+   AND !isset($_GET["premium"])
+   AND !isset($_GET["moderator"])
                             ) 
    {
     return true;
@@ -1652,7 +1654,7 @@ function OS_ExpireDateRemain( $bandate = "", $d="d", $h="h", $min="min", $remain
     
 	if ( $days>=1 ) echo "<b>".$days." $d</b>, ";
 
-	echo "<b>".$hours." $h</b>, ";
+	if ($hours>=1)  echo "<b>".$hours." $h</b>, ";
 	echo "<b>".$minutes." $min</b> $remain";
   }
 }
@@ -2056,6 +2058,7 @@ function OS_DisplayPPStatus( $pp = 0 ) {
    if ( $pp>=4 AND $pp<=7 ) { $icon = "hot.png"; $status = "Hot"; }
    if ( $pp>=8 ) { $icon = "critical.gif";  $status = "Critical"; }
    if ( $pp>=11 ) { $icon = "critical.gif"; $status = "Very Critical"; }
+   if ( $pp>=18 ) { $icon = "critical.gif"; $status = "Very Critical: Perm Ban"; }
    ?>
    <img src="<?=OS_HOME?>img/pp/<?=$icon?>" alt="cool" width="24" height="24" class="imgvalign padLeft" /> <b>Status:</b> <?=$status?>
    <?php
@@ -2063,7 +2066,7 @@ function OS_DisplayPPStatus( $pp = 0 ) {
 
 function OS_DisplayPPBar( $total = 0 ) {
   $bar = $total;
-  if ( $bar>=20 ) $bar = 20;
+  if ( $bar>=19 ) $bar = 19;
   ?>
   <div style="width:200px; border: 1px solid #616161; border-radius: 4px; height:24px; margin-left:8px; float:left;">
   <?php if ($total>=1) { ?>
@@ -2211,5 +2214,216 @@ function MonthYearForm( $startYear = 2013,  $page = 'top' ) {
 	<?php } ?>
  </select>
  <?php
+}
+
+function OS_is_moderator() {
+  if ( isset($_SESSION["level"]) AND $_SESSION["level"]>=5 ) return true;
+}
+
+function OS_ToolRemovePP( $id ) {
+  if ( OS_is_moderator() AND isset($_GET["u"]) AND is_numeric($_GET["u"]) ) {
+    ?>
+	<a href="javascript:;" onclick="if(confirm('Remove PP?')) { location.href='<?=OS_HOME?>?u=<?=(int)$_GET["u"]?>&amp;removepp=<?=$id?>' }">&times;</a>
+	<?php
+  }
+}
+
+function OS_AdminTools( $userID = "", $PlayerName = "" ) {
+  if ( OS_is_moderator() ) {
+  ?>
+   <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$userID?>&amp;mcp">Moderator CP</a> 
+  <?php
+  }
+  if ( OS_is_admin() ) {
+  ?>
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?bans&amp;add=<?=$PlayerName?>" target="_blank">Ban User</a> 
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?pp&amp;addpp=<?=$PlayerName?>" target="_blank">Add PP</a>
+  <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;player=<?=$PlayerName?>&amp;show=ips" target="_blank">All IPs</a>
+  <?php  
+  }
+}
+
+function ShowModeratorPanel( $UserData ) {
+ if(isset($_GET["mcp"])) {
+ ?>
+ <hr />
+ <h2>Moderator Control Panel  <?php
+  if ( !empty($UserData[0]["banname"]) ) {
+    ?>
+	<a href="javascript:;" onclick="if(confirm('Remove ban <?=$UserData[0]["banname"]?>?')) { location.href='<?=OS_HOME?>?u=<?=(int)$_GET["u"]?>&amp;mcp&amp;rban=<?=$UserData[0]["banid"]?>' }" class="menuButtons" style="background-color: #DD0B0B; color: #FFF;" >Remove ban</a>
+	<?php
+  }
+ ?></h2>
+ <hr />
+<?php OS_Mod_DisplayUserLevel( $UserData[0]["user_level"], $UserData[0]["user_level_expire"] );?>
+ <div><a href="<?=OS_HOME?>?moderator&amp;option=pp&amp;add=<?=$UserData[0]["player"]?>" class="menuButtons" >Add Penalty Points</a></div>
+ <form action="" method="post">
+ <table>
+    <tr>
+	  <td width="100">Ban user:</td>
+	  <td>
+	  <select name="expire">
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*10 )?>">+10h</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24 )?>">+1 day</option>
+	   <option selected="selected" value="<?=date("Y-m-d H:i:00", time()+3600*48 )?>">+2 days</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*72 )?>">+3 days</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*5 )?>">+5 days</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*7 )?>">+7 days</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*30 )?>">+1 month</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*60 )?>">+2 months</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*90 )?>">+3 months</option>
+	   <option value="<?=date("Y-m-d H:i:00", time()+3600*24*180 )?>">+6 months</option>
+	   <option value="0000-00-00 00:00:00">[permanent]</option>
+	  </select>
+		
+	  </td>
+	</tr>
+    <tr>
+	  <td width="100">Reason:</td>
+	  <td>
+	  <input type="text" value="" name="reason" size="45" class="field" maxlength="255" />
+		
+	  </td>
+	</tr>
+	
+    <tr>
+	  <td width="100">Game name:</td>
+	  <td>
+	  <input type="text" value="" name="game" size="32" class="field" maxlength="255" />
+		
+	  </td>
+	</tr>
+	
+    <tr>
+	  <td>User IP:</td>
+	  <td><?=$UserData[0]["ip"]?> (<?=$UserData[0]["country"]?>) </td>
+	</tr>
+	
+    <tr>
+	  <td width="100"</td>
+	  <td>
+	  <input type="Submit" value="Add ban" name="add_ban" />
+		
+	  </td>
+	</tr>
+ </table>
+ </form>
+ 
+ <a class="menuButtons" href="<?=OS_HOME?>?u=<?=(int)$_GET["u"]?>&amp;mcp#ips">Show User IP Addresses</a>
+ <a class="menuButtons" href="<?=OS_HOME?>?u=<?=(int)$_GET["u"]?>&amp;mcp#other">Shared IP</a>
+ <?php
+    global $UserIPRange;
+	global $UserIPAddr;
+	global $OtherIPAddr;
+	
+	?>
+	<hr />
+	<h3>Banned players on the same IP range</h3>
+	<table style="font-size:12px;">
+	 <tr>
+	   <th>Player</th>
+	   <th>IP</th>
+	   <th>Expire</th>
+	   <th>Reason</th>
+	   <th>Game Name</th>
+	   <th>Country</th>
+	   <th>Date</th>
+	   <th>Banned by</th>
+	 </tr>
+	
+	<?php
+	if (!empty($UserIPRange)) foreach ($UserIPRange as $ipr) {
+    ?>
+	<tr>
+	  <td><a target="_blank" href="<?=OS_HOME?>?u=<?=$ipr["name"]?>"><?=$ipr["name"]?></a></td>
+	  <td><?=$ipr["ip"]?></td>
+	  <td><?=$ipr["expiredate"]?></td>
+	  <td><?=$ipr["reason"]?></td>
+	  <td><?=$ipr["gamename"]?></td>
+	  <td><?=$ipr["country"]?></td>
+	  <td><?=$ipr["date"]?></td>
+	  <td><?=$ipr["admin"]?></td>
+	</tr>
+	<?php
+    } 
+    ?>
+	</table>
+	<?php if (empty($UserIPRange)) echo "<div>No record.</div>"; ?>
+	<hr />
+
+	<a name="ips"></a>
+	<h3>User IP Addresses</h3>
+	<table style="font-size:12px;">
+	 <tr>
+	   <th width="180">Player</th>
+	   <th width="120">IP</th>
+	   <th width="250">Gamename</th>
+	   <th>Date</th>
+	 </tr>
+	<?php
+    if (!empty($UserIPAddr)) foreach ($UserIPAddr as $uip) {
+    ?>
+	<tr>
+	  <td><a href="<?=OS_HOME?>?u=<?=$uip["name"]?>"><?=$uip["name"]?></a></td>
+	  <td><?=$uip["ip"]?></td>
+	  <td><a href="<?=OS_HOME?>?game=<?=$uip["gameid"]?>"><?=$uip["gamename"]?></a></td>
+	  <td><?=$uip["datetime"]?></td>
+	</tr>
+	<?php
+    }
+	?>
+	</table>
+	<?php if (empty($UserIPAddr)) echo "<div>No record.</div>"; ?>
+
+	<hr />
+	<a name="other"></a>
+	<h3>Shared IP</h3>
+	<table style="font-size:12px;">
+	 <tr>
+	   <th width="180">Player</th>
+	   <th width="120">IP</th>
+	   <th width="250">Gamename</th>
+	   <th>Date</th>
+	 </tr>
+	<?php
+    if (!empty($OtherIPAddr)) foreach ($OtherIPAddr as $uip) {
+    ?>
+	<tr>
+	  <td><a href="<?=OS_HOME?>?u=<?=$uip["name"]?>"><?=$uip["name"]?></a></td>
+	  <td><?=$uip["ip"]?></td>
+	  <td><a href="<?=OS_HOME?>?game=<?=$uip["gameid"]?>"><?=$uip["gamename"]?></a></td>
+	  <td><?=$uip["datetime"]?></td>
+	</tr>
+	<?php
+    }
+	?>
+	</table>
+	<?php if (empty($OtherIPAddr)) echo "<div>No record.</div>"; ?>
+	
+	<a href="<?=OS_HOME?>?u=<?=(int)$_GET["u"]?>">Back to User Page</a>
+	
+	<hr />
+	<div>&nbsp;</div>
+	<?php
+ 
+  }
+}
+
+function OS_Mod_DisplayUserLevel( $level = "", $expire = "" ) {
+  if ( $level>=1 ) {
+  
+  OS_IsUserGameAdmin( $level ); 
+  echo "<b>".OS_ShowUserRole( $level )."</b>";
+  
+  if ( $expire!='0000-00-00 00:00:00' ) {
+    global $lang;
+    ?>
+	- <?=OS_ExpireDateRemain( $expire ) ?> (<?=date( OS_DATE_FORMAT, strtotime($expire))?>)
+	<?php
+  } else {
+  ?> (Never Expire)<?php
+  }
+  
+  }
 }
 ?>

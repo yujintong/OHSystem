@@ -191,6 +191,7 @@ protected:
     bool m_Voted;                                                           // define if the vote process is already done when this option is enabled
     uint32_t m_VotedTimeStart;                                              // when the voting has started, a timer function
     bool m_AllowMapTrading;
+    uint32_t m_PartTime;
         
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
@@ -282,7 +283,7 @@ public:
 	virtual void SendAllActions( );
 	virtual void SendWelcomeMessage( CGamePlayer *player );
 	virtual void SendEndMessage( );
-    virtual void SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type );
+    virtual void SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, uint32_t type, bool gproxy );
 
 	// events
 	// note: these are only called while iterating through the m_Potentials or m_Players vectors

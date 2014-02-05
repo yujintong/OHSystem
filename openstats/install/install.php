@@ -181,7 +181,15 @@ if (strstr($_SERVER['REQUEST_URI'], basename(__FILE__) ) ) {header('location: ..
 	<?php
 	   if (file_exists("install/sql_data.sql") ) {
 	   
-       $dbh = new PDO('mysql:host='.$server.';dbname='.$database, $username, $password);
+       //$dbh = new PDO('mysql:host='.$server.';dbname='.$database, $username, $password);
+try {
+    $dbh = new PDO('mysql:host='.$server.';dbname='.$database, $username, $password);
+} catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    die();
+}
+	  
+	   
 	   $result = file_get_contents("install/sql_data.sql");
 	   $items = explode(";", $result);
 	   foreach ($items as $data) {

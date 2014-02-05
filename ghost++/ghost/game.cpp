@@ -123,7 +123,12 @@ CGame :: ~CGame( )
                                         Counter++;
                                 if( Counter <= 2 && VictimLevel <= 2 )
                                 {
-                                    string Reason = "left at ";
+                                    uint32_t BanTime = m_GHost->m_DisconnectAutoBanTime;
+                                    string Reason = "disconnected at ";
+                                    if((*i)->GetLeftReason( ).find("left")!=string::npos) {
+                                        Reason = "left at ";
+                                        BanTime = m_GHost->m_LeaverAutoBanTime;
+                                    }
 
                                     if( EndTime < 300 ) {
                                         Reason += UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
@@ -139,7 +144,7 @@ CGame :: ~CGame( )
 
                                         Reason += LeftMin+":"+LeftSec + "/" + EndMin+":"+EndSec;
                                     }
-                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, m_GHost->m_LeaverAutoBanTime, "", m_GameAlias  ) );
+                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, BanTime, ""  ) );
                                 }
                         }
                 }
@@ -201,6 +206,9 @@ CGame :: ~CGame( )
                 m_GHost->m_Callables.push_back( i->second );
  
         for( vector<PairedSS> :: iterator i = m_PairedSSs.begin( ); i != m_PairedSSs.end( ); ++i )
+                m_GHost->m_Callables.push_back( i->second );
+
+        for( vector<PairedRegAdd> :: iterator i = m_PairedRegAdds.begin( ); i != m_PairedRegAdds.end( ); ++i )
                 m_GHost->m_Callables.push_back( i->second );
  
         for( vector<CDBBan *> :: iterator i = m_DBBans.begin( ); i != m_DBBans.end( ); ++i )
@@ -358,29 +366,6 @@ bool CGame :: Update( void *fd, void *send_fd )
                             Year=m_GHost->GetTimeFunction(0);
                         if( StatsPlayerSummary )
                         {
-                          /**
-                           * 1: Assassin (  kills/games > 15 )
-                           * 2: Jungler ( neutrals/games > 50 )
-                           * 3: Supporter ( assists/games > 15 )
-                           * 4: Observer ( observedgames/games > .5 )
-                           * 5: Feeder ( deaths/games > 8 )
-                           * 6: Enemies Assitant ( (kills/deaths) < 1 )
-                           */
-                           uint32_t role = StatsPlayerSummary->GetRole();
-                           string roleName = "Unknown";
-                           if( role == 1 ) {
-                               roleName = "Assassin";
-                           } else if( role == 2 ) {
-                               roleName = "Jungler";
-                           } else if( role == 3 ) {
-                               roleName = "Supporter";
-                           } else if( role == 4 ) {
-                               roleName = "Observer";
-                           } else if( role == 5 ) {
-                               roleName = "Feeder";
-                           } else if( role == 6 ) {
-                               roleName = "Enemies Assistant";
-                           }
                             if(! StatsPlayerSummary->GetHidden() )
                             {
                                 if( i->first.empty( ) )
@@ -394,7 +379,6 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
-                                                roleName,
                                                 m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
@@ -417,7 +401,6 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
-                                                roleName,
                                                 m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
@@ -446,7 +429,6 @@ bool CGame :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
-                                                roleName,
                                                 m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
@@ -720,7 +702,9 @@ bool CGame :: Update( void *fd, void *send_fd )
                                  * Tree Tag template
                                  */
                                 Summary="G: "+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+" Score: "+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+" W/L/D: "+UTIL_ToString( StatsPlayerSummary->GetWins( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetLosses( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetDraw( ) )+" K/D/S: "+UTIL_ToString( StatsPlayerSummary->GetKills( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgKills( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetDeaths( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDeaths( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetAssists( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 1)+") E/I: "+UTIL_ToString( StatsPlayerSummary->GetCreeps( ) )+"("+UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 1 )+")/"+UTIL_ToString( StatsPlayerSummary->GetDenies( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 1)+")";
-                            } else{
+                            } else if( StatsPlayerSummary->GetWins( ) != 0 || StatsPlayerSummary->GetLosses( ) != 0 ){
+                                Summary="G: "+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+" Score: "+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+" Rank: "+StatsPlayerSummary->GetRank()+" W/L/D: "+UTIL_ToString( StatsPlayerSummary->GetWins( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetLosses( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetDraw( ) );
+                            } else {
                                 Summary="Found ["+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+"] games, which can not be detailed parsed.";
                             }
  
@@ -819,6 +803,37 @@ bool CGame :: Update( void *fd, void *send_fd )
                         ++i;
         }
  
+        for( vector<PairedRegAdd> :: iterator i = m_PairedRegAdds.begin( ); i != m_PairedRegAdds.end( ); )
+        {
+                if( i->second->GetReady( ) )
+                {
+                        CGamePlayer *Player = GetPlayerFromName( i->second->GetUser( ), true );
+                        uint32_t Result = i->second->GetResult( );
+                        if( Player ) {
+                            if( Result == 1 )
+                                    SendChat( Player, m_GHost->m_Language->SuccessfullyRegistered() );
+                            else if( Result == 2 )
+                                    SendChat( Player,m_GHost->m_Language->SuccessfullyRegistered() );
+                            else if( Result == 3 )
+                                    SendChat( Player,m_GHost->m_Language->WrongPassword() );
+                            else if( Result == 4 )
+                                    SendChat( Player,m_GHost->m_Language->WrongEMail() );
+                            else if( Result == 5 )
+                                    SendChat( Player,m_GHost->m_Language->NameAlreadyUsed( ) );
+                            else if( Result == 6 )
+                                    SendChat( Player,m_GHost->m_Language->NoAccountToConfirm( ) );
+                            else
+                                    SendChat( Player,m_GHost->m_Language->WrongContactBotOwner( ) );
+                        }
+
+                        m_GHost->m_DB->RecoverCallable( i->second );
+                        delete i->second;
+                        i = m_PairedRegAdds.erase( i );
+                }
+                else
+                        ++i;
+        }
+
         if( m_ForfeitTime != 0 && GetTime( ) - m_ForfeitTime >= 5 )
         {
                 // kick everyone on forfeit team
@@ -1627,7 +1642,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 if( Matches == 0 )
                                                         SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                                 else if( Matches == 1 )
-                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, 0, "", m_GameAlias ) ) );
+                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, 0, "" ) ) );
                                                 else
                                                         SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                                         }
@@ -1639,7 +1654,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 if( Matches == 0 )
                                                         SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                                 else if( Matches == 1 )
-                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, 0, LastMatch->GetCLetter( ), m_GameAlias ) ) );
+                                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, 0, LastMatch->GetCLetter( ) ) ) );
                                                 else
                                                         SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                                         }
@@ -1755,7 +1770,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                                         else if( Matches == 1 )
                                                                         {
                                                                              if( Level >= 7 || ( Level == 5 ||  Level == 6 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
-                                                                                     m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "", m_GameAlias ) ) );
+                                                                                     m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "" ) ) );
                                                                              else
                                                                                  SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
                                                                         }
@@ -1772,7 +1787,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                                         else if( Matches == 1 )
                                                                         {
                                                                                 if( Level >= 7 || ( Level == 5 ||  Level == 6 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
-                                                                                         m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ), m_GameAlias ) ) );
+                                                                                         m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ) ) ) );
                                                                                 else
                                                                                         SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
 
@@ -1885,7 +1900,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         if( Payload.empty( ) )
                                                 Payload = "Leaver";
  
-                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 0, "", m_GameAlias ) ) );
+                                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 0, "" ) ) );
                                 }
                                 else
                                         SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
@@ -1900,7 +1915,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             if( Payload.empty( ) )
                                 Payload = "Leaver";
 
-                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 432000, "", m_GameAlias ) ) );
+                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 432000, "" ) ) );
                         }
  
                         //
@@ -3318,7 +3333,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
                 player->SetVKTimes( );
                 if( player->GetVKTimes( ) == 8 )
-                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "", m_GameAlias ) ) );
+                        m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "" ) ) );
                 else if( player->GetVKTimes( ) == 5 )
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( player->GetName( ), "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
                 else if( player->GetVKTimes( ) >= 2 )
@@ -4458,7 +4473,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         //
         // !VOTERESULT
         //
-        else if( ( Command == "voteresult" || Command == "vr" ) && m_GHost->m_VoteMode && m_Voted ) {
+        else if( ( Command == "voteresult" || Command == "vr" )  ) {
             uint32_t c = 0;
             uint32_t mode1 = 0;
             uint32_t mode2 = 0;
@@ -4534,6 +4549,51 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SendAllChat( "No lag has been disabled for player [" + player->GetName( ) + "]." );
 
             player->SetStatsDotASentTime( GetTime( ) );
+        }
+
+        //
+        // !REG
+        // !REGISTRATION
+        //
+        else if( ( Command == "reg" || Command == "registration" || Command == "verify" || Command == "confirm" ) && !Payload.empty( ) )
+        {
+                string type = "";
+                if( Command == "reg" || Command == "registration" )
+                        type = "r";
+                else if( Command == "verify" || Command == "confirm" )
+                        type = "c";
+
+                string Mail;
+                string Password;
+                stringstream SS;
+                SS << Payload;
+                SS >> Mail;
+
+                if( !SS.eof( ) )
+                {
+                        getline( SS, Password );
+                        string :: size_type Start = Password.find_first_not_of( " " );
+
+                        if( Start != string :: npos )
+                                Password = Password.substr( Start );
+                }
+
+                if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
+                {
+                        if( Password.find( " " ) != string::npos )
+                                SendChat( player, m_GHost->m_Language->WrongPassRegisterCommand( Password ) );
+                        else if( Password.length() > 2 )
+                        {
+                            m_PairedRegAdds.push_back( PairedRegAdd( string( ), m_GHost->m_DB->ThreadedRegAdd( player->GetName( ), player->GetSpoofedRealm(), Mail, Password, type ) ) );
+                        }
+                        else
+                                SendChat( player, m_GHost->m_Language->PassTooShortRegisterCommand( Password ) );
+                }
+                else
+                        SendChat( player, m_GHost->m_Language->InvalidEmailRegisterCommand( Mail) );
+
+                return true;
+
         }
 
         return HideCommand;

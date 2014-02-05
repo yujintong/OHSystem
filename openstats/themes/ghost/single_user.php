@@ -22,19 +22,21 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?> 
   </h1>
 	 </td>
-	 <td style="text-align:right"><?=DisplayGameTypePlayer($GameAliases, $UserOtherGames, $User["player"])?></td>
+	 <td style="text-align:right">
+	 <?=DisplayGameTypePlayer($GameAliases, $UserOtherGames, $User["player"])?></td>
    </tr>
    <tr>
     <td  class="padLeft">
 	<?=$User["realm"]?>
 	</td>
-	<td>
+	<td style="font-size:12px; text-align:right">
+	<?=OS_AdminTools($User["id"], $User["player"])?>
 	</td>
    </tr>
-   <?php if (isset($User["OtherStats"]) ) { ?>
+   <?php if (isset($UserOtherGames["id"]) ) { ?>
    <tr>
    <td  class="padLeft">
-   <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$User["OtherStats"]?>"><?=$lang["most_recent_stats"]?></a></td>
+   <a class="menuButtons" href="<?=OS_HOME?>?u=<?=$UserOtherGames["id"]?>"><?=$lang["most_recent_stats"]?></a></td>
    <td></td>
    </tr>
    <?php } ?>
@@ -54,6 +56,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    <td></td>
    </tr>
 </table>	
+
+  <?php ShowModeratorPanel($UserData); ?>
 
  <?php
   if ( OS_is_banned_player( $User["banname"] ) ) {
@@ -80,66 +84,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   </tr>
   </table>
   <?php } ?> 
-
-  <div align="center" style="display:none;">
-  <h1>
-	<?=OS_ShowUserFlag( $User["letter"], $User["country"], 220 )?>
-    <?=$User["player"]?>  
-	<?=OS_IsUserGameBanned( $User["banned"], $lang["banned"] )?> 
-	<?=OS_IsUserGameAdmin( $User["GameAdmin"] )?>
-	<?=OS_IsUserGameWarned( $User["warn"],  $User["warn_expire"], $lang["warned"] )?>
-	<!--<?=OS_IsUserGameSafe( $User["safelist"], $lang["safelist"] )?>
-	<?=OS_IsUserGameLeaver( $User["leaver"], $lang["leaves"].": ".$User["leaver"]."<div>".$lang["stayratio"].": ".$User["stayratio"]."%</div>",1 )?>-->
-	<?=OS_bnet_icon($User["user_bnet"], 14, 14, "imgvalign")?>
-	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?> 
-  </h1>
-  
-  <div>
-  <?=$User["realm"]?>
-  <?=DisplayGameTypePlayer($GameAliases, $UserOtherGames, $User["player"])?>
-  </div>
-  
-  <?php if (isset($User["OtherStats"]) ) { ?><a class="menuButtons" href="<?=OS_HOME?>?u=<?=$User["OtherStats"]?>"><?=$lang["most_recent_stats"]?></a><?php } ?>
-  
-  <?php
-  if ( !empty($LastSeen["gameid"]) ) {
-  ?>
-  <div> <?=$lang["last_seen"]?>:
-  <a href="<?=OS_HOME?>?live_games&amp;gameid=<?=$LastSeen["gameid"]?>&amp;botid=<?=$LastSeen["botid"]?>">
-   <span <?=ShowToolTip("Last seen: <div>".$LastSeen["time"]."</div>", OS_HOME.'img/BotOnline.png', 210, 32, 32)?>><img src="<?=OS_HOME?>img/BotOnline.png" width="16" class="imgvalign" /></span>
-    <?=$lang["game"]?> #<?=$LastSeen["gameid"]?>, <?=($LastSeen["time"])?>
-   </a>
-   </div>
-  <?php
-  }
-  ?>
-  
-  <?php
-  if ( OS_is_banned_player( $User["banname"] ) ) {
-  ?>
-  <h4><span class="banned"><?=$lang["banned"]?></span> 	<?=OS_is_ban_perm($User["expiredate"], $lang["permanent_ban"])?></h4>
-  <table class="Table500px">
-  <tr>
-    <td width="100"><b><?=$lang["reason"]?>:</b> </td>
-	<td><span class="banned padTop"><?=$User["reason"]?></span></td>
-  <tr>
-    <td width="100"><b><?=$lang["bannedby"]?>:</b> </td>
-	<td><?=$User["bannedby"]?></td>
-  </tr>
-  <tr>
-    <td width="100"><b><?=$lang["date"]?>:</b> </td>
-	<td><?=$User["bandate"]?></td>
-  </tr>
-  <tr>
-    <td width="100"><b><?=$lang["expires"]?>:</b> </td>
-	<td>
-	<?=OS_ban_expired($User["expiredate"], "", "" )?>
-	<div><?=OS_ExpireDateRemain($User["expiredate"])?></div>
-	</td>
-  </tr>
-  </table>
-  <?php } ?>
-  </div>
   
   <?php if ($User["hide"] == 0 ) { ?>
   <div class="padTop">
@@ -253,6 +197,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
   <?=OS_DisplayPPBar( $PenaltyData[0]["total"] )?>
   <?php if ($PenaltyData[0]["total"] >=1 ) {  ?>
+  <a name="pp"></a>
   <table>
     <tr>
 	  <th width="60"><?=$lang["pp"]?></th>
@@ -265,7 +210,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  foreach ( $PenaltyData as $PP ) {
 	?>
 	</tr>
-	  <td width="60"><b>+<?=$PP["pp"]?></b></td>
+	  <td width="60"><b>+<?=$PP["pp"]?></b> <?php OS_ToolRemovePP( $PP["id"] ) ?></td>
 	  <td width="190"><?=$PP["reason"]?></td>
 	  <td><?=$PP["admin"]?></td>
 	  <td><?=$PP["date"]?></td>

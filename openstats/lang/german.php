@@ -58,6 +58,7 @@ $lang["recent_news"]    = "Vergangene News";
     
 $lang["profile"]         = "Profile";  
 $lang["admin_panel"]     = "Admin Bereich";  
+$lang["moderator_panel"] = "Moderator Bereich";
 $lang["logout"]          = "Abmelden &times; ";  
 $lang["login_register"]  = "Anmelden/Registrieren";  
 $lang["login_fb_info"]   = "Klick auf den obrigen Button um sich via FB einzuloggen";  
@@ -500,4 +501,5 @@ $lang["game_log_lobby"]  = "Lobby Log";
 $lang["game_log_game"]   = "Game Log";
 $lang["show_all"]        = "Show All";
 $lang["choose_game_type"]        = "Choose game type";
+$lang["game_type"]               = "Game type";
 ?>  

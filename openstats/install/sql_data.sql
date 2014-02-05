@@ -208,6 +208,7 @@ DROP TABLE IF EXISTS `oh_gamelist`;
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) DEFAULT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `gamename` varchar(128) DEFAULT NULL,
   `ownername` varchar(32) DEFAULT NULL,
   `creatorname` varchar(32) DEFAULT NULL,
@@ -322,6 +323,7 @@ DROP TABLE IF EXISTS `oh_game_status`;
 CREATE TABLE IF NOT EXISTS `oh_game_status` (
   `botid` smallint(6) NOT NULL,
   `gameid` smallint(6) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `gametime` datetime NOT NULL,
   `gamename` varchar(30) NOT NULL,
   `gamestatus` tinyint(3) NOT NULL,
@@ -343,6 +345,18 @@ CREATE TABLE IF NOT EXISTS `oh_geoip` (
   KEY `code` (`code`),
   KEY `ip_integer` (`ip_start_int`,`ip_end_int`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `oh_gproxy`;
+CREATE TABLE IF NOT EXISTS `oh_gproxy` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player` varchar(30) NOT NULL,
+  `ip` varchar(20) NOT NULL,
+  `added` datetime NOT NULL,
+  `added_by` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `player` (`player`),
+  KEY `ip` (`ip`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_heroes`;
 CREATE TABLE IF NOT EXISTS `oh_heroes` (
@@ -443,7 +457,6 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `year` year(4) NOT NULL,
   `user_level` tinyint(4) NOT NULL,
   `forced_gproxy` tinyint(1) NOT NULL,
-  `ingame_role` tinyint(1) NOT NULL,
   `score` int(11) NOT NULL,
   `games` int(11) NOT NULL,
   `wins` int(11) NOT NULL,
@@ -458,7 +471,6 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `towers` int(11) NOT NULL,
   `rax` int(11) NOT NULL,
   `banned` tinyint(1) NOT NULL,
-  `penalty` tinyint(4) NOT NULL,
   `realm` varchar(100) NOT NULL,
   `reserved` int(11) NOT NULL,
   `leaver` int(11) NOT NULL,
@@ -493,6 +505,7 @@ DROP TABLE IF EXISTS `oh_users`;
 CREATE TABLE IF NOT EXISTS `oh_users` (
   `user_id` mediumint(8) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(60) NOT NULL,
+  `alias_id` smallint(6) NOT NULL,
   `bnet_username` varchar(30) NOT NULL,
   `user_bnet` tinyint(1) NOT NULL,
   `user_password` varchar(100) NOT NULL,

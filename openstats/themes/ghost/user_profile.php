@@ -30,13 +30,19 @@ if ( isset($ProfileData) AND !empty($ProfileData)  ) {
 	  </td>
 	</tr>
 <?=OS_RealmUsername( $ProfileData[0]["bnet_username"] )?>
-    <tr>
-	  <td class="padLeft" width="130"><?=$lang["points"]?>:</td>
-	  <td class="imgvalign" valign="middle">
-	    <?=$ProfileData[0]["points"]?> 
-	    <input type="button" value="Order items" class="menuButtons imgvalign" />
-	  </td>
-	</tr>
+<?php if ($ProfileData[0]["user_level_expire"]!='0000-00-00 00:00:00') { ?>
+<tr>
+  <td class="padLeft" width="130"><?=$lang["expire"]?>:</td>
+  <td>
+      <div>
+	  <?=OS_IsUserGameAdmin( $ProfileData[0]["user_level"] )?>
+	  <?=OS_ShowUserRole( $ProfileData[0]["user_level"] )?>
+	  </div>
+      <div><?=OS_ExpireDateRemain( $ProfileData[0]["user_level_expire"]) ?></div>
+      <div><?=$ProfileData[0]["role_expire_date"]?></div>
+  </td>
+</tr>  
+<?php } ?>
 <?php $ProfileData[0]["hide_stats"] = 1; if ($ProfileData[0]["hide_stats"]) { ?>	
     <tr>
 	  <td class="padLeft" width="130"><?=$lang["stats"]?>:</td>
@@ -80,7 +86,7 @@ if ( isset($ProfileData) AND !empty($ProfileData)  ) {
 	</tr>
 	
     <tr>
-	  <td class="padLeft" width="130"><?=$lang["protect_account"]?>:</td>
+	  <td class="padLeft" width="130"><a name="protect_account"></a><?=$lang["protect_account"]?>:</td>
 	  <td>
 	  <?=OS_ProtectAccountFileds($ProfileData[0]["user_ppwd"], $ProfileData[0]["user_bnet"], $ProfileData[0]["ppwd_checked"], $ProfileData[0]["ppwd_show_info"] )?>
 	  </td>

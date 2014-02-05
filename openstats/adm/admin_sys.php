@@ -48,7 +48,7 @@ if ( isset($_GET["optimize_tables"]) ) {
   `".OSDB_NOTES."`,     `".OSDB_STATS."`,         `".OSDB_USERS."`,    `".OSDB_CUSTOM_FIELDS."`,
   `".OSDB_GUIDES."`,    `".OSDB_GAMELOG."`,       `".OSDB_COMMANDS."`. `".OSDB_GAMESTATUS."`,
   `".OSDB_GAME_INFO."`, `".OSDB_BNET_PM."`,       `".OSDB_ADMIN_LOG."`, `".OSDB_GO."`,
-  `".OSDB_ALIASES."`,   `".OSDB_GOALS."`,         `".OSDB_LG_LOGS."`                  ");
+  `".OSDB_ALIASES."`,   `".OSDB_GOALS."`,         `".OSDB_LG_LOGS."` ,  `".OSDB_GPROXY."`                 ");
    $result = $opt->execute();
    $ok = 1;
   if ($ok ) $OptimizedTables = 1;
@@ -130,7 +130,8 @@ if ( isset( $_GET["pp"]) )           $HomeTitle = "Penalty Points and Offences |
 if ( isset( $_GET["admin_logs"]) AND $_SESSION["level"]>=10 )  $HomeTitle = "Admin Logs | DotA OpenStats v4"; else
 if ( isset( $_GET["remote"]) )       $HomeTitle = "Remote Control | DotA OpenStats v4"; else
 if ( isset( $_GET["aliases"]) )      $HomeTitle = "Game Types | DotA OpenStats v4"; else 
-if ( isset( $_GET["ban_names"]) )      $HomeTitle = "Ban Names | DotA OpenStats v4";
+if ( isset( $_GET["ban_names"]) )    $HomeTitle = "Ban Names | DotA OpenStats v4"; else
+if ( isset( $_GET["gproxy"]) )       $HomeTitle = "GProxy | DotA OpenStats v4";
 
 //Version check
 

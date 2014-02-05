@@ -477,5 +477,6 @@ if ( isset( $_GET["geoip"]) )       include('admin_geoip.php'); else
 if ( isset( $_GET["admin_logs"])    AND $_SESSION["level"]>=10 ) include('admin_logs.php'); else 
 if ( isset( $_GET["warns"]) )       include('admin_warns.php'); else 
 if ( isset( $_GET["aliases"]) )     include('admin_aliases.php'); else
-if ( isset( $_GET["ban_names"]) )     include('admin_banned_names.php');
+if ( isset( $_GET["ban_names"]) )     include('admin_banned_names.php'); else
+if ( isset( $_GET["gproxy"]) )        include('admin_gproxy.php');
 ?>

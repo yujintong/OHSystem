@@ -374,15 +374,16 @@ CGHost :: CGHost( CConfig *CFG )
 	m_FinishedGames = 0;
 	m_CallableGameUpdate = NULL;
 	m_CallableFlameList = NULL;
-        m_CallableAliasList = NULL;
+    m_CallableForcedGProxyList = NULL;
+    m_CallableAliasList = NULL;
 	m_CallableAnnounceList = NULL;
 	m_CallableDCountryList = NULL;
 	m_CallableCommandList = NULL;
-        m_CallableDeniedNamesList = NULL;
-        m_CallableHC = NULL;
+    m_CallableDeniedNamesList = NULL;
+    m_CallableHC = NULL;
 	m_CheckForFinishedGames = 0;
-        m_RanksLoaded = true;
-        m_ReservedHostCounter = 0;
+    m_RanksLoaded = true;
+    m_ReservedHostCounter = 0;
 	string DBType = CFG->GetString( "db_type", "mysql" );
 	CONSOLE_Print( "[GHOST] opening primary database" );
 
@@ -463,6 +464,7 @@ CGHost :: CGHost( CConfig *CFG )
 	m_LastCommandListTime = GetTime( );
 	m_LastGameUpdateTime  = GetTime( );
 	m_LastFlameListUpdate = 0;
+    m_LastGProxyListUpdate=0;
     m_LastAliasListUpdate = 0;
 	m_LastAnnounceListUpdate = 0;
     m_LastDNListUpdate = 0;
@@ -1204,6 +1206,21 @@ bool CGHost :: Update( long usecBlock )
                 m_CallableAliasList = NULL;
         }
 
+        // refresh forcedgproxy list all 30 minutes
+        if( !m_CallableForcedGProxyList && ( GetTime( ) - m_LastGProxyListUpdate >= 1800 || m_LastGProxyListUpdate == 0 ) )
+        {
+            m_CallableForcedGProxyList = m_DB->ThreadedForcedGProxyList( );
+            m_LastGProxyListUpdate = GetTime( );
+        }
+
+        if( m_CallableForcedGProxyList && m_CallableForcedGProxyList->GetReady( ))
+        {
+                m_GProxyList = m_CallableForcedGProxyList->GetResult( );
+                m_DB->RecoverCallable( m_CallableForcedGProxyList );
+                delete m_CallableForcedGProxyList;
+                m_CallableForcedGProxyList = NULL;
+        }
+
         // refresh denied names list all 60 minutes
         if( !m_CallableDeniedNamesList && ( GetTime( ) - m_LastDNListUpdate >= 3600 || m_LastDNListUpdate == 0 ) )
         {
@@ -1495,10 +1512,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_SyncLimit = CFG->GetInt( "bot_synclimit", 50 );
 	m_VoteKickAllowed = CFG->GetInt( "bot_votekickallowed", 1 ) == 0 ? false : true;
 	m_VoteKickPercentage = CFG->GetInt( "bot_votekickpercentage", 100 );
-	LoadDatas();
-    LoadRules();
-    LoadRanks();
-    ReadRoomData();
 	if( m_VoteKickPercentage > 100 )
 	{
 		m_VoteKickPercentage = 100;
@@ -1525,7 +1538,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_NoGarena = CFG->GetInt( "oh_nogarena", 0 ) == 0 ? false : true;
 	m_CheckIPRange = CFG->GetInt( "oh_checkiprangeonjoin", 0 ) == 0 ? false : true;
 	m_DenieProxy = CFG->GetInt( "oh_proxykick", 0 ) == 0 ? false : true;
-	m_LiveGames = CFG->GetInt( "oh__general_livegames", 1 ) == 0 ? false : true;
+    m_LiveGames = CFG->GetInt( "oh_general_livegames", 1 ) == 0 ? false : true;
     m_MinFF = CFG->GetInt( "oh_minff", 20 );
     m_MinimumLeaverKills = CFG->GetInt( "antifarm_minkills", 3 );
     m_MinimumLeaverDeaths = CFG->GetInt( "antifarm_mindeaths", 3 );
@@ -1537,8 +1550,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_StatsUpdate = CFG->GetInt( "oh_general_updatestats", 1 ) == 0 ? false : true;
     m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
     m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
-    if( m_FunCommands )
-        LoadInsult( );
     m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
     m_AccountProtection = CFG->GetInt("oh_general_accountprotection", 1 ) == 0 ? false : true;
     m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
@@ -1552,7 +1563,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_FlameCheck = CFG->GetInt("oh_flamecheck", 0) == 0 ? false : true;
     m_BotManagerName = CFG->GetString( "oh_general_botmanagername", "PeaceMaker" );
     m_IngameVoteKick = CFG->GetInt("oh_ingamevotekick", 1) == 0 ? false : true;
-    m_LeaverAutoBanTime = CFG->GetInt("oh_leaverautobantime", 86400);
+    m_LeaverAutoBanTime = CFG->GetInt("oh_leaverautobantime", 259200);
+    m_DisconnectAutoBanTime = CFG->GetInt("oh_disconnectautobantime", 86400);
     m_FirstFlameBanTime = CFG->GetInt("oh_firstflamebantime", 172800 );
     m_SecondFlameBanTime = CFG->GetInt("oh_secondflamebantime", 345600);
     m_SpamBanTime = CFG->GetInt("oh_spambantime", 172800 );
@@ -1576,11 +1588,22 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_VirtualLobby = CFG->GetInt("oh_virtuallobby", 1 ) == 0 ? false : true;
     m_VirtualLobbyTime = CFG->GetInt("oh_virtuallobbytime", 20);
     m_CustomVirtualLobbyInfoBanText = CFG->GetString("oh_virtuallobbybantext", string( ));
+    m_SimpleAFKScript = CFG->GetInt("oh_simpleafksystem", 1 ) == 0 ? false :  true;
+    m_APMAllowedMinimum = CFG->GetInt("oh_apmallowedminimum", 20);
+    m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
+    m_Website = CFG->GetString("oh_general_domain", "http://ohsystem.net/" );
+    m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
+    LoadDatas();
+    LoadRules();
+    LoadRanks();
+    ReadRoomData();
+    if( m_FunCommands )
+        LoadInsult( );
 }
 
 void CGHost :: ExtractScripts( )
 {
-	string PatchMPQFileName = m_Warcraft3Path + "War3Patch.mpq";
+    string PatchMPQFileName = m_Warcraft3Path + "War3Patch.mpq";
 	HANDLE PatchMPQ;
 
 	if( SFileOpenArchive( PatchMPQFileName.c_str( ), 0, MPQ_OPEN_FORCE_MPQ_V1, &PatchMPQ ) )
@@ -1601,7 +1624,7 @@ void CGHost :: ExtractScripts( )
 
 				if( SFileReadFile( SubFile, SubFileData, FileLength, &BytesRead ) )
 				{
-					CONSOLE_Print( "[GHOST] extracting Scripts\\common.j from MPQ file to [" + m_MapCFGPath + "common.j]" );
+                    CONSOLE_Print( "[GHOST] extracting Scripts\\common.j from MPQ file to [" + m_MapCFGPath + "common.j]" );
 					UTIL_FileWrite( m_MapCFGPath + "common.j", (unsigned char *)SubFileData, BytesRead );
 				}
 				else
@@ -1932,7 +1955,7 @@ void CGHost :: LoadDatas( )
 
 void CGHost :: LoadRules( )
 {
-    string File = "rules.txt";
+    string File = m_SharedFilesPath + "rules.txt";
     string line;
     ifstream myfile(File.c_str());
     m_Rules.clear();
@@ -1963,7 +1986,7 @@ uint32_t CGHost :: GetNewHostCounter( )
 void CGHost :: LoadRanks( )
 {
     //TODO Fix if the file is empty, dont check levels else there is a crash
-    string File = "ranks.txt";
+    string File = m_SharedFilesPath + "ranks.txt";
     ifstream in;
     in.open( File.c_str() );
     m_Ranks.clear();
@@ -1996,7 +2019,7 @@ void CGHost :: LoadRanks( )
 void CGHost :: LoadInsult()
 {
     //TODO Fix if the file is empty, dont check levels else there is a crash
-    string File = "insult.txt";
+    string File = m_SharedFilesPath + "insult.txt";
     ifstream in;
     in.open( File.c_str() );
     m_Insults.clear();
@@ -2055,7 +2078,7 @@ string CGHost :: GetRoomName (string RoomID)
 
 void CGHost :: ReadRoomData()
 {
-	string file = "rooms.txt";
+    string file = m_SharedFilesPath + "rooms.txt";
 	ifstream in;
 	in.open( file.c_str( ) );
 	m_LanRoomName.clear();
@@ -2169,4 +2192,62 @@ string CGHost :: GetMonthInWords( string month ) {
         return "December";
     else
         return "unknown";
+}
+
+bool CGHost :: IsForcedGProxy( string input ) {
+    transform( input.begin( ), input.end( ), input.begin( ), ::tolower );
+
+    for( vector<string> :: iterator i = m_GProxyList.begin( ); i != m_GProxyList.end( ); ++i )
+    {
+        string BanIP = *i;
+        if( BanIP[0] == ':' )
+        {
+            BanIP = BanIP.substr( 1 );
+            int len = BanIP.length( );
+
+            if( input.length( ) >= len && input.substr( 0, len ) == BanIP )
+            {
+                return true;
+            }
+            else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && input.length( ) >= 3 && input[0] == 'h' && input.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
+            {
+
+                return true;
+            }
+        }
+
+        if( *i == input )
+        {
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool CGHost :: FindHackFiles( string input ) {
+    transform( input.begin( ), input.end( ), input.begin( ), ::tolower );
+    bool HasNoHackFiles = true;
+    vector<string> m_HackFiles;
+    string File;
+    stringstream SS;
+    SS << input;
+    while( SS >> File )
+    {
+        m_HackFiles.push_back( File );
+    }
+
+    for( vector<string> :: iterator i = m_HackFiles.begin( ); i != m_HackFiles.end( ); ++i ) {
+        string FileAndSize = *i;
+        if( FileAndSize.find("-")!=string::npos ) {
+            uint32_t filelength =  FileAndSize.length( );
+            std::size_t pos =  FileAndSize.find("-");
+            string File = FileAndSize.substr( 0, pos);
+            string Size = FileAndSize.substr( pos+1, ( filelength-pos+1 ) );
+            if( Size != "19968" && Size !="1069672" && Size != "7680" && !Size.empty() ) {
+                HasNoHackFiles = false;
+            }
+        }
+    }
+    return HasNoHackFiles;
 }

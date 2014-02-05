@@ -47,8 +47,8 @@ CStatsDOTA :: CStatsDOTA( CBaseGame *nGame ) : CStats( nGame ), m_Winner( 0 ), m
 		m_LeaverDeaths[i] = 0;
 		m_AssistsOnLeaverKills[i] = 0;
 		m_DeathsByLeaver[i] = 0;
-                m_LatestKill[i] = 0;
-                m_KillCounter[i] = 0;   //The killcounter for checking as double kill etc (not the general kills of a player.)
+        m_LatestKill[i] = 0;
+        m_KillCounter[i] = 0;   //The killcounter for checking as double kill etc (not the general kills of a player.)
 	}
 	m_FirstBlood = false;
 }
@@ -148,25 +148,25 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         {
                                             m_Game->GAME_Print( 131, MinString, SecString, Killer->GetName(), "", "" );
                                             CONSOLE_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got a double kill.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "1" + "\n";
+                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "dk" + "\n";
                                         }
                                         if(m_KillCounter[ValueInt] == 3 )
                                         {
                                             m_Game->GAME_Print( 132, MinString, SecString, Killer->GetName(), "", "" );
                                             CONSOLE_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got a tripple kill.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "2" + "\n";
+                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "tk" + "\n";
                                         }
                                         if(m_KillCounter[ValueInt] == 4 )
                                         {
                                             m_Game->GAME_Print( 133, MinString, SecString, Killer->GetName(), "", "" );
                                             CONSOLE_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got an ultra kill.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "3" + "\n";
+                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "uk" + "\n";
                                         }
                                         if(m_KillCounter[ValueInt] >= 5 )
                                         {
                                             m_Game->GAME_Print( 134, MinString, SecString, Killer->GetName(), "", "" );
                                             CONSOLE_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got a rampage.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "4" + "\n";
+                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "rk" + "\n";
                                         }
                                     }
                                 }

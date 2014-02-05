@@ -102,7 +102,8 @@ include(OS_PAGE_PATH."add_comment_page.php");
   if ( isset($_GET["profile"]) AND os_is_logged() )            include(OS_PAGE_PATH."user_profile_page.php"); else
   if ( isset($_GET["profile"]) AND !os_is_logged() )           { header("location: ".OS_HOME."?login"); die; } else
   if ( isset($_GET["ban_report"]) AND $BanReports == 1)        include(OS_PAGE_PATH."ban_reports_page.php"); else
-  if ( isset($_GET["ban_appeal"]))                             include(OS_PAGE_PATH."ban_appeals_page.php");
+  if ( isset($_GET["ban_appeal"]))                             include(OS_PAGE_PATH."ban_appeals_page.php"); else
+  if ( isset($_GET["moderator"]))                              include(OS_PAGE_PATH."moderator_page.php");
    
    include("inc/compare_players.php");
    

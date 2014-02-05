@@ -90,6 +90,7 @@ define('OSDB_ALIASES',    'oh_aliases');
 define('OSDB_GOALS',      'oh_goals');
 define('OSDB_GOALS_LOG',  'oh_goals_log');
 define('OSDB_LG_LOGS',    'oh_lobby_game_logs');
+define('OSDB_GPROXY',     'oh_gproxy'); //do not change
 
 
 //DATABASE

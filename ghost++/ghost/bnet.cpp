@@ -560,29 +560,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
  
                         if( StatsPlayerSummary )
                         {
-                            /**
-                             * 1: Assassin (  kills/games > 15 )
-                             * 2: Jungler ( neutrals/games > 50 )
-                             * 3: Supporter ( assists/games > 15 )
-                             * 4: Observer ( observedgames/games > .5 )
-                             * 5: Feeder ( deaths/games > 8 )
-                             * 6: Enemies Assitant ( (kills/deaths) < 1 )
-                             */
-                             uint32_t role = StatsPlayerSummary->GetRole();
-                             string roleName = "Unknown";
-                             if( role == 1 ) {
-                                 roleName = "Assassin";
-                             } else if( role == 2 ) {
-                                 roleName = "Jungler";
-                             } else if( role == 3 ) {
-                                 roleName = "Supporter";
-                             } else if( role == 4 ) {
-                                 roleName = "Observer";
-                             } else if( role == 5 ) {
-                                 roleName = "Feeder";
-                             } else if( role == 6 ) {
-                                 roleName = "Enemies Assistant";
-                             }
                             if(! StatsPlayerSummary->GetHidden())
                             {
                                 string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
@@ -594,7 +571,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
-                                                roleName,
                                                 m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ) );
@@ -614,7 +590,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                 UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                                 UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                                 Streak,
-                                                roleName,
                                                 m_GHost->GetMonthInWords(Month),
                                                 Year
                                                 ), i->first, true );
@@ -790,6 +765,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                  * Tree Tag template
                                  */
                                 Summary="G: "+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+" Score: "+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+" W/L/D: "+UTIL_ToString( StatsPlayerSummary->GetWins( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetLosses( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetDraw( ) )+" K/D/S: "+UTIL_ToString( StatsPlayerSummary->GetKills( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgKills( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetDeaths( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDeaths( ), 1)+")/"+UTIL_ToString( StatsPlayerSummary->GetAssists( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgAssists( ), 1)+") E/I: "+UTIL_ToString( StatsPlayerSummary->GetCreeps( ) )+"("+UTIL_ToString( StatsPlayerSummary->GetAvgCreeps( ), 1 )+")/"+UTIL_ToString( StatsPlayerSummary->GetDenies( ))+"("+UTIL_ToString( StatsPlayerSummary->GetAvgDenies( ), 1)+")";
+                            } else if( StatsPlayerSummary->GetWins( ) != 0 || StatsPlayerSummary->GetLosses( ) != 0 ){
+                                Summary="G: "+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+" Score: "+UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 )+" Rank: "+StatsPlayerSummary->GetRank()+" W/L/D: "+UTIL_ToString( StatsPlayerSummary->GetWins( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetLosses( ) )+"/"+UTIL_ToString( StatsPlayerSummary->GetDraw( ) );
                             } else{
                                 Summary="Found ["+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+"] games, which can not be detailed parsed.";
                             } 
@@ -2230,7 +2207,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         //if( IsBannedName( Victim ) )
                                                         //      QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
                                                         //else
-                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "", 0 ) ) );
+                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "" ) ) );
                                                 }
                                                 else
                                                         QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ), User, Whisper );
@@ -2266,7 +2243,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, VictimIP ), User, Whisper );
                                         else
                                         {
-                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "", 0 ) ) );
+                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "" ) ) );
                                                 QueueChatCommand( m_GHost->m_Language->BannedIPRange( VictimIP, m_Server ), User, Whisper );
                                         }
                                 }
@@ -2357,7 +2334,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 {
                                                                                         if( !Reason.empty() )
                                                                                         {
-                                                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, BanTime, "", 0 ) ) );
+                                                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, BanTime, "" ) ) );
                                                                                                 //QueueChatCommand( "Temporary ban: " + Victim + " for " + UTIL_ToString(Amount) + " " + Suffix + " with reason: " + Reason, User, Whisper);
                                                                                         }
                                                                                         else
@@ -3557,7 +3534,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 {
                                                         QueueChatCommand( m_GHost->m_Language->UnhostingGame( m_GHost->m_CurrentGame->GetDescription( ) ), User, Whisper );
                                                         m_GHost->m_CurrentGame->SetExiting( true );
-                                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_GHost->m_CurrentGame->m_ChatID, string(), 3, uint32_t() ) );
+                                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_GHost->m_CurrentGame->m_ChatID, string(), 3, uint32_t(), m_GHost->m_CurrentGame->m_GameAlias ) );
                                                 }
                                         }
                                         else
@@ -3959,6 +3936,19 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( Command == "top" || Command == "top10" )
                                 {
                                     m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( "", "", 0, "top" ) ) );
+                                }
+
+                                //
+                                // !GPROXYLIST
+                                //
+                                else if( Command == "gproxylist" ) {
+                                    if(!Payload.empty()) {
+                                        //return value is reserved :-D
+                                        if(! m_GHost->FindHackFiles(Payload) ) {
+                                            //found hack file
+                                            m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, User, string( ), string( ), User, "Suspicius File(s): "+Payload, 0, "" ) ) );
+                                        }
+                                    }
                                 }
         }
 }

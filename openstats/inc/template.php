@@ -4,6 +4,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
   //PREMIUM
   if ( isset($_GET["premium"]) ) include(OS_PAGE_PATH."premium/index.php"); else 
+  
+  //MODERATOR PAGE
+  if ( isset($_GET["moderator"]) ) include(OS_CURRENT_THEME_PATH."moderator.php"); else 
 
   //LIVE GAMES
   if ( isset($_GET["live_games"]) ) include(OS_CURRENT_THEME_PATH."livegames.php"); else 

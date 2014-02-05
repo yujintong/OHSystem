@@ -159,7 +159,6 @@ private:
 	string m_CLetter;
 	string m_Country;
     bool m_Silence;
-	bool m_ForcedGproxy;
 	bool m_HasLeft;
 	bool m_AFKMarked;
 	bool m_SafeDrop;
@@ -177,6 +176,15 @@ private:
     bool m_VotedForInterruption;
     uint32_t m_VotedMode;
     bool m_NoLag;                // if the player wants to ignore lag screen
+    uint32_t m_ActionCounter;
+    uint32_t m_FirstPartOfMinute;
+    uint32_t m_SecondPartOfMinute;
+    uint32_t m_ThirdPartOfMinute;
+    uint32_t m_FourthPartOfMinute;
+    uint32_t m_FifthPartOfMinute;
+    uint32_t m_SixthPartOfMinute;
+    uint32_t m_AFKWarnings;
+    uint32_t m_LastAfkWarn;
 
 public:
 	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -240,7 +248,6 @@ public:
 	string GetCLetter( )					{ return m_CLetter; }
     string GetCountry( )					{ return m_Country; }
     bool GetSilence( )                                              { return m_Silence; }
-	bool GetForcedGproxy( )						{ return m_ForcedGproxy; }
 	bool GetLeft( )							{ return m_HasLeft; }
 	bool GetAFKMarked( )						{ return m_AFKMarked; }
 	bool GetSafeDrop( )						{ return m_SafeDrop; }
@@ -257,7 +264,16 @@ public:
     uint32_t GetChecked( )                                              { return m_Checked; }
     bool GetVotedForInterruption( )                                        { return m_VotedForInterruption; }
     uint32_t GetVotedMode( )                                                { return m_VotedMode; }
-    bool GetNoLag( )              { return m_NoLag; }
+    bool GetNoLag( )                                                        { return m_NoLag; }
+    uint32_t GetActions( )                      { return m_ActionCounter; }
+    uint32_t GetFirstActionsForFirstPart( )     { return m_FirstPartOfMinute; }
+    uint32_t GetFirstActionsForSecondPart( )     { return m_SecondPartOfMinute; }
+    uint32_t GetFirstActionsForThirdPart( )     { return m_ThirdPartOfMinute; }
+    uint32_t GetFirstActionsForFourthPart( )     { return m_FourthPartOfMinute; }
+    uint32_t GetFirstActionsForFifthPart( )     { return m_FifthPartOfMinute; }
+    uint32_t GetFirstActionsForSixthPart( )     { return m_SixthPartOfMinute; }
+    uint32_t GetAFKWarnings( )                  { return m_AFKWarnings; }
+    uint32_t GetLastAFKWarn( )                   { return m_LastAfkWarn; }
 
 	void SetLeftReason( string nLeftReason )										{ m_LeftReason = nLeftReason; }
 	void SetSpoofedRealm( string nSpoofedRealm )									{ m_SpoofedRealm = nSpoofedRealm; }
@@ -301,7 +317,6 @@ public:
 	void SetCLetter( string nCLetter )							{ m_CLetter = nCLetter; }
     void SetCountry( string nCountry )                                                      { m_Country = nCountry; }
     void SetSilence( bool nSilence )                                                                                { m_Silence = nSilence; }
-	void SetForcedGproxy( bool nForcedGproxy )									{ m_ForcedGproxy = nForcedGproxy; }
 	void SetLeft( bool nHasLeft )											{ m_HasLeft = nHasLeft; }
 	void SetAFKMarked( bool nAFKMarked )										{ m_AFKMarked = nAFKMarked; }
 	void SetSafeDrop( bool nSafeDrop )										{ m_SafeDrop = nSafeDrop; }
@@ -325,6 +340,16 @@ public:
     void SetVotedForInterruption ( bool nVoted )                                                                    { m_VotedForInterruption = nVoted; }
     void SetVotedMode( uint32_t nVotedMode )                                                                        { m_VotedMode = nVotedMode;}
     void SetNoLag( bool nNoLag )                          { m_NoLag = nNoLag; }
+
+    void SetActions( )                      { m_ActionCounter++; }
+    void SetFirstActionsForFirstPart( uint32_t actions )     { m_FirstPartOfMinute = actions; }
+    void SetFirstActionsForSecondPart( uint32_t actions )     { m_SecondPartOfMinute = actions; }
+    void SetFirstActionsForThirdPart( uint32_t actions )     { m_ThirdPartOfMinute = actions; }
+    void SetFirstActionsForFourthPart( uint32_t actions )     { m_FourthPartOfMinute = actions; }
+    void SetFirstActionsForFifthPart( uint32_t actions )     { m_FifthPartOfMinute = actions; }
+    void SetFirstActionsForSixthPart( uint32_t actions )     { m_SixthPartOfMinute = actions; }
+    void SetAFKWarnings( )                                      { m_AFKWarnings; }
+    void SetLastAFKWarning( )                                   { m_LastAfkWarn = GetTime( ); }
 
 	// processing functions
 
