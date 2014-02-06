@@ -22,6 +22,17 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $PlayerCK  = "";
 	 $PlayerCD  = "";
 	 $PlayerKills = "";
+	 $update_view = $db->exec("UPDATE ".OSDB_GAMES." SET views = views + 1 WHERE id = '".(int)$gameid ."' ");
+	 //REPLAY
+	 $duration = "";
+	 $durationTime = "";
+     $replayDate =  "";  //3*3600 = +3 HOURS,   +0 minutes.
+     $replayDate = "";
+     $gametimenew = "";
+	 $gid = $gameid;
+	 $gamename = $GameData[$c]["gamename"];
+	 require_once('inc/get_replay.php');
+	 if ( file_exists($replayloc) ) $GameData[$c]["replay"]  = $replayloc;
 	 } else {
 	 
 	 /////////////////////////////////////////////////////////////////////
