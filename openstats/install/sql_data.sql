@@ -576,6 +576,7 @@ CREATE TABLE IF NOT EXISTS `wc3connect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(256) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
+  `user_ip` varchar(20) DEFAULT NULL,
   `sessionkey` mediumtext,
   `time` datetime DEFAULT NULL,
   `proxy` varchar(128) DEFAULT NULL,
