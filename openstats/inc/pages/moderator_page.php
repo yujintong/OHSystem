@@ -12,6 +12,20 @@ $orderby = "id DESC, date DESC";
 if ( file_exists("inc/geoip/geoip.inc") ) {
 	 include("inc/geoip/geoip.inc");
 	 $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
+	 $GeoIP = 1;<?php
+if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
+
+if ( !OS_is_moderator() ) { header("location: ".OS_HOME.""); die(); }
+
+$HomeTitle = ($lang["moderator_panel"]);
+$SearchValue = "";
+$Button = "Add Ban";
+$sql = "";
+$orderby = "id DESC, date DESC";
+
+if ( file_exists("inc/geoip/geoip.inc") ) {
+	 include("inc/geoip/geoip.inc");
+	 $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
 	 $GeoIP = 1;
 	 }
 	 
@@ -260,6 +274,7 @@ if (!isset($_GET["option"])) {
     $HomeTitle ="PENALTY POINTS :: MODERATOR";
     $orderby = "id DESC, offence_time DESC";
 	$Button = "Add PP";
+	
 	if ( isset($_GET["edit"]) AND is_numeric($_GET["edit"]) ) {
 	$Button = "Edit PP";
 	  $id = (int) $_GET["edit"];
@@ -270,7 +285,7 @@ if (!isset($_GET["option"])) {
 	  $PP_Reason = $row["reason"];
 	  $PP_Value = $row["pp"];
 	} else { $PP_PlayerName = ""; $PP_Reason = ""; $PP_Value="1"; }
-	
+
 	if ( isset($_GET["add"]) AND !empty($_GET["add"]) ) 
 	$PP_PlayerName = trim( strip_tags($_GET["add"]) );
 	
@@ -434,6 +449,17 @@ if (!isset($_GET["option"])) {
 	 $IPData[$c]["country"] =  $row["country"];
 	 $IPData[$c]["date"] =  date( OS_DATE_FORMAT, strtotime($row["date"]));
 	 $IPData[$c]["gamename"] =  $row["gamename"];
+	 
+	$Letter   = geoip_country_code_by_addr($GeoIPDatabase, $row["ip"]);
+	$Country  = geoip_country_name_by_addr($GeoIPDatabase, $row["ip"]);
+	
+	$IPData[$c]["letter"]  = $Letter;
+	$IPData[$c]["country"] = $Country;
+	
+	if (empty($Letter)) {
+	$IPData[$c]["letter"]  = "blank";
+	$IPData[$c]["country"] = "";
+	}
 	 
 	if ( !empty( $IPData[$c]["gamename"] ) AND strstr($IPData[$c]["gamename"], "#") ) {
 	

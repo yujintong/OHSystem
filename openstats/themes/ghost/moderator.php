@@ -12,12 +12,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<table>
 	<tr>
 	  <td style="font-size:13px;">
-	   <a href="<?=OS_HOME?>?moderator" class="menuButtons">Dashboard</a> &middot; 
+	   <a href="<?=OS_HOME?>?moderator" class="menuButtons">MCP</a> &middot; 
 	   <a href="<?=OS_HOME?>?moderator&amp;option=addban" class="menuButtons">Add ban</a>
 	   <a href="<?=OS_HOME?>?moderator&amp;option=bans" class="menuButtons">Bans</a> &middot; 
 	   <a href="<?=OS_HOME?>?moderator&amp;option=pp&amp;add" class="menuButtons">Add PP</a>
 	   <a href="<?=OS_HOME?>?moderator&amp;option=pp" class="menuButtons">Penalty Points</a> &middot; 
-	   <a href="<?=OS_HOME?>?moderator&amp;option=roles" class="menuButtons">Roles</a>
+	   <a href="<?=OS_HOME?>?moderator&amp;option=roles" class="menuButtons">Roles</a> &middot; 
+	   <a href="<?=OS_HOME?>?moderator&amp;option=ip" class="menuButtons">IP</a> 
 	 </td>
 	 <td>
 	 <?php if ( isset($_GET["option"]) AND $_GET["option"] == "pp" ) { ?>
@@ -306,6 +307,65 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		 <?php
 		 include('inc/pagination.php');
 		} 
+?>
+		
+		<?php
+		if ( isset($_GET["option"]) AND $_GET["option"] == "ip" ) {
+		?>
+		<form action="" method="get">
+		<input type="hidden" name="moderator" />
+		<input type="hidden" name="option" value="ip" />
+		<table>
+		  <tr>
+		    <td width="180">Search IP:</td>
+			<td><input type="text" name="search_ip" value="<?=$IPSearch?>" /></td>
+		  </tr>
+		  <tr>
+		    <td width="180"></td>
+			<td><input type="submit" value="Search" class="menuButtons" /></td>
+		  </tr>
+		</table>
+		</form>
+		
+		<?php 
+        if (!empty($IPData)) {
+		?>
+		<table style="font-size:13px;">
+		<tr>
+		  <th width="150">Player / Reason</th>
+		  <th width="100">IP</th>
+		  <th width="165">Expire</th>
+		  <th width="180">Game Name</th>
+		  <th width="120">Date</th>
+		  <th>Banned by</th>
+		</tr>
+		<?php
+		   foreach($IPData as $data) {
+		   ?>
+		   <tr>
+		     <td>
+			 <?=OS_ShowUserFlag( $data["letter"], $data["country"], 175 )?>  
+			 <a href="<?=OS_HOME?>?u=<?=$data["name"]?>"><b><?=$data["name"]?></b></a>
+			 <div style="background-color: #EAF3FF"><?=$data["reason"]?></div>
+			 </td>
+			 <td><?=$data["ip"]?></td>
+			 <td><?php if ( date( strtotime($data["expiredate"]) )>1990 ) { ?><?=OS_ExpireDateRemain( $data["expiredate"] )?><?php } else {  ?><span class="perm_ban">Permanent</span><?php } ?></td>
+			 <td>
+			 <?=$data["gamename"]?>
+			 </td>
+			 <td><?=$data["date"]?></td>
+			 <td><?=$data["admin"]?></td>
+		   </tr>
+		   <?php
+		   }
+		 ?>
+		 </table>
+		 <?php
+		}
+		?>
+		<?php
+		
+		}
 ?>
     <script type="text/javascript">
 	function toggle(source) {

@@ -599,7 +599,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   $time = date("Y-m-d H:i:s", time() );
 		   
 		   $db->insert( OSDB_BANS, array(
-		   "name" => $PlayerName,
+		   "name" => strtolower($PlayerName),
 		   "server" => $realm,
 		   "reason" => $reason,
 		   "ip" => $ip,
@@ -612,7 +612,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
              ));
 		   
 		   $db->insert( OSDB_GO, array(
-		   "player_name" => $PlayerName,
+		   "player_name" => strtolower($PlayerName),
 		   "reason" => $reason,
 		   "offence_time" => $time,
 		   "offence_expire" => '0000-00-00 00:00:00',
