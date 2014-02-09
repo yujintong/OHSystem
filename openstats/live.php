@@ -85,8 +85,20 @@
    
     $botID = (int) $_POST["botID"];
 	$lastID =(int) $_POST["lastID"];
-	$chatID =(int) $_POST["chatID"];
+	$chatID =(int) $_POST["chatID"]; //BotID
 	$click  =(int) $_POST["cl"];
+	
+	$UserIP = strip_tags($_SERVER["REMOTE_ADDR"]);
+	//Check userIP (if user already in game). If so, don't show him live games.
+	$sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMELIST." WHERE usernames LIKE ('%	".$UserIP."	%')");
+	$result = $sth->execute();
+	$r = $sth->fetch(PDO::FETCH_NUM);
+	$numrows = $r[0];
+	
+	if ( $numrows>=1 ) {
+	?><div><?=$lang["live_games_disable"]?></div><?php
+	die();
+	}
 
 	//PURGE LOGS
 	if ( $lastID>=$LiveGamesTotalLogs) 	{

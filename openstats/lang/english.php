@@ -498,4 +498,5 @@ $lang["game_log_game"]   = "Game Log";
 $lang["show_all"]        = "Show All";
 $lang["choose_game_type"]        = "Choose game type";
 $lang["game_type"]               = "Game type";
+$lang["live_games_disable"]      = "You are in the game. Data not available.";
 ?>
