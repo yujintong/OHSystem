@@ -208,7 +208,9 @@ DROP TABLE IF EXISTS `oh_gamelist`;
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) DEFAULT NULL,
+  `gameid` int(11) NOT NULL,
   `alias_id` smallint(6) NOT NULL,
+  `last_update` datetime NOT NULL,
   `gamename` varchar(128) DEFAULT NULL,
   `ownername` varchar(32) DEFAULT NULL,
   `creatorname` varchar(32) DEFAULT NULL,
@@ -218,7 +220,8 @@ CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `usernames` varchar(512) DEFAULT NULL,
   `totalgames` int(11) DEFAULT NULL,
   `totalplayers` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `gameid` (`gameid`)
 ) ENGINE=MEMORY  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_gameplayers`;
