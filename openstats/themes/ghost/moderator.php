@@ -271,6 +271,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		<?php
 		if ( isset($_GET["option"]) AND $_GET["option"] == "roles" AND !empty($RoleData) ) {
 		 ?>
+		 <a class="menuButtons" href="<?=OS_HOME?>?moderator&amp;option=roles&amp;sort=bl">Show Blacklisted Users</a>
 		 <table style="font-size:13px;">
 		   <tr>
 		     <th>Username</th>
@@ -285,7 +286,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   
 		   ?>
 		   <tr>
-		    <td width="150"><a href="<?=OS_HOME?>?member=<?=$data["id"]?>"><?=$data["user_name"]?></a></td>
+		    <td width="150">
+			<a href="<?=OS_HOME?>?member=<?=$data["id"]?>"><?=$data["user_name"]?></a>
+			<?php if ($data["blacklisted"] == 1) { ?>
+			 <span style="color:red">blacklisted</span>
+			<?php } ?>
+			</td>
 			<td width="180">
 			<img src="<?=OS_HOME?>img/bnet.png" width="16" class="imgvalign" />
 			<a target="_blank" href="<?=OS_HOME?>?u=<?=$data["bnet_username"]?>"><?=$data["bnet_username"]?></a>

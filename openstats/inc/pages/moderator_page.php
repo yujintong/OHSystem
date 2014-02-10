@@ -12,20 +12,6 @@ $orderby = "id DESC, date DESC";
 if ( file_exists("inc/geoip/geoip.inc") ) {
 	 include("inc/geoip/geoip.inc");
 	 $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
-	 $GeoIP = 1;<?php
-if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
-
-if ( !OS_is_moderator() ) { header("location: ".OS_HOME.""); die(); }
-
-$HomeTitle = ($lang["moderator_panel"]);
-$SearchValue = "";
-$Button = "Add Ban";
-$sql = "";
-$orderby = "id DESC, date DESC";
-
-if ( file_exists("inc/geoip/geoip.inc") ) {
-	 include("inc/geoip/geoip.inc");
-	 $GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
 	 $GeoIP = 1;
 	 }
 	 
@@ -376,7 +362,7 @@ if (!isset($_GET["option"])) {
    
    //DISPLAY ROLES
    if ( isset($_GET["option"]) AND $_GET["option"] == "roles" ) {
-    $sql = "";
+    $sql = " AND user_level>=2 ";
 	$orderby = 'user_level DESC';
 	if ( isset($_GET["sort"]) ) {
 	  
@@ -387,9 +373,15 @@ if (!isset($_GET["option"])) {
 	  
 	  }
 	  
+	if ($_GET["sort"] == 'bl') {
+	$orderby = 'LOWER(user_name) ASC';
+	$sql=" AND blacklisted=1 ";
+	  }
+	  
 	}
+
 	
-    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_id>=1 AND user_level>=2 $sql" );
+    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_id>=1 $sql" );
     $result = $sth->execute();
     $r = $sth->fetch(PDO::FETCH_NUM);
     $numrows = $r[0];
@@ -417,6 +409,7 @@ if (!isset($_GET["option"])) {
 	$RoleData[$c]["user_level"] = $row["user_level"];
 	$RoleData[$c]["user_level_expire"] = $row["user_level_expire"];
 	$RoleData[$c]["user_ip"] = $row["user_ip"];
+	$RoleData[$c]["blacklisted"] = $row["blacklisted"];
 	$c++;
    }
    
@@ -435,10 +428,36 @@ if (!isset($_GET["option"])) {
 	   $ip_part = OS_GetIpRange( $ip );
 	   
 	   $IPSearch = $ip;
-	   
+	 
+    //BANS QRY	 
+	if ( isset($_GET["search_type"]) AND $_GET["search_type"] == 1 ) { 
+
+	if ( isset($_GET["ipr"]) ) {
+	$sql = " OR ip LIKE ('".$ip_part."%') OR ip_part LIKE ('".$ip_part."%') ";
+	}
+  
     $sth = $db->prepare( "SELECT * FROM ".OSDB_BANS." WHERE id>=1 AND 
-	(ip LIKE '".$ip."' OR ip LIKE ('".$ip_part."%') OR ip_part LIKE ('".$ip_part."%') ) LIMIT 150" );
+	(ip LIKE '".$ip."' $sql ) LIMIT 150" );
+	}
+	
+	//BANS GAMEPLAYERS-GAMES
+	if ( isset($_GET["search_type"]) AND $_GET["search_type"] == 2 ) {  
+	
+	if ( isset($_GET["ipr"]) ) {
+	$sql = " OR gp.ip LIKE ('".$ip_part."%')";
+	}
+	
+    $sth = $db->prepare( "SELECT g.gamename, g.datetime as date, gp.ip, gp.name, g.server, g.id
+	FROM ".OSDB_GAMES." as g 
+	LEFT JOIN ".OSDB_GP." as gp ON gp.gameid = g.id
+	WHERE g.id>=1 AND 
+	(gp.ip LIKE '".$ip."' $sql ) 
+	GROUP BY gp.name
+	ORDER BY g.id DESC
+	LIMIT 150" );
+	}
     $result = $sth->execute();
+	
 	
 	$c = 0;
      while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
@@ -446,7 +465,7 @@ if (!isset($_GET["option"])) {
 	 $IPData[$c]["server"] =  $row["server"];
 	 $IPData[$c]["name"] =  $row["name"];
 	 $IPData[$c]["ip"] =  $row["ip"];
-	 $IPData[$c]["country"] =  $row["country"];
+	 $IPData[$c]["country"] =  "";
 	 $IPData[$c]["date"] =  date( OS_DATE_FORMAT, strtotime($row["date"]));
 	 $IPData[$c]["gamename"] =  $row["gamename"];
 	 
@@ -468,10 +487,16 @@ if (!isset($_GET["option"])) {
 	  if ( isset($gn[1]) AND is_numeric($gn[1]) )
 	  $IPData[$c]["gamename"] = $gn[0].' <a href="'.OS_HOME.'?game='. $gn[1].'#'.$row["name"].'">#'.$gn[1].'</a>';
 	}
+	
+	if ( isset($_GET["search_type"]) AND $_GET["search_type"] == 2 ) {
+	 $row["expiredate"] = "";
+	 $row["admin"] = "";
+	 $row["reason"] = "";
+	}
 	 
 	 $IPData[$c]["admin"] =  $row["admin"];
 	 if (empty($row["admin"])) $IPData[$c]["admin"] = '<span style="color:#C90B00">[system]</span>';
-	 $IPData[$c]["reason"] =  $row["reason"];
+	 $IPData[$c]["reason"] =  convEnt($row["reason"]);
 	 $IPData[$c]["expiredate"] =  $row["expiredate"];
 	 $c++;
 	 }
