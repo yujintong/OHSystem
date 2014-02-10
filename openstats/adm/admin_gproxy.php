@@ -57,7 +57,7 @@ if (!empty($Info)) echo $Info;
 		   OS_AddLog($_SESSION["username"], "[os_gproxy] Edited Gproxy record: ".$player." (#".$id.")");
 		   
 		} else {
-		   $upd = $db->prepare("INSERT INTO ".OSDB_GPROXY." (player, ip, addded, added_by) VALUES('".$player."', '".$ip."', '".date("Y-m-d H:i:s")."', '".$_SESSION["username"]."')");
+		   $upd = $db->prepare("INSERT INTO ".OSDB_GPROXY." (player, ip, added, added_by) VALUES('".$player."', '".$ip."', '".date("Y-m-d H:i:s")."', '".$_SESSION["username"]."')");
            $result = $upd->execute();
 		   
 		   OS_AddLog($_SESSION["username"], "[os_gproxy] Added Gproxy record (".$player.")");
