@@ -85,16 +85,20 @@
    
     $botID = (int) $_POST["botID"];
 	$lastID =(int) $_POST["lastID"];
-	$chatID =(int) $_POST["chatID"]; //BotID
+	$chatID =(int) $_POST["chatID"]; //GameID
 	$click  =(int) $_POST["cl"];
 	
 	$UserIP = strip_tags($_SERVER["REMOTE_ADDR"]);
+	
 	//Check userIP (if user already in game). If so, don't show him live games.
-	$sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GAMELIST." WHERE usernames LIKE ('%	".$UserIP."	%')");
+	$sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GP." 
+	WHERE ip = '".$UserIP."' AND gameid = '".$chatID."' ");
+	
 	$result = $sth->execute();
 	$r = $sth->fetch(PDO::FETCH_NUM);
 	$numrows = $r[0];
 	
+	//Player is in game. Do not show him live games data.
 	if ( $numrows>=1 ) {
 	?><div><?=$lang["live_games_disable"]?></div><?php
 	die();

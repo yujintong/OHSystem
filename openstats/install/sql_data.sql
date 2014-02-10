@@ -208,7 +208,6 @@ DROP TABLE IF EXISTS `oh_gamelist`;
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) DEFAULT NULL,
-  `gameid` int(11) NOT NULL,
   `alias_id` smallint(6) NOT NULL,
   `last_update` datetime NOT NULL,
   `gamename` varchar(128) DEFAULT NULL,
