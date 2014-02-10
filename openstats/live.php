@@ -489,10 +489,10 @@
     
 	$rcon = safeEscape( trim($_POST["rcon"]) );
 	$com = (trim(($_POST["com"])));
-	$com = str_replace('&amp;', '&',$com);
-	$com = convEnt($com);
-	$com = str_replace('&amp;quot;', '"',$com);
-	$com = OS_StrToUTF8($com);
+	//$com = str_replace('&amp;', '&',$com);
+	//$com = convEnt($com);
+	//$com = str_replace('&amp;quot;', '"',$com);
+	//$com = OS_StrToUTF8($com);
 	$gameID = (int) $_POST["gameID"];
 	$botID = (int) $_POST["botID"];
 	

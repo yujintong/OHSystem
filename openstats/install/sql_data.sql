@@ -208,6 +208,7 @@ DROP TABLE IF EXISTS `oh_gamelist`;
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `botid` int(11) DEFAULT NULL,
+  `gameid` int(11) DEFAULT NULL,
   `alias_id` smallint(6) NOT NULL,
   `last_update` datetime NOT NULL,
   `gamename` varchar(128) DEFAULT NULL,
@@ -510,6 +511,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   `alias_id` smallint(6) NOT NULL,
   `bnet_username` varchar(30) NOT NULL,
   `user_bnet` tinyint(1) NOT NULL,
+  `blacklisted` tinyint(1) NOT NULL,
   `user_password` varchar(100) NOT NULL,
   `password_hash` varchar(65) NOT NULL,
   `user_ppwd` varchar(20) NOT NULL,

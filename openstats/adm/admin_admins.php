@@ -211,7 +211,7 @@ if (( isset($_GET["del"]) OR isset($_GET["edit"]) OR isset($_GET["add"]) ) AND $
 ?>
 <div align="center">
 <div class="padBottom padTop">
-<a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;add">[+] Add Admin</a>
+<a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;add">[+] Add User</a>
 <select name="alias_id" onchange="location.href='<?=OS_HOME?>adm/?admins&game_type='+this.value">
 <option value="">All Games</option>
 <?php
@@ -268,7 +268,11 @@ $s='selected="selected"'; else $s = "";
 	else $expire = "";
    ?>
    <tr class="row" style="height:30px;">
-     <td width="150" class="padLeft font12"><a href="<?=OS_HOME?>adm/?users&amp;edit=<?=$row["user_id"]?>"><?=$row["user_name"]?></a></td>
+     <td width="150" class="padLeft font12"><a href="<?=OS_HOME?>adm/?users&amp;edit=<?=$row["user_id"]?>"><?=$row["user_name"]?></a>
+	 <?php if($row["blacklisted"] == 1) { ?>
+	 <div style="color:red;">(blacklisted)</div>
+	 <?php } ?>
+	 </td>
 	 <td width="100" class="padLeft font12">
 	 <?php
 	 if ( $row["alias_id"]<=0 ) echo "All Games"; else {
