@@ -599,13 +599,16 @@
     <?php
 	    $c = 1; $team = 0;
 		for($i = 0; $i < count( $LiveGames["players"] ) - 2; $i+=3) {
-	 	$username = $LiveGames["players"][$i];
-		$realm = $LiveGames["players"][$i + 1];
-		$ping = $LiveGames["players"][$i + 2];
 		
-		//if ( $_SESSION["level"]>=10 ) $username.=" ".$c+1;
+	 	$username   = $LiveGames["players"][$i];
+		$realm      = $LiveGames["players"][$i + 1];
+		$PlayerIP   = $LiveGames["players"][$i + 2];
 		
-		if ( $username == "" ) {
+		if ( $PlayerIP == $_SERVER["REMOTE_ADDR"] OR (os_is_logged() AND $_SESSION["username"] == $username ) ) {
+		 $xstyle = 'background-color: yellow';
+		} else $xstyle = '';
+		
+		if ( empty($username) OR ( strstr($username, "PeaceMaker") AND strstr($realm, "OHConnect") )) {
 		?><span class="col<?=$c?>" style="font-size:14px;">-</span> <?php
         //$c++;
 		} else {
