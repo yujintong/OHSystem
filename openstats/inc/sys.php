@@ -60,7 +60,6 @@ include(OS_PAGE_PATH."add_comment_page.php");
 		header( 'location: '.OS_HOME.'?search='.$uid ); die;
 		}
 	 }
-	 }
 	 
 	 $MenuClass = array();
 	 $MenuClass["home"] = "menulink";
