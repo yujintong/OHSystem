@@ -2047,11 +2047,11 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
     string ToDelete;
     for( vector<string> :: iterator i = ids.begin( ); i != ids.end( ); ++i) {
         if(!ToDelete.empty())
-            ToDelete += "AND id='"+*i+"' ";
+            ToDelete += ", '"+*i+"' ";
         else
-            ToDelete += "WHERE id='"+*i+"' ";
+            ToDelete += "'"+*i+"'";
     }
-    string DeleteQuery = "DELETE FROM oh_commands '" + ToDelete + "'";
+    string DeleteQuery = "DELETE FROM oh_commands WHERE id IN( " + ToDelete + " )";
 
 	if( mysql_real_query( (MYSQL *)conn, DeleteQuery.c_str( ), DeleteQuery.size( ) ) != 0 )
 		*error = mysql_error( (MYSQL *)conn );
