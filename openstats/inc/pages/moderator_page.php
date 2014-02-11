@@ -504,6 +504,49 @@ if (!isset($_GET["option"])) {
 	}
 	
 	}
+	
+	
+	
+	//gproxy users
+	
+	if ( isset($_GET["option"]) AND $_GET["option"] == "gproxy" ) {
+	$sql = "";
+	
+    if ( isset($_GET["gpr"]) AND strlen($_GET["gpr"])>=2 ) {
+    $SearchValue = trim(safeEscape( strip_tags($_GET["gpr"]) ) );
+    $sql.=" AND player LIKE ('%".$SearchValue."%') ";
+    $HomeTitle ="Search GProxy :: MODERATOR | $SearchValue";
+   }
+   
+    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_GPROXY." WHERE id>=1 $sql" );
+    $result = $sth->execute();
+    $r = $sth->fetch(PDO::FETCH_NUM);
+    $numrows = $r[0];
+    $result_per_page = 50;
+    $draw_pagination = 0;
+    $SHOW_TOTALS = 1;
+    include('inc/pagination.php');
+    $draw_pagination = 1;
+	
+   $sth = $db->prepare("SELECT * FROM ".OSDB_GPROXY." 
+   WHERE id>=1 $sql
+   ORDER BY player ASC
+   LIMIT $offset, $rowsperpage");
+    $result = $sth->execute();
+	$GPData = array();
+	$c = 0;
+
+    while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	$GPData[$c]["id"] = $row["id"];
+	$GPData[$c]["ip"] = $row["ip"];
+	$GPData[$c]["player"] = $row["player"];
+	$GPData[$c]["added"] = $row["added"];
+	$GPData[$c]["added_by"] = $row["added_by"];
+	$c++;
+	}
+	
+	
+	}
    
    
    if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($GeoIPDatabase);
