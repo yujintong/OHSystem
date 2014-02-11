@@ -771,8 +771,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         string Result = i->second->GetResult( );
                         if( i->second->GetType( ) == "betcheck" )
                                 SendAllChat( m_GHost->m_Language->CurrentPoints( i->second->GetUser( ), Result ) );
-                        else if( i->second->GetType( ) == "bet" )
-                        {
+                        else if( i->second->GetType( ) == "bet" ) {
                                 CGamePlayer *Player = GetPlayerFromName( i->second->GetUser( ), true );
                                 if( Result == "already bet" )
                                         SendChat( Player, m_GHost->m_Language->ErrorAlreadyBet() );
@@ -785,8 +784,13 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 else
                                         CONSOLE_Print( "Betsystem have an issue here" );
                         }
-                        else if( i->second->GetType() == "top")
-                        {
+                        else if( i->second->GetType() == "top") {
+                            if( Result != "failed" )
+                                SendAllChat( Result );
+                            else
+                                SendAllChat( m_GHost->m_Language->WrongContactBotOwner() );
+                        }
+                        else if(i->second->GetType() == "forcedgproxy") {
                             if( Result != "failed" )
                                 SendAllChat( Result );
                             else
@@ -1403,6 +1407,28 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 }
                                         }
                                 }
+                        }
+
+                        //
+                        // !FORCEGPROXY
+                        //
+                       else if( Command == "forcegproxy" ) {
+                            if(Payload.empty()) {
+                                SendChat(player, m_GHost->m_Language->NoUserDefined( ));
+                            } else {
+                                CGamePlayer *LastMatch = NULL;
+                                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+                                if( Matches == 0 )
+                                {
+                                    SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                                }
+                                else if( Matches == 1 )
+                                {
+                                    m_PairedSSs.push_back( PairedSS( string( ), m_GHost->m_DB->ThreadedStatsSystem( Payload,player->GetName(), 0, "forcegproxy" ) ) );
+                                } else {
+                                    SendChat( player, m_GHost->m_Language->FoundMultiplyMatches());
+                                }
+                            }
                         }
 
                         //

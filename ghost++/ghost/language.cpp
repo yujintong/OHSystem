@@ -2816,5 +2816,9 @@ string CLanguage :: PlayersWhoDidntVoteForMode( string players )
     return Out;
 }
 
-
+string CLanguage :: NoUserDefined( )
+{
+    string Out = m_CFG->GetString( "oh_177", "oh_177" );
+    return Out;
+}
 
