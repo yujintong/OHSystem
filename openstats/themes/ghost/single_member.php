@@ -24,7 +24,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	        <div class="padLeft"><?=$Member["user_email"]?> | <?=EditUserLink( $Member["user_id"] )?></div>
 	        <?php } ?>
 			<?php if (OS_is_bnet($Member["user_bnet"]) ) { ?>
-			<div class="padLeft padTop"><a class="menuButtons" href="<?=OS_HOME?>?u=<?=$Member["user_name"]?>"><?=$lang["bnet_mystats"]?></a></div>
+			<div class="padLeft padTop"><a class="menuButtons" href="<?=OS_HOME?>?u=<?=$Member["bnet_username"]?>"><?=$lang["bnet_mystats"]?></a></div>
 			<?php } ?>
 			</td>
 		 </tr>

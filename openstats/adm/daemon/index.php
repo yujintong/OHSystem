@@ -344,6 +344,32 @@ if ($BanIPUpdate == 1) {
    }
    
    
+   //Check user_level expire
+   $debug = "";
+   $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." WHERE user_level_expire!= '0000-00-00 00:00:00' AND user_level_expire<=NOW() LIMIT $MaxQueries");
+   $result = $sth->execute(); 
+   while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+    $debug.= $row["user_name"]." (level: ".$row["user_level"]."), ";
+	$upd  = $db->prepare("UPDATE ".OSDB_USERS." SET user_level = 0, user_level_expire= '0000-00-00 00:00:00' WHERE user_id = '".$row["user_id"]."'");
+	$result2 = $upd->execute();
+
+    OS_AddLog( "CRONJOB", "[os_cron] Expired privileges: $debug )");	
+	
+	 if (!empty($row["bnet_username"])) {
+	    $upd2 = $db->prepare("UPDATE ".OSDB_STATS." SET user_level = 0, user_level_expire= '0000-00-00 00:00:00' WHERE player = '".$row["bnet_username"]."'");
+	    $result2 = $upd2->execute(); 
+	  }
+	  
+    }
+   
+   	//Cron entry example - LOG
+	if ( $CronReportDetails >=1 AND !empty($debug) ) {
+       $cron_data = 'DAEMON: Expired privileges <b>'.htmlentities($debug).'</b>';
+	   $sth3 = $db->prepare("INSERT INTO cron_logs (cron_data, cron_date) VALUES('$cron_data', '".time()."' ) ");
+	   $result3 = $sth3->execute();  
+    }
+   
+   
 	//REMOVE EXPIRED PP
 	if ($PPExpireDays>=1) {
 	$sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GO." WHERE offence_time<=NOW() - INTERVAL $PPExpireDays DAY");
