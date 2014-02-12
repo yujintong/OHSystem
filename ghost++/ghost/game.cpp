@@ -784,7 +784,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 else
                     CONSOLE_Print( "Betsystem have an issue here" );
             }
-            else if( i->second->GetType() == "top")
+            else if( i->second->GetType() == "top" || i->second->GetType() == "forcedgproxy" )
             {
                 if( Result != "failed" )
                     SendAllChat( Result );
