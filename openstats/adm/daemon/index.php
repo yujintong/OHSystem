@@ -356,9 +356,9 @@ if ($BanIPUpdate == 1) {
     OS_AddLog( "CRONJOB", "[os_cron] Expired privileges: $debug )");	
 	
 	 if (!empty($row["bnet_username"])) {
-	    $upd2 = $db->prepare("UPDATE ".OSDB_STATS." SET user_level = 0, user_level_expire= '0000-00-00 00:00:00' WHERE player = '".$row["bnet_username"]."'");
+	    $upd2 = $db->prepare("UPDATE ".OSDB_STATS." SET user_level = '0' WHERE player = '".$row["bnet_username"]."' ");
 	    $result2 = $upd2->execute(); 
-	  }
+	 }
 	  
     }
    
