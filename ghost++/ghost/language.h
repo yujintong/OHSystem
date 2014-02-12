@@ -440,7 +440,12 @@ public:
     string ErrorInvalidModeWasVoted( );
     string UserVotedForMode( string user, string mode );
     string PlayersWhoDidntVoteForMode( string players );
-    string NoUserDefined( );
+
+
+
+
+
+
 };
 
 #endif

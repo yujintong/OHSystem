@@ -39,7 +39,6 @@ class CCRC32;
 class CSHA1;
 class CBNET;
 class CBaseGame;
-class CAdminGame;
 class CGHostDB;
 class CBaseCallable;
 class CLanguage;
@@ -55,6 +54,7 @@ class CCallableDCountryList;
 class CCallableGameDBInit;
 class CCallableDeniedNamesList;
 class CCallableAliasList;
+class CGameProtocol;
 
 class CGHost
 {
@@ -62,13 +62,14 @@ public:
 	CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
 	CTCPServer *m_ReconnectSocket;			// listening socket for GProxy++ reliable reconnects
 	vector<CTCPSocket *> m_ReconnectSockets;// vector of sockets attempting to reconnect (connected but not identified yet)
-	CGPSProtocol *m_GPSProtocol;
+    CTCPServer *m_Socket;					// listening socket
+    CGameProtocol *m_Protocol;				// game protocol
+    CGPSProtocol *m_GPSProtocol;
 	CGCBIProtocol *m_GCBIProtocol;
 	CCRC32 *m_CRC;							// for calculating CRC's
 	CSHA1 *m_SHA;							// for calculating SHA1's
 	vector<CBNET *> m_BNETs;				// all our battle.net connections (there can be more than one)
-	CBaseGame *m_CurrentGame;				// this game is still in the lobby state
-	CAdminGame *m_AdminGame;				// this "fake game" allows an admin who knows the password to control the bot from the local network
+    vector<CBaseGame *> m_CurrentGames;				// this game is still in the lobby
 	vector<CBaseGame *> m_Games;			// these games are in progress
 	CGHostDB *m_DB;							// database
 	CGHostDB *m_DBLocal;					// local database (for temporary data)
@@ -106,7 +107,8 @@ public:
 	uint32_t m_AutoHostMaximumGames;		// maximum number of games to auto host
 	uint32_t m_AutoHostAutoStartPlayers;	// when using auto hosting auto start the game when this many players have joined
 	uint32_t m_LastAutoHostTime;			// GetTime when the last auto host was attempted
-	bool m_AutoHostMatchMaking;
+    uint32_t m_EntryKey;					// LAN entry key
+    bool m_AutoHostMatchMaking;
 	uint32_t m_LastCommandListTime;			// GetTime when last refreshed command list
 	vector<string> m_ColoredNames;
 	vector<string> m_Modes;
@@ -135,7 +137,10 @@ public:
 	double m_AutoHostMinimumScore;
 	double m_AutoHostMaximumScore;
 	bool m_AllGamesFinished;				// if all games finished (used when exiting nicely)
-	uint32_t m_AllGamesFinishedTime;		// GetTime when all games finished (used when exiting nicely)
+    uint32_t m_LastLANBroadcastTime;		// GetTime when the last LAN broadcast was sent
+    uint32_t m_LastRefreshTime;				// GetTime when we last refreshed
+    bool m_RefreshEnabled;					// whether or not we are currently refreshing the persistent game
+    uint32_t m_AllGamesFinishedTime;		// GetTime when all games finished (used when exiting nicely)
 	string m_LanguageFile;					// config value: language file
 	string m_Warcraft3Path;					// config value: Warcraft 3 path
 	bool m_TFT;								// config value: TFT enabled or not
@@ -173,7 +178,8 @@ public:
 	uint32_t m_BanMethod;					// config value: ban method (ban by name/ip/both)
 	string m_IPBlackListFile;				// config value: IP blacklist file (ipblacklist.txt)
 	uint32_t m_LobbyTimeLimit;				// config value: auto close the game lobby after this many minutes without any reserved players
-	uint32_t m_Latency;						// config value: the latency (by default)
+    set<string> m_IPBlackList;				// set of IP addresses to blacklist from joining (todotodo: convert to uint32's for efficiency)
+    uint32_t m_Latency;						// config value: the latency (by default)
 	uint32_t m_SyncLimit;					// config value: the maximum number of packets a player can fall out of sync before starting the lag screen (by default)
 	bool m_VoteKickAllowed;					// config value: if votekicks are allowed or not
 	uint32_t m_VoteKickPercentage;			// config value: percentage of players required to vote yes for a votekick to pass
@@ -181,11 +187,7 @@ public:
 	string m_MOTDFile;						// config value: motd.txt
 	string m_GameLoadedFile;				// config value: gameloaded.txt
 	string m_GameOverFile;					// config value: gameover.txt
-	bool m_LocalAdminMessages;				// config value: send local admin messages or not
-	bool m_AdminGameCreate;					// config value: create the admin game or not
-	uint16_t m_AdminGamePort;				// config value: the port to host the admin game on
-	string m_AdminGamePassword;				// config value: the admin game password
-	string m_AdminGameMap;					// config value: the admin game map config to use
+    bool m_LocalAdminMessages;				// config value: send local admin messages or not
 	unsigned char m_LANWar3Version;			// config value: LAN warcraft 3 version
 	uint32_t m_ReplayWar3Version;			// config value: replay warcraft 3 version (for saving replays)
 	uint32_t m_ReplayBuildNumber;			// config value: replay build number (for saving replays)
@@ -281,8 +283,9 @@ public:
 	void ReloadConfigs( );
 	void SetConfigs( CConfig *CFG );
 	void ExtractScripts( );
-	void CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, uint32_t gameType, bool whisper, uint32_t m_HostCounter );
-	bool FlameCheck( string message );
+    void VirtualStartup( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, bool whisper, uint32_t gameType, uint32_t m_HostCounter );
+    void CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, bool whisper );
+    bool FlameCheck( string message );
 	void GetDeniedCountries( );
 	void LoadDatas( );
     void LoadRules( );

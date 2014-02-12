@@ -966,7 +966,7 @@ BYTEARRAY CGameProtocol :: EncodeSlotInfo( vector<CGameSlot> &slots, uint32_t ra
 // CIncomingJoinPlayer
 //
 
-CIncomingJoinPlayer :: CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP, uint32_t nGames, bool nRegistered, uint32_t nScore, string nCC ) : m_HostCounter( nHostCounter ), m_EntryKey( nEntryKey ), m_Name( nName ), m_InternalIP( nInternalIP ), m_Games( nGames ), m_Registered( nRegistered ), m_Score( nScore ), m_CC( nCC )
+CIncomingJoinPlayer :: CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP, uint32_t nGames, bool nRegistered, uint32_t nScore, string nCC ) : m_HostCounter( nHostCounter ), m_EntryKey( nEntryKey ), m_Name( nName ), m_InternalIP( nInternalIP ), m_Games( nGames ), m_Registered( nRegistered ), m_Score( nScore ), m_CC( nCC ), m_TransferJoin( false ), m_TransferPID( 255 )
 {
 
 }

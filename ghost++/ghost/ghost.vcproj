@@ -374,11 +374,7 @@
 			<File
 				RelativePath=".\game.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\game_admin.cpp"
-				>
-			</File>
+         </File>
 			<File
 				RelativePath=".\game_base.cpp"
 				>
@@ -504,11 +500,7 @@
 			<File
 				RelativePath=".\game.h"
 				>
-			</File>
-			<File
-				RelativePath=".\game_admin.h"
-				>
-			</File>
+         </File>
 			<File
 				RelativePath=".\game_base.h"
 				>

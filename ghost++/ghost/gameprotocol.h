@@ -167,6 +167,8 @@ private:
     bool m_Registered;
     uint32_t m_Score;
     string m_CC;
+    bool m_TransferJoin;
+    int m_TransferPID;
 
 public:
     CIncomingJoinPlayer( uint32_t nHostCounter, uint32_t nEntryKey, string nName, BYTEARRAY &nInternalIP, uint32_t nGames, bool nRegistered, uint32_t nScore, string nCC );
@@ -185,6 +187,11 @@ public:
     void SetRegistered( bool nRegsistered)  { m_Registered = nRegsistered; }
     void SetScore( uint32_t nScore )          { m_Score = nScore; }
     void SetCLetter( string nCC )           { m_CC = nCC; }
+    bool GetTransferJoin( )		{ return m_TransferJoin; }
+    int GetTransferPID( )		{ return m_TransferPID; }
+
+    void SetTransferJoin( bool nTransferJoin ) { m_TransferJoin = nTransferJoin; }
+    void SetTransferPID( int nTransferPID ) { m_TransferPID = nTransferPID; }
 };
 
 //

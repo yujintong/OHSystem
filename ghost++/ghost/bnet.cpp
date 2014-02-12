@@ -306,35 +306,29 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         if( i->second->GetType( ) == "betcheck" )
                                 QueueChatCommand( m_GHost->m_Language->BetPoints(i->second->GetUser( ), Result ), i->first, !i->first.empty( ) );
  
-                        else if( i->second->GetType( ) == "statsreset" )
+                        if( i->second->GetType( ) == "statsreset" )
                         {
                                 if( Result == "success" )
                                         QueueChatCommand( m_GHost->m_Language->SuccessfullyResetedStats( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                                 else
                                     QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                         }
-                        else if( i->second->GetType( ) == "aliascheck" )
+                        if( i->second->GetType( ) == "aliascheck" )
                         {
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
                                          QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                         }
-                        else if( i->second->GetType( ) == "rpp" )
+                        if( i->second->GetType( ) == "rpp" )
                         {
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
                                         QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
                         }
-                        else if( i->second->GetType() == "top")
+                        if( i->second->GetType() == "top")
                         {
-                            if( Result != "failed" )
-                                QueueChatCommand( Result, i->first, !i->first.empty( ) );
-                            else
-                                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
-                        }
-                        else if(i->second->GetType() == "forcedgproxy") {
                             if( Result != "failed" )
                                 QueueChatCommand( Result, i->first, !i->first.empty( ) );
                             else
@@ -376,11 +370,13 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         uint32_t Result = i->second->GetResult( );
                         if( Result == 1 )
                         {
-                                if( m_GHost->m_CurrentGame )
+                                if( m_GHost->m_CurrentGames.size( ) > 0 )
                                 {
-                                        for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( );k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                                    for( vector<CBaseGame *> :: iterator a = m_GHost->m_CurrentGames.begin( ); a != m_GHost->m_CurrentGames.end( ); ++a )
+                                    {
+                                        for( vector<CGamePlayer *> :: iterator k = (*a)->m_Players.begin( );k != (*a)->m_Players.end( ); ++k )
                                         {
-                                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
+                                                CGamePlayer *Player = (*a)->GetPlayerFromName( (*k)->GetName( ), true );
                                                 if( Player )
                                                 {
                                                         if( Player->GetName() == i->first )
@@ -391,6 +387,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                                                         }
                                                 }
                                         }
+                                    }
                                 }
                         }
  
@@ -832,7 +829,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
         }
  
         // checking for finished games
-        if( GetTime( ) - m_GHost->m_CheckForFinishedGames >= 120 && m_GHost->m_StatsUpdate )
+        if( GetTime( ) - m_GHost->m_CheckForFinishedGames >= 15 && m_GHost->m_StatsUpdate )
         {
 #ifdef WIN32
                 system("stats.exe");
@@ -1411,39 +1408,46 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
                 // this case covers whispers - we assume that anyone who sends a whisper to the bot with message "spoofcheck" should be considered spoof checked
                 // note that this means you can whisper "spoofcheck" even in a public game to manually spoofcheck if the /whois fails
  
-                if( Event == CBNETProtocol :: EID_WHISPER && m_GHost->m_CurrentGame )
+                if( Event == CBNETProtocol :: EID_WHISPER )
                 {
                         if( Message == "s" || Message == "sc" || Message == "spoof" || Message == "check" || Message == "spoofcheck" )
-                                m_GHost->m_CurrentGame->AddToSpoofed( m_Server, User, true );
-                        else if( Message.find( m_GHost->m_CurrentGame->GetGameName( ) ) != string :: npos )
-                        {
-                                // look for messages like "entered a Warcraft III The Frozen Throne game called XYZ"
-                                // we don't look for the English part of the text anymore because we want this to work with multiple languages
-                                // it's a pretty safe bet that anyone whispering the bot with a message containing the game name is a valid spoofcheck
- 
-                                if( m_PasswordHashType == "pvpgn" && User == m_PVPGNRealmName )
-                                {
-                                        // the equivalent pvpgn message is: [PvPGN Realm] Your friend abc has entered a Warcraft III Frozen Throne game named "xyz".
- 
-                                        vector<string> Tokens = UTIL_Tokenize( Message, ' ' );
- 
-                                        if( Tokens.size( ) >= 3 )
-                                                m_GHost->m_CurrentGame->AddToSpoofed( m_Server, Tokens[2], false );
-                                }
-                                else
-                                        m_GHost->m_CurrentGame->AddToSpoofed( m_Server, User, false );
-                        }
+                            for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                   (*i)->AddToSpoofed( m_Server, User, true );
                 }
- 
-                // handle bot commands
- 
-                if( Message == "?trigger" && ( IsLevel( User ) >= 9 || ( m_PublicCommands && m_OutPackets.size( ) <= 3 ) ) )
-                        QueueChatCommand( m_GHost->m_Language->CommandTrigger( string( 1, m_CommandTrigger ) ), User, Whisper );
-                else if( !Message.empty( ) && Message[0] == m_CommandTrigger )
+                for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
                 {
-                    BotCommand( Message, User, Whisper, false );
+                    if( Message.find( m_GHost->m_AutoHostGameName ) != string :: npos )
+                    {
+                        // look for messages like "entered a Warcraft III The Frozen Throne game called XYZ"
+                        // we don't look for the English part of the text anymore because we want this to work with multiple languages
+                        // it's a pretty safe bet that anyone whispering the bot with a message containing the game name is a valid spoofcheck
+
+                        if( m_PasswordHashType == "pvpgn" && User == m_PVPGNRealmName )
+                        {
+                            // the equivalent pvpgn message is: [PvPGN Realm] Your friend abc has entered a Warcraft III Frozen Throne game named "xyz".
+
+                            vector<string> Tokens = UTIL_Tokenize( Message, ' ' );
+
+                            if( Tokens.size( ) >= 3 )
+                                (*i)->AddToSpoofed( m_Server, Tokens[2], false );
+                        }
+                        else
+                            (*i)->AddToSpoofed( m_Server, User, false );
+                    }
+                    else
+                         (*i)->AddToSpoofed( m_Server, User, false );
                 }
         }
+
+        // handle bot commands
+
+        if( Message == "?trigger" && ( IsLevel( User ) >= 9 || ( m_PublicCommands && m_OutPackets.size( ) <= 3 ) ) )
+                QueueChatCommand( m_GHost->m_Language->CommandTrigger( string( 1, m_CommandTrigger ) ), User, Whisper );
+        else if( !Message.empty( ) && Message[0] == m_CommandTrigger )
+        {
+            BotCommand( Message, User, Whisper, false );
+        }
+
         else if( Event == CBNETProtocol :: EID_CHANNEL )
         {
                 // keep track of current channel so we can rejoin it after hosting a game
@@ -1469,33 +1473,19 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
                 // this case covers whois results which are used when hosting a public game (we send out a "/whois [player]" for each player)
                 // at all times you can still /w the bot with "spoofcheck" to manually spoof check
  
-                if( m_GHost->m_CurrentGame && m_GHost->m_CurrentGame->GetPlayerFromName( UserName, true ) )
+                for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
                 {
-                        if( Message.find( "is away" ) != string :: npos )
-                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofPossibleIsAway( UserName ) );
-                        else if( Message.find( "is unavailable" ) != string :: npos )
-                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofPossibleIsUnavailable( UserName ) );
-                        else if( Message.find( "is refusing messages" ) != string :: npos )
-                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofPossibleIsRefusingMessages( UserName ) );
-                        else if( Message.find( "is using Warcraft III The Frozen Throne in the channel" ) != string :: npos )
-                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsNotInGame( UserName ) );
-                        else if( Message.find( "is using Warcraft III The Frozen Throne in channel" ) != string :: npos )
-                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsNotInGame( UserName ) );
-                        else if( Message.find( "is using Warcraft III The Frozen Throne in a private channel" ) != string :: npos )
-                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInPrivateChannel( UserName ) );
- 
-                        if( Message.find( "is using Warcraft III The Frozen Throne in game" ) != string :: npos || Message.find( "is using Warcraft III Frozen Throne and is currently in  game" ) != string :: npos )
-                        {
- 
-                                // check both the current game name and the last game name against the /whois response
-                                // this is because when the game is rehosted, players who joined recently will be in the previous game according to battle.net
-                                // note: if the game is rehosted more than once it is possible (but unlikely) for a false positive because only two game names are checked
- 
-                                if( Message.find( m_GHost->m_CurrentGame->GetGameName( ) ) != string :: npos || Message.find( m_GHost->m_CurrentGame->GetLastGameName( ) ) != string :: npos )
-                                        m_GHost->m_CurrentGame->AddToSpoofed( m_Server, UserName, false );
-                                else
-                                        m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInAnotherGame( UserName ) );
-                        }
+                    if( Message.find( "is using Warcraft III The Frozen Throne in game" ) != string :: npos || Message.find( "is using Warcraft III Frozen Throne and is currently in  game" ) != string :: npos )
+                    {
+                        // check both the current game name and the last game name against the /whois response
+                        // this is because when the game is rehosted, players who joined recently will be in the previous game according to battle.net
+                        // note: if the game is rehosted more than once it is possible (but unlikely) for a false positive because only two game names are checked
+
+                        if( Message.find( m_GHost->m_AutoHostGameName ) != string :: npos || Message.find( (*i)->GetLastGameName( ) ) != string :: npos )
+                            (*i)->AddToSpoofed( m_Server, UserName, false );
+                        else
+                            (*i)->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInAnotherGame( UserName ) );
+                    }
                 }
         }
  
@@ -1586,21 +1576,24 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         else
                                                         {
  
-                                                                if( m_GHost->m_CurrentGame )
+                                                                if( m_GHost->m_CurrentGames.size( ) > 0  )
                                                                 {
-                                                                        for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                                                                    for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                                                    {
+                                                                        for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
                                                                         {
-                                                                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
+                                                                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
                                                                                 if( Player )
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User ) );
+                                                                                                (*i)->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User ) );
                                                                                                 Player->SetMuted( true );
                                                                                                 Success = true;
                                                                                         }
                                                                                 }
                                                                         }
+                                                                    }
                                                                 }
                                                                 for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
                                                                 {
@@ -1649,21 +1642,24 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         else
                                                         {
  
-                                                                if( m_GHost->m_CurrentGame )
+                                                                if( m_GHost->m_CurrentGames.size( ) > 0  )
                                                                 {
-                                                                        for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                                                                    for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                                                    {
+                                                                        for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
                                                                         {
-                                                                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
+                                                                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
                                                                                 if( Player )
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat(m_GHost->m_Language->UserUnMutedByRCON( Name, User ));
+                                                                                                (*i)->SendAllChat(m_GHost->m_Language->UserUnMutedByRCON( Name, User ));
                                                                                                 Player->SetMuted( false );
                                                                                                 Success = true;
                                                                                         }
                                                                                 }
                                                                         }
+                                                                    }
                                                                 }
                                                                 for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
                                                                 {
@@ -1712,24 +1708,27 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-kick command" );
                                                         else
                                                         {
-                                                                if( m_GHost->m_CurrentGame )
+                                                                if( m_GHost->m_CurrentGames.size( ) > 1 )
                                                                 {
-                                                                        for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                                                                    for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                                                    {
+                                                                        for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
                                                                         {
-                                                                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
+                                                                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
                                                                                 if( Player )
                                                                                 {
                                                                                         if( Player->GetName() == Name )
                                                                                         {
-                                                                                                m_GHost->m_CurrentGame->SendAllChat(m_GHost->m_Language->UserKickedByRCON( Name, User ));
+                                                                                                (*i)->SendAllChat(m_GHost->m_Language->UserKickedByRCON( Name, User ));
                                                                                                 Player->SetDeleteMe( true );
                                                                                                 Player->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
                                                                                                 Player->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                                                                                m_GHost->m_CurrentGame->OpenSlot( m_GHost->m_CurrentGame->GetSIDFromPID( Player->GetPID( ) ), false );
+                                                                                                (*i)->OpenSlot( (*i)->GetSIDFromPID( Player->GetPID( ) ), false );
                                                                                                 Success = true;
                                                                                         }
                                                                                 }
                                                                         }
+                                                                    }
                                                                 }
                                                                 for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
                                                                 {
@@ -1786,10 +1785,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                         Message = Message.substr( Start );
                                                         }
  
-                                                        if( m_GHost->m_CurrentGame && User != "" && Message != "")
+                                                        if( m_GHost->m_CurrentGames.size( ) > 0 && User != "" && Message != "")
                                                         {
-                                                                m_GHost->m_CurrentGame->SendAllChat( "[" + User + "] " + Message );
-                                                                Success = true;
+                                                            for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                                                (*i)->SendAllChat( "[" + User + "] " + Message );
+                                                            Success = true;
                                                         }
                                                 }
 /*
@@ -1874,20 +1874,23 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                                 Message = Message.substr( Start );
                                                                 }
  
-                                                                if( m_GHost->m_CurrentGame && Message != "" )
+                                                                if( m_GHost->m_CurrentGames.size( ) > 0 )
                                                                 {
-                                                                        for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                                                                    for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                                                    {
+                                                                        for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
                                                                         {
-                                                                                unsigned char SID = m_GHost->m_CurrentGame->GetSIDFromPID( (*k)->GetPID() );
-                                                                                string slot = UTIL_ToString( m_GHost->m_CurrentGame->GetSIDFromPID( (*k)->GetPID() ) );
+                                                                                unsigned char SID = (*i)->GetSIDFromPID( (*k)->GetPID() );
+                                                                                string slot = UTIL_ToString( (*i)->GetSIDFromPID( (*k)->GetPID() ) );
                                                                                 unsigned char fteam;
-                                                                                fteam = m_GHost->m_CurrentGame->m_Slots[SID].GetTeam();
+                                                                                fteam = (*i)->m_Slots[SID].GetTeam();
                                                                                 if( fteam == Team )
                                                                                 {
-                                                                                        m_GHost->m_CurrentGame->SendChat( (*k), "[TC:"+ User +"] "+ Message );
+                                                                                        (*i)->SendChat( (*k), "[TC:"+ User +"] "+ Message );
                                                                                         Success = true;
                                                                                 }
                                                                         }
+                                                                    }
                                                                 }
                                                                 else
                                                                         CONSOLE_Print( "There are no games at the lobby" );
@@ -1959,7 +1962,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         //
                                         // RCON FROM
                                         //
-                                        else if( RCONCommand == "from" && m_GHost->m_CurrentGame )
+                                        else if( RCONCommand == "from" && m_GHost->m_CurrentGames.size( ) > 0 )
                                         {
                                             uint32_t GameID = UTIL_ToUInt32(RCONPayload);
                                             for( vector<CBaseGame *> :: iterator k = m_GHost->m_Games.begin( ); k != m_GHost->m_Games.end( ); ++k ) {
@@ -1993,7 +1996,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                             }
                                         }
                                 }
- 
+ /*
                                 //
                                 // !VOUCH
                                 //
@@ -2015,7 +2018,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                         m_PairedPUps.push_back( PairedPUp( Whisper ? User : string( ), m_GHost->m_DB->ThreadedPUp( Name, 1, Realm, User ) ) );
                                 }
- 
+ */
                                 //
                                 // !SETPERMISSION
                                 //
@@ -2178,20 +2181,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         }
                                 }
   
-                                //
-                                // !FORCEGPROXY
-                                //
-                                else if( Command == "forcegproxy" ) {
-                                    if(Payload.empty()) {
-                                        QueueChatCommand(m_GHost->m_Language->NoUserDefined( ), User, Whisper );
-                                    } else {
-                                        m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( Payload,User, 0, "forcegproxy" ) ) );
-                                    }
-                                }
-
-
-
-
                                 /*****************
                                 * ADMIN COMMANDS *
                                 *****************/
@@ -2227,7 +2216,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         //if( IsBannedName( Victim ) )
                                                         //      QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
                                                         //else
-                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "" ) ) );
+                                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 29030400, "" ) ) );
                                                 }
                                                 else
                                                         QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ), User, Whisper );
@@ -2263,7 +2252,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, VictimIP ), User, Whisper );
                                         else
                                         {
-                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "" ) ) );
+                                                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 29030400, "" ) ) );
                                                 QueueChatCommand( m_GHost->m_Language->BannedIPRange( VictimIP, m_Server ), User, Whisper );
                                         }
                                 }
@@ -2373,17 +2362,17 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 }
                                         }
                                 }
- 
+ /*
                                 //
                                 // !ANNOUNCE
                                 //
  
-                                else if( Command == "announce" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) )
+                                else if( Command == "announce" && m_GHost->m_CurrentGames.size( ) > 0 && !(*i)->GetCountDownStarted( ) )
                                 {
                                         if( Payload.empty( ) || Payload == "off" )
                                         {
                                                 QueueChatCommand( m_GHost->m_Language->AnnounceMessageDisabled( ), User, Whisper );
-                                                m_GHost->m_CurrentGame->SetAnnounce( 0, string( ) );
+                                                (*i)->SetAnnounce( 0, string( ) );
                                         }
                                         else
                                         {
@@ -2411,7 +2400,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                         Message = Message.substr( Start );
  
                                                                 QueueChatCommand( m_GHost->m_Language->AnnounceMessageEnabled( ), User, Whisper );
-                                                                m_GHost->m_CurrentGame->SetAnnounce( Interval, Message );
+                                                                (*i)->SetAnnounce( Interval, Message );
                                                         }
                                                 }
                                         }
@@ -2608,12 +2597,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !AUTOSTART
                                 //
  
-                                else if( Command == "autostart" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && IsLevel( User ) >= 9 )
+                                else if( Command == "autostart" && m_GHost->m_CurrentGames.size( ) > 0 && !(*i)->GetCountDownStarted( ) && IsLevel( User ) >= 9 )
                                 {
                                         if( Payload.empty( ) || Payload == "off" )
                                         {
                                                 QueueChatCommand( m_GHost->m_Language->AutoStartDisabled( ), User, Whisper );
-                                                m_GHost->m_CurrentGame->SetAutoStartPlayers( 0 );
+                                                (*i)->SetAutoStartPlayers( 0 );
                                         }
                                         else
                                         {
@@ -2622,11 +2611,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 if( AutoStartPlayers != 0 )
                                                 {
                                                         QueueChatCommand( m_GHost->m_Language->AutoStartEnabled( UTIL_ToString( AutoStartPlayers ) ), User, Whisper );
-                                                        m_GHost->m_CurrentGame->SetAutoStartPlayers( AutoStartPlayers );
+                                                        (*i)->SetAutoStartPlayers( AutoStartPlayers );
                                                 }
                                         }
                                 }
- 
+ */
                                 //
                                 // !CHANNEL (change channel)
                                 //
@@ -2680,14 +2669,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 m_PairedBanCheck2s.push_back( PairedBanCheck2( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanCheck2( m_Server, Payload, "check" ) ) );
                                         }
                                 }
- 
+ /*
                                 //
                                 // !CLOSE (close slot)
                                 //
  
-                                else if( Command == "close" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 7 )
+                                else if( Command == "close" && !Payload.empty( ) && m_GHost->m_CurrentGames.size( ) > 0 && IsLevel( User ) >= 7 )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
+                                        if( !(*i)->GetLocked( ) )
                                         {
                                                 // close as many slots as specified, e.g. "5 10" closes slots 5 and 10
  
@@ -2705,7 +2694,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                 break;
                                                         }
                                                         else
-                                                                m_GHost->m_CurrentGame->CloseSlot( (unsigned char)( SID - 1 ), true );
+                                                                (*i)->CloseSlot( (unsigned char)( SID - 1 ), true );
                                                 }
                                         }
                                         else
@@ -2716,14 +2705,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !CLOSEALL
                                 //
  
-                                else if( Command == "closeall" && m_GHost->m_CurrentGame && IsLevel( User ) >= 9 )
+                                else if( Command == "closeall" && m_GHost->m_CurrentGames.size( ) > 0 && IsLevel( User ) >= 9 )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
-                                                m_GHost->m_CurrentGame->CloseAllSlots( );
+                                        if( !(*i)->GetLocked( ) )
+                                                (*i)->CloseAllSlots( );
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
                                 }
- 
+ */
                                 //
                                 // !COUNTBANS
                                 //
@@ -2871,7 +2860,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         m_Exiting = true;
                                                 else
                                                 {
-                                                        if( m_GHost->m_CurrentGame || !m_GHost->m_Games.empty( ) )
+                                                        if( !m_GHost->m_Games.empty( ) )
                                                                 QueueChatCommand( m_GHost->m_Language->AtLeastOneGameActiveUseForceToShutdown( ), User, Whisper );
                                                         else
                                                                 m_Exiting = true;
@@ -2921,17 +2910,13 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                 else if( Command == "getgames" && IsLevel( User ) >= 9 )
                                 {
-                                        if( m_GHost->m_CurrentGame )
-                                                QueueChatCommand( m_GHost->m_Language->GameIsInTheLobby( m_GHost->m_CurrentGame->GetDescription( ), UTIL_ToString( m_GHost->m_Games.size( ) ), UTIL_ToString( m_GHost->m_MaxGames ) ), User, Whisper );
-                                        else
-                                                QueueChatCommand( m_GHost->m_Language->ThereIsNoGameInTheLobby( UTIL_ToString( m_GHost->m_Games.size( ) ), UTIL_ToString( m_GHost->m_MaxGames ) ), User, Whisper );
+                                        QueueChatCommand( m_GHost->m_Language->ThereIsNoGameInTheLobby( UTIL_ToString( m_GHost->m_Games.size( ) ), UTIL_ToString( m_GHost->m_MaxGames ) ), User, Whisper );
                                 }
- 
+ /*
                                 //
                                 // !HOLD (hold a slot for someone)
                                 //
- 
-                                else if( Command == "hold" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 8 )
+                                else if( Command == "hold" && !Payload.empty( ) && m_GHost->m_CurrentGames.size( ) > 0 && IsLevel( User ) >= 8 )
                                 {
                                         // hold as many players as specified, e.g. "Varlock Kilranin" holds players "Varlock" and "Kilranin"
  
@@ -2951,7 +2936,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 else
                                                 {
                                                         QueueChatCommand( m_GHost->m_Language->AddedPlayerToTheHoldList( HoldName ), User, Whisper );
-                                                        m_GHost->m_CurrentGame->AddToReserved( HoldName );
+                                                        (*i)->AddToReserved( HoldName );
                                                 }
                                         }
                                 }
@@ -2961,8 +2946,8 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
  
                                 else if( Command == "hostsg" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, true, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
- 
+                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, true, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
+ */
                                 //
                                 // !LOAD (load config file)
                                 //
@@ -3041,7 +3026,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 }
                                         }
                                 }
- 
+ /*
                                 //
                                 // !LOADSG
                                 //
@@ -3059,7 +3044,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                                 if( UTIL_FileExists( File ) )
                                                 {
-                                                        if( m_GHost->m_CurrentGame )
+                                                        if( m_GHost->m_CurrentGames.size( ) > 0 )
                                                                 QueueChatCommand( m_GHost->m_Language->UnableToLoadSaveGameGameInLobby( ), User, Whisper );
                                                         else
                                                         {
@@ -3074,7 +3059,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         QueueChatCommand( m_GHost->m_Language->UnableToLoadSaveGameDoesntExist( File ), User, Whisper );
                                         }
                                 }
- 
+ */
                                 //
                                 // !MAP (load map file)
                                 //
@@ -3156,14 +3141,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 }
                                         }
                                 }
- 
+ /*
                                 //
                                 // !OPEN (open slot)
                                 //
  
-                                else if( Command == "open" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 7 )
+                                else if( Command == "open" && !Payload.empty( ) && m_GHost->m_CurrentGames.size( ) > 0 && IsLevel( User ) >= 7 )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
+                                        if( !(*i)->GetLocked( ) )
                                         {
                                                 // open as many slots as specified, e.g. "5 10" opens slots 5 and 10
  
@@ -3181,7 +3166,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                 break;
                                                         }
                                                         else
-                                                                m_GHost->m_CurrentGame->OpenSlot( (unsigned char)( SID - 1 ), true );
+                                                                (*i)->OpenSlot( (unsigned char)( SID - 1 ), true );
                                                 }
                                         }
                                         else
@@ -3192,27 +3177,27 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !OPENALL
                                 //
  
-                                else if( Command == "openall" && m_GHost->m_CurrentGame && IsLevel( User ) >= 9 )
+                                else if( Command == "openall" && m_GHost->m_CurrentGames.size( ) > 0 && IsLevel( User ) >= 9 )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
-                                                m_GHost->m_CurrentGame->OpenAllSlots( );
+                                        if( !(*i)->GetLocked( ) )
+                                                (*i)->OpenAllSlots( );
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
                                 }
- 
+
                                 //
                                 // !PRIV (host private game)
                                 //
  
                                 else if( Command == "priv" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
  
                                 //
                                 // !VIP (host vip games)
                                 //
                                 else if( Command == "vip" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, "[VIP] "+Payload, User, User, m_Server, 4, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
- 
+                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, "[VIP] "+Payload, User, User, m_Server, 4, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
+ */
                                 //
                                 // !VIP Reg Needed
                                 //
@@ -3265,12 +3250,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                 QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
                                         }
                                 }
- 
+ /*
                                 //
                                 // !RESERVED (host reserved only game)
                                 //
                                 else if( Command == "reserved" && !Payload.empty( ) && IsLevel( User ) >= 8 )
-                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, "[R] "+Payload, User, User, m_Server, 5, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, "[R] "+Payload, User, User, m_Server, 5, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
  
                                 //
                                 // !PRIVBY (host private game by other player)
@@ -3289,7 +3274,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         {
                                                 Owner = Payload.substr( 0, GameNameStart );
                                                 GameName = Payload.substr( GameNameStart + 1 );
-                                                m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, GameName, Owner, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+                                                m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, GameName, Owner, User, m_Server, 1, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
                                         }
                                 }
  
@@ -3298,7 +3283,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 //
  
                                 else if( Command == "pub" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly)
-                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, m_Server, 2, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+                                        m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, m_Server, 2, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
  
                                 //
                                 // !PUBBY (host public game by other player)
@@ -3317,10 +3302,10 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         {
                                                 Owner = Payload.substr( 0, GameNameStart );
                                                 GameName = Payload.substr( GameNameStart + 1 );
-                                                m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, GameName, Owner, User, m_Server, 2, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+                                                m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, GameName, Owner, User, m_Server, 2, Whisper, m_GHost->m_CurrentGames.size( ) > 0 ? (*i)->GetHostCounter( ) : 0 );
                                         }
                                 }
- 
+ */
                                 //
                                 // !RELOAD
                                 //
@@ -3399,10 +3384,10 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 {
                                         if( IsLevel( User ) == 10 || ForceRoot )
                                         {
-                                                if( m_GHost->m_CurrentGame )
-                                                        m_GHost->m_CurrentGame->SendAllChat( Payload );
- 
                                                 for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
+                                                        (*i)->SendAllChat( "ADMIN: " + Payload );
+
+                                                for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
                                                         (*i)->SendAllChat( "ADMIN: " + Payload );
                                         }
                                         else
@@ -3435,17 +3420,20 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                         return;
                                                 }
  
-                                                if( m_GHost->m_CurrentGame )
+                                                if( m_GHost->m_CurrentGames.size( ) > 0 )
                                                 {
-                                                        for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                                                    for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i )
+                                                    {
+                                                        for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
                                                         {
-                                                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
+                                                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
                                                                 if( Player )
                                                                 {
                                                                         if( Player->GetName() == UserTo )
-                                                                                m_GHost->m_CurrentGame->SendChat( Player, "[" + User + "] " + Message );
+                                                                                (*i)->SendChat( Player, "[" + User + "] " + Message );
                                                                 }
                                                         }
+                                                    }
                                                 }
  
                                                 for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
@@ -3464,17 +3452,17 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
                                 }
- 
+ /*
                                 //
                                 // !SP
                                 //
  
-                                else if( Command == "sp" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && IsLevel( User ) >= 8 )
+                                else if( Command == "sp" && m_GHost->m_CurrentGames.size( ) > 0 && !(*i)->GetCountDownStarted( ) && IsLevel( User ) >= 8 )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
+                                        if( !(*i)->GetLocked( ) )
                                         {
-                                                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->ShufflingPlayers( ) );
-                                                m_GHost->m_CurrentGame->ShuffleSlots( );
+                                                (*i)->SendAllChat( m_GHost->m_Language->ShufflingPlayers( ) );
+                                                (*i)->ShuffleSlots( );
                                         }
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
@@ -3484,17 +3472,17 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !START
                                 //
  
-                                else if( Command == "start" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && m_GHost->m_CurrentGame->GetNumHumanPlayers( ) > 0 && ( IsLevel( User ) >= 8  || ForceRoot ) )
+                                else if( Command == "start" && m_GHost->m_CurrentGames.size( ) > 0 && !(*i)->GetCountDownStarted( ) && (*i)->GetNumHumanPlayers( ) > 0 && ( IsLevel( User ) >= 8  || ForceRoot ) )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
+                                        if( !(*i)->GetLocked( ) )
                                         {
                                                 // if the player sent "!start force" skip the checks and start the countdown
                                                 // otherwise check that the game is ready to start
  
                                                 if( Payload == "force" )
-                                                        m_GHost->m_CurrentGame->StartCountDown( true );
+                                                        (*i)->StartCountDown( true );
                                                 else
-                                                        m_GHost->m_CurrentGame->StartCountDown( false );
+                                                        (*i)->StartCountDown( false );
                                         }
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
@@ -3504,9 +3492,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 // !SWAP (swap slots)
                                 //
  
-                                else if( Command == "swap" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 8 )
+                                else if( Command == "swap" && !Payload.empty( ) && m_GHost->m_CurrentGames.size( ) > 0 && IsLevel( User ) >= 8 )
                                 {
-                                        if( !m_GHost->m_CurrentGame->GetLocked( ) )
+                                        if( !(*i)->GetLocked( ) )
                                         {
                                                 uint32_t SID1;
                                                 uint32_t SID2;
@@ -3527,7 +3515,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                                                 if( SS.fail( ) )
                                                                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the swap command" );
                                                                 else
-                                                                        m_GHost->m_CurrentGame->SwapSlots( (unsigned char)( SID1 - 1 ), (unsigned char)( SID2 - 1 ) );
+                                                                        (*i)->SwapSlots( (unsigned char)( SID1 - 1 ), (unsigned char)( SID2 - 1 ) );
                                                         }
                                                 }
                                         }
@@ -3541,26 +3529,26 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                 else if( Command == "unhost" && IsLevel( User ) >= 8 && ForceRoot && ! m_GHost->m_ChannelBotOnly)
                                 {
-                                        if( m_GHost->m_CurrentGame )
+                                        if( m_GHost->m_CurrentGames.size( ) > 0 )
                                         {
-                                                if( m_GHost->m_CurrentGame->GetCountDownStarted( ) )
-                                                        QueueChatCommand( m_GHost->m_Language->UnableToUnhostGameCountdownStarted( m_GHost->m_CurrentGame->GetDescription( ) ), User, Whisper );
+                                                if( (*i)->GetCountDownStarted( ) )
+                                                        QueueChatCommand( m_GHost->m_Language->UnableToUnhostGameCountdownStarted( (*i)->GetDescription( ) ), User, Whisper );
  
                                                 // if the game owner is still in the game only allow the root admin to unhost the game
  
-                                                else if( m_GHost->m_CurrentGame->GetPlayerFromName( m_GHost->m_CurrentGame->GetOwnerName( ), false ) && IsLevel( User ) != 10 )
-                                                        QueueChatCommand( m_GHost->m_Language->CantUnhostGameOwnerIsPresent( m_GHost->m_CurrentGame->GetOwnerName( ) ), User, Whisper );
+                                                else if( (*i)->GetPlayerFromName( (*i)->GetOwnerName( ), false ) && IsLevel( User ) != 10 )
+                                                        QueueChatCommand( m_GHost->m_Language->CantUnhostGameOwnerIsPresent( (*i)->GetOwnerName( ) ), User, Whisper );
                                                 else
                                                 {
-                                                        QueueChatCommand( m_GHost->m_Language->UnhostingGame( m_GHost->m_CurrentGame->GetDescription( ) ), User, Whisper );
-                                                        m_GHost->m_CurrentGame->SetExiting( true );
-                                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_GHost->m_CurrentGame->m_ChatID, string(), 3, uint32_t(), m_GHost->m_CurrentGame->m_GameAlias ) );
+                                                        QueueChatCommand( m_GHost->m_Language->UnhostingGame( (*i)->GetDescription( ) ), User, Whisper );
+                                                        (*i)->SetExiting( true );
+                                                        m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( (*i)->m_ChatID, string(), 3, uint32_t(), (*i)->m_GameAlias ) );
                                                 }
                                         }
                                         else
                                                 QueueChatCommand( m_GHost->m_Language->UnableToUnhostGameNoGameInLobby( ), User, Whisper );
                                 }
- 
+ */
                                 //
                                 // !WARDENSTATUS
                                 //
@@ -3595,7 +3583,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
  
                                 if( Command == "games" || Command == "g" )
                                 {
-                                        m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedGameUpdate("", "", "", "", 0, "", 0, 0, 0, false ) ) );
+                                        m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedGameUpdate("", "", "", "", 0, "", 0, 0, 0, false, 0, 0 ) ) );
                                 }
  
                                 //
@@ -3683,13 +3671,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( Command.substr(0, 4) == "rank" || ( Command == "rd" || Command == "rl" || Command == "ri") )
                                 {
                                        uint32_t m_StatsAlias = 0;
-                                       if( Command.size( ) > 4 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 4, Command.size( ) - 4 ) );
-                                       else if( Command.size( ) < 4 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
-                                           
-                                       if( m_StatsAlias == 0 )
-                                            m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
                                        
                                        string StatsUser = User;
                                        string Month = "";
@@ -3717,13 +3698,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( ( Command.substr( 0, 5 ) == "stats" && Command.size( ) > 5 ) || ( Command == "sl" || Command == "sd" || Command == "si" ) )
                                 {
                                        uint32_t m_StatsAlias = 0;
-                                       if( Command.size( ) > 5 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
-                                       else if( Command.size( ) < 5 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
- 
-                                        if( m_StatsAlias == 0 )
-                                            m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
                                        
                                         string StatsUser = User;
                                         string Month = "";
@@ -3752,13 +3726,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 else if( Command.substr(0, 6) == "streak" || ( Command == "std" || Command == "stl" || Command == "sti" ) )
                                 {
                                         uint32_t m_StatsAlias = 0;
-                                        if( Command.size( ) > 6 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 6, Command.size( ) - 6 ) );
-                                        else if( Command.size( ) < 6 )
-                                           m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
-                                        
-                                        if( m_StatsAlias == 0 )
-                                            m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
                                        
                                         string StatsUser = User;
  
@@ -3791,7 +3758,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 /************************
                                 ** GRIEF-CODE COMMANDS **
                                 ************************/
- 
+ /*
                                 //
                                 // !PM
                                 //
@@ -3838,7 +3805,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 {
                                         m_PairedINChecks.push_back( PairedINCheck( User, m_GHost->m_DB->ThreadedInboxSummaryCheck( User ) ) );
                                 }
- 
+ */
                                 //
                                 // !REG
                                 // !REGISTRATION
@@ -3895,7 +3862,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         }
  
                                 }
- 
+ /*
                                 //
                                 // !POINTS      !P
                                 //
@@ -3949,7 +3916,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
                                                 m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "", 0, "aliascheck" ) ) );
                                 }
-
+*/
                                 //
                                 // !TOP      !TOP10
                                 //
@@ -4110,7 +4077,7 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
                         MapHeight.push_back( 7 );
  
                         //4294901762, 4294901760, 4294901776, 4294901778, 4294901777, 4294901766, 4294901767, 4294901779, 4294901764, 4294901765, 4294901763, 4399106, 4399107, 4399110, 4399111, 6, 4399111, 4901779, 4294901779, 01322020
- 
+
                         int RandomNumber = (rand()%(21-1))+1;
                         if( RandomNumber == 1 )
                                 MapGameType = 01322020;
@@ -4275,26 +4242,26 @@ CDBBan *CBNET :: IsBannedIP( string ip )
         transform( ip.begin( ), ip.end( ), ip.begin( ), ::tolower ); //transform in case it's a hostname
         for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
         {
-                if( (*i)->GetIP( )[0] == ':' )
-                {
-                        string BanIP = (*i)->GetIP( ).substr( 1 );
-                        int len = BanIP.length( );
- 
-                        if( ip.length( ) >= len && ip.substr( 0, len ) == BanIP )
-                        {
-                                return *i;
-                        }
-                        else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && ip.length( ) >= 3 && ip[0] == 'h' && ip.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
-                        {
- 
-                                return *i;
-                        }
-                }
- 
-                if( (*i)->GetIP( ) == ip )
+            if( (*i)->GetIP( )[0] == ':' )
+            {
+                string BanIP = (*i)->GetIP( ).substr( 1 );
+                int len = BanIP.length( );
+
+                if( ip.length( ) >= len && ip.substr( 0, len ) == BanIP )
                 {
                         return *i;
                 }
+                else if( BanIP.length( ) >= 3 && BanIP[0] == 'h' && ip.length( ) >= 3 && ip[0] == 'h' && ip.substr( 1 ).find( BanIP.substr( 1 ) ) != string::npos )
+                {
+
+                        return *i;
+                }
+            }
+
+            if( (*i)->GetIP( ) == ip )
+            {
+                    return *i;
+            }
         }
  
         return NULL;

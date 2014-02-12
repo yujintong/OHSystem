@@ -69,15 +69,15 @@ class CBaseGame
 {
 public:
 	CGHost *m_GHost;
+    vector<CPotentialPlayer *> m_Potentials;		// vector of potential players (connections that haven't sent a W3GS_REQJOIN packet yet)
+
 
 protected:
     CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
 	vector<CDBBan *> m_DBBans;					// vector of potential ban data for the database (see the Update function for more info, it's not as straightforward as you might think)
-	CTCPServer *m_Socket;							// listening socket
-	CGameProtocol *m_Protocol;						// game protocol
+    CGameProtocol *m_Protocol;						// game protocol
     map<uint32_t, CPotentialPlayer*> m_BannedPlayers;
-    vector<CPotentialPlayer *> m_Potentials;		// vector of potential players (connections that haven't sent a W3GS_REQJOIN packet yet)
-	vector<CCallableScoreCheck *> m_ScoreChecks;
+    vector<CCallableScoreCheck *> m_ScoreChecks;
     vector<PairedPWCheck> m_PairedPWChecks;				// vector for checking if a player joined with a password
 	vector<Pairedpm> m_Pairedpms;
 	vector<PairedWPCheck> m_PairedWPChecks;
@@ -87,8 +87,7 @@ protected:
 	queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
 	vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)
 	set<string> m_IgnoredNames;						// set of player names to NOT print ban messages for when joining because they've already been printed
-	set<string> m_IPBlackList;						// set of IP addresses to blacklist from joining (todotodo: convert to uint32's for efficiency)
-	vector<CGameSlot> m_EnforceSlots;				// vector of slots to force players to use (used with saved games)
+    vector<CGameSlot> m_EnforceSlots;				// vector of slots to force players to use (used with saved games)
 	vector<PIDPlayer> m_EnforcePlayers;				// vector of pids to force players to use (used with saved games)
     CCallableBanList *m_CallableBanList;			// threaded database ban list in progress
     vector<CDBBan *> m_Bans;						// vector of cached bans
@@ -143,10 +142,7 @@ protected:
 	double m_MaximumScore;							// the maximum allowed score for matchmaking mode
 	bool m_SlotInfoChanged;							// if the slot info has changed and hasn't been sent to the players yet (optimization)
 	bool m_Locked;									// if the game owner is the only one allowed to run game commands or not
-	bool m_RefreshMessages;							// if we should display "game refreshed..." messages or not
-	bool m_RefreshError;							// if there was an error refreshing the game
-	bool m_RefreshRehosted;							// if we just rehosted and are waiting for confirmation that it was successful
-	bool m_MuteAll;									// if we should stop forwarding ingame chat messages targeted for all players or not
+    bool m_MuteAll;									// if we should stop forwarding ingame chat messages targeted for all players or not
 	bool m_MuteLobby;								// if we should stop forwarding lobby chat messages
 	bool m_CountDownStarted;						// if the game start countdown has started or not
 	bool m_LoadInGame;								// if the load-in-game feature is enabled or not
@@ -200,7 +196,6 @@ public:
     vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
     CMap *m_Map;
     uint16_t m_HostPort;                                                    // the port to host games on
-    uint32_t m_EntryKey;                                                    // random entry key for LAN, used to prove that a player is actually joining from LAN
     uint32_t m_HostCounter;                                                 // a unique game number
     bool m_GameLoading;                                                             // if the game is currently loading or not
     bool m_GameLoaded;                                                              // if the game has loaded or not
@@ -228,12 +223,12 @@ public:
 	virtual uint32_t GetGameType( )                              { return m_GameType; }
 	virtual uint32_t GetLastLagScreenTime( )		{ return m_LastLagScreenTime; }
 	virtual bool GetLocked( )						{ return m_Locked; }
-	virtual bool GetRefreshMessages( )				{ return m_RefreshMessages; }
-	virtual bool GetCountDownStarted( )				{ return m_CountDownStarted; }
+    virtual bool GetCountDownStarted( )				{ return m_CountDownStarted; }
 	virtual bool GetGameLoading( )					{ return m_GameLoading; }
 	virtual bool GetGameLoaded( )					{ return m_GameLoaded; }
 	virtual bool GetLagging( )						{ return m_Lagging; }
     virtual uint32_t GetCreationTime( )                                     { return m_CreationTime; }
+    virtual CGameProtocol *GetProtocol( )			{ return m_Protocol; }
 
 	virtual void SetEnforceSlots( vector<CGameSlot> nEnforceSlots )		{ m_EnforceSlots = nEnforceSlots; }
 	virtual void SetEnforcePlayers( vector<PIDPlayer> nEnforcePlayers )	{ m_EnforcePlayers = nEnforcePlayers; }
@@ -241,8 +236,7 @@ public:
 	virtual void SetAutoStartPlayers( uint32_t nAutoStartPlayers )		{ m_AutoStartPlayers = nAutoStartPlayers; }
 	virtual void SetMinimumScore( double nMinimumScore )				{ m_MinimumScore = nMinimumScore; }
 	virtual void SetMaximumScore( double nMaximumScore )				{ m_MaximumScore = nMaximumScore; }
-	virtual void SetRefreshError( bool nRefreshError )					{ m_RefreshError = nRefreshError; }
-	virtual void SetMatchMaking( bool nMatchMaking )					{ m_MatchMaking = nMatchMaking; }
+        virtual void SetMatchMaking( bool nMatchMaking )					{ m_MatchMaking = nMatchMaking; }
     virtual void SetCreationTime( uint32_t nCreationTime )                                                         { m_CreationTime = nCreationTime; }
 
 	virtual uint32_t GetNextTimedActionTicks( );
@@ -294,8 +288,7 @@ public:
 	virtual void EventPlayerDisconnectPlayerError( CGamePlayer *player );
 	virtual void EventPlayerDisconnectSocketError( CGamePlayer *player );
 	virtual void EventPlayerDisconnectConnectionClosed( CGamePlayer *player );
-	virtual void EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer );
-	virtual void EventPlayerJoinedWithScore( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer, double score );
+    virtual void EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer );
 	virtual void EventPlayerLeft( CGamePlayer *player, uint32_t reason );
 	virtual void EventPlayerLoaded( CGamePlayer *player );
 	virtual bool EventPlayerAction( CGamePlayer *player, CIncomingAction *action );
@@ -312,8 +305,7 @@ public:
 
 	// these events are called outside of any iterations
 
-	virtual void EventGameRefreshed( string server );
-	virtual void EventGameStarted( );
+    virtual void EventGameStarted( );
 	virtual void EventGameLoaded( );
 
 	// other functions
@@ -387,6 +379,8 @@ public:
     string m_lGameAliasName;
     virtual void StartVoteMode( );
     void GetVotingModes( string allmodes );
+    virtual void MovePlayerToANewLobby( CGamePlayer *player );
+    virtual void CreateNewLobbyForPlayer( CGamePlayer *player );
 };
 
 #endif

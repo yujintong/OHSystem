@@ -38,7 +38,6 @@
 #include "stats.h"
 #include "statsdota.h"
 #include "statsw3mmd.h"
-#include "game_admin.h"
  
 #include <stdio.h>
 #include <cmath>
@@ -771,7 +770,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                         string Result = i->second->GetResult( );
                         if( i->second->GetType( ) == "betcheck" )
                                 SendAllChat( m_GHost->m_Language->CurrentPoints( i->second->GetUser( ), Result ) );
-                        else if( i->second->GetType( ) == "bet" ) {
+                        else if( i->second->GetType( ) == "bet" )
+                        {
                                 CGamePlayer *Player = GetPlayerFromName( i->second->GetUser( ), true );
                                 if( Result == "already bet" )
                                         SendChat( Player, m_GHost->m_Language->ErrorAlreadyBet() );
@@ -784,13 +784,8 @@ bool CGame :: Update( void *fd, void *send_fd )
                                 else
                                         CONSOLE_Print( "Betsystem have an issue here" );
                         }
-                        else if( i->second->GetType() == "top") {
-                            if( Result != "failed" )
-                                SendAllChat( Result );
-                            else
-                                SendAllChat( m_GHost->m_Language->WrongContactBotOwner() );
-                        }
-                        else if(i->second->GetType() == "forcedgproxy") {
+                        else if( i->second->GetType() == "top")
+                        {
                             if( Result != "failed" )
                                 SendAllChat( Result );
                             else
@@ -1407,28 +1402,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 }
                                         }
                                 }
-                        }
-
-                        //
-                        // !FORCEGPROXY
-                        //
-                       else if( Command == "forcegproxy" ) {
-                            if(Payload.empty()) {
-                                SendChat(player, m_GHost->m_Language->NoUserDefined( ));
-                            } else {
-                                CGamePlayer *LastMatch = NULL;
-                                uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
-                                if( Matches == 0 )
-                                {
-                                    SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
-                                }
-                                else if( Matches == 1 )
-                                {
-                                    m_PairedSSs.push_back( PairedSS( string( ), m_GHost->m_DB->ThreadedStatsSystem( Payload,player->GetName(), 0, "forcegproxy" ) ) );
-                                } else {
-                                    SendChat( player, m_GHost->m_Language->FoundMultiplyMatches());
-                                }
-                            }
                         }
 
                         //
@@ -2675,7 +2648,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 if( Kicked > 0 )
                                         SendAllChat( m_GHost->m_Language->KickingPlayersWithPingsGreaterThan( UTIL_ToString( Kicked ), UTIL_ToString( KickPing ) ) );
                         }
- 
+ /*
                         //
                         // !PRIV (rehost as private game)
                         //
@@ -2766,7 +2739,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         m_RefreshMessages = false;
                                 }
                         }
- 
+ */
                         //
                         // !SAY
                         //
@@ -2777,7 +2750,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
  
                                 HideCommand = true;
                         }
- 
+
                         //
                         // !SENDLAN
                         //
@@ -2828,7 +2801,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 BYTEARRAY MapHeight;
                                                 MapHeight.push_back( 0 );
                                                 MapHeight.push_back( 0 );
-                                                m_GHost->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                                                m_GHost->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), 12, 12, m_HostPort, FixedHostCounter, m_GHost->m_EntryKey ) );
                                         }
                                         else
                                         {
@@ -2836,11 +2809,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                                 // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
  
                                                 uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
-                                                m_GHost->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, m_Map->GetMapPath( ), m_Map->GetMapCRC( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                                                m_GHost->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, m_Map->GetMapPath( ), m_Map->GetMapCRC( ), 12, 12, m_HostPort, FixedHostCounter, m_GHost->m_EntryKey ) );
                                         }
                                 }
                         }
- 
+
                         //
                         // !SP
                         //
@@ -3492,47 +3465,40 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( ( Command == "votestart" || Command == "vs" ) && !m_CountDownStarted && m_GHost->m_AllowVoteStart )
         {
+            if(m_StartedVoteStartTime == 0) { //need >minplayers or admin to START a votestart
+                if (GetNumHumanPlayers() < m_GHost->m_VoteStartMinPlayers ) { //need at least eight players to votestart
+                            SendChat( player, m_GHost->m_Language->UnableToVoteStartMissingPlayers( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ) );
+                            return false;
+                }
 
-                if( !m_GHost->m_CurrentGame->GetLocked( ) )
-                {
-                        if(m_StartedVoteStartTime == 0) { //need >minplayers or admin to START a votestart
-                            if (GetNumHumanPlayers() < m_GHost->m_VoteStartMinPlayers ) { //need at least eight players to votestart
-                                        SendChat( player, m_GHost->m_Language->UnableToVoteStartMissingPlayers( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ) );
-                                        return false;
-                            }
+                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                            (*i)->SetStartVote( false );
+                m_StartedVoteStartTime = GetTime();
+            }
 
-                            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-                                        (*i)->SetStartVote( false );
-                            m_StartedVoteStartTime = GetTime();
-                        }
+            player->SetStartVote(true);
 
-                        player->SetStartVote(true);
+            uint32_t VotesNeeded = GetNumHumanPlayers( ) - 1;
 
-                        uint32_t VotesNeeded = GetNumHumanPlayers( ) - 1;
+            if( VotesNeeded < 2 )
+                    VotesNeeded = 2;
 
-                        if( VotesNeeded < 2 )
-                                VotesNeeded = 2;
+            uint32_t Votes = 0;
 
-                        uint32_t Votes = 0;
+            for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+            {
+                if( (*i)->GetStartVote( ) )
+                    ++Votes;
+            }
 
-                        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-                        {
-                            if( (*i)->GetStartVote( ) )
-                                ++Votes;
-                        }
-
-                        if(Votes < VotesNeeded) {
-                            SendAllChat( m_GHost->m_Language->UnableToVoteStartMissingVotesd( UTIL_ToString(VotesNeeded - Votes) ) );
-                        } else {
+            if(Votes < VotesNeeded) {
+                SendAllChat( m_GHost->m_Language->UnableToVoteStartMissingVotesd( UTIL_ToString(VotesNeeded - Votes) ) );
+            } else {
 //                                if( m_MatchMaking && m_AutoStartPlayers != 0 )
 //                                        BalanceSlots( );
-                            SendAllChat(m_GHost->m_Language->SuccessfullyVoteStarted( ));
-                            StartCountDown( true );
-                        }
-                }
-                else {
-                        SendChat( player, m_GHost->m_Language->UnableToVoteStartOwnerInGame( ) );
-                }
+                SendAllChat(m_GHost->m_Language->SuccessfullyVoteStarted( ));
+                StartCountDown( true );
+            }
         }
         
         //
@@ -4620,6 +4586,148 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                 return true;
 
+        }
+
+        //
+        // !GOTO
+        //
+        else if( ( Command == "goto" || Command == "join" ) && !m_CountDownStarted && !Payload.empty( ) )
+        {
+            uint32_t GameNumber = UTIL_ToUInt32( Payload );
+
+            if( m_HostCounter == GameNumber ) {
+                SendChat(player, "You are already in this game.");
+                return false;
+            }
+
+            int number=0;
+            bool game=false;
+            for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i ) {
+                if( (*i)->m_HostCounter == GameNumber) {
+                    game = true;
+                    break;
+                }
+                number++;
+            }
+            if( number < m_GHost->m_CurrentGames.size( ) && game )
+            {
+                // remove the player from the current game
+                // and then add the player to the other game (or create new game)
+                // note that we have to delete all other players first!
+
+                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                {
+                    if( !(*i)->GetLeftMessageSent( ) && *i != player )
+                    {
+                        player->Send( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( (*i)->GetPID( ), PLAYERLEAVE_LOBBY ) );
+                    }
+                }
+
+                if( m_FakePlayerPID != 255 )
+                    player->Send( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_FakePlayerPID, PLAYERLEAVE_LOBBY ) );
+
+                if( m_VirtualHostPID != 255 )
+                    player->Send( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_VirtualHostPID, PLAYERLEAVE_LOBBY ) );
+
+                // transfer the socket and joinPlayer to the new player
+                CTCPSocket *playerSocket = player->GetSocket( );
+                CIncomingJoinPlayer *joinPlayer = player->GetJoinPlayer( );
+                player->SetSocket( NULL );
+                player->SetJoinPlayer( NULL );
+
+                // tell everyone that this player is leaving
+                EventPlayerLeft( player, PLAYERLEAVE_LOBBY );
+
+                CBaseGame *targetGame = m_GHost->m_CurrentGames[number];
+                joinPlayer->SetTransferJoin( true );
+                joinPlayer->SetTransferPID( player->GetPID( ) );
+                CPotentialPlayer* potentialPlayer = new CPotentialPlayer( targetGame->GetProtocol( ), targetGame, playerSocket );
+                targetGame->EventPlayerJoined( potentialPlayer, joinPlayer );
+
+                delete potentialPlayer;
+            }
+            else
+                SendAllChat( m_GHost->m_Language->GameNumberDoesntExist( Payload ) );
+        }
+
+        //
+        // !CREATELOBBY
+        //
+        else if( ( Command == "create" || Command == "createlobby" ) && Level >= 3 && !m_CountDownStarted )
+        {
+            uint32_t GameNumber = m_GHost->m_CurrentGames.size( );
+            if( GameNumber < m_GHost->m_MaxGames && Payload.empty()) {
+                SendAllChat( "Player ["+player->GetName( ) + "] created a new game.");
+                for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+                {
+                    if( !(*i)->GetLeftMessageSent( ) && *i != player )
+                    {
+                        player->Send( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( (*i)->GetPID( ), PLAYERLEAVE_LOBBY ) );
+                    }
+                }
+
+                if( m_FakePlayerPID != 255 )
+                    player->Send( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_FakePlayerPID, PLAYERLEAVE_LOBBY ) );
+
+                if( m_VirtualHostPID != 255 )
+                    player->Send( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_VirtualHostPID, PLAYERLEAVE_LOBBY ) );
+
+                // transfer the socket and joinPlayer to the new player
+                CTCPSocket *playerSocket = player->GetSocket( );
+                CIncomingJoinPlayer *joinPlayer = player->GetJoinPlayer( );
+                player->SetSocket( NULL );
+                player->SetJoinPlayer( NULL );
+
+                // tell everyone that this player is leaving
+                EventPlayerLeft( player, PLAYERLEAVE_LOBBY );
+                m_GHost->CreateGame( m_GHost->m_AutoHostMap, GAME_PUBLIC, false, m_GHost->m_AutoHostGameName, player->GetName(), m_GHost->m_AutoHostOwner, m_GHost->m_AutoHostServer, false );
+                m_GHost->m_CurrentGames[m_GHost->m_CurrentGames.size( ) - 1]->SetAutoStartPlayers( m_GHost->m_AutoHostAutoStartPlayers );
+                CBaseGame *targetGame = m_GHost->m_CurrentGames[GameNumber];
+                joinPlayer->SetTransferJoin( true );
+                joinPlayer->SetTransferPID( player->GetPID( ) );
+                CPotentialPlayer* potentialPlayer = new CPotentialPlayer( targetGame->GetProtocol( ), targetGame, playerSocket );
+                targetGame->EventPlayerJoined( potentialPlayer, joinPlayer );
+
+                delete potentialPlayer;
+            }
+        }
+
+        //
+        // !FIND
+        //
+        else if( Command == "find" && !m_GameLoaded && !Payload.empty() ) {
+            uint32_t GameNumber = 0;
+            string name = "";
+            for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i ) {
+                CGamePlayer *LastMatch = NULL;
+                uint32_t Matches=(*i)->GetPlayerFromNamePartial(Payload,&LastMatch);
+
+                if(Matches==1)
+                {
+                    GameNumber= (*i)->m_HostCounter;
+                    name = LastMatch->GetName();
+                }
+            }
+            if( GameNumber != 0 &&! name.empty())
+                SendChat( player, name+" is in the game #"+UTIL_ToString(GameNumber));
+            else
+                SendChat( player, Payload+" could not be found.");
+        }
+        //
+        // !GOTP
+        //
+
+        else if( ( Command == "gotp" || Command == "games" || Command == "lobbies" || Command == "lobby" ) && !m_CountDownStarted )
+        {
+            SendChat(player, "There are currently [" + UTIL_ToString( m_GHost->m_CurrentGames.size( ) ) + "] game(s) in the lobby." );
+            SendChat(player, "*********************" );
+            int c=1;
+            for( vector<CBaseGame *> :: iterator i = m_GHost->m_CurrentGames.begin( ); i != m_GHost->m_CurrentGames.end( ); ++i ) {
+                SendChat(player, ""+UTIL_ToString((*i)->m_HostCounter)+" :: "+(*i)->m_GameName+" ["+UTIL_ToString((*i)->GetSlotsOccupied())+"/" + UTIL_ToString((*i)->GetSlotsOccupied()+(*i)->GetSlotsOpen())+"]" );
+                c++;
+            }
+            SendChat(player, "*********************" );
+            SendChat(player, "Use !join GAMENUMBER to switch to another game.");
         }
 
         return HideCommand;

@@ -72,6 +72,7 @@ public:
     string GetRoomName( )                                           { return m_RoomName; }
 
 	virtual void SetSocket( CTCPSocket *nSocket )	{ m_Socket = nSocket; }
+    virtual void SetJoinPlayer( CIncomingJoinPlayer *nJoinPlayer) { m_IncomingJoinPlayer = nJoinPlayer; }
 	virtual void SetDeleteMe( bool nDeleteMe )		{ m_DeleteMe = nDeleteMe; }
 	virtual void SetGarenaUser( CIncomingGarenaUser *nIncomingGarenaUser ) { m_IncomingGarenaUser = nIncomingGarenaUser; }
     virtual void SetBanned( )            { m_Banned = true; }
@@ -187,8 +188,8 @@ private:
     uint32_t m_LastAfkWarn;
 
 public:
-	CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
-	CGamePlayer( CPotentialPlayer *potential, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
+    CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved, CIncomingJoinPlayer *nJoinPlayer );
+    CGamePlayer( CPotentialPlayer *potential, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved, CIncomingJoinPlayer *nJoinPlayer );
 	virtual ~CGamePlayer( );
 
     vector<string> m_IgnoreList;                            // list of usernames this player is ignoring
