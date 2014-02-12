@@ -306,29 +306,35 @@ bool CBNET :: Update( void *fd, void *send_fd )
                         if( i->second->GetType( ) == "betcheck" )
                                 QueueChatCommand( m_GHost->m_Language->BetPoints(i->second->GetUser( ), Result ), i->first, !i->first.empty( ) );
  
-                        if( i->second->GetType( ) == "statsreset" )
+                        else if( i->second->GetType( ) == "statsreset" )
                         {
                                 if( Result == "success" )
                                         QueueChatCommand( m_GHost->m_Language->SuccessfullyResetedStats( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                                 else
                                     QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                         }
-                        if( i->second->GetType( ) == "aliascheck" )
+                        else if( i->second->GetType( ) == "aliascheck" )
                         {
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
                                          QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
                         }
-                        if( i->second->GetType( ) == "rpp" )
+                        else if( i->second->GetType( ) == "rpp" )
                         {
                                 if( Result != "failed" )
                                         QueueChatCommand( Result, i->first, !i->first.empty( ) );
                                 else
                                         QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
                         }
-                        if( i->second->GetType() == "top")
+                        else if( i->second->GetType() == "top")
                         {
+                            if( Result != "failed" )
+                                QueueChatCommand( Result, i->first, !i->first.empty( ) );
+                            else
+                                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
+                        }
+                        else if(i->second->GetType() == "forcedgproxy") {
                             if( Result != "failed" )
                                 QueueChatCommand( Result, i->first, !i->first.empty( ) );
                             else
@@ -2172,6 +2178,20 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                         }
                                 }
   
+                                //
+                                // !FORCEGPROXY
+                                //
+                                else if( Command == "forcegproxy" ) {
+                                    if(Payload.empty()) {
+                                        QueueChatCommand(m_GHost->m_Language->NoUserDefined( ), User, Whisper );
+                                    } else {
+                                        m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( Payload,User, 0, "forcegproxy" ) ) );
+                                    }
+                                }
+
+
+
+
                                 /*****************
                                 * ADMIN COMMANDS *
                                 *****************/

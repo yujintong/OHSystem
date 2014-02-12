@@ -56,6 +56,8 @@ include(OS_PAGE_PATH."add_comment_page.php");
 		if ( $sth->rowCount()>=1 ) {
 		   $row = $sth->fetch(PDO::FETCH_ASSOC);
 		   header( 'location: '.OS_HOME.'?u='.$row["id"] ); die;
+		} else {
+		header( 'location: '.OS_HOME.'?search='.$uid ); die;
 		}
 	 }
 	 

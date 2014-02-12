@@ -873,23 +873,23 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 	string EscUser = MySQLEscapeString( conn, user );
 	string EscInput = MySQLEscapeString( conn, input );
 
-        if( type == "top" )
+    if( type == "top" )
+    {
+        string ReturnResult = "failed";
+        string Query = "SELECT player, score FROM oh_stats ORDER BY score DESC LIMIT 10";
+
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+            *error = mysql_error( (MYSQL *)conn );
+        else
         {
-  		string ReturnResult = "failed";
-		string Query = "SELECT player, score FROM oh_stats ORDER BY score DESC LIMIT 10";
+            MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
 
-		if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
-			*error = mysql_error( (MYSQL *)conn );
-		else
-		{
-			MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
-
-			if( Result )
-			{
-				vector<string> Row = MySQLFetchRow( Result );
+            if( Result )
+            {
+                vector<string> Row = MySQLFetchRow( Result );
                                 uint32_t c = 1;
-				while( Row.size( ) == 2 )
-				{
+                while( Row.size( ) == 2 )
+                {
                                     if( ReturnResult.empty())
                                     {
                                         ReturnResult = "Top Players: 1."+Row[0]+"("+Row[1]+")";
@@ -897,40 +897,40 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
                                         c++;
                                         ReturnResult = ", "+UTIL_ToString(c)+"."+Row[0]+"("+Row[1]+")";
                                     }
-				}
+                }
 
-				mysql_free_result( Result );
-			}
-			else
-				*error = mysql_error( (MYSQL *)conn );
-		}          
-                return ReturnResult;
+                mysql_free_result( Result );
+            }
+            else
+                *error = mysql_error( (MYSQL *)conn );
         }
-	else if( type == "betcheck" || type == "bet" )
+        return ReturnResult;
+    }
+    else if( type == "betcheck" || type == "bet" )
 	{
 		string CheckQuery = "SELECT `points`, `points_bet` FROM `oh_stats` WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
 		uint32_t currentpoints = 0;
 		uint32_t betpoints = 0;
-        	if( mysql_real_query( (MYSQL *)conn, CheckQuery.c_str( ), CheckQuery.size( ) ) != 0 )
-                	*error = mysql_error( (MYSQL *)conn );
-	        else
-        	{
-                	MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+        if( mysql_real_query( (MYSQL *)conn, CheckQuery.c_str( ), CheckQuery.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+        else
+        {
+            MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
 
-	                if( Result )
-        	        {
-                	        vector<string> Row = MySQLFetchRow( Result );
+            if( Result )
+            {
+                vector<string> Row = MySQLFetchRow( Result );
 
-	                        if( Row.size( ) == 2 )
-				{
-					currentpoints = UTIL_ToUInt32( Row[0] );
-					betpoints = UTIL_ToUInt32( Row[1] );
-				}
-	                        else
-        	                        return "not listed";
+                if( Row.size( ) == 2 )
+                {
+                    currentpoints = UTIL_ToUInt32( Row[0] );
+                    betpoints = UTIL_ToUInt32( Row[1] );
+                }
+                else
+                        return "not listed";
 
-	                        mysql_free_result( Result );
-        	        }
+                mysql_free_result( Result );
+           }
 		}
 
 		if( type == "betcheck" )
@@ -942,12 +942,11 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 		else if( type == "bet" )
 		{
 			string BetQuery = "UPDATE `oh_stats` SET `points_bet` = '" + UTIL_ToString( one ) + "' WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
-	        	if( mysql_real_query( (MYSQL *)conn, BetQuery.c_str( ), BetQuery.size( ) ) != 0 )
-	                	*error = mysql_error( (MYSQL *)conn );
-	        	else
+            if( mysql_real_query( (MYSQL *)conn, BetQuery.c_str( ), BetQuery.size( ) ) != 0 )
+                    *error = mysql_error( (MYSQL *)conn );
+            else
 			{
-				return "successfully bet";
-                        	*error = mysql_error( (MYSQL *)conn );
+                return "successfully bet";
 			}
 		}
 		return "failed";
@@ -1019,8 +1018,8 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 		if( EscInput.empty( ) )
 		{
 			string Query = "DELETE FROM oh_game_offenses WHERE player_name = '"+EscUser+"' ORDER BY id ASC "+LimitString+";";
-        	        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
-	                        *error = mysql_error( (MYSQL *)conn );
+            if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                    *error = mysql_error( (MYSQL *)conn );
 			else
 			{
 				if( one != 0 )
@@ -1032,8 +1031,8 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 		else
 		{
 			string Query = "DELETE FROM oh_game_offenses WHERE player_name = '"+EscUser+"' AND reason LIKE '%"+EscInput+"%' ORDER BY id ASC "+LimitString+";";
-                        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
-                                *error = mysql_error( (MYSQL *)conn );
+            if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                    *error = mysql_error( (MYSQL *)conn );
 			else
 			{
 				if( one != 0 )
@@ -1044,6 +1043,19 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 		}
 		return "failed";
 	}
+    else if(type=="forcegproxy")
+    {
+        bool success=false;
+        string Query="INSERT INTO oh_gproxy ( player, added, added_by ) VALUES ('"+EscUser+"', NOW(), '"+EscInput+"')";
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+                *error = mysql_error( (MYSQL *)conn );
+        else
+            success=true;
+        if(success)
+            return "Successfully forced from now User ["+EscUser+"] to use gproxy.";
+
+        return "failed";
+    }
 
 	return "error";
 }
@@ -2006,8 +2018,9 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
 vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
 {
 	vector<string> CommandList;
-    string Query = "SELECT command FROM oh_commands WHERE ( botid='" + UTIL_ToString(botid) + "' OR botid='0' ) AND command != '';";
+    string Query = "SELECT command, id FROM oh_commands WHERE ( botid='" + UTIL_ToString(botid) + "' OR botid='0' ) AND command != '' ORDER BY id ASC LIMIT 3;";
 
+    vector<string> ids;
 	if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
 		*error = mysql_error( (MYSQL *)conn );
 	else
@@ -2018,9 +2031,10 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
 		{
 			vector<string> Row = MySQLFetchRow( Result );
 
-			while( Row.size( ) == 1 )
+			while( Row.size( ) == 2 )
 			{
 				CommandList.push_back( Row[0] );
+                ids.push_back(Row[1]);
 				Row = MySQLFetchRow( Result );
 			}
 
@@ -2028,13 +2042,21 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
 		}
 		else
 			*error = mysql_error( (MYSQL *)conn );
-	}
+    }
 
-	string DeleteQuery = "DELETE FROM oh_commands WHERE botid='" + UTIL_ToString(botid) + "'";
+    string ToDelete;
+    for( vector<string> :: iterator i = ids.begin( ); i != ids.end( ); ++i) {
+        if(!ToDelete.empty())
+            ToDelete += ", '"+*i+"' ";
+        else
+            ToDelete += "'"+*i+"'";
+    }
+    if(ToDelete.size()>0) {
+    	string DeleteQuery = "DELETE FROM oh_commands WHERE id IN( " + ToDelete + " )";
 
-	if( mysql_real_query( (MYSQL *)conn, DeleteQuery.c_str( ), DeleteQuery.size( ) ) != 0 )
-		*error = mysql_error( (MYSQL *)conn );
-
+		if( mysql_real_query( (MYSQL *)conn, DeleteQuery.c_str( ), DeleteQuery.size( ) ) != 0 )
+			*error = mysql_error( (MYSQL *)conn );
+    }
 	return CommandList;
 }
 

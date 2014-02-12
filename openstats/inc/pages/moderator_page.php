@@ -260,6 +260,7 @@ if (!isset($_GET["option"])) {
     $HomeTitle ="PENALTY POINTS :: MODERATOR";
     $orderby = "id DESC, offence_time DESC";
 	$Button = "Add PP";
+	
 	if ( isset($_GET["edit"]) AND is_numeric($_GET["edit"]) ) {
 	$Button = "Edit PP";
 	  $id = (int) $_GET["edit"];
@@ -270,7 +271,7 @@ if (!isset($_GET["option"])) {
 	  $PP_Reason = $row["reason"];
 	  $PP_Value = $row["pp"];
 	} else { $PP_PlayerName = ""; $PP_Reason = ""; $PP_Value="1"; }
-	
+
 	if ( isset($_GET["add"]) AND !empty($_GET["add"]) ) 
 	$PP_PlayerName = trim( strip_tags($_GET["add"]) );
 	
@@ -361,7 +362,7 @@ if (!isset($_GET["option"])) {
    
    //DISPLAY ROLES
    if ( isset($_GET["option"]) AND $_GET["option"] == "roles" ) {
-    $sql = "";
+    $sql = " AND user_level>=2 ";
 	$orderby = 'user_level DESC';
 	if ( isset($_GET["sort"]) ) {
 	  
@@ -372,9 +373,15 @@ if (!isset($_GET["option"])) {
 	  
 	  }
 	  
+	if ($_GET["sort"] == 'bl') {
+	$orderby = 'LOWER(user_name) ASC';
+	$sql=" AND blacklisted=1 ";
+	  }
+	  
 	}
+
 	
-    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_id>=1 AND user_level>=2 $sql" );
+    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_id>=1 $sql" );
     $result = $sth->execute();
     $r = $sth->fetch(PDO::FETCH_NUM);
     $numrows = $r[0];
@@ -402,6 +409,7 @@ if (!isset($_GET["option"])) {
 	$RoleData[$c]["user_level"] = $row["user_level"];
 	$RoleData[$c]["user_level_expire"] = $row["user_level_expire"];
 	$RoleData[$c]["user_ip"] = $row["user_ip"];
+	$RoleData[$c]["blacklisted"] = $row["blacklisted"];
 	$c++;
    }
    
@@ -420,10 +428,36 @@ if (!isset($_GET["option"])) {
 	   $ip_part = OS_GetIpRange( $ip );
 	   
 	   $IPSearch = $ip;
-	   
+	 
+    //BANS QRY	 
+	if ( isset($_GET["search_type"]) AND $_GET["search_type"] == 1 ) { 
+
+	if ( isset($_GET["ipr"]) ) {
+	$sql = " OR ip LIKE ('".$ip_part."%') OR ip_part LIKE ('".$ip_part."%') ";
+	}
+  
     $sth = $db->prepare( "SELECT * FROM ".OSDB_BANS." WHERE id>=1 AND 
-	(ip LIKE '".$ip."' OR ip LIKE ('".$ip_part."%') OR ip_part LIKE ('".$ip_part."%') ) LIMIT 150" );
+	(ip LIKE '".$ip."' $sql ) LIMIT 150" );
+	}
+	
+	//BANS GAMEPLAYERS-GAMES
+	if ( isset($_GET["search_type"]) AND $_GET["search_type"] == 2 ) {  
+	
+	if ( isset($_GET["ipr"]) ) {
+	$sql = " OR gp.ip LIKE ('".$ip_part."%')";
+	}
+	
+    $sth = $db->prepare( "SELECT g.gamename, g.datetime as date, gp.ip, gp.name, g.server, g.id
+	FROM ".OSDB_GAMES." as g 
+	LEFT JOIN ".OSDB_GP." as gp ON gp.gameid = g.id
+	WHERE g.id>=1 AND 
+	(gp.ip LIKE '".$ip."' $sql ) 
+	GROUP BY gp.name
+	ORDER BY g.id DESC
+	LIMIT 150" );
+	}
     $result = $sth->execute();
+	
 	
 	$c = 0;
      while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
@@ -431,9 +465,20 @@ if (!isset($_GET["option"])) {
 	 $IPData[$c]["server"] =  $row["server"];
 	 $IPData[$c]["name"] =  $row["name"];
 	 $IPData[$c]["ip"] =  $row["ip"];
-	 $IPData[$c]["country"] =  $row["country"];
+	 $IPData[$c]["country"] =  "";
 	 $IPData[$c]["date"] =  date( OS_DATE_FORMAT, strtotime($row["date"]));
 	 $IPData[$c]["gamename"] =  $row["gamename"];
+	 
+	$Letter   = geoip_country_code_by_addr($GeoIPDatabase, $row["ip"]);
+	$Country  = geoip_country_name_by_addr($GeoIPDatabase, $row["ip"]);
+	
+	$IPData[$c]["letter"]  = $Letter;
+	$IPData[$c]["country"] = $Country;
+	
+	if (empty($Letter)) {
+	$IPData[$c]["letter"]  = "blank";
+	$IPData[$c]["country"] = "";
+	}
 	 
 	if ( !empty( $IPData[$c]["gamename"] ) AND strstr($IPData[$c]["gamename"], "#") ) {
 	
@@ -442,15 +487,64 @@ if (!isset($_GET["option"])) {
 	  if ( isset($gn[1]) AND is_numeric($gn[1]) )
 	  $IPData[$c]["gamename"] = $gn[0].' <a href="'.OS_HOME.'?game='. $gn[1].'#'.$row["name"].'">#'.$gn[1].'</a>';
 	}
+	
+	if ( isset($_GET["search_type"]) AND $_GET["search_type"] == 2 ) {
+	 $row["expiredate"] = "";
+	 $row["admin"] = "";
+	 $row["reason"] = "";
+	}
 	 
 	 $IPData[$c]["admin"] =  $row["admin"];
 	 if (empty($row["admin"])) $IPData[$c]["admin"] = '<span style="color:#C90B00">[system]</span>';
-	 $IPData[$c]["reason"] =  $row["reason"];
+	 $IPData[$c]["reason"] =  convEnt($row["reason"]);
 	 $IPData[$c]["expiredate"] =  $row["expiredate"];
 	 $c++;
 	 }
 	
 	}
+	
+	}
+	
+	
+	
+	//gproxy users
+	
+	if ( isset($_GET["option"]) AND $_GET["option"] == "gproxy" ) {
+	$sql = "";
+	
+    if ( isset($_GET["gpr"]) AND strlen($_GET["gpr"])>=2 ) {
+    $SearchValue = trim(safeEscape( strip_tags($_GET["gpr"]) ) );
+    $sql.=" AND player LIKE ('%".$SearchValue."%') ";
+    $HomeTitle ="Search GProxy :: MODERATOR | $SearchValue";
+   }
+   
+    $sth = $db->prepare( "SELECT COUNT(*) FROM ".OSDB_GPROXY." WHERE id>=1 $sql" );
+    $result = $sth->execute();
+    $r = $sth->fetch(PDO::FETCH_NUM);
+    $numrows = $r[0];
+    $result_per_page = 50;
+    $draw_pagination = 0;
+    $SHOW_TOTALS = 1;
+    include('inc/pagination.php');
+    $draw_pagination = 1;
+	
+   $sth = $db->prepare("SELECT * FROM ".OSDB_GPROXY." 
+   WHERE id>=1 $sql
+   ORDER BY player ASC
+   LIMIT $offset, $rowsperpage");
+    $result = $sth->execute();
+	$GPData = array();
+	$c = 0;
+
+    while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	$GPData[$c]["id"] = $row["id"];
+	$GPData[$c]["ip"] = $row["ip"];
+	$GPData[$c]["player"] = $row["player"];
+	$GPData[$c]["added"] = $row["added"];
+	$GPData[$c]["added_by"] = $row["added_by"];
+	$c++;
+	}
+	
 	
 	}
    

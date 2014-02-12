@@ -198,6 +198,18 @@ $TotalFiles = $c;
 	    <input type="text" name="pw" value="" required /> <input type="submit" value="Start Daemon" class="menuButtons" /> - Type cron password
 	  </form>
 	  
+	  <?php
+	  if ( file_exists("daemon/_working.txt") AND filemtime( "daemon/_working.txt" )+60 >= time() ) {
+	  ?>
+	  <div><img src="<?=OS_HOME?>adm/daemon/loader.gif" width="16" height="16" class="imgvalign" /> Working...</div>
+	  <?php
+	  } else {
+	  ?>
+	  <div style="color:red; text-weight:bold;" >[Stopped]</div>
+	  <?php
+	  }
+	  ?>
+	  
 	</div>
 	<?php
 	if ( isset($_SESSION["intro_message"]) ) echo $_SESSION["intro_message"];

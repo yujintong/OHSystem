@@ -12,12 +12,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<table>
 	<tr>
 	  <td style="font-size:13px;">
-	   <a href="<?=OS_HOME?>?moderator" class="menuButtons">Dashboard</a> &middot; 
+	   <a href="<?=OS_HOME?>?moderator" class="menuButtons">MCP</a> &middot; 
 	   <a href="<?=OS_HOME?>?moderator&amp;option=addban" class="menuButtons">Add ban</a>
 	   <a href="<?=OS_HOME?>?moderator&amp;option=bans" class="menuButtons">Bans</a> &middot; 
 	   <a href="<?=OS_HOME?>?moderator&amp;option=pp&amp;add" class="menuButtons">Add PP</a>
-	   <a href="<?=OS_HOME?>?moderator&amp;option=pp" class="menuButtons">Penalty Points</a> &middot; 
-	   <a href="<?=OS_HOME?>?moderator&amp;option=roles" class="menuButtons">Roles</a>
+	   <a href="<?=OS_HOME?>?moderator&amp;option=pp" class="menuButtons">Penalties</a> &middot; 
+	   <a href="<?=OS_HOME?>?moderator&amp;option=roles" class="menuButtons">Roles</a> &middot; 
+	   <a href="<?=OS_HOME?>?moderator&amp;option=ip" class="menuButtons">IP</a>  &middot; 
+	   <a href="<?=OS_HOME?>?moderator&amp;option=gproxy" class="menuButtons">GProxy</a>  
 	 </td>
 	 <td>
 	 <?php if ( isset($_GET["option"]) AND $_GET["option"] == "pp" ) { ?>
@@ -26,7 +28,17 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   <input type="text" value="<?=$SearchValue?>" name="spp" /> 
 	   <input type="submit" value="Search PP" class="menuButtons" />
 	   <a href="<?=OS_HOME?>?moderator&amp;option=pp" class="menuButtons">Reset</a>
-	 <?php } else { ?>
+	 <?php } else  
+	 if ( isset($_GET["option"]) AND $_GET["option"] == "gproxy" ) {
+	 ?>
+	   <input type="hidden" value="" name="moderator" />
+	   <input type="hidden" value="gproxy" name="option" />
+	   <input type="text" value="<?=$SearchValue?>" name="gpr" /> 
+	   <input type="submit" value="Search Gproxy" class="menuButtons" />
+	   <a href="<?=OS_HOME?>?moderator&amp;option=gproxy" class="menuButtons">Reset</a>
+	 <?php
+	 } else {
+	 ?>
 	   <input type="hidden" value="" name="moderator" />
 	   <input type="hidden" value="bans" name="option" />
 	   <input type="text" value="<?=$SearchValue?>" name="sban" /> 
@@ -270,6 +282,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		<?php
 		if ( isset($_GET["option"]) AND $_GET["option"] == "roles" AND !empty($RoleData) ) {
 		 ?>
+		 <a class="menuButtons" href="<?=OS_HOME?>?moderator&amp;option=roles&amp;sort=bl">Show Blacklisted Users</a>
 		 <table style="font-size:13px;">
 		   <tr>
 		     <th>Username</th>
@@ -288,6 +301,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 			<td width="180">
 			<img src="<?=OS_HOME?>img/bnet.png" width="16" class="imgvalign" />
 			<a target="_blank" href="<?=OS_HOME?>?u=<?=$data["bnet_username"]?>"><?=$data["bnet_username"]?></a>
+			<?php if ($data["blacklisted"] == 1) { ?>
+			 <span style="color:red">(blacklisted)</span>
+			<?php } ?>
 			</td>
 			<td width="180">
 			<?=OS_IsUserGameAdmin( $data["user_level"] )?> 
@@ -306,6 +322,112 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		 <?php
 		 include('inc/pagination.php');
 		} 
+?>
+		
+		<?php
+		if ( isset($_GET["option"]) AND $_GET["option"] == "ip" ) {
+		?>
+		<form action="" method="get">
+		<input type="hidden" name="moderator" />
+		<input type="hidden" name="option" value="ip" />
+		<table>
+		  <tr>
+		    <td width="180">Search IP:</td>
+			<td>
+			<input type="text" name="search_ip" value="<?=$IPSearch?>" />
+			<?php if (isset($_GET["ipr"])) $s='checked="checked"'; else $s = '';?>
+			<input type="checkbox" name="ipr" value="1" <?=$s?> /> Search IP Range also
+			</td>
+		  </tr>
+		  <tr>
+		    <td width="180"></td>
+			<td>
+			<select name="search_type">
+<?php if (isset($_GET["search_type"]) AND $_GET["search_type"] == 1) $s='selected="selected"'; else $s='';?>
+			  <option <?=$s?> value="1">Search Bans</option>
+<?php if (isset($_GET["search_type"]) AND $_GET["search_type"] == 2) $s='selected="selected"'; else $s='';?>
+			  <option <?=$s?> value="2">Search Games</option>
+			</select>
+			<input type="submit" value="Search" class="menuButtons" />
+			</td>
+		  </tr>
+		</table>
+		</form>
+		
+		<?php 
+        if (!empty($IPData)) {
+		?>
+		<table style="font-size:13px;">
+		<tr>
+		  <th width="150">Player / Reason</th>
+		  <th width="100">IP</th>
+		  <?php if (isset($_GET["search_type"]) AND $_GET["search_type"] <= 1) { ?>
+		  <th width="165">Expire</th>
+		  <?php } ?>
+		  <th width="180">Game Name</th>
+		  <th width="120">Date</th>
+		   <?php if (isset($_GET["search_type"]) AND $_GET["search_type"] <= 1) { ?>
+		  <th>Banned by</th>
+		  <?php } ?>
+		</tr>
+		<?php
+		   foreach($IPData as $data) {
+		   ?>
+		   <tr>
+		     <td>
+			 <?=OS_ShowUserFlag( $data["letter"], $data["country"], 175 )?>  
+			 <a href="<?=OS_HOME?>?u=<?=$data["name"]?>"><b><?=$data["name"]?></b></a>
+			 <div style="background-color: #EAF3FF"><?=$data["reason"]?></div>
+			 </td>
+			 <td><?=$data["ip"]?></td>
+			 <?php if (isset($_GET["search_type"]) AND $_GET["search_type"] <= 1) { ?>
+			 <td><?php if ( date( strtotime($data["expiredate"]) )>1990 ) { ?><?=OS_ExpireDateRemain( $data["expiredate"] )?><?php } else {  ?><span class="perm_ban">Permanent</span><?php } ?></td>
+			 <?php } ?>
+			 <td>
+			 <?=$data["gamename"]?>
+			 </td>
+			 <td><?=$data["date"]?></td>
+			 <?php if (isset($_GET["search_type"]) AND $_GET["search_type"] <= 1) { ?>
+			 <td><?=$data["admin"]?></td>
+			 <?php } ?>
+		   </tr>
+		   <?php
+		   }
+		 ?>
+		 </table>
+		 <?php
+		}
+		}
+		
+
+		if ( isset($_GET["option"]) AND $_GET["option"] == "gproxy" AND !empty($GPData) ) {
+
+		?>
+		<table style="font-size:12px;">
+		 <tr>
+		   <th width="160">Player</th>
+		   <th width="95">IP</th>
+		   <th width="160">Added</th>
+		   <th>Added By</th>
+		 </tr>
+		 <?php
+		 foreach ( $GPData as $pp ) {
+		 ?>
+		 <tr>
+		  <td><a target="_blank" href="<?=OS_HOME?>?u=<?=$pp["player"]?>"><b><?=$pp["player"]?></b></td>
+		  <td>
+           <?=$pp["ip"]?>
+		  </td>
+		  <td><?=date( OS_DATE_FORMAT, strtotime($pp["added"]) )?></td>
+		  <td><?=$pp["added_by"]?></td>
+		 </tr>
+		 <?php
+		 }
+		 ?>
+		</table>
+		<?php
+		include('inc/pagination.php');
+		}
 ?>
     <script type="text/javascript">
 	function toggle(source) {

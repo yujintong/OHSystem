@@ -98,6 +98,8 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $user_clan  = strip_tags( $_POST["user_clan"]);
 	  $admin_realm  = strip_tags( $_POST["admin_realm"]);
 	  $alias_id   = strip_tags($_POST["alias_id"]);
+	  if (isset($_POST["blacklisted"])) $blacklisted = strip_tags( $_POST["blacklisted"]);
+	  else $blacklisted = 0;
 	  $sql_update_pw = "";
 	  
 	  $user_bnet = safeEscape( $_POST["user_bnet"]);
@@ -139,11 +141,11 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $time = date( "Y-m-d H:i:s", time() );
 	  
 	  if ( isset($_GET["edit"]) ) $sql = "UPDATE ".OSDB_USERS." SET 
-	  user_name= '".$name."', alias_id = '".$alias_id."', user_email = '".$email."', user_level = '".$level."', user_website = '".$www."', user_avatar = '".$avatar."', user_gender = '".$gender."', bnet_username = '".$bnet."', user_bnet = '".$user_bnet."', user_realm = '".$user_realm."', user_clan = '".$user_clan."', admin_realm = '".$admin_realm."'
+	  user_name= '".$name."', alias_id = '".$alias_id."', user_email = '".$email."', user_level = '".$level."', user_website = '".$www."', user_avatar = '".$avatar."', user_gender = '".$gender."', bnet_username = '".$bnet."', user_bnet = '".$user_bnet."', user_realm = '".$user_realm."', user_clan = '".$user_clan."', admin_realm = '".$admin_realm."', blacklisted = '$blacklisted'
 	  $sql_update_pw 
 	  WHERE user_id ='".$id."' LIMIT 1 ";
 	  
-	  if ( isset($_GET["add"]) ) $sql = "INSERT INTO ".OSDB_USERS."(user_name, alias_id, user_email, user_password, password_hash, user_joined, bnet_username, user_bnet, user_realm, user_clan) VALUES('".$name."', '".$alias_id."', '".$email."', '".$password_db."', '".$hash."', '".time()."', '".$bnet."', '".$user_bnet."', '".$user_realm."', '".$user_clan."')";
+	  if ( isset($_GET["add"]) ) $sql = "INSERT INTO ".OSDB_USERS."(user_name, alias_id, user_email, user_password, password_hash, user_joined, bnet_username, user_bnet, user_realm, user_clan, blacklisted) VALUES('".$name."', '".$alias_id."', '".$email."', '".$password_db."', '".$hash."', '".time()."', '".$bnet."', '".$user_bnet."', '".$user_realm."', '".$user_clan."', '".$blacklisted."')";
 	  
 	  $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." WHERE (user_name) = ('".$name."') AND user_id!='".$id."' ");
 	  $result = $sth->execute();
@@ -203,6 +205,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	 $www        = ( $row["user_website"]);
 	 $gender     = ( $row["user_gender"]);
 	 $bnet     = ( $row["bnet_username"]);
+	 $blacklisted      = ( $row["blacklisted"]);
 	 $user_bnet = $row["user_bnet"];
 	 $user_realm = $row["user_realm"];
 	 $user_clan = $row["user_clan"];
@@ -213,7 +216,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	 $button = "Edit User";
 	 } else { $button = "Add User"; $level = ""; $avatar  = ""; $www  = ""; $gender = ""; $bnet =""; 
 	 $user_bnet = ""; $user_realm = ""; $user_clan = ""; $user_pw = ""; $admin_realm = ""; 
-	 $user_level_expire = "";
+	 $user_level_expire = ""; $blacklisted = "";
 	 }
 	 ?>
 	 
@@ -409,6 +412,8 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	</div>
 		 
 		 <div class="padBottom"></div>
+		 <?php if($blacklisted == 1) $s='checked="checked"'; else $s=""; ?>
+		 <input <?=$s?> type="checkbox" value="1" name="blacklisted" /> <span style="color:red;">Blacklisted user</span>
 		 </td>
 	   </tr>
 	   <?php if (!isset($_GET["add"])) { ?>
@@ -442,6 +447,8 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
   
   if ( isset($_GET["sort"])  AND $_GET["sort"] == "inactive_users")  $sql.=" AND user_last_login <= '".$inactive_time."' ";
   if ( isset($_GET["sort"])  AND $_GET["sort"] == "inactive_admins") $sql.=" AND user_last_login <= '".$inactive_time."' AND user_level>=5";
+  
+  if ( isset($_GET["sort"])  AND $_GET["sort"] == "blacklisted") $sql.=" AND blacklisted >=1";
 
   $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_USERS." WHERE user_id>=1 $sql ");
   $result = $sth->execute();
@@ -544,6 +551,7 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
         <form action="" method="get">
 		<a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;add">[+] Add User</a>
 		
+		 <a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;sort=blacklisted">Blacklisted Users</a>
 		 <a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;sort=inactive_users">Inactive Users</a>
 		 <a class="menuButtons" href="<?=OS_HOME?>adm/?users&amp;sort=inactive_admins">Inactive Admins</a>
 		
@@ -644,6 +652,11 @@ if ( isset($_GET["email"]) AND is_numeric($_GET["email"]) ) {
 	   <?=OS_bnet_icon($row["user_bnet"], 16, 16, "imgvalign" ) ?>  
 	   <?=OS_protected_icon( $row["user_ppwd"], $row["user_bnet"], $lang["protected_account"], 16, 16, "imgvalign" ) ?>
 	   </div>
+	   
+	 
+	 <?php if($row["blacklisted"] == 1) { ?>
+	 <span style="color:red">blacklisted</span>
+	 <?php } ?>
 	 </div>
 	 </td>
 	 <td width="48" class="font12">
