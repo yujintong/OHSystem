@@ -2018,7 +2018,7 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
 vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
 {
 	vector<string> CommandList;
-    string Query = "SELECT command FROM oh_commands WHERE ( botid='" + UTIL_ToString(botid) + "' OR botid='0' ) AND command != '' ORDER BY id ASC LIMIT 3;";
+    string Query = "SELECT command, id FROM oh_commands WHERE ( botid='" + UTIL_ToString(botid) + "' OR botid='0' ) AND command != '' ORDER BY id ASC LIMIT 3;";
 
     vector<string> ids;
 	if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
@@ -2031,10 +2031,10 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
 		{
 			vector<string> Row = MySQLFetchRow( Result );
 
-			while( Row.size( ) == 1 )
+			while( Row.size( ) == 2 )
 			{
 				CommandList.push_back( Row[0] );
-                ids.push_back(Row[0]);
+                ids.push_back(Row[1]);
 				Row = MySQLFetchRow( Result );
 			}
 
@@ -2051,11 +2051,12 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
         else
             ToDelete += "'"+*i+"'";
     }
-    string DeleteQuery = "DELETE FROM oh_commands WHERE id IN( " + ToDelete + " )";
+    if(ToDelete.size()>0) {
+    	string DeleteQuery = "DELETE FROM oh_commands WHERE id IN( " + ToDelete + " )";
 
-	if( mysql_real_query( (MYSQL *)conn, DeleteQuery.c_str( ), DeleteQuery.size( ) ) != 0 )
-		*error = mysql_error( (MYSQL *)conn );
-
+		if( mysql_real_query( (MYSQL *)conn, DeleteQuery.c_str( ), DeleteQuery.size( ) ) != 0 )
+			*error = mysql_error( (MYSQL *)conn );
+    }
 	return CommandList;
 }
 
