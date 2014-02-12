@@ -73,6 +73,13 @@ public:
 
 
 protected:
+    CTCPServer *m_Socket;							// listening socket
+    set<string> m_IPBlackList;						// set of IP addresses to blacklist from joining (todotodo: convert to uint32's for efficiency)
+    bool m_RefreshMessages;							// if we should display "game refreshed..." messages or not
+    bool m_RefreshError;							// if there was an error refreshing the game
+    bool m_RefreshRehosted;							// if we just rehosted and are waiting for confirmation that it was successful
+    uint32_t m_EntryKey;                                                    // random entry key for LAN, used to prove that a player is actually joining from LAN
+
     CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
     vector<CDBBan *> m_DBBans;					// vector of potential ban data for the database (see the Update function for more info, it's not as straightforward as you might think)
     CGameProtocol *m_Protocol;						// game protocol
@@ -443,6 +450,14 @@ public:
     void GetVotingModes( string allmodes );
     virtual void MovePlayerToANewLobby( CGamePlayer *player );
     virtual void CreateNewLobbyForPlayer( CGamePlayer *player );
+    virtual bool GetRefreshMessages( )				{
+        return m_RefreshMessages;
+    }
+    virtual void SetRefreshError( bool nRefreshError )					{
+        m_RefreshError = nRefreshError;
+    }
+    virtual void EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer );
+    virtual void EventGameRefreshed( string server );
 };
 
 #endif

@@ -369,13 +369,13 @@ bool CGamePlayer :: Update( void *fd )
     // make sure we're not waiting too long for the first MAPSIZE packet
 
     /*    	if( m_ConnectionState == 1 && GetTicks( ) - m_ConnectionTime > 5000 && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() )
-    	{
-    		CONSOLE_Print( "[DENY] Kicking player: MAPSIZE not received within five seconds" );
-    		m_DeleteMe = true;
-            	SetLeftReason( "MAPSIZE not received within five seconds" );
-            	SetLeftCode( PLAYERLEAVE_LOBBY );
-            	m_Game->OpenSlot( m_Game->GetSIDFromPID( GetPID( ) ), false );
-        	}
+        {
+            CONSOLE_Print( "[DENY] Kicking player: MAPSIZE not received within five seconds" );
+            m_DeleteMe = true;
+                SetLeftReason( "MAPSIZE not received within five seconds" );
+                SetLeftCode( PLAYERLEAVE_LOBBY );
+                m_Game->OpenSlot( m_Game->GetSIDFromPID( GetPID( ) ), false );
+            }
     */
     // disconnect if the player is downloading too slowly
 

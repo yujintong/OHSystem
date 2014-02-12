@@ -364,13 +364,16 @@ CGHost :: CGHost( CConfig *CFG )
     m_UDPSocket->SetBroadcastTarget( CFG->GetString( "udp_broadcasttarget", string( ) ) );
     m_UDPSocket->SetDontRoute( CFG->GetInt( "udp_dontroute", 0 ) == 0 ? false : true );
     m_ReconnectSocket = NULL;
-    m_Socket = NULL;
+    if(m_PersistLobby)
+        m_Socket = NULL;
     m_GPSProtocol = new CGPSProtocol( );
     m_GCBIProtocol = new CGCBIProtocol( );
     m_CRC = new CCRC32( );
     m_CRC->Initialize( );
     m_SHA = new CSHA1( );
     m_FinishedGames = 0;
+    if(!m_PersistLobby)
+        m_CurrentGame = NULL;
     m_CallableGameUpdate = NULL;
     m_CallableFlameList = NULL;
     m_CallableForcedGProxyList = NULL;
@@ -460,7 +463,8 @@ CGHost :: CGHost( CConfig *CFG )
     m_AutoHostGameName = CFG->GetString( "autohost_gamename", string( ) );
     m_AutoHostOwner = CFG->GetString( "autohost_owner", string( ) );
     m_LastAutoHostTime = GetTime( );
-    m_LastLANBroadcastTime = GetTime( );
+    if(m_PersistLobby)
+        m_LastLANBroadcastTime = GetTime( );
     m_LastCommandListTime = GetTime( );
     m_LastGameUpdateTime  = GetTime( );
     m_LastFlameListUpdate = 0;
@@ -609,14 +613,16 @@ CGHost :: CGHost( CConfig *CFG )
     MapCFG.Read( m_MapCFGPath + m_DefaultMap );
     m_Map = new CMap( this, &MapCFG, m_MapCFGPath + m_DefaultMap );
 
-    m_AutoHostMap = new CMap( *m_Map );
-    m_SaveGame = new CSaveGame( );
-    m_Protocol = new CGameProtocol( this );
-    m_EntryKey = rand();
+    if(m_PersistLobby) {
+        m_AutoHostMap = new CMap( *m_Map );
+        m_SaveGame = new CSaveGame( );
+        m_Protocol = new CGameProtocol( this );
+        m_EntryKey = rand();
+    }
 
     // load the ip blacklist file
 
-    if( !m_IPBlackListFile.empty( ) )
+    if( !m_IPBlackListFile.empty( ) && m_PersistLobby)
     {
         ifstream in;
         in.open( m_IPBlackListFile.c_str( ) );
@@ -669,7 +675,8 @@ CGHost :: ~CGHost( )
 {
     delete m_UDPSocket;
     delete m_ReconnectSocket;
-    delete m_Socket;
+    if(m_PersistLobby)
+        delete m_Socket;
 
     for( vector<CTCPSocket *> :: iterator i = m_ReconnectSockets.begin( ); i != m_ReconnectSockets.end( ); ++i )
         delete *i;
@@ -685,9 +692,12 @@ CGHost :: ~CGHost( )
     for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
         delete *i;
 
-    for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( ); ++i )
-        delete *i;
-
+    if(m_PersistLobby) {
+        for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( ); ++i )
+            delete *i;
+    } else {
+        delete m_CurrentGame;
+    }
     delete m_DB;
 
     // warning: we don't delete any entries of m_Callables here because we can't be guaranteed that the associated threads have terminated
@@ -729,6 +739,22 @@ bool CGHost :: Update( long usecBlock )
             m_BNETs.clear( );
         }
 
+        if(!m_PersistLobby) {
+            if( m_CurrentGame )
+            {
+                CONSOLE_Print( "[GHOST] deleting current game in preparation for exiting nicely" );
+                delete m_CurrentGame;
+                m_CurrentGame = NULL;
+            }
+
+        } else {
+            for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( ); )
+            {
+                CONSOLE_Print( "[GHOST] deleting game [" + (*i)->GetGameName( ) + "]" );
+                delete *i;
+                i = m_CurrentGames.erase( i );
+            }
+        }
         if( m_Games.empty( ) )
         {
             if( !m_AllGamesFinished )
@@ -752,15 +778,6 @@ bool CGHost :: Update( long usecBlock )
                     m_Exiting = true;
                 }
             }
-        }
-
-        // end current games
-
-        for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( ); )
-        {
-            CONSOLE_Print( "[GHOST] deleting game [" + (*i)->GetGameName( ) + "]" );
-            delete *i;
-            i = m_CurrentGames.erase( i );
         }
     }
 
@@ -823,10 +840,15 @@ bool CGHost :: Update( long usecBlock )
 
     // 2. the current game's server
 
-    if( m_Socket )
-    {
-        m_Socket->SetFD( &fd, &send_fd, &nfds );
-        ++NumFDs;
+    if(m_PersistLobby) {
+        if( m_Socket )
+        {
+            m_Socket->SetFD( &fd, &send_fd, &nfds );
+            ++NumFDs;
+        }
+    } else {
+        if( m_CurrentGame )
+            NumFDs += m_CurrentGame->SetFD( &fd, &send_fd, &nfds );
     }
 
     // 3. all running games' player sockets
@@ -897,6 +919,47 @@ bool CGHost :: Update( long usecBlock )
     bool AdminExit = false;
     bool BNETExit = false;
 
+    if(!m_PersistLobby) {
+        // update current game
+
+        if( m_CurrentGame )
+        {
+            if( m_CurrentGame->Update( &fd, &send_fd ) )
+            {
+                CONSOLE_Print( "[GHOST] deleting current game [" + m_CurrentGame->GetGameName( ) + "]" );
+                m_FinishedGames += 1;
+                m_CheckForFinishedGames = GetTime();
+                delete m_CurrentGame;
+                m_CurrentGame = NULL;
+
+                for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+                {
+                    (*i)->QueueGameUncreate( );
+                    (*i)->QueueEnterChat( );
+                }
+            }
+            else if( m_CurrentGame )
+                m_CurrentGame->UpdatePost( &send_fd );
+        }
+    } else {
+        // update current games using integer indexes because we might delete a current game in Update()
+
+        for( int i = 0; i < m_CurrentGames.size( ); )
+        {
+            if( m_CurrentGames[i]->Update( &fd, &send_fd ) )
+            {
+                CONSOLE_Print( "[GHOST] deleting game [" + m_CurrentGames[i]->GetGameName( ) + "]" );
+                EventGameDeleted( m_CurrentGames[i] );
+                delete m_CurrentGames[i];
+                m_CurrentGames.erase( m_CurrentGames.begin() + i );
+            }
+            else
+            {
+                m_CurrentGames[i]->UpdatePost( &send_fd );
+                i++;
+            }
+        }
+    }
     // update running games
 
     for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); )
@@ -912,24 +975,6 @@ bool CGHost :: Update( long usecBlock )
         {
             (*i)->UpdatePost( &send_fd );
             ++i;
-        }
-    }
-
-    // update current games using integer indexes because we might delete a current game in Update()
-
-    for( int i = 0; i < m_CurrentGames.size( ); )
-    {
-        if( m_CurrentGames[i]->Update( &fd, &send_fd ) )
-        {
-            CONSOLE_Print( "[GHOST] deleting game [" + m_CurrentGames[i]->GetGameName( ) + "]" );
-            EventGameDeleted( m_CurrentGames[i] );
-            delete m_CurrentGames[i];
-            m_CurrentGames.erase( m_CurrentGames.begin() + i );
-        }
-        else
-        {
-            m_CurrentGames[i]->UpdatePost( &send_fd );
-            i++;
         }
     }
 
@@ -1053,234 +1098,195 @@ bool CGHost :: Update( long usecBlock )
         ++i;
     }
 
-    // broadcast the game to the local network every 5 seconds
-    // see the !sendlan code later in this file for some more information about how this works
-    // todotodo: should we send a game cancel message somewhere? we'll need to implement a host counter for it to work
-
-    if( GetTime() - m_LastLANBroadcastTime >= 5 )
-    {
-        m_LastLANBroadcastTime = GetTime();
-
-        // construct a fixed host counter which will be used to identify players from this "realm" (i.e. LAN)
-        // the fixed host counter's 4 most significant bits will contain a 4 bit ID (0-15)
-        // the rest of the fixed host counter will contain the 28 least significant bits of the actual host counter
-        // since we're destroying 4 bits of information here the actual host counter should not be greater than 2^28 which is a reasonable assumption
-        // when a player joins a game we can obtain the ID from the received host counter
-        // note: LAN broadcasts use an ID of 0, battle.net refreshes use an ID of 1-10, the rest are unused
-
-        if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 )
+    if(m_PersistLobby) {
+        if( GetTime() - m_LastLANBroadcastTime >= 5 )
         {
-            uint32_t FixedHostCounter = m_HostCounter & 0x0FFFFFFF;
+            m_LastLANBroadcastTime = GetTime();
 
-            // we send 12 for SlotsTotal because this determines how many PID's Warcraft 3 allocates
-            // we need to make sure Warcraft 3 allocates at least SlotsTotal + 1 but at most 12 PID's
-            // this is because we need an extra PID for the virtual host player (but we always delete the virtual host player when the 12th person joins)
-            // however, we can't send 13 for SlotsTotal because this causes Warcraft 3 to crash when sharing control of units
-            // nor can we send SlotsTotal because then Warcraft 3 crashes when playing maps with less than 12 PID's (because of the virtual host player taking an extra PID)
-            // we also send 12 for SlotsOpen because Warcraft 3 assumes there's always at least one player in the game (the host)
-            // so if we try to send accurate numbers it'll always be off by one and results in Warcraft 3 assuming the game is full when it still needs one more player
-            // the easiest solution is to simply send 12 for both so the game will always show up as (1/12) players
-            /*
-                        if( m_SaveGame )
-                        {
-                            // note: the PrivateGame flag is not set when broadcasting to LAN (as you might expect)
-
-                            uint32_t MapGameType = MAPGAMETYPE_SAVEDGAME;
-                            BYTEARRAY MapWidth;
-                            MapWidth.push_back( 0 );
-                            MapWidth.push_back( 0 );
-                            BYTEARRAY MapHeight;
-                            MapHeight.push_back( 0 );
-                            MapHeight.push_back( 0 );
-                            m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_TFT, m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_AutoHostGameName, "OHSystem", 0, "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
-                        *///}
-            //else
-            //{
-            // note: the PrivateGame flag is not set when broadcasting to LAN (as you might expect)
-            // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
-
-            uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
-            m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_TFT, m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_AutoHostMap->GetMapGameFlags( ), m_AutoHostMap->GetMapWidth( ), m_AutoHostMap->GetMapHeight( ), m_AutoHostGameName, "OHSystem", 0, m_AutoHostMap->GetMapPath( ), m_AutoHostMap->GetMapCRC( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
-            //}
-        }
-    }
-
-    // refresh every 3 seconds
-
-    if( !m_ExitingNice && m_Enabled && m_Games.size( ) < m_MaxGames && m_Games.size( ) < m_AutoHostMaximumGames )
-    {
-        if( m_RefreshEnabled && GetTime( ) - m_LastRefreshTime >= 3 )
-        {
-            // send a game refresh packet to each battle.net connection
-
-            bool Refreshed = false;
-
-            for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+            if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 )
             {
-                // don't queue a game refresh message if the queue contains more than 1 packet because they're very low priority
-
-                if( (*i)->GetOutPacketsQueued( ) <= 1 )
-                {
-                    (*i)->QueueGameRefresh( GAME_PUBLIC, m_AutoHostGameName, string( ), m_AutoHostMap, NULL, 0, m_HostCounter );
-                    Refreshed = true;
-                }
+                uint32_t FixedHostCounter = m_HostCounter & 0x0FFFFFFF;
+                uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
+                m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_TFT, m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_AutoHostMap->GetMapGameFlags( ), m_AutoHostMap->GetMapWidth( ), m_AutoHostMap->GetMapHeight( ), m_AutoHostGameName, "OHSystem", 0, m_AutoHostMap->GetMapPath( ), m_AutoHostMap->GetMapCRC( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
             }
-
-            //if( Refreshed )
-            //    CONSOLE_Print( "[VIRTUAL] Game refreshed!" );
-
-            m_LastRefreshTime = GetTime( );
         }
-    }
 
-    if( m_Socket )
-    {
-        CTCPSocket *NewSocket = m_Socket->Accept( &fd );
 
-        if( NewSocket )
+        // refresh every 3 seconds
+
+        if( !m_ExitingNice && m_Enabled && m_Games.size( ) < m_MaxGames && m_Games.size( ) < m_AutoHostMaximumGames )
         {
-            // check the IP blacklist
-
-            if( m_IPBlackList.find( NewSocket->GetIPString( ) ) == m_IPBlackList.end( ) )
+            if( m_RefreshEnabled && GetTime( ) - m_LastRefreshTime >= 3 )
             {
-                CONSOLE_Print( "[VIRTUAL] accepting connection from [" + NewSocket->GetIPString( ) + "]" );
+                // send a game refresh packet to each battle.net connection
 
-                if( m_TCPNoDelay )
-                    NewSocket->SetNoDelay( true );
+                bool Refreshed = false;
 
-                // find the first current game for this player that isn't full
-
-                bool foundGame = false;
-
-                for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( ); ++i )
+                for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
                 {
-                    if( (*i)->GetEmptySlot( false ) != 255 )
+                    // don't queue a game refresh message if the queue contains more than 1 packet because they're very low priority
+
+                    if( (*i)->GetOutPacketsQueued( ) <= 1 )
                     {
-                        (*i)->m_Potentials.push_back( new CPotentialPlayer( (*i)->GetProtocol( ), (*i), NewSocket ) );
-                        foundGame = true;
-                        break;
+                        (*i)->QueueGameRefresh( GAME_PUBLIC, m_AutoHostGameName, string( ), m_AutoHostMap, NULL, 0, m_HostCounter );
+                        Refreshed = true;
                     }
                 }
 
-                // if no game was found, then create a new one
+                //if( Refreshed )
+                //    CONSOLE_Print( "[VIRTUAL] Game refreshed!" );
 
-                if( !foundGame )
-                {
-                    CreateGame( m_AutoHostMap, GAME_PUBLIC, false, m_AutoHostGameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, false );
-
-                    CBaseGame *targetGame = m_CurrentGames[m_CurrentGames.size( ) - 1];
-                    targetGame->SetAutoStartPlayers( m_AutoHostAutoStartPlayers );
-
-                    targetGame->m_Potentials.push_back( new CPotentialPlayer( targetGame->GetProtocol( ), targetGame, NewSocket ) );
-                }
-            }
-            else
-            {
-                CONSOLE_Print( "[VIRTUAL] rejected connection from [" + NewSocket->GetIPString( ) + "] due to blacklist" );
-                delete NewSocket;
+                m_LastRefreshTime = GetTime( );
             }
         }
 
-        m_LastAutoHostTime = GetTime( );
-        if( m_Socket->HasError( ) )
-            return true;
+        if( m_Socket )
+        {
+            CTCPSocket *NewSocket = m_Socket->Accept( &fd );
+
+            if( NewSocket )
+            {
+                // check the IP blacklist
+
+                if( m_IPBlackList.find( NewSocket->GetIPString( ) ) == m_IPBlackList.end( ) )
+                {
+                    CONSOLE_Print( "[VIRTUAL] accepting connection from [" + NewSocket->GetIPString( ) + "]" );
+
+                    if( m_TCPNoDelay )
+                        NewSocket->SetNoDelay( true );
+
+                    // find the first current game for this player that isn't full
+
+                    bool foundGame = false;
+
+                    for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( ); ++i )
+                    {
+                        if( (*i)->GetEmptySlot( false ) != 255 )
+                        {
+                            (*i)->m_Potentials.push_back( new CPotentialPlayer( (*i)->GetProtocol( ), (*i), NewSocket ) );
+                            foundGame = true;
+                            break;
+                        }
+                    }
+
+                    // if no game was found, then create a new one
+
+                    if( !foundGame )
+                    {
+                        CreateGame( m_AutoHostMap, GAME_PUBLIC, false, m_AutoHostGameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, false );
+
+                        CBaseGame *targetGame = m_CurrentGames[m_CurrentGames.size( ) - 1];
+                        targetGame->SetAutoStartPlayers( m_AutoHostAutoStartPlayers );
+
+                        targetGame->m_Potentials.push_back( new CPotentialPlayer( targetGame->GetProtocol( ), targetGame, NewSocket ) );
+                    }
+                }
+                else
+                {
+                    CONSOLE_Print( "[VIRTUAL] rejected connection from [" + NewSocket->GetIPString( ) + "] due to blacklist" );
+                    delete NewSocket;
+                }
+            }
+
+            m_LastAutoHostTime = GetTime( );
+            if( m_Socket->HasError( ) )
+                return true;
+        }
     }
 
-    if( m_LastAutoHostTime != 0 && GetTime( ) - m_LastAutoHostTime >= 10 )
+    if( m_LastAutoHostTime != 0 && GetTime( ) - m_LastAutoHostTime >= 10 && m_PersistLobby )
     {
 
         VirtualStartup( m_AutoHostMap, GAME_PUBLIC, false, m_AutoHostGameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, false, m_AutoHostGameType, m_HostCounter );
         m_LastAutoHostTime = 0;
+    } else if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 && GetTime( ) - m_LastAutoHostTime >= 30 && m_ReservedHostCounter != 0 ) {
+
+        if( !m_ExitingNice && m_Enabled && !m_CurrentGame && m_Games.size( ) < m_MaxGames && m_Games.size( ) < m_AutoHostMaximumGames )
+        {
+            if( m_AutoHostMap->GetValid( ) )
+            {
+                string GameName = m_AutoHostGameName + " #" + UTIL_ToString( GetNewHostCounter( ) );
+
+                if( GameName.size( ) <= 31 )
+                {
+                    VirtualStartup( m_AutoHostMap, GAME_PUBLIC, false, GameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, false, m_AutoHostGameType, m_HostCounter );
+
+                    if( m_CurrentGame )
+                    {
+                        if( m_ObserverFake )
+                            m_CurrentGame->CreateFakePlayer( );
+                        m_CurrentGame->SetAutoStartPlayers( m_AutoHostAutoStartPlayers );
+
+                        if( m_AutoHostMatchMaking )
+                        {
+                            if( !m_Map->GetMapMatchMakingCategory( ).empty( ) )
+                            {
+                                if( !( m_Map->GetMapOptions( ) & MAPOPT_FIXEDPLAYERSETTINGS ) )
+                                    CONSOLE_Print( "[GHOST] autohostmm - map_matchmakingcategory [" + m_Map->GetMapMatchMakingCategory( ) + "] found but matchmaking can only be used with fixed player settings, matchmaking disabled" );
+                                else
+                                {
+                                    CONSOLE_Print( "[GHOST] autohostmm - map_matchmakingcategory [" + m_Map->GetMapMatchMakingCategory( ) + "] found, matchmaking enabled" );
+
+                                    m_CurrentGame->SetMatchMaking( true );
+                                    m_CurrentGame->SetMinimumScore( m_AutoHostMinimumScore );
+                                    m_CurrentGame->SetMaximumScore( m_AutoHostMaximumScore );
+                                }
+                            }
+                            else
+                                CONSOLE_Print( "[GHOST] autohostmm - map_matchmakingcategory not found, matchmaking disabled" );
+                        }
+                    }
+                }
+                else
+                {
+                    CONSOLE_Print( "[GHOST] stopped auto hosting, next game name [" + GameName + "] is too long (the maximum is 31 characters)" );
+                    m_AutoHostGameName.clear( );
+                    m_AutoHostOwner.clear( );
+                    m_AutoHostServer.clear( );
+                    m_AutoHostMaximumGames = 0;
+                    m_AutoHostAutoStartPlayers = 0;
+                    m_AutoHostMatchMaking = false;
+                    m_AutoHostMinimumScore = 0.0;
+                    m_AutoHostMaximumScore = 0.0;
+                }
+            }
+            else
+            {
+                CONSOLE_Print( "[GHOST] stopped auto hosting, map config file [" + m_AutoHostMap->GetCFGFile( ) + "] is invalid" );
+                m_AutoHostGameName.clear( );
+                m_AutoHostOwner.clear( );
+                m_AutoHostServer.clear( );
+                m_AutoHostMaximumGames = 0;
+                m_AutoHostAutoStartPlayers = 0;
+                m_AutoHostMatchMaking = false;
+                m_AutoHostMinimumScore = 0.0;
+                m_AutoHostMaximumScore = 0.0;
+            }
+        }
+
+        m_LastAutoHostTime = GetTime( );
     }
-    /*
-    	if( !m_AutoHostGameName.empty( ) && m_AutoHostMaximumGames != 0 && m_AutoHostAutoStartPlayers != 0 && GetTime( ) - m_LastAutoHostTime >= 30 && m_ReservedHostCounter != 0 )
-    	{
-    		// copy all the checks from CGHost :: CreateGame here because we don't want to spam the chat when there's an error
-    		// instead we fail silently and try again soon
 
-    		if( !m_ExitingNice && m_Enabled && !m_CurrentGame && m_Games.size( ) < m_MaxGames && m_Games.size( ) < m_AutoHostMaximumGames )
-    		{
-    			if( m_AutoHostMap->GetValid( ) )
-    			{
-    				string GameName = m_AutoHostGameName + " #" + UTIL_ToString( GetNewHostCounter( ) );
-
-    				if( GameName.size( ) <= 31 )
-    				{
-    					CreateGame( m_AutoHostMap, GAME_PUBLIC, false, GameName, m_AutoHostOwner, m_AutoHostOwner, m_AutoHostServer, m_AutoHostGameType, false, m_HostCounter );
-
-    					if( m_CurrentGame )
-    					{
-    						if( m_ObserverFake )
-    							m_CurrentGame->CreateFakePlayer( );
-    						m_CurrentGame->SetAutoStartPlayers( m_AutoHostAutoStartPlayers );
-
-    						if( m_AutoHostMatchMaking )
-    						{
-    							if( !m_Map->GetMapMatchMakingCategory( ).empty( ) )
-    							{
-    								if( !( m_Map->GetMapOptions( ) & MAPOPT_FIXEDPLAYERSETTINGS ) )
-    									CONSOLE_Print( "[GHOST] autohostmm - map_matchmakingcategory [" + m_Map->GetMapMatchMakingCategory( ) + "] found but matchmaking can only be used with fixed player settings, matchmaking disabled" );
-    								else
-    								{
-    									CONSOLE_Print( "[GHOST] autohostmm - map_matchmakingcategory [" + m_Map->GetMapMatchMakingCategory( ) + "] found, matchmaking enabled" );
-
-    									m_CurrentGame->SetMatchMaking( true );
-    									m_CurrentGame->SetMinimumScore( m_AutoHostMinimumScore );
-    									m_CurrentGame->SetMaximumScore( m_AutoHostMaximumScore );
-    								}
-    							}
-    							else
-    								CONSOLE_Print( "[GHOST] autohostmm - map_matchmakingcategory not found, matchmaking disabled" );
-    						}
-    					}
-    				}
-    				else
-    				{
-    					CONSOLE_Print( "[GHOST] stopped auto hosting, next game name [" + GameName + "] is too long (the maximum is 31 characters)" );
-    					m_AutoHostGameName.clear( );
-    					m_AutoHostOwner.clear( );
-    					m_AutoHostServer.clear( );
-    					m_AutoHostMaximumGames = 0;
-    					m_AutoHostAutoStartPlayers = 0;
-    					m_AutoHostMatchMaking = false;
-    					m_AutoHostMinimumScore = 0.0;
-    					m_AutoHostMaximumScore = 0.0;
-    				}
-    			}
-    			else
-    			{
-    				CONSOLE_Print( "[GHOST] stopped auto hosting, map config file [" + m_AutoHostMap->GetCFGFile( ) + "] is invalid" );
-    				m_AutoHostGameName.clear( );
-    				m_AutoHostOwner.clear( );
-    				m_AutoHostServer.clear( );
-    				m_AutoHostMaximumGames = 0;
-    				m_AutoHostAutoStartPlayers = 0;
-    				m_AutoHostMatchMaking = false;
-    				m_AutoHostMinimumScore = 0.0;
-    				m_AutoHostMaximumScore = 0.0;
-    			}
-    		}
-
-    		m_LastAutoHostTime = GetTime( );
-    	}
-        */
 
     //update gamelist every 10 seconds
     if( !m_CallableGameUpdate && GetTime() - m_LastGameUpdateTime >= 10)
     {
-        int c=0;
-        for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( );)
-        {
-            if( (*i)->GetNumHumanPlayers( ) == 0 && c!=0)
+        if(m_PersistLobby) {
+            int c=0;
+            for( vector<CBaseGame *> :: iterator i = m_CurrentGames.begin( ); i != m_CurrentGames.end( );)
             {
-                CONSOLE_Print( "[GHOST] deleting game [" + (*i)->GetGameName( ) + "] no players ingame." );
-                delete *i;
-                i=m_CurrentGames.erase( i );
+                if( (*i)->GetNumHumanPlayers( ) == 0 && c!=0)
+                {
+                    CONSOLE_Print( "[GHOST] deleting game [" + (*i)->GetGameName( ) + "] no players ingame." );
+                    delete *i;
+                    i=m_CurrentGames.erase( i );
+                }
+                else
+                    i++;
+                c++;
             }
-            else
-                i++;
-            c++;
         }
+
         uint32_t TotalGames = m_Games.size( );
         uint32_t TotalPlayers = 0;
 
@@ -1288,28 +1294,40 @@ bool CGHost :: Update( long usecBlock )
             TotalPlayers += (*i)->GetNumHumanPlayers( );
             TotalGames++;
         }
-
-        for( vector<CBaseGame *> :: iterator x = m_CurrentGames.begin( ); x != m_CurrentGames.end( ); ++x )
-        {
-            string PlayerList="";
-            for( unsigned char i = 0; i < (*x)->m_Slots.size( ); ++i )
+        if(m_PersistLobby) {
+            for( vector<CBaseGame *> :: iterator x = m_CurrentGames.begin( ); x != m_CurrentGames.end( ); ++x )
             {
-                if( (*x)->m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED && (*x)->m_Slots[i].GetComputer( ) == 0 )
+                string PlayerList="";
+                for( unsigned char i = 0; i < (*x)->m_Slots.size( ); ++i )
                 {
-                    CGamePlayer *player = (*x)->GetPlayerFromSID( i );
+                    if( (*x)->m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED && (*x)->m_Slots[i].GetComputer( ) == 0 )
+                    {
+                        CGamePlayer *player = (*x)->GetPlayerFromSID( i );
+
+                        if( player )
+                            PlayerList += player->GetName( ) + "\t" + player->GetSpoofedRealm( ) + "\t" + UTIL_ToString( player->GetPing( m_LCPings ) ) + "\t";
+                    }
+                    else if( (*x)->m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OPEN )
+                        PlayerList += "\t\t\t";
+                }
+
+                m_CallableGameUpdate = m_DB->ThreadedGameUpdate((*x)->GetMapName(), m_AutoHostGameName, (*x)->GetOwnerName(), (*x)->GetCreatorName(), (*x)->GetSlotsOccupied(), PlayerList, (*x)->GetSlotsOccupied() + (*x)->GetSlotsOpen(), TotalGames, TotalPlayers, true, (*x)->m_HostCounter, (*x)->m_GameAlias );
+            }
+        } else {
+            string PlayerList="";
+            for( unsigned char i = 0; i < m_CurrentGame->m_Slots.size( ); ++i )
+            {
+                if( (*x)->m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED && m_CurrentGame->m_Slots[i].GetComputer( ) == 0 )
+                {
+                    CGamePlayer *player = m_CurrentGame->GetPlayerFromSID( i );
 
                     if( player )
                         PlayerList += player->GetName( ) + "\t" + player->GetSpoofedRealm( ) + "\t" + UTIL_ToString( player->GetPing( m_LCPings ) ) + "\t";
-                    else
-                        PlayerList += "PeaceMaker \t OHConnect \t 127.0.0.1 \t";
                 }
                 else if( (*x)->m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OPEN )
                     PlayerList += "\t\t\t";
-                else
-                    PlayerList += "PeaceMaker \t OHConnect \t 127.0.0.1 \t";
             }
-
-            m_CallableGameUpdate = m_DB->ThreadedGameUpdate((*x)->GetMapName(), m_AutoHostGameName, (*x)->GetOwnerName(), (*x)->GetCreatorName(), (*x)->GetSlotsOccupied(), PlayerList, (*x)->GetSlotsOccupied() + (*x)->GetSlotsOpen(), TotalGames, TotalPlayers, true, (*x)->m_HostCounter, (*x)->m_GameAlias );
+            m_CallableGameUpdate = m_DB->ThreadedGameUpdate(m_CurrentGame->GetMapName(), m_AutoHostGameName, m_CurrentGame->GetOwnerName(), m_CurrentGame->GetCreatorName(), m_CurrentGame->GetSlotsOccupied(), PlayerList, m_CurrentGame->GetSlotsOccupied() + m_CurrentGame->GetSlotsOpen(), TotalGames, TotalPlayers, true, m_CurrentGame->m_HostCounter, m_CurrentGame->m_GameAlias );
         }
         m_LastGameUpdateTime = GetTime();
     }
@@ -1486,11 +1504,30 @@ void CGHost :: EventBNETGameRefreshed( CBNET *bnet )
 
 void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
 {
-    m_RefreshEnabled = false;
+    if(m_PersistLobby) {
+        m_RefreshEnabled = false;
 
-    if( m_RefreshEnabled )
-    {
-        bnet->QueueGameCreate( GAME_PUBLIC, m_AutoHostGameName, string( ), m_AutoHostMap, NULL, 1337 );
+        if( m_RefreshEnabled )
+        {
+            bnet->QueueGameCreate( GAME_PUBLIC, m_AutoHostGameName, string( ), m_AutoHostMap, NULL, 1337 );
+        }
+    } else {
+        if( m_CurrentGame )
+        {
+            for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+            {
+                (*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
+
+                if( (*i)->GetServer( ) == m_CurrentGame->GetCreatorServer( ) )
+                    (*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ), m_CurrentGame->GetCreatorName( ), true );
+            }
+            m_CurrentGame->SendAllChat( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
+
+            if( m_CurrentGame->GetNumHumanPlayers( ) == 0 )
+                m_CurrentGame->SetExiting( true );
+
+            m_CurrentGame->SetRefreshError( true );
+        }
     }
 }
 
@@ -1821,6 +1858,50 @@ void CGHost :: VirtualStartup( CMap *map, unsigned char gameState, bool saveGame
         }
     }
 
+    if(!m_PersistLobby) {
+        if( m_CurrentGame )
+        {
+            for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+            {
+                if( (*i)->GetServer( ) == creatorServer )
+                    (*i)->QueueChatCommand( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ), creatorName, whisper );
+            }
+
+            if( m_AdminGame )
+                m_AdminGame->SendAllChat( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ) );
+
+            return;
+        }
+
+        if( m_Games.size( ) >= m_MaxGames )
+        {
+            for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+            {
+                if( (*i)->GetServer( ) == creatorServer )
+                    (*i)->QueueChatCommand( m_Language->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ), creatorName, whisper );
+            }
+
+            return;
+        }
+
+        CONSOLE_Print( "[GHOST] creating game [" + gameName + "]" );
+        if( m_HostCounter == 0 )
+            m_HostCounter = GetNewHostCounter( );
+
+        if( saveGame )
+            m_CurrentGame = new CGame( this, map, m_SaveGame, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType, m_HostCounter );
+        else
+            m_CurrentGame = new CGame( this, map, NULL, m_HostPort, gameState, gameName, ownerName, creatorName, creatorServer, gameType, m_HostCounter );
+
+        // todotodo: check if listening failed and report the error to the user
+
+        if( m_SaveGame )
+        {
+            m_CurrentGame->SetEnforcePlayers( m_EnforcePlayers );
+            m_EnforcePlayers.clear( );
+        }
+    }
+
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
     {
         if( whisper && (*i)->GetServer( ) == creatorServer )
@@ -1842,10 +1923,17 @@ void CGHost :: VirtualStartup( CMap *map, unsigned char gameState, bool saveGame
                 (*i)->QueueChatCommand( m_Language->CreatingPublicGame( gameName, ownerName ) );
         }
 
-        if( saveGame )
-            (*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, 1337 );
-        else
-            (*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, 1337 );
+        if(m_PersistLobby) {
+            if( saveGame )
+                (*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, 1337 );
+            else
+                (*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, 1337 );
+        } else {
+            if( saveGame )
+                (*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, m_CurrentGame->GetHostCounter( ) );
+            else
+                (*i)->QueueGameCreate( gameState, gameName, string( ), map, NULL, m_CurrentGame->GetHostCounter( ) );
+        }
     }
 
     // if we're creating a private game we don't need to send any game refresh messages so we can rejoin the chat immediately
@@ -1860,17 +1948,49 @@ void CGHost :: VirtualStartup( CMap *map, unsigned char gameState, bool saveGame
                 (*i)->QueueEnterChat( );
         }
     }
-    m_Socket = new CTCPServer( );
+    if(m_PersistLobby) {
+        m_Socket = new CTCPServer( );
 
-    if( m_Socket->Listen( m_BindAddress, m_HostPort ) )
-        CONSOLE_Print( "[VIRTUAL] listening on port " + UTIL_ToString( m_HostPort ) );
-    else
-    {
-        CONSOLE_Print( "[VIRTUAL] error listening on port " + UTIL_ToString( m_HostPort ) );
+        if( m_Socket->Listen( m_BindAddress, m_HostPort ) )
+            CONSOLE_Print( "[VIRTUAL] listening on port " + UTIL_ToString( m_HostPort ) );
+        else
+        {
+            CONSOLE_Print( "[VIRTUAL] error listening on port " + UTIL_ToString( m_HostPort ) );
+        }
+
+        m_RefreshEnabled = true;
+        m_LastRefreshTime = GetTime( );
+    } else {
+        // hold friends and/or clan members
+        for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+        {
+            if( (*i)->GetHoldFriends( ) )
+                (*i)->HoldFriends( m_CurrentGame );
+
+            if( (*i)->GetHoldClan( ) )
+                (*i)->HoldClan( m_CurrentGame );
+        }
+
+        //update mysql current games list
+        if( m_CallableGameUpdate && m_CallableGameUpdate->GetReady()) {
+            m_DB->RecoverCallable( m_CallableGameUpdate );
+            delete m_CallableGameUpdate;
+            m_CallableGameUpdate = NULL;
+            m_LastGameUpdateTime = GetTime();
+        }
+
+        if(!m_CallableGameUpdate) {
+            uint32_t TotalGames = m_Games.size( ) + 1;
+            uint32_t TotalPlayers = 0;
+
+            for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
+                TotalPlayers += (*i)->GetNumHumanPlayers( );
+
+            m_CallableGameUpdate = m_DB->ThreadedGameUpdate(m_CurrentGame->GetMapName( ), m_AutoHostGameName, m_CurrentGame->GetOwnerName(), m_CurrentGame->GetCreatorName(), m_CurrentGame->GetSlotsOccupied(), m_CurrentGame->GetPlayerList( ), m_CurrentGame->GetSlotsOccupied() + m_CurrentGame->GetSlotsOpen(), TotalGames, TotalPlayers, true, m_HostCounter, m_CurrentGame->m_GameAlias);
+            m_LastGameUpdateTime = GetTime();
+        }
+
     }
-
-    m_RefreshEnabled = true;
-    m_LastRefreshTime = GetTime( );
 }
 
 void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, bool whisper )

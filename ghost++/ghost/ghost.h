@@ -69,6 +69,7 @@ public:
     CCRC32 *m_CRC;							// for calculating CRC's
     CSHA1 *m_SHA;							// for calculating SHA1's
     vector<CBNET *> m_BNETs;				// all our battle.net connections (there can be more than one)
+    CBaseGame *m_CurrentGame;				// this game is still in the lobby state
     vector<CBaseGame *> m_CurrentGames;				// this game is still in the lobby
     vector<CBaseGame *> m_Games;			// these games are in progress
     CGHostDB *m_DB;							// database
