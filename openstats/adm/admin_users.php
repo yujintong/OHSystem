@@ -102,6 +102,8 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  else $blacklisted = 0;
 	  $sql_update_pw = "";
 	  
+	  $user_level_expire = strip_tags($_POST["user_level_expire"]);
+	  
 	  $user_bnet = safeEscape( $_POST["user_bnet"]);
 	   
 	  if ( isset( $_POST["chpw"]) AND $_POST["chpw"] == 1 AND !isset($_GET["add"]) ) {
@@ -141,11 +143,11 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  $time = date( "Y-m-d H:i:s", time() );
 	  
 	  if ( isset($_GET["edit"]) ) $sql = "UPDATE ".OSDB_USERS." SET 
-	  user_name= '".$name."', alias_id = '".$alias_id."', user_email = '".$email."', user_level = '".$level."', user_website = '".$www."', user_avatar = '".$avatar."', user_gender = '".$gender."', bnet_username = '".$bnet."', user_bnet = '".$user_bnet."', user_realm = '".$user_realm."', user_clan = '".$user_clan."', admin_realm = '".$admin_realm."', blacklisted = '$blacklisted'
+	  user_name= '".$name."', alias_id = '".$alias_id."', user_email = '".$email."', user_level = '".$level."', user_website = '".$www."', user_avatar = '".$avatar."', user_gender = '".$gender."', bnet_username = '".$bnet."', user_bnet = '".$user_bnet."', user_realm = '".$user_realm."', user_clan = '".$user_clan."', admin_realm = '".$admin_realm."', blacklisted = '$blacklisted', user_level_expire = '".$user_level_expire."'
 	  $sql_update_pw 
 	  WHERE user_id ='".$id."' LIMIT 1 ";
 	  
-	  if ( isset($_GET["add"]) ) $sql = "INSERT INTO ".OSDB_USERS."(user_name, alias_id, user_email, user_password, password_hash, user_joined, bnet_username, user_bnet, user_realm, user_clan, blacklisted) VALUES('".$name."', '".$alias_id."', '".$email."', '".$password_db."', '".$hash."', '".time()."', '".$bnet."', '".$user_bnet."', '".$user_realm."', '".$user_clan."', '".$blacklisted."')";
+	  if ( isset($_GET["add"]) ) $sql = "INSERT INTO ".OSDB_USERS."(user_name, alias_id, user_email, user_password, password_hash, user_joined, bnet_username, user_bnet, user_realm, user_clan, blacklisted, user_level_expire) VALUES('".$name."', '".$alias_id."', '".$email."', '".$password_db."', '".$hash."', '".time()."', '".$bnet."', '".$user_bnet."', '".$user_realm."', '".$user_clan."', '".$blacklisted."', '".$user_level_expire."')";
 	  
 	  $sth = $db->prepare("SELECT * FROM ".OSDB_USERS." WHERE (user_name) = ('".$name."') AND user_id!='".$id."' ");
 	  $result = $sth->execute();
@@ -394,7 +396,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 		   <option <?=$sel.$dis?> value="10"><?=$lang["member_root"]?></option>
 		 </select>
 		 
-		 Expire: <input name="user_leve_expire" id="expiredate" style="width: 180px; height: 28px;" type="text" value="<?=$user_level_expire?>" />
+		 Expire: <input name="user_level_expire" id="expiredate" style="width: 180px; height: 28px;" type="text" value="<?=$user_level_expire?>" />
 		 <?php if (!empty($user_level_expire)) echo date( OS_DATE_FORMAT, strtotime($user_level_expire)); ?> ( YYYY-MM-DD H:i:s )
 <div class="padTop padBottom">
 	 Set: 
