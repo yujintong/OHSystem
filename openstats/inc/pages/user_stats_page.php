@@ -94,7 +94,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["bandate"]  = date($DateFormat, strtotime($rowban["date"]));
 	$UserData[$c]["bandate_raw"]  = ($rowban["date"]);
 	$UserData[$c]["expiredate"]  = ($rowban["expiredate"]);
-	$UserData[$c]["reason"]  = ($rowban["reason"]);
+	$UserData[$c]["reason"]  = convEnt($rowban["reason"]);
 	$UserData[$c]["reason"] = str_replace(array("fuck", "FUCK", "Fuck"), array("f***", "F***", "F***"), $UserData[$c]["reason"]);
 	$UserData[$c]["admin"]  = ($rowban["admin"]);
 	
@@ -158,7 +158,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["banned"] = 0;
 	$UserData[$c]["banname"] ="";
 	}
-
+	
 	//Check if user have some privileges.
 	 $sth3 = $db->prepare("SELECT * FROM ".OSDB_STATS." 
 	 WHERE player = '".$row["player"]."' AND user_level>1 LIMIT 1");
@@ -174,6 +174,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 
 	 if ( strtotime($row2["user_level_expire"]) <= time() ) $UserData[0]["user_level"] = 0;
 	 $UserData[$c]["GameAdmin"]  = ($row["user_level"]);
+
 	 
 	 //$row2 = $sth2->fetch(PDO::FETCH_ASSOC);
 	// $IP = $row2["ip"];
@@ -484,7 +485,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	    $PenaltyData[$c]["id"] = $row["id"];
 		$PenaltyData[$c]["player_id"] = $row["player_id"];
 		$PenaltyData[$c]["player_name"] = $row["player_name"];
-		$PenaltyData[$c]["reason"] = $row["reason"];
+		$PenaltyData[$c]["reason"] = convEnt($row["reason"]);
 		$PenaltyData[$c]["offence_time"] = $row["offence_time"];
 		$PenaltyData[$c]["date"] = date(OS_DATE_FORMAT, strtotime($row["offence_time"]));
 		
@@ -674,7 +675,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 			$UserIPRange[$c]["date"] = date( OS_DATE_FORMAT, strtotime($row["date"]));
 			$UserIPRange[$c]["admin"] = $row["admin"];
 			$UserIPRange[$c]["gamename"] = $row["gamename"];
-			$UserIPRange[$c]["reason"] = $row["reason"];
+			$UserIPRange[$c]["reason"] = convEnt($row["reason"]);
 			$UserIPRange[$c]["expiredate"] = date( OS_DATE_FORMAT, strtotime($row["expiredate"]));
 			
 			if(empty($row["expiredate"]) OR $row["expiredate"] == "0000-00-00 00:00:00")

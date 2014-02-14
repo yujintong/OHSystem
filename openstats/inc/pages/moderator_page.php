@@ -92,7 +92,7 @@ if (!isset($_GET["option"])) {
 		$BanPlayer = strtolower($row["name"]);
 		$BanAdmin = $row["admin"];
 		$BanServer = $row["server"];
-		$BanReason = $row["reason"];
+		$BanReason = convEnt($row["reason"]);
 		$BanGamename = $row["gamename"];
    		$BanExpire = $row["expiredate"];
 		$BansDate = date( OS_DATE_FORMAT, strtotime($row["date"]));
@@ -247,7 +247,7 @@ if (!isset($_GET["option"])) {
 	$BansData[$c]["date"] = date( OS_DATE_FORMAT, strtotime($row["date"]));
 	$BansData[$c]["gamename"] = $row["gamename"];
 	$BansData[$c]["admin"] = $row["admin"];
-	$BansData[$c]["reason"] = $row["reason"];
+	$BansData[$c]["reason"] = convEnt($row["reason"]);
 	$BansData[$c]["expiredate"] = date( OS_DATE_FORMAT, strtotime($row["expiredate"]));
 	$BansData[$c]["expiredate_db"] = $row["expiredate"];
 
@@ -268,7 +268,7 @@ if (!isset($_GET["option"])) {
       $result = $sth->execute();
 	  $row = $sth->fetch(PDO::FETCH_ASSOC);
 	  $PP_PlayerName = $row["player_name"];
-	  $PP_Reason = $row["reason"];
+	  $PP_Reason = convEnt($row["reason"]);
 	  $PP_Value = $row["pp"];
 	} else { $PP_PlayerName = ""; $PP_Reason = ""; $PP_Value="1"; }
 
@@ -350,7 +350,7 @@ if (!isset($_GET["option"])) {
     while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
     $PPData[$c]["id"] = $row["id"];
 	$PPData[$c]["player_name"] = $row["player_name"];
-	$PPData[$c]["reason"] = $row["reason"];
+	$PPData[$c]["reason"] = convEnt($row["reason"]);
 	$PPData[$c]["offence_time"] = date( OS_DATE_FORMAT, strtotime($row["offence_time"]));
 	$PPData[$c]["pp"] = $row["pp"];
 	$PPData[$c]["admin"] = $row["admin"];
@@ -530,7 +530,7 @@ if (!isset($_GET["option"])) {
 	
    $sth = $db->prepare("SELECT * FROM ".OSDB_GPROXY." 
    WHERE id>=1 $sql
-   ORDER BY player ASC
+   ORDER BY added DESC
    LIMIT $offset, $rowsperpage");
     $result = $sth->execute();
 	$GPData = array();
