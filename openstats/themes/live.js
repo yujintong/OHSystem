@@ -12,19 +12,25 @@ $( document ).ready(function() {
 });
 */
 
+  function RefreshGameList() {
+     clearTimeout( GameList );
+	 ShowGameList();
+  }
+
   function ShowGameList() {
   
-   setTimeout( function(){ ShowGameList() }, RefreshTime );
+   var gameListTimer = setTimeout( function(){ ShowGameList() }, RefreshTime );
    
    document.getElementById("gamerefresher").innerHTML = '<img class="imgvalign" width="16" height="16" src="img/loader-small.gif" alt="" />';
    
    currentGameID = document.getElementById("selectedGameID").value;
+   alias_ID = document.getElementById("aliasID").value;
    
    var $jqry = jQuery;
    $jqry.ajax({
                     type: "POST",
                     url: "live.php",
-                    data: "refresh=gamelist&gameid="+currentGameID,
+                    data: "refresh=gamelist&gameid="+currentGameID+"&alias_id="+alias_ID,
                     success: function(msg){
 					
                     document.getElementById("AllLiveGames").innerHTML = msg;
@@ -35,6 +41,13 @@ $( document ).ready(function() {
                     }
                 });
     
+  }
+  
+  function ChangeAlias( alias_ID ) {
+    document.getElementById("aliasID").value = alias_ID;
+	document.getElementById('alias_'+alias_ID).disabled = true;
+	setTimeout( function() { enableDisabledButton('alias_'+alias_ID) }, 5000 );
+    RefreshGameList();
   }
 
   function show_live_game(botID, chatID, gamename, click) {

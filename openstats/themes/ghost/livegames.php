@@ -65,8 +65,18 @@ if ( $ChatOpen == 1) {
 	 
 	 <div class="padLeft padBottom">
 
-    <div class="h32" style="display:none;"><span id="lastID">0</span> </div>
+    <div class="h32" style="display:none;"><span id="lastID">0</span> <span id="aliasID">1</span></div>
 
+<div style="padding: 5px;border: 4px solid #E7F9FB;margin-bottom: 6px;">
+  <?php
+    foreach ( $GameAliases as $Alias ) {
+	?>
+	<input class="menuButtons" type="button" id="alias_<?=$Alias["alias_id"]?>" value="<?=$Alias["alias_name"]?>" onclick="ChangeAlias('<?=$Alias["alias_id"]?>')" />
+	<?php
+	}
+  ?>
+</div>
+	
 <div id="AllLiveGames" <?=$PageDisabled?>>
 <span id="gamerefresher" class="h32"><img src="<?=OS_HOME?>/img/blank.gif" width="16" height="16" class="imgvalign" /></span>
 <?php

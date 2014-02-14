@@ -160,23 +160,82 @@ td { vertical-align:top; padding: 2px; border: 1px solid #ebebeb;  }
 th img { vertical-align:middle; text-align:center; }
 
 
-.menuButtons {padding-top: 3px;
-padding-left: 3px;
-padding-bottom: 3px;
-padding-right: 8px;
-margin: 0;
-border-radius: 4px;
--webkit-box-shadow: 0 0px 0 #ccc, 0 0px #fff inset;
-background: #E9E9E9;
-color: black;
-border: none;
-outline: none;
-display: inline-block;
--webkit-appearance: none;
-cursor: pointer;
-border: 1px solid #ccc;
+.menuButtons {
+	background-color:#3bb3e0;
+	padding:4px;
+	position:relative;
+	font-family: 'Open Sans', sans-serif;
+	font-size:12px;
+	text-decoration:none;
+	color:#fff;
+	border: solid 1px #186f8f;
+	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-gradient(
+	linear,
+	left bottom,
+	left top,
+	color-stop(0, rgb(44,160,202)),
+	color-stop(1, rgb(62,184,229))
+	);
+	-webkit-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-moz-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	border-radius: 5px;
 }
-.menuButtons:hover { background-color: #E2E2E2; text-decoration:none; }
+
+.menuButtons:disabled { color:red; }
+
+.menuButtons:hover { cursor: pointer; color: #ECECEC; }
+
+.menuButtons::before {
+	background-color:#ccd0d5;
+	content:"";
+	display:block;
+	position:absolute;
+	width:100%;
+	height:100%;
+	padding:8px;
+	left:-8px;
+	top:-8px;
+	z-index:-1;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: inset 0px 1px 1px #909193, 0px 1px 0px #fff;
+	-moz-box-shadow: inset 0px 1px 1px #909193, 0px 1px 0px #fff;
+	-o-box-shadow: inset 0px 1px 1px #909193, 0px 1px 0px #fff;
+	box-shadow: inset 0px 1px 1px #909193, 0px 1px 0px #fff;
+}
+
+.menuButtons:active {
+/*
+	padding-bottom:3px;
+	padding-left:4px;
+	padding-right:4px;
+	padding-top:4px;
+	top:1px;
+	*/
+	background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-gradient(
+	linear,
+	left bottom,
+	left top,
+	color-stop(0, rgb(62,184,229)),
+	color-stop(1, rgb(44,160,202))
+	);
+}
 
 .reportUser { margin-right: 50px; background-color: #0A6496; color: #fff !important; cursor: pointer; width: 85px;  padding-left: 5px; float:right; border-radius: 6px; -webkit-border-radius: 6px;	-moz-border-radius: 6px; }
 .reportUser a {  color: #fff !important; }
@@ -1026,9 +1085,11 @@ overflow: scroll; overflow-y: scroll; overflow-x: hidden; font-size:13px; }
 .chatSubmitMessage { margin-top:12px; margin-bottom:12px; }
 .chatAttention { padding: 16px; border:10px solid #ccc; margin-top: 40px; }
 .GameButton { background-color: #D7FFFD  !important; padding-top: 3px; padding-bottom: 3px; margin-bottom: 8px; }
-.LobbyButton { padding-top: 5px; padding-bottom: 5px; margin-bottom: 8px; }
+.LobbyButton { color: #C0FFBE !important; padding-top: 5px; padding-bottom: 5px; margin-bottom: 8px; }
 .GameButton:hover { background-color:#C7EDF1 !important; }
-.GameButton:disabled { background-color: #C2C2C2 !important; }
+.GameButton:disabled { background-color: #C2C2C2 !important; color: #ccc !important;  }
+.LobbyButton:disabled { background-color: #C2C2C2 !important; color: #ccc !important; }
+.LobbyButton:hover { color: #5CE759 !important; } 
 
 .col0 { color:#2E2E2E; text-shadow:1px 1px #c2c2c2;  }
 .col1 { color:#0044FB; text-shadow:1px 1px #c2c2c2; }

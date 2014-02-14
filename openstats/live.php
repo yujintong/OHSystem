@@ -42,6 +42,9 @@
 	//if (os_is_logged() AND $_SESSION["level"]>=9 ) $sql = " ";
 	//else $sql = " AND botid = 1";
 	
+	if ( isset($_POST["alias_id"]) AND is_numeric($_POST["alias_id"]))
+	$sql.= " AND alias_id = '".(int)$_POST["alias_id"]."' OR alias_id>=200";
+	
     $sth = $db->prepare( "SELECT * FROM ".OSDB_GAMESTATUS." 
 	WHERE gamestatus<=2 
 	AND gametime>=NOW()-INTERVAL 2 hour
@@ -87,19 +90,15 @@
 	$lastID =(int) $_POST["lastID"];
 	$chatID =(int) $_POST["chatID"]; //GameID
 	$click  =(int) $_POST["cl"];
-	
 	$UserIP = strip_tags($_SERVER["REMOTE_ADDR"]);
-	
 	//Check userIP (if user already in game). If so, don't show him live games.
 	$sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GP." 
 	WHERE ip = '".$UserIP."' AND gameid = '".$chatID."' ");
-	
 	$result = $sth->execute();
 	$r = $sth->fetch(PDO::FETCH_NUM);
 	$numrows = $r[0];
 	
-	//Player is in game. Do not show him live games data.
-	if ( $numrows>=1 ) {
+	if ( $numrows>=1  ) {
 	?><div><?=$lang["live_games_disable"]?></div><?php
 	die();
 	}
@@ -456,12 +455,14 @@
    
    
    } else if ( isset($_POST["command"]) AND os_is_logged() AND $_SESSION["level"]>=9 ) {
-     $com = safeEscape( trim($_POST["command"]) );
+   
+     $com = $_POST["command"] = str_replace(array("'", '"'), array(" ", ''), $_POST["command"]);
+	 $com = str_replace(array("'", '"'), array(" ", ''), $com);
 	 $user = strip_tags(trim($_POST["user"]));
 	 $botID = (int) $_POST["botID"];
-	 $gameID = (int) $_POST["gameID"];
+	 if (isset($_POST["gameID"])) $gameID = (int) $_POST["gameID"]; else $gameID = "";
 	 
-	 $type = (int) $_POST["rcon"];
+	 if (isset($_POST["rcon"])) $type = (int) $_POST["rcon"]; else $type = "";
 	 
 	 if ( $botID <0)  $botID = 1; 
 	 $command = "";
@@ -600,21 +601,20 @@
 	    $c = 1; $team = 0;
 		for($i = 0; $i < count( $LiveGames["players"] ) - 2; $i+=3) {
 		
-	 	$username   = $LiveGames["players"][$i];
-		$realm      = $LiveGames["players"][$i + 1];
-		$PlayerIP   = $LiveGames["players"][$i + 2];
+	 	$username = $LiveGames["players"][$i];
+		$realm    = $LiveGames["players"][$i + 1];
+		$PlayerIP     = $LiveGames["players"][$i + 2];
 		
 		if ( $PlayerIP == $_SERVER["REMOTE_ADDR"] OR (os_is_logged() AND $_SESSION["username"] == $username ) ) {
 		 $xstyle = 'background-color: yellow';
 		} else $xstyle = '';
-		
 		if ( empty($username) OR ( strstr($username, "PeaceMaker") AND strstr($realm, "OHConnect") )) {
 		?><span class="col<?=$c?>" style="font-size:14px;">-</span> <?php
         //$c++;
 		} else {
 		?>
-		<a target="_blank" href="<?=OS_HOME?>?u=<?=$username?>">
-		<span class="col<?=$c?>" style="font-size:11px;"><?=$username?></span>
+		<a title="<?=$realm?>" target="_blank" href="<?=OS_HOME?>?u=<?=$username?>">
+		<span class="col<?=$c?>" style="font-size:11px;<?=$xstyle?>"><?=$username?></span>
 		</a>
 		<?php
 		}
@@ -665,7 +665,7 @@ function HighlightKeyword($str, $search) {
 	WHERE player LIKE ('%".$search."%') GROUP BY player ORDER BY id DESC, score DESC LIMIT 50");
     $result = $sth->execute();
 	?>
-	<div style="position:absolute; top: 166px; right:10px; background-color: #fff; color:#000; border:3px solid #ccc; border-radius: 2px solid #ccc; width:210px; height: 380px; overflow: scroll; padding-left: 5px; padding-top: 4px; font-size:12px; opacity:0.9; overflow-x: hidden;">
+	<div style="position:absolute; top: 166px; right:10px; background-color: #fff; color:#000; border:3px solid #ccc; border-radius: 2px solid #ccc; width:210px; height: 380px; overflow: scroll; padding-left: 5px; padding-top: 4px; font-size:12px; opacity:0.9; overflow-x: hidden; z-index: 80000;">
 	<a href="javascript:;" onclick="OS_ResetSearch()" style="float: right;"><img src="<?=OS_HOME?>img/close.png" alt="close" width="16" height="16" class="imgvalign" /></a>
 	<?php
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
