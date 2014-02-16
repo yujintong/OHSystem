@@ -242,6 +242,9 @@ CBaseGame :: ~CBaseGame( )
     for( vector<PairedWPCheck> :: iterator i = m_PairedWPChecks.begin( ); i != m_PairedWPChecks.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
+    for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); ++i )
+        m_GHost->m_Callables.push_back( i->second );
+
     for( vector<PairedBanCheck2> :: iterator i = m_PairedBanCheck2s.begin( ); i != m_PairedBanCheck2s.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
@@ -458,6 +461,33 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedWPChecks.erase( i );
+        }
+        else
+            ++i;
+    }
+
+
+    for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); )
+    {
+        if( i->second->GetReady( ) )
+        {
+            CDBInboxSummary *InboxSummary = i->second->GetResult( );
+            CGamePlayer *Player = GetPlayerFromName( i->first, true );
+            if( Player )
+            {
+                if( InboxSummary ) {
+			if( InboxSummary->GetUser( ) != m_GHost->m_BotManagerName )
+	                    SendChat( Player, "[" + InboxSummary->GetUser( ) + "] " + InboxSummary->GetMessage( ) );
+			else
+			    SendChat( Player, InboxSummary->GetMessage( ) );
+		}
+                else
+                    SendChat( Player, m_GHost->m_Language->ErrorInboxEmpty() );
+            }
+
+            m_GHost->m_DB->RecoverCallable( i->second );
+            delete i->second;
+            i = m_PairedINChecks.erase( i );
         }
         else
             ++i;
@@ -3167,7 +3197,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         m_VotedTimeStart = 0;
         m_Voted = false;
     }
-    m_PairedINChecks.push_back( PairedINCheck( User, m_GHost->m_DB->ThreadedInboxSummaryCheck( Player->GetName () ) ) );
+    m_PairedINChecks.push_back( PairedINCheck( string(), m_GHost->m_DB->ThreadedInboxSummaryCheck( Player->GetName () ) ) );
     // check if players is registered and may suggest it
     //if(! Player->GetRegistered( ) ) {
     //    SendChat(Player, "You are not registered. Register you with '!register MAIL PASSWORD', the command is complete hidden." );

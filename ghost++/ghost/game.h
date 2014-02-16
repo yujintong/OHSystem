@@ -31,14 +31,12 @@
 class CDBBan;
 class CDBGame;
 class CDBGamePlayer;
-class CDBInbox;
 class CStats;
 class CCallableBanCheck;
 class CCallablePassCheck;
 class CCallableGameAdd;
 class CCallableGamePlayerSummaryCheck;
 class CCallableStatsPlayerSummaryCheck;
-class CCallableInboxSummaryCheck;
 class CCallableStatsSystem;
 class CCallablePUp;
 class CCallableRegAdd;
@@ -48,7 +46,6 @@ typedef pair<string,CCallablePassCheck *> PairedPassCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedGSCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedRankCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedStreakCheck;
-typedef pair<string,CCallableInboxSummaryCheck *> PairedINCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedSCheck;
 typedef pair<string,CCallableStatsSystem *> PairedSS;
 typedef pair<string,CCallablePUp *> PairedPUp;
@@ -67,7 +64,6 @@ protected:
     vector<PairedPassCheck> m_PairedPassChecks;       // vector of paired threaded database password checks in progress
     vector<PairedGSCheck> m_PairedGSChecks;	// vector of paired threaded database game player summary checks in progress
     vector<PairedRankCheck> m_PairedRankChecks;
-    vector<PairedINCheck> m_PairedINChecks;       // vector of paired threaded database ingame checks in progress
     vector<PairedStreakCheck> m_PairedStreakChecks;       // vector of paired threaded database ingame checks in progress
     vector<PairedSCheck> m_PairedSChecks;	// vector of paired threaded database DotA player summary checks in progress
     vector<PairedSS> m_PairedSSs;

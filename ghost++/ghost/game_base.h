@@ -56,6 +56,8 @@ class CCallableBanList;
 class CCallableTBRemove;
 class CCallableConnectCheck;
 class CCallableGameDBInit;
+class CDBInbox;
+class CCallableInboxSummaryCheck;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -64,6 +66,7 @@ typedef pair<string,CCallableBanCheck2 *> PairedBanCheck2;
 typedef pair<string,CCallablepenp *> Pairedpenp;
 typedef pair<string,CCallableBanAdd *> PairedBanAdd;
 typedef pair<string,CCallableStoreLog *> PairedLogUpdate;
+typedef pair<string,CCallableInboxSummaryCheck *> PairedINCheck;
 
 class CBaseGame
 {
@@ -83,6 +86,7 @@ protected:
     vector<PairedWPCheck> m_PairedWPChecks;
     vector<PairedBanCheck2> m_PairedBanCheck2s;
     vector<PairedLogUpdate> m_PairedLogUpdates;
+    vector<PairedINCheck> m_PairedINChecks;       // vector of paired threaded database ingame checks in progress
     CCallableGameDBInit *m_CallableGameDBInit;
     queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
     vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)

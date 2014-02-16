@@ -193,9 +193,6 @@ CGame :: ~CGame( )
     for( vector<PairedStreakCheck> :: iterator i = m_PairedStreakChecks.begin( ); i != m_PairedStreakChecks.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
-    for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
-
     for( vector<PairedSCheck> :: iterator i = m_PairedSChecks.begin( ); i != m_PairedSChecks.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
@@ -626,28 +623,6 @@ bool CGame :: Update( void *fd, void *send_fd )
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedStreakChecks.erase( i );
-        }
-        else
-            ++i;
-    }
-
-    for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); )
-    {
-        if( i->second->GetReady( ) )
-        {
-            CDBInboxSummary *InboxSummary = i->second->GetResult( );
-            CGamePlayer *Player = GetPlayerFromName( i->first, true );
-            if( Player )
-            {
-                if( InboxSummary )
-                    SendChat( Player, "[" + InboxSummary->GetUser( ) + "] " + InboxSummary->GetMessage( ) );
-                else
-                    SendChat( Player, m_GHost->m_Language->ErrorInboxEmpty() );
-            }
-
-            m_GHost->m_DB->RecoverCallable( i->second );
-            delete i->second;
-            i = m_PairedINChecks.erase( i );
         }
         else
             ++i;
