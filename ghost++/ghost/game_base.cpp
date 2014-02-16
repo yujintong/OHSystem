@@ -1044,7 +1044,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         if( (*i)->GetGames( ) < m_GHost->m_MinLimit && (*i)->GetLevel < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was kicked for having to less games." );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1054,7 +1054,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && (*i)->GetLevel < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was kicked for having a to low score." );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1066,7 +1066,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && (*i)->GetLevel < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was kicked for not being registered." );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1075,7 +1075,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && (*i)->GetLevel < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was kicked for having to less games." );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1085,10 +1085,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
                     if( m_GameType == 5 && (*i)->GetLevel < 2 )
                     {
-                        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + (*i)->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but isn't reserved" );
-
                         if(m_GHost->m_AutoDenyUsers)
-                            m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
 
                         (*i)->SetDeleteMe( true );
                         (*i)->SetLeftReason( "was kicked for joining without being reserved." );
@@ -1122,7 +1120,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         if( CC == "a1" || CC == "a2")
                         {
                             if(m_GHost->m_AutoDenyUsers)
-                                m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                                m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was kicked for joining without gproxy and a proxy." );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1133,17 +1131,17 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && (*i)->GetLevel < 1 && !(*i)->GetGProxy( ) )
                     {
                         if(m_GHost->m_AutoDenyUsers)
-                            m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                         (*i)->SetDeleteMe( true );
                         (*i)->SetLeftReason( "was kicked for joining without gproxy on a denied country." );
                         (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                         OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                     }
 
-                    if( !(*i)->GetGProxy( ) && (*i)->GetLevel < 1 && ( m_GHost->IsForcedGProxy((*i)->GetName( )) || m_GHost->IsForcedGProxy(potential->GetExternalIPString( )) ) )
+                    if( !(*i)->GetGProxy( ) && (*i)->GetLevel < 1 && ( m_GHost->IsForcedGProxy((*i)->GetName( )) || m_GHost->IsForcedGProxy((*i)->GetExternalIPString( )) ) )
                     {
                         if(m_GHost->m_AutoDenyUsers)
-                            m_Denied.push_back( (*i)->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
+                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                         (*i)->SetDeleteMe( true );
                         (*i)->SetLeftReason( "was kicked for being forced to use gproxy, but doesnt use it." );
                         (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
