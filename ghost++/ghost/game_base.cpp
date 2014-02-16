@@ -3167,10 +3167,11 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         m_VotedTimeStart = 0;
         m_Voted = false;
     }
+    m_PairedINChecks.push_back( PairedINCheck( User, m_GHost->m_DB->ThreadedInboxSummaryCheck( Player->GetName () ) ) );
     // check if players is registered and may suggest it
-    if(! Player->GetRegistered( ) ) {
-        SendChat(Player, "You are not registered. Register you with '!register MAIL PASSWORD', the command is complete hidden." );
-    }
+    //if(! Player->GetRegistered( ) ) {
+    //    SendChat(Player, "You are not registered. Register you with '!register MAIL PASSWORD', the command is complete hidden." );
+    //}
 }
 
 void CBaseGame :: EventPlayerJoinedWithScore( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer, double score )
@@ -3619,7 +3620,7 @@ void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
     else
     {
         player->SetLeftReason( m_GHost->m_Language->HasLeftVoluntarily( ) );
-        if( player->GetLeavePerc() >= 20 && !player->GetSafeDrop( ) )
+        if( player->GetLeavePerc() >= 30 && !player->GetSafeDrop( ) )
         {
             player->SetAutoban( true );
         }
@@ -6463,7 +6464,7 @@ void CBaseGame :: StopLaggers( string reason )
             (*i)->SetDeleteMe( true );
             (*i)->SetLeftReason( reason );
             (*i)->SetLeftCode( PLAYERLEAVE_DISCONNECT );
-            if( (*i)->GetLeavePerc() >= 20 && !(*i)->GetGProxy() && !(*i)->GetSafeDrop( ) && m_GHost->m_AutobanAll )
+            if( (*i)->GetLeavePerc() >= 30 && !(*i)->GetGProxy() && !(*i)->GetSafeDrop( ) && m_GHost->m_AutobanAll )
                 (*i)->SetAutoban( true );
             (*i)->SetLeft( true );
         }
