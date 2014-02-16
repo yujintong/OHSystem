@@ -2244,10 +2244,34 @@ bool CGHost :: FindHackFiles( string input ) {
             std::size_t pos =  FileAndSize.find("-");
             string File = FileAndSize.substr( 0, pos);
             string Size = FileAndSize.substr( pos+1, ( filelength-pos+1 ) );
-            if( Size != "19968" && Size !="1069672" && Size != "7680" && !Size.empty() ) {
+            if( Size != "7680" && !Size.empty() ) {
                 HasNoHackFiles = false;
             }
         }
     }
     return HasNoHackFiles;
+}
+
+bool CGHost ::  PlayerCached( string playername ) {
+    transform( playername.begin( ), playername.end( ), playername.begin( ), ::tolower );
+    for( vector<string> :: iterator i = m_PlayerCache.begin( ); i != m_PlayerCache.end( );)
+    {
+        string username;
+        string cachedtime;
+        stringstream SS;
+        SS << *i;
+        SS >> username;
+        SS >> cachedtime;
+        else if(  GetTime( ) - UTIL_ToUInt32( cachedtime ) <= 7200 )
+        {
+            if( username == playername )
+                return true;
+
+            i++;
+        }
+        else
+            i=m_PlayerCache.erase( i );
+    }
+
+    return false;
 }

@@ -1186,7 +1186,6 @@ uint32_t MySQLpm( void *conn, string *error, uint32_t botid, string user, string
             }
             else
                 *error = mysql_error( (MYSQL *)conn );
-
         }
 
     }
@@ -1629,7 +1628,7 @@ CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server,
             if( Row.size( ) == 11 )
                 Ban = new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10] );
             /* else
-            	*error = "error checking ban [" + server + " : " + user + "] - row doesn't have 6 columns"; */
+                *error = "error checking ban [" + server + " : " + user + "] - row doesn't have 6 columns"; */
 
             mysql_free_result( Result );
         }
@@ -2423,8 +2422,8 @@ CDBInboxSummary *MySQLInboxSummaryCheck( void *conn, string *error, uint32_t bot
                 }
 
             }
-            else
-                *error = "error checking message [" + name + "] - row doesn't have 4 columns";
+            //else
+                //*error = "error checking message [" + name + "] - row doesn't have 4 columns";
 
             mysql_free_result( Result );
         }
@@ -2614,7 +2613,7 @@ double MySQLScoreCheck( void *conn, string *error, uint32_t botid, string catego
             if( Row.size( ) == 1 )
                 Score = UTIL_ToDouble( Row[0] );
             /* else
-            	*error = "error checking score [" + category + " : " + name + " : " + server + "] - row doesn't have 1 column"; */
+                *error = "error checking score [" + category + " : " + name + " : " + server + "] - row doesn't have 1 column"; */
 
             mysql_free_result( Result );
         }

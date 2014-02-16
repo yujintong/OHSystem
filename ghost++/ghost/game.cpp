@@ -258,12 +258,14 @@ bool CGame :: Update( void *fd, void *send_fd )
             CGamePlayer *Player = GetPlayerFromName( i->first, true );
             if( Player )
             {
-                if( Result == 2 ) {
+                if( Result == 2 && !m_GHost->PlayerCached( Player->GetName ( ) ) ) {
                     SendChat( Player, m_GHost->m_Language->PassProtAcc( ) );
                     Player->SetPasswordProt( true );
                     Player->SetRegistered( true );
-                }
-                else if( Result == 1 ) {
+                } else if( Result == 2 && m_GHost->PlayerCached( Player->GetName ( ) ) ) {
+                    SendChat( Player, "Successfully used cached Password.");
+                    Player->SetRegistered( true );
+                } else if( Result == 1 ) {
                     Player->SetRegistered( true );
                 }
             }
@@ -287,6 +289,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 if( Result == 1 )
                 {
                     SendChat( Player, m_GHost->m_Language->SuccessfullyTypedPassword(Player->GetName()) );
+                    m_GHost->m_PlayerCache.push_back( Player->GetName( )+" "+UTIL_ToString(GetTime) );
                     Player->SetPasswordProt( false );
                     Player->SetSpoofed( true );
                 }

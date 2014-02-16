@@ -254,6 +254,7 @@ public:
     string m_Website;
     uint32_t m_DisconnectAutoBanTime;
     string m_SharedFilesPath;
+    vector<string> m_PlayerCache;
 
     CGHost( CConfig *CFG );
     ~CGHost( );
@@ -298,6 +299,7 @@ public:
     string GetMonthInWords( string month);
     bool IsForcedGProxy(string input );
     bool FindHackFiles( string input );
+    bool PlayerCached( string playername );
 };
 
 #endif
