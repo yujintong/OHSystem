@@ -47,432 +47,432 @@ void CGHostDB :: RecoverCallable( CBaseCallable *callable )
 
 bool CGHostDB :: Begin( )
 {
-    return true;
+	return true;
 }
 
 bool CGHostDB :: Commit( )
 {
-    return true;
+	return true;
 }
 
 uint32_t CGHostDB :: RegAdd( string user, string server, string mail, string password, string type )
 {
-    return 0;
+        return 0;
 }
 
 string CGHostDB :: StatsSystem( string user, string input, uint32_t one, string type )
 {
-    return "";
+        return "";
 }
 
 uint32_t CGHostDB :: PWCheck(  string user )
 {
-    return false;
+        return false;
 }
 
 uint32_t CGHostDB :: PassCheck(  string user, string pass, uint32_t st )
 {
-    return 0;
+        return 0;
 }
 
 uint32_t CGHostDB :: pm( string user, string listener, uint32_t status, string message, string type )
 {
-    return 0;
+        return 0;
 }
 
 uint32_t CGHostDB :: StoreLog( uint32_t chatid, string game, vector<string> admin )
 {
-    return 0;
+        return 0;
 }
 
 uint32_t CGHostDB :: gs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype )
 {
-    return 0;
+        return 0;
 }
 
 uint32_t CGHostDB :: penp( string name, string reason, string admin, uint32_t amount, string type )
 {
-    return 0;
+        return 0;
 }
 
 vector<string> CGHostDB :: PList( string server )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 vector<string> CGHostDB :: FlameList( )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 vector<string> CGHostDB :: ForcedGProxyList( )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 vector<string> CGHostDB :: AliasList( )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 vector<string> CGHostDB :: DeniedNamesList( )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 vector<string> CGHostDB :: AnnounceList( )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 vector<string> CGHostDB :: DCountryList( )
 {
-    return vector<string>( );
+        return vector<string>( );
 }
 
 uint32_t CGHostDB :: BanCount( string server )
 {
-    return 0;
+	return 0;
 }
 
 CDBBan *CGHostDB :: BanCheck( string server, string user, string ip )
 {
-    return NULL;
+	return NULL;
 }
 
 string CGHostDB :: BanCheck2( string server, string user, string type )
 {
-    return "";
+        return "";
 }
 
 uint32_t CGHostDB :: BanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
 {
-    return false;
+	return false;
 }
 
 bool CGHostDB :: PUp( string name, uint32_t level, string realm, string user )
 {
-    return false;
+        return false;
 }
 
 bool CGHostDB :: BanRemove( string server, string user )
 {
-    return false;
+	return false;
 }
 
 bool CGHostDB :: TBRemove( string server )
 {
-    return false;
+        return false;
 }
 
 bool CGHostDB :: BanRemove( string user )
 {
-    return false;
+	return false;
 }
 
 vector<CDBBan *> CGHostDB :: BanList( string server )
 {
-    return vector<CDBBan *>( );
+	return vector<CDBBan *>( );
 }
 
 vector<string> CGHostDB :: CommandList( )
 {
-    return vector<string>( );
+	return vector<string>( );
 }
 
 uint32_t CGHostDB :: GameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype )
 {
-    return 0;
+	return 0;
 }
 
-string CGHostDB :: GameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add, uint32_t hostcounter, uint32_t gamealias )
+string CGHostDB :: GameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
 {
-    return "";
+	return "";
 }
 
 uint32_t CGHostDB :: GamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour )
 {
-    return 0;
+	return 0;
 }
 
 uint32_t CGHostDB :: GamePlayerCount( string name )
 {
-    return 0;
+	return 0;
 }
 
 CDBGamePlayerSummary *CGHostDB :: GamePlayerSummaryCheck( string name )
 {
-    return NULL;
+	return NULL;
 }
 
 CDBStatsPlayerSummary *CGHostDB :: StatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias )
 {
-    return NULL;
+        return NULL;
 }
 
 CDBInboxSummary *CGHostDB :: InboxSummaryCheck( string name )
 {
-    return NULL;
+        return NULL;
 }
 
 uint32_t CGHostDB :: DotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec )
 {
-    return 0;
+	return 0;
 }
 
 uint32_t CGHostDB :: DotAPlayerAdd( uint32_t gameid, uint32_t colour, uint32_t kills, uint32_t deaths, uint32_t creepkills, uint32_t creepdenies, uint32_t assists, uint32_t gold, uint32_t neutralkills, string item1, string item2, string item3, string item4, string item5, string item6, string hero, uint32_t newcolour, uint32_t towerkills, uint32_t raxkills, uint32_t courierkills, uint32_t level )
 {
-    return 0;
+	return 0;
 }
 
 uint32_t CGHostDB :: DotAPlayerCount( string name )
 {
-    return 0;
+	return 0;
 }
 
 CDBDotAPlayerSummary *CGHostDB :: DotAPlayerSummaryCheck( string name )
 {
-    return NULL;
+	return NULL;
 }
 
 bool CGHostDB :: DownloadAdd( string map, uint32_t mapsize, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t downloadtime )
 {
-    return false;
+	return false;
 }
 
 uint32_t CGHostDB :: W3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
 {
-    return 0;
+	return 0;
 }
 
 bool CGHostDB :: W3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints )
 {
-    return false;
+	return false;
 }
 
 bool CGHostDB :: W3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals )
 {
-    return false;
+	return false;
 }
 
 bool CGHostDB :: W3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings )
 {
-    return false;
+	return false;
 }
 
 void CGHostDB :: CreateThread( CBaseCallable *callable )
 {
-    callable->SetReady( true );
+	callable->SetReady( true );
 }
 
 CCallableRegAdd *CGHostDB :: ThreadedRegAdd( string user, string server, string mail, string password, string type )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableStatsSystem *CGHostDB :: ThreadedStatsSystem( string user, string input, uint32_t one, string type )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallablePWCheck *CGHostDB :: ThreadedPWCheck( string user )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallablePassCheck *CGHostDB :: ThreadedPassCheck( string user, string pass, uint32_t st )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallablepm *CGHostDB :: Threadedpm( string user, string listener, uint32_t status, string message, string type )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallablePList *CGHostDB :: ThreadedPList( string server )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableFlameList *CGHostDB :: ThreadedFlameList( )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableForcedGProxyList *CGHostDB :: ThreadedForcedGProxyList( )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableAliasList *CGHostDB :: ThreadedAliasList( )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableDeniedNamesList *CGHostDB :: ThreadedDeniedNamesList( )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableAnnounceList *CGHostDB :: ThreadedAnnounceList( )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableDCountryList *CGHostDB :: ThreadedDCountryList( )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableStoreLog *CGHostDB :: ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallablegs *CGHostDB :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallablepenp *CGHostDB :: Threadedpenp( string name, string reason, string admin, uint32_t amount, string type )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableBanCount *CGHostDB :: ThreadedBanCount( string server )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableBanCheck *CGHostDB :: ThreadedBanCheck( string server, string user, string ip )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableBanCheck2 *CGHostDB :: ThreadedBanCheck2( string server, string user, string type )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableBanAdd *CGHostDB :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallablePUp *CGHostDB :: ThreadedPUp( string name, uint32_t level, string realm, string user )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableBanRemove *CGHostDB :: ThreadedBanRemove( string server, string user )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableBanRemove *CGHostDB :: ThreadedBanRemove( string user )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableBanList *CGHostDB :: ThreadedBanList( string server )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableTBRemove *CGHostDB :: ThreadedTBRemove( string server )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableCommandList *CGHostDB :: ThreadedCommandList( )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableGameAdd *CGHostDB :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableGameDBInit *CGHostDB :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias )
 {
-    return NULL;
+        return NULL;
 }
 
-CCallableGameUpdate *CGHostDB :: ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add, uint32_t hostcounter, uint32_t gamealias )
+CCallableGameUpdate *CGHostDB :: ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableGamePlayerAdd *CGHostDB :: ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableGamePlayerSummaryCheck *CGHostDB :: ThreadedGamePlayerSummaryCheck( string name )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableStatsPlayerSummaryCheck *CGHostDB :: ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableInboxSummaryCheck *CGHostDB :: ThreadedInboxSummaryCheck( string name )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableDotAGameAdd *CGHostDB :: ThreadedDotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableDotAPlayerAdd *CGHostDB :: ThreadedDotAPlayerAdd( uint32_t gameid, uint32_t colour, uint32_t kills, uint32_t deaths, uint32_t creepkills, uint32_t creepdenies, uint32_t assists, uint32_t gold, uint32_t neutralkills, string item1, string item2, string item3, string item4, string item5, string item6, string hero, uint32_t newcolour, uint32_t towerkills, uint32_t raxkills, uint32_t courierkills, uint32_t level )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableDotAPlayerSummaryCheck *CGHostDB :: ThreadedDotAPlayerSummaryCheck( string name )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableDownloadAdd *CGHostDB :: ThreadedDownloadAdd( string map, uint32_t mapsize, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t downloadtime )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableScoreCheck *CGHostDB :: ThreadedScoreCheck( string category, string name, string server )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableConnectCheck *CGHostDB :: ThreadedConnectCheck( string name, uint32_t sessionkey )
 {
-    return NULL;
+        return NULL;
 }
 
 CCallableW3MMDPlayerAdd *CGHostDB :: ThreadedW3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableW3MMDVarAdd *CGHostDB :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableW3MMDVarAdd *CGHostDB :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals )
 {
-    return NULL;
+	return NULL;
 }
 
 CCallableW3MMDVarAdd *CGHostDB :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings )
 {
-    return NULL;
+	return NULL;
 }
 
 //
@@ -481,13 +481,13 @@ CCallableW3MMDVarAdd *CGHostDB :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP
 
 void CBaseCallable :: Init( )
 {
-    m_StartTicks = GetTicks( );
+	m_StartTicks = GetTicks( );
 }
 
 void CBaseCallable :: Close( )
 {
-    m_EndTicks = GetTicks( );
-    m_Ready = true;
+	m_EndTicks = GetTicks( );
+	m_Ready = true;
 }
 
 CCallableRegAdd :: ~CCallableRegAdd( )
@@ -572,7 +572,7 @@ CCallableBanCount :: ~CCallableBanCount( )
 
 CCallableBanCheck :: ~CCallableBanCheck( )
 {
-    delete m_Result;
+	delete m_Result;
 }
 
 CCallableBanCheck2 :: ~CCallableBanCheck2( )
@@ -597,17 +597,17 @@ CCallableBanRemove :: ~CCallableBanRemove( )
 
 CCallableBanList :: ~CCallableBanList( )
 {
-    // don't delete anything in m_Result here, it's the caller's responsibility
+	// don't delete anything in m_Result here, it's the caller's responsibility
 }
 
 CCallableTBRemove :: ~CCallableTBRemove( )
 {
-    // don't delete anything in m_Result here, it's the caller's responsibility
+        // don't delete anything in m_Result here, it's the caller's responsibility
 }
 
 CCallableCommandList :: ~CCallableCommandList( )
 {
-    // don't delete anything in m_Result here, it's the caller's responsibility
+	// don't delete anything in m_Result here, it's the caller's responsibility
 }
 
 CCallableGameAdd :: ~CCallableGameAdd( )
@@ -631,17 +631,17 @@ CCallableGamePlayerAdd :: ~CCallableGamePlayerAdd( )
 
 CCallableGamePlayerSummaryCheck :: ~CCallableGamePlayerSummaryCheck( )
 {
-    delete m_Result;
+	delete m_Result;
 }
 
 CCallableStatsPlayerSummaryCheck :: ~CCallableStatsPlayerSummaryCheck( )
 {
-    delete m_Result;
+        delete m_Result;
 }
 
 CCallableInboxSummaryCheck :: ~CCallableInboxSummaryCheck( )
 {
-    delete m_Result;
+        delete m_Result;
 }
 
 CCallableDotAGameAdd :: ~CCallableDotAGameAdd( )
@@ -656,7 +656,7 @@ CCallableDotAPlayerAdd :: ~CCallableDotAPlayerAdd( )
 
 CCallableDotAPlayerSummaryCheck :: ~CCallableDotAPlayerSummaryCheck( )
 {
-    delete m_Result;
+	delete m_Result;
 }
 
 CCallableDownloadAdd :: ~CCallableDownloadAdd( )
@@ -798,12 +798,12 @@ CDBDotAPlayer :: CDBDotAPlayer( ) : m_ID( 0 ), m_GameID( 0 ), m_Colour( 0 ), m_K
 CDBDotAPlayer :: CDBDotAPlayer( uint32_t nID, uint32_t nGameID, uint32_t nColour, uint32_t nKills, uint32_t nDeaths, uint32_t nCreepKills, uint32_t nCreepDenies, uint32_t nAssists, uint32_t nGold, uint32_t nNeutralKills, string nItem1, string nItem2, string nItem3, string nItem4, string nItem5, string nItem6, string nHero, uint32_t nNewColour, uint32_t nTowerKills, uint32_t nRaxKills, uint32_t nCourierKills, uint32_t nLevel )
     : m_ID( nID ), m_GameID( nGameID ), m_Colour( nColour ), m_Kills( nKills ), m_Deaths( nDeaths ), m_CreepKills( nCreepKills ), m_CreepDenies( nCreepDenies ), m_Assists( nAssists ), m_Gold( nGold ), m_NeutralKills( nNeutralKills ), m_Hero( nHero ), m_NewColour( nNewColour ), m_TowerKills( nTowerKills ), m_RaxKills( nRaxKills ), m_CourierKills( nCourierKills ), m_Level( nLevel )
 {
-    m_Items[0] = nItem1;
-    m_Items[1] = nItem2;
-    m_Items[2] = nItem3;
-    m_Items[3] = nItem4;
-    m_Items[4] = nItem5;
-    m_Items[5] = nItem6;
+	m_Items[0] = nItem1;
+	m_Items[1] = nItem2;
+	m_Items[2] = nItem3;
+	m_Items[3] = nItem4;
+	m_Items[4] = nItem5;
+	m_Items[5] = nItem6;
 }
 
 CDBDotAPlayer :: ~CDBDotAPlayer( )
@@ -813,16 +813,16 @@ CDBDotAPlayer :: ~CDBDotAPlayer( )
 
 string CDBDotAPlayer :: GetItem( unsigned int i )
 {
-    if( i < 6 )
-        return m_Items[i];
+	if( i < 6 )
+		return m_Items[i];
 
-    return string( );
+	return string( );
 }
 
 void CDBDotAPlayer :: SetItem( unsigned int i, string item )
 {
-    if( i < 6 )
-        m_Items[i] = item;
+	if( i < 6 )
+		m_Items[i] = item;
 }
 
 //

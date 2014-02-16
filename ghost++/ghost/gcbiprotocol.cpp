@@ -45,30 +45,30 @@ CGCBIProtocol :: ~CGCBIProtocol( )
 
 CIncomingGarenaUser *CGCBIProtocol :: RECEIVE_GCBI_INIT( BYTEARRAY data )
 {
-    // 2 bytes					-> Header
-    // 2 bytes					-> Length
-    // 4 bytes					-> actual IP address (big endian)
-    // 4 bytes					-> Garena user ID (big endian)
-    // 4 bytes					-> Garena room ID (big endian)
-    // 4 bytes					-> Garena user experience (big endian)
-    // 2 bytes					-> country string from Garena
+	// 2 bytes					-> Header
+	// 2 bytes					-> Length
+	// 4 bytes					-> actual IP address (big endian)
+	// 4 bytes					-> Garena user ID (big endian)
+	// 4 bytes					-> Garena room ID (big endian)
+	// 4 bytes					-> Garena user experience (big endian)
+	// 2 bytes					-> country string from Garena
 
-    if( ValidateLength( data ) && data.size( ) == 22 )
-    {
-        BYTEARRAY IP = BYTEARRAY( data.begin( ) + 4, data.begin( ) + 8 );
-        BYTEARRAY UserID = BYTEARRAY( data.begin( ) + 8, data.begin( ) + 12 );
-        BYTEARRAY RoomID = BYTEARRAY( data.begin( ) + 12, data.begin( ) + 16 );
-        BYTEARRAY UserExp = BYTEARRAY( data.begin( ) + 16, data.begin( ) + 20 );
-        BYTEARRAY Country = BYTEARRAY( data.begin( ) + 20, data.begin( ) + 22 );
+	if( ValidateLength( data ) && data.size( ) == 22 )
+	{
+		BYTEARRAY IP = BYTEARRAY( data.begin( ) + 4, data.begin( ) + 8 );
+		BYTEARRAY UserID = BYTEARRAY( data.begin( ) + 8, data.begin( ) + 12 );
+		BYTEARRAY RoomID = BYTEARRAY( data.begin( ) + 12, data.begin( ) + 16 );
+		BYTEARRAY UserExp = BYTEARRAY( data.begin( ) + 16, data.begin( ) + 20 );
+		BYTEARRAY Country = BYTEARRAY( data.begin( ) + 20, data.begin( ) + 22 );
+		
+		return new CIncomingGarenaUser(UTIL_ByteArrayToUInt32( IP, true ),
+											UTIL_ByteArrayToUInt32( UserID, true ),
+											UTIL_ByteArrayToUInt32( RoomID, true ),
+											UTIL_ByteArrayToUInt32( UserExp, true ),
+											string( Country.begin( ), Country.end( ) ) );
+	}
 
-        return new CIncomingGarenaUser(UTIL_ByteArrayToUInt32( IP, true ),
-                                       UTIL_ByteArrayToUInt32( UserID, true ),
-                                       UTIL_ByteArrayToUInt32( RoomID, true ),
-                                       UTIL_ByteArrayToUInt32( UserExp, true ),
-                                       string( Country.begin( ), Country.end( ) ) );
-    }
-
-    return NULL;
+	return NULL;
 }
 
 ////////////////////
@@ -81,39 +81,39 @@ CIncomingGarenaUser *CGCBIProtocol :: RECEIVE_GCBI_INIT( BYTEARRAY data )
 
 bool CGCBIProtocol :: AssignLength( BYTEARRAY &content )
 {
-    // insert the actual length of the content array into bytes 3 and 4 (indices 2 and 3)
+	// insert the actual length of the content array into bytes 3 and 4 (indices 2 and 3)
 
-    BYTEARRAY LengthBytes;
+	BYTEARRAY LengthBytes;
 
-    if( content.size( ) >= 4 && content.size( ) <= 65535 )
-    {
-        LengthBytes = UTIL_CreateByteArray( (uint16_t)content.size( ), false );
-        content[2] = LengthBytes[0];
-        content[3] = LengthBytes[1];
-        return true;
-    }
+	if( content.size( ) >= 4 && content.size( ) <= 65535 )
+	{
+		LengthBytes = UTIL_CreateByteArray( (uint16_t)content.size( ), false );
+		content[2] = LengthBytes[0];
+		content[3] = LengthBytes[1];
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 bool CGCBIProtocol :: ValidateLength( BYTEARRAY &content )
 {
-    // verify that bytes 3 and 4 (indices 2 and 3) of the content array describe the length
+	// verify that bytes 3 and 4 (indices 2 and 3) of the content array describe the length
 
-    uint16_t Length;
-    BYTEARRAY LengthBytes;
+	uint16_t Length;
+	BYTEARRAY LengthBytes;
 
-    if( content.size( ) >= 4 && content.size( ) <= 65535 )
-    {
-        LengthBytes.push_back( content[2] );
-        LengthBytes.push_back( content[3] );
-        Length = UTIL_ByteArrayToUInt16( LengthBytes, false );
+	if( content.size( ) >= 4 && content.size( ) <= 65535 )
+	{
+		LengthBytes.push_back( content[2] );
+		LengthBytes.push_back( content[3] );
+		Length = UTIL_ByteArrayToUInt16( LengthBytes, false );
 
-        if( Length == content.size( ) )
-            return true;
-    }
+		if( Length == content.size( ) )
+			return true;
+	}
 
-    return false;
+	return false;
 }
 
 //
