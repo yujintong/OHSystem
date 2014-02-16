@@ -217,8 +217,8 @@ int main( int argc, char **argv )
     string Password = CFG.GetString( "db_mysql_password", string( ) );
     int Port = CFG.GetInt( "db_mysql_port", 0 );
     uint32_t ScoreStart = CFG.GetInt( "statsupdate_scorestart", 0 );
-    int32_t ScoreWin = CFG.GetInt( "statsupdate_scorewin", 5 );
-    int32_t ScoreLoose = CFG.GetInt( "statsupdate_scoreloose", 3 );
+    int32_t DefaultScoreWin = CFG.GetInt( "statsupdate_scorewin", 5 );
+    int32_t DefaultScoreLoose = CFG.GetInt( "statsupdate_scoreloose", 3 );
     uint32_t StreakBonus = CFG.GetInt( "statsupdate_streakbonus", 1 );
     uint32_t StatsUpdateLimit = CFG.GetInt( "statsupdate_limit", 1 );
 
@@ -287,7 +287,7 @@ int main( int argc, char **argv )
         CONSOLE_Print( "Starting update for gameid ["+GameID+"]" );
 
         // BASIC INFORMATION UPDATE PROCESS
-        MYSQL_RES *BasicResult = QueryBuilder(Connection, "SELECT s.id, gp.name, gp.spoofedrealm, gp.reserved, gp.left, gp.ip, g.duration, gp.team, gp.colour FROM oh_gameplayers as gp LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON ( gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" AND s.alias_id="+Alias+") WHERE gp.gameid = " + GameID );
+        MYSQL_RES *BasicResult = QueryBuilder(Connection, "SELECT s.id, gp.name, gp.spoofedrealm, gp.reserved, gp.left, gp.ip, g.duration, gp.team, gp.colour, g.gamename FROM oh_gameplayers as gp LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON ( gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" AND s.alias_id="+Alias+") WHERE gp.gameid = " + GameID );
         if( BasicResult )
         {
             vector<string> Row = MySQLFetchRow( BasicResult );
@@ -357,9 +357,10 @@ int main( int argc, char **argv )
             string s_gameAliasName="";
             bool b_ignored = false;
             bool b_w3mmdfixedwinner = false;
+            string s_gamename = "";
 
             int i_playerCounter = 0;
-            while( Row.size( ) == 9 ) {
+            while( Row.size( ) == 10 ) {
 
                 //init dota relating values
                 i_ingameKills[i_playerCounter]=0;
@@ -423,6 +424,9 @@ int main( int argc, char **argv )
                 b_bannedPlayer[i_playerCounter]=false;
                 b_leaver[i_playerCounter]=false;
 
+                // values
+                int32_t ScoreWin = DefaultScoreWin;
+                int32_t ScoreLoose = DefaultScoreLoose;
                 //define values
                 if(i_playerCounter==0 &&! Row[6].empty( ) ) {
                     i_gameDuration = UTIL_ToUInt32(Row[6]);
@@ -442,6 +446,7 @@ int main( int argc, char **argv )
                 s_playerIp[i_playerCounter] = Row[5];
                 i_playerTeam[i_playerCounter] = UTIL_ToUInt32(Row[7]);
                 i_playerColour[i_playerCounter] = UTIL_ToUInt32(Row[8]);
+                s_gamename = Row[9];
 
                 // ban check
                 MYSQL_RES *BanResult = QueryBuilder(Connection, "SELECT id FROM oh_bans WHERE name='"+s_lowerPlayerName[i_playerCounter]+"' OR ip='"+s_playerIp[i_playerCounter]+"';" );
@@ -458,6 +463,16 @@ int main( int argc, char **argv )
                     vector<string> Row = MySQLFetchRow( UserLevelResult );
                     if(Row.size( ) != 0 ) {
                         i_userLevel[i_playerCounter] = UTIL_ToUInt32(Row[0]);
+                    }
+                }
+
+                if(i_userLevel[i_playerCounter]>=3) {
+                    MYSQL_RES *EXPEvent = QueryBuilder(Connection, "SELECT id FROM `oh_games` WHERE DAYOFWEEK(`datetime`)=1 AND WEEK(`datetime`) % 2 AND  id="+GameID+";" );
+                    if( EXPEvent ) {
+                        vector<string> Row = MySQLFetchRow( EXPEvent );
+                        if(Row.size( ) == 1 ) {
+                            ScoreWin[i_playerCounter] = ScoreWin*2;
+                        }
                     }
                 }
 
@@ -779,8 +794,9 @@ int main( int argc, char **argv )
                 uint32_t i_maxStreak=0;
                 uint32_t i_currLoosStreak=0;
                 uint32_t i_maxLoosingStreak=0;
+                int32_t i_score = -1337;
                 if(! b_newPlayer[i_playerCounter] ) {
-                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak FROM oh_stats WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
+                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
                     if( DetailedStatsQuery ) {
                         vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
                         if( Row.size( ) == 6 ) {
@@ -790,6 +806,7 @@ int main( int argc, char **argv )
                             i_maxStreak=UTIL_ToUInt32(Row[3]);
                             i_currLoosStreak=UTIL_ToUInt32(Row[4]);
                             i_maxLoosingStreak=UTIL_ToUInt32(Row[5]);
+                            i_score=UTIL_ToInt32(Row[6]);
                         }
                     }
                 }
@@ -798,6 +815,10 @@ int main( int argc, char **argv )
                     s_playerLooseStreak[i_playerCounter]="losingstreak = 0, ";
                     i_winStreak[i_playerCounter]=i_currStreak+1;
                     i_looseStreak[i_playerCounter]=0;
+                    if(i_score != -1337 ) {
+                        string s_playerMessage = "[Game: '"+gamename+"'] You have won. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: +"+UTIL_ToString( ScoreWin )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
+                        MYSQL_RES *WinMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+                    }
                     if(i_pointsBet != 0 ) {
                         i_winPoints[i_playerCounter] = i_currentPoints+i_pointsBet*2;
                     }
@@ -809,6 +830,11 @@ int main( int argc, char **argv )
                     s_playerLooseStreak[i_playerCounter]="losingstreak = losingstreak+1, ";
                     i_looseStreak[i_playerCounter]=i_currLoosStreak+1;
                     i_winStreak[i_playerCounter]=0;
+                    if(i_score != -1337 ) {
+                        string s_playerMessage = "[Game: '"+gamename+"'] You have lost. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: -"+UTIL_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
+                        MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+                    }
+
                     if(i_pointsBet != 0 ) {
                         i_winPoints[i_playerCounter] = i_currentPoints-i_pointsBet*4;
                         if(i_winPoints[i_playerCounter]<0)
@@ -828,6 +854,10 @@ int main( int argc, char **argv )
                         i_winPoints[i_playerCounter] = i_currentPoints;
                     } else {
                         i_winPoints[i_playerCounter]=5;
+                    }
+                    if(i_score != -1337 ) {
+                        string s_playerMessage = "[Game: '"+gamename+"'] The game was drawn. Neither score nor rate or streak has changed.";
+                        MYSQL_RES *DrawMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
                     }
                 }
 
