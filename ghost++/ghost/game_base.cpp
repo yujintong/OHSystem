@@ -1041,7 +1041,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 if( GetTime( ) - (*i)->GetJoinTime( ) >= 15 ) {
                     if( m_GameType == 3 )
                     {
-                        if( (*i)->GetGames( ) < m_GHost->m_MinLimit && (*i)->GetLevel < 1 )
+                        if( (*i)->GetGames( ) < m_GHost->m_MinLimit && (*i)->GetLevel( ) < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
                                 m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -1051,7 +1051,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                             return;
                         }
-                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && (*i)->GetLevel < 1 )
+                        else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && (*i)->GetLevel( ) < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
                                 m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -1063,7 +1063,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     }
                     if( m_GameType == 4 )
                     {
-                        if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && (*i)->GetLevel < 1 )
+                        if( m_GHost->m_RegVIPGames && !(*i)->GetRegistered( ) && (*i)->GetLevel( ) < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
                                 m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -1072,7 +1072,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                             OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                         }
-                        else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && (*i)->GetLevel < 1 )
+                        else if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  && (*i)->GetLevel( ) < 1 )
                         {
                             if(m_GHost->m_AutoDenyUsers)
                                 m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -1083,7 +1083,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         }
                     }
 
-                    if( m_GameType == 5 && (*i)->GetLevel < 2 )
+                    if( m_GameType == 5 && (*i)->GetLevel( ) < 2 )
                     {
                         if(m_GHost->m_AutoDenyUsers)
                             m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
@@ -1115,7 +1115,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         k++;
                     }
 
-                    if( m_GHost->m_DenieProxy && (*i)->GetLevel < 1 && !(*i)->GetGProxy( ) )
+                    if( m_GHost->m_DenieProxy && (*i)->GetLevel( ) < 1 && !(*i)->GetGProxy( ) )
                     {
                         if( CC == "a1" || CC == "a2")
                         {
@@ -1128,7 +1128,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         }
                     }
 
-                    if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && (*i)->GetLevel < 1 && !(*i)->GetGProxy( ) )
+                    if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && (*i)->GetLevel( ) < 1 && !(*i)->GetGProxy( ) )
                     {
                         if(m_GHost->m_AutoDenyUsers)
                             m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
