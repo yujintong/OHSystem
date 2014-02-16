@@ -1049,7 +1049,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             (*i)->SetLeftReason( "was kicked for having to less games." );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                             OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                            return;
                         }
                         else if( m_GHost->m_MinScoreLimit != 0 && (*i)->GetScore( ) < m_GHost->m_MinScoreLimit && (*i)->GetLevel( ) < 1 )
                         {
@@ -1138,7 +1137,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                     }
 
-                    if( !(*i)->GetGProxy( ) && (*i)->GetLevel < 1 && ( m_GHost->IsForcedGProxy((*i)->GetName( )) || m_GHost->IsForcedGProxy((*i)->GetExternalIPString( )) ) )
+                    if( !(*i)->GetGProxy( ) && (*i)->GetLevel( ) < 1 && ( m_GHost->IsForcedGProxy((*i)->GetName( )) || m_GHost->IsForcedGProxy((*i)->GetExternalIPString( )) ) )
                     {
                         if(m_GHost->m_AutoDenyUsers)
                             m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
