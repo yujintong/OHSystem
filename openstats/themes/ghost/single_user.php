@@ -132,7 +132,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  <td class="padLeft" width="140"><b><?=$lang["games"]?>:</b></td>
 	  <td width="160"><a href="<?=OS_HOME?>?games&amp;uid=<?=$User["id"]?>"><?=$User["games"]?></a> (<?=$User["totalgames"]?>)</td>
 	  <td class="padLeft" width="60"><b><?=$lang["wl"] ?>:</b></td>
-	  <td width="160"><?=($User["wins"])?> / <?=($User["losses"])?> (<?=$User["totallosses"]?>)</td>
+	  <td width="160"><?=($User["wins"])?> / <?=($User["losses"])?> (<?=$User["totalwins"]?> / <?=$User["totallosses"]?>)</td>
 	  <td class="padLeft" width="60"><b><?=$lang["towers"]?>:</b></td>
 	  <td width="160"><?=($User["towers"])?> (<?=$User["totaltowers"]?>)</td>
 	</tr>
