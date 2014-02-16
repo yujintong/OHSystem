@@ -816,7 +816,7 @@ int main( int argc, char **argv )
                     i_winStreak[i_playerCounter]=i_currStreak+1;
                     i_looseStreak[i_playerCounter]=0;
                     if(i_score != -1337 ) {
-                        string s_playerMessage = "[Game: '"+s_gamename+"'] You have won. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: +"+UTIL_ToString( ScoreWin )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
+                        string s_playerMessage = "[Game: '"+s_gamename+"'] You have won. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: +"+Int32_ToString( ScoreWin )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
                         MYSQL_RES *WinMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
                     }
                     if(i_pointsBet != 0 ) {
@@ -831,7 +831,7 @@ int main( int argc, char **argv )
                     i_looseStreak[i_playerCounter]=i_currLoosStreak+1;
                     i_winStreak[i_playerCounter]=0;
                     if(i_score != -1337 ) {
-                        string s_playerMessage = "[Game: '"+s_gamename+"'] You have lost. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: -"+UTIL_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
+                        string s_playerMessage = "[Game: '"+s_gamename+"'] You have lost. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: -"+Int32_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
                         MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
                     }
 
