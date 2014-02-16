@@ -2262,7 +2262,7 @@ bool CGHost ::  PlayerCached( string playername ) {
         SS << *i;
         SS >> username;
         SS >> cachedtime;
-        else if(  GetTime( ) - UTIL_ToUInt32( cachedtime ) <= 7200 )
+        if(  GetTime( ) - UTIL_ToUInt32( cachedtime ) <= 7200 )
         {
             if( username == playername )
                 return true;
