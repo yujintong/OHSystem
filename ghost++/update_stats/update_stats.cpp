@@ -1,5 +1,5 @@
 /**
-  * Copyright [2013-2014] [OHsystem]
+6  * Copyright [2013-2014] [OHsystem]
   *
   * OHSystem is free software: You can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -794,12 +794,12 @@ int main( int argc, char **argv )
                 uint32_t i_maxStreak=0;
                 uint32_t i_currLoosStreak=0;
                 uint32_t i_maxLoosingStreak=0;
-                int32_t i_score = -1337;
+                int32_t i_score = 0;
                 if(! b_newPlayer[i_playerCounter] ) {
                     MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
                     if( DetailedStatsQuery ) {
                         vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
-                        if( Row.size( ) == 6 ) {
+                        if( Row.size( ) == 7 ) {
                             i_currentPoints=UTIL_ToInt32(Row[0]);
                             i_pointsBet=UTIL_ToUInt32(Row[1]);
                             i_currStreak=UTIL_ToUInt32(Row[2]);
@@ -815,10 +815,9 @@ int main( int argc, char **argv )
                     s_playerLooseStreak[i_playerCounter]="losingstreak = 0, ";
                     i_winStreak[i_playerCounter]=i_currStreak+1;
                     i_looseStreak[i_playerCounter]=0;
-                    if(i_score != -1337 ) {
-                        string s_playerMessage = "[Game: '"+s_gamename+"'] You have won. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: +"+Int32_ToString( ScoreWin )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
-                        MYSQL_RES *WinMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    }
+                    string s_playerMessage = "[Game: "+s_gamename+"] You have won. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: +"+Int32_ToString( ScoreWin )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
+                    MYSQL_RES *WinMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+
                     if(i_pointsBet != 0 ) {
                         i_winPoints[i_playerCounter] = i_currentPoints+i_pointsBet*2;
                     }
@@ -830,10 +829,8 @@ int main( int argc, char **argv )
                     s_playerLooseStreak[i_playerCounter]="losingstreak = losingstreak+1, ";
                     i_looseStreak[i_playerCounter]=i_currLoosStreak+1;
                     i_winStreak[i_playerCounter]=0;
-                    if(i_score != -1337 ) {
-                        string s_playerMessage = "[Game: '"+s_gamename+"'] You have lost. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: -"+Int32_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
-                        MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    }
+                    string s_playerMessage = "[Game: "+s_gamename+"] You have lost. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: -"+Int32_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
+                    MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
 
                     if(i_pointsBet != 0 ) {
                         i_winPoints[i_playerCounter] = i_currentPoints-i_pointsBet*4;
@@ -855,10 +852,10 @@ int main( int argc, char **argv )
                     } else {
                         i_winPoints[i_playerCounter]=5;
                     }
-                    if(i_score != -1337 ) {
-                        string s_playerMessage = "[Game: '"+s_gamename+"'] The game was drawn. Neither score nor rate or streak has changed.";
-                        MYSQL_RES *DrawMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    }
+                    string s_playerMessage = "[Game: "+s_gamename+"] The game was drawn. Neither score nor rate or streak has changed.";
+                    MYSQL_RES *DrawMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+		    if(DrawMessage)
+		    	vector<string> Row = MySQLFetchRow( DrawMessage );
                 }
 
                 i_playerCounter++;
