@@ -471,7 +471,7 @@ int main( int argc, char **argv )
                     if( EXPEvent ) {
                         vector<string> Row = MySQLFetchRow( EXPEvent );
                         if(Row.size( ) == 1 ) {
-                            ScoreWin[i_playerCounter] = ScoreWin*2;
+                            ScoreWin = ScoreWin*2;
                         }
                     }
                 }
