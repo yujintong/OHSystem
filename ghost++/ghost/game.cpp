@@ -289,7 +289,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 if( Result == 1 )
                 {
                     SendChat( Player, m_GHost->m_Language->SuccessfullyTypedPassword(Player->GetName()) );
-                    m_GHost->m_PlayerCache.push_back( Player->GetName( )+" "+UTIL_ToString(GetTime) );
+                    m_GHost->m_PlayerCache.push_back( Player->GetName( )+" "+UTIL_ToString(GetTime()) );
                     Player->SetPasswordProt( false );
                     Player->SetSpoofed( true );
                 }
