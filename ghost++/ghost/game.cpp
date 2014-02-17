@@ -340,7 +340,7 @@ bool CGame :: Update( void *fd, void *send_fd )
             {
                 if( Result == -1 )
                     SendChat( Player, m_GHost->m_Language->SuccessfullyStoredMessage() );
-                else if( Result == 2 )
+                else if( Result > 0 )
                     SendChat( Player, m_GHost->m_Language->NewMessages(Player->GetName( ), UTIL_ToString( Result ) ) );
             }
 

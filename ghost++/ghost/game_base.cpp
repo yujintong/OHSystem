@@ -3151,7 +3151,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         m_VotedTimeStart = 0;
         m_Voted = false;
     }
-    m_Pairedpms.push_back( Pairedpm( string(), m_GHost->m_DB->Threadedpm( Player->GetName(), string(), 0, string(), "join" ) ) );
 }
 
 void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
