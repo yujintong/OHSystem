@@ -831,7 +831,7 @@ int main( int argc, char **argv )
                     i_winStreak[i_playerCounter]=0;
                     string s_playerMessage = "[Game: "+s_gamename+"] You have lost. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: -"+Int32_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
                     MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    MYSQL_RES *LoseScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score+ScoreLoose)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
+                    MYSQL_RES *LoseScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score-ScoreLoose)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
 
                     if(i_pointsBet != 0 ) {
                         i_winPoints[i_playerCounter] = i_currentPoints-i_pointsBet*4;
