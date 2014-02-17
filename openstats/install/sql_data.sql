@@ -238,6 +238,8 @@ CREATE TABLE IF NOT EXISTS `oh_gameplayers` (
   `team` tinyint(1) unsigned NOT NULL,
   `colour` tinyint(1) unsigned NOT NULL,
   `spoofedrealm` varchar(100) NOT NULL,
+  `score_before` int(10) NOT NULL,
+  `score_after` int(10) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `gameid` (`gameid`),
   KEY `colour` (`colour`),

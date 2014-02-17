@@ -21,6 +21,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	<?=OS_bnet_icon($User["user_bnet"], 14, 14, "imgvalign")?>
 	<?=OS_protected_icon( $User["user_ppwd"], $User["user_bnet"], $lang["protected_account"], 14, 14, "imgvalign" ) ?> 
   </h1>
+  <?=OS_ShowGravatar( $User["player"])?>
 	 </td>
 	 <td style="text-align:right">
 	 <?=DisplayGameTypePlayer($GameAliases, $UserOtherGames, $User["player"])?></td>
@@ -53,7 +54,9 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   <?php
   }
   ?></td>
-   <td></td>
+   <td>  
+   <?=ShowCommonGames($User["player"])?>
+   </td>
    </tr>
 </table>	
 

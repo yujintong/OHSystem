@@ -1243,6 +1243,7 @@ function OS_is_home_page() {
    AND !isset($_GET["live_games"])
    AND !isset($_GET["premium"])
    AND !isset($_GET["moderator"])
+   AND !isset($_GET["common_games"])
                             ) 
    {
     return true;
@@ -2425,5 +2426,21 @@ function OS_Mod_DisplayUserLevel( $level = "", $expire = "" ) {
   }
   
   }
+}
+
+function OS_ShowGravatar( $id = "", $icon = 'monsterid', $w = 150 ) {
+
+  $icon = 'monsterid'; 
+  if ( isset($_GET["icon"]) ) $icon = $_GET["icon"]; 
+  ?>
+  <img width="<?=$w?>" src="https://www.gravatar.com/avatar/<?=md5( strtolower($id) )?>?s=<?=$w?>&amp;d=<?=$icon?>&amp;r=g" alt="User avatar" />
+  <?php
+}
+
+function ShowCommonGames( $user = "" ) {
+global $lang;
+if (isset($_SESSION["bnet_username"]) AND strtolower($_SESSION["bnet_username"])!=strtolower($user)) { ?>
+<a href="<?=OS_HOME?>?common_games=<?=$user?>" class="menuButtons"><?=$lang["common_games"]?></a>
+<?php } 
 }
 ?>

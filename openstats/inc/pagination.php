@@ -25,6 +25,7 @@ if ( isset($_GET["game"]) AND is_numeric($_GET["game"]) )   $prefix.="?game=".sa
 if ( isset($_GET["fame"]) )     $prefix.="?fame";
 if ( isset($_GET["shame"]) )     $prefix.="?shame";
 if ( isset($_GET["livegames"]) )     $prefix.="?livegames";
+if ( isset($_GET["common_games"]) )  $prefix.="?common_games=".strip_tags($_GET["common_games"]) ;
 
 if ( isset($_GET["moderator"]) )   {  
   $prefix.="?moderator";
