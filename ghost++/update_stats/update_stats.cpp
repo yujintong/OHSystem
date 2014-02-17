@@ -490,7 +490,30 @@ int main( int argc, char **argv )
                     }
                 }
                 std::transform( s_gameAliasName.begin(), s_gameAliasName.end(), s_gameAliasName.begin(), ::tolower);
-
+                //check if the player had bet for this game
+                //check the current maxstreaks and determine if they should be set again
+                int32_t i_currentPoints=0;
+                uint32_t i_pointsBet=0;
+                uint32_t i_currStreak=0;
+                uint32_t i_maxStreak=0;
+                uint32_t i_currLoosStreak=0;
+                uint32_t i_maxLoosingStreak=0;
+                int32_t i_score = 0;
+                if(! b_newPlayer[i_playerCounter] ) {
+                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
+                    if( DetailedStatsQuery ) {
+                        vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
+                        if( Row.size( ) == 7 ) {
+                            i_currentPoints=UTIL_ToInt32(Row[0]);
+                            i_pointsBet=UTIL_ToUInt32(Row[1]);
+                            i_currStreak=UTIL_ToUInt32(Row[2]);
+                            i_maxStreak=UTIL_ToUInt32(Row[3]);
+                            i_currLoosStreak=UTIL_ToUInt32(Row[4]);
+                            i_maxLoosingStreak=UTIL_ToUInt32(Row[5]);
+                            i_score=UTIL_ToInt32(Row[6]);
+                        }
+                    }
+                }
                 /**
                  * Dota Specific games should be filtered here
                  */
@@ -543,21 +566,27 @@ int main( int argc, char **argv )
                         i_zerodeaths[i_playerCounter]=1;
                     }
 
-                    if( ( i_Winner == 1 && i_playerColour[i_playerCounter] >= 1 && i_playerColour[i_playerCounter] <= 5 ) || ( i_Winner == 2 && i_playerColour[i_playerCounter] >= 7 && i_playerColour[i_playerCounter] <= 11 ) ) {
-                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin);
-                        i_newPlayerScore[i_playerCounter]=ScoreStart+ScoreWin;
-                        i_wins[i_playerCounter]=1;
-                    }
+                    if(!b_leaver[i_playerCounter]) {
+                        if( ( i_Winner == 1 && i_playerColour[i_playerCounter] >= 1 && i_playerColour[i_playerCounter] <= 5 ) || ( i_Winner == 2 && i_playerColour[i_playerCounter] >= 7 && i_playerColour[i_playerCounter] <= 11 ) ) {
+                            s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin+(i_currStreak*StreakBonus) );
+                            i_newPlayerScore[i_playerCounter]=ScoreStart+ScoreWin;
+                            i_wins[i_playerCounter]=1;
+                        }
 
-                    else if( ( i_Winner == 2 && i_playerColour[i_playerCounter] >= 1 && i_playerColour[i_playerCounter] <= 5 ) || ( i_Winner == 1 && i_playerColour[i_playerCounter] >= 7 && i_playerColour[i_playerCounter] <= 11 ) ) {
-                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose);
-                        i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
-                        i_losses[i_playerCounter]=1;
-                    }
-                    //Draw Game
-                    else {
-                        i_draws[i_playerCounter]=1;
-                        i_newPlayerScore[i_playerCounter]=ScoreStart;
+                        else if( ( i_Winner == 2 && i_playerColour[i_playerCounter] >= 1 && i_playerColour[i_playerCounter] <= 5 ) || ( i_Winner == 1 && i_playerColour[i_playerCounter] >= 7 && i_playerColour[i_playerCounter] <= 11 ) ) {
+                            s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose+(i_currLoosStreak*StreakBonus) );
+                            i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
+                            i_losses[i_playerCounter]=1;
+                        }
+                        //Draw Game
+                        else {
+                            i_draws[i_playerCounter]=1;
+                            i_newPlayerScore[i_playerCounter]=ScoreStart;
+
+                        }
+                    } else {
+                        s_playerScore[i_playerCounter]=", score = score-15";
+                        i_newPlayerScore[i_playerCounter]= ScoreStart-15;
                     }
                 }
 
@@ -651,13 +680,13 @@ int main( int argc, char **argv )
 
                     // Winner
                     if( s_Winner == "winner" ) {
-                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin);
+                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin+(i_currStreak*StreakBonus) );
                         i_newPlayerScore[i_playerCounter] = ScoreStart+ScoreWin;
                         i_wins[i_playerCounter]=1;
                     }
                     // Looser
                     else if( s_Winner == "loser" ) {
-                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose);
+                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose+(i_currLoosStreak*StreakBonus) );
                         i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
                         i_losses[i_playerCounter]=1;
                     }
@@ -733,13 +762,13 @@ int main( int argc, char **argv )
 
                     // Winner
                     if( s_Winner == "winner" ) {
-                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin);
+                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin+(i_currStreak*StreakBonus));
                         i_newPlayerScore[i_playerCounter] = ScoreStart+ScoreWin;
                         i_wins[i_playerCounter]=1;
                     }
                     // Looser
                     else if( s_Winner == "loser" ) {
-                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose);
+                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose+(i_currLoosStreak*StreakBonus));
                         i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
                         i_losses[i_playerCounter]=1;
                     }
@@ -768,13 +797,13 @@ int main( int argc, char **argv )
 
                     // Winner
                     if( s_Winner == "winner" ) {
-                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin);
+                        s_playerScore[i_playerCounter]=", score = score+" + Int32_ToString( ScoreWin+(i_currStreak*StreakBonus));
                         i_newPlayerScore[i_playerCounter] = ScoreStart+ScoreWin;
                         i_wins[i_playerCounter]=1;
                     }
                     // Looser
                     else if( s_Winner == "loser" ) {
-                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose);
+                        s_playerScore[i_playerCounter]=", score = score-" + Int32_ToString( ScoreLoose+(i_currLoosStreak*StreakBonus));
                         i_newPlayerScore[i_playerCounter]=ScoreStart-ScoreLoose;
                         i_losses[i_playerCounter]=1;
                     }
@@ -786,62 +815,53 @@ int main( int argc, char **argv )
                     }
                 }
 
-                //check if the player had bet for this game
-                //check the current maxstreaks and determine if they should be set again
-                int32_t i_currentPoints=0;
-                uint32_t i_pointsBet=0;
-                uint32_t i_currStreak=0;
-                uint32_t i_maxStreak=0;
-                uint32_t i_currLoosStreak=0;
-                uint32_t i_maxLoosingStreak=0;
-                int32_t i_score = 0;
-                if(! b_newPlayer[i_playerCounter] ) {
-                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
-                    if( DetailedStatsQuery ) {
-                        vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
-                        if( Row.size( ) == 7 ) {
-                            i_currentPoints=UTIL_ToInt32(Row[0]);
-                            i_pointsBet=UTIL_ToUInt32(Row[1]);
-                            i_currStreak=UTIL_ToUInt32(Row[2]);
-                            i_maxStreak=UTIL_ToUInt32(Row[3]);
-                            i_currLoosStreak=UTIL_ToUInt32(Row[4]);
-                            i_maxLoosingStreak=UTIL_ToUInt32(Row[5]);
-                            i_score=UTIL_ToInt32(Row[6]);
+                if(!b_leaver[i_playerCounter]) {
+                    if( i_wins[i_playerCounter] == 1 ) {
+                        s_playerWinStreak[i_playerCounter]="streak = streak+1, ";
+                        s_playerLooseStreak[i_playerCounter]="losingstreak = 0, ";
+                        i_winStreak[i_playerCounter]=i_currStreak+1;
+                        i_looseStreak[i_playerCounter]=0;
+                        string s_playerMessage = "[Game: "+s_gamename+"] You have won. Score: "+Int32_ToString(i_score+ScoreWin+(i_currStreak*StreakBonus))+", Rate: +"+Int32_ToString( ScoreWin+(i_currStreak*StreakBonus) )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
+                        MYSQL_RES *WinMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+                        MYSQL_RES *WinScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score+ScoreWin+(i_currStreak*StreakBonus))+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
+                        if(i_pointsBet != 0 ) {
+                            i_winPoints[i_playerCounter] = i_currentPoints+i_pointsBet*2;
                         }
-                    }
-                }
-                if( i_wins[i_playerCounter] == 1 ) {
-                    s_playerWinStreak[i_playerCounter]="streak = streak+1, ";
-                    s_playerLooseStreak[i_playerCounter]="losingstreak = 0, ";
-                    i_winStreak[i_playerCounter]=i_currStreak+1;
-                    i_looseStreak[i_playerCounter]=0;
-                    string s_playerMessage = "[Game: "+s_gamename+"] You have won. Score: "+Int32_ToString(i_score+ScoreWin)+", Rate: +"+Int32_ToString( ScoreWin )+", Streak: +"+UTIL_ToString (i_winStreak[i_playerCounter]);
-                    MYSQL_RES *WinMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    MYSQL_RES *WinScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score+ScoreWin)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
-                    if(i_pointsBet != 0 ) {
-                        i_winPoints[i_playerCounter] = i_currentPoints+i_pointsBet*2;
-                    }
-                    if(i_winStreak[i_playerCounter] >= i_maxStreak ) {
-                        i_maxWinStreak[i_playerCounter]=i_winStreak[i_playerCounter];
-                    }
-                } else if( i_losses[i_playerCounter] == 1 ) {
-                    s_playerWinStreak[i_playerCounter]="streak = 0, ";
-                    s_playerLooseStreak[i_playerCounter]="losingstreak = losingstreak+1, ";
-                    i_looseStreak[i_playerCounter]=i_currLoosStreak+1;
-                    i_winStreak[i_playerCounter]=0;
-                    string s_playerMessage = "[Game: "+s_gamename+"] You have lost. Score: "+Int32_ToString(i_score-ScoreLoose)+", Rate: -"+Int32_ToString( ScoreLoose )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
-                    MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    MYSQL_RES *LoseScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score-ScoreLoose)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
+                        if(i_winStreak[i_playerCounter] >= i_maxStreak ) {
+                            i_maxWinStreak[i_playerCounter]=i_winStreak[i_playerCounter];
+                        }
+                    } else if( i_losses[i_playerCounter] == 1 ) {
+                        s_playerWinStreak[i_playerCounter]="streak = 0, ";
+                        s_playerLooseStreak[i_playerCounter]="losingstreak = losingstreak+1, ";
+                        i_looseStreak[i_playerCounter]=i_currLoosStreak+1;
+                        i_winStreak[i_playerCounter]=0;
+                        string s_playerMessage = "[Game: "+s_gamename+"] You have lost. Score: "+Int32_ToString(i_score-(ScoreLoose+(i_currLoosStreak*StreakBonus)))+", Rate: -"+Int32_ToString( ScoreLoose+(i_currLoosStreak*StreakBonus) )+", Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
+                        MYSQL_RES *LooseMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+                        MYSQL_RES *LoseScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score-(ScoreLoose+(i_currLoosStreak*StreakBonus)))+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
 
-                    if(i_pointsBet != 0 ) {
-                        i_winPoints[i_playerCounter] = i_currentPoints-i_pointsBet*4;
-                        if(i_winPoints[i_playerCounter]<0)
+                        if(i_pointsBet != 0 ) {
+                            i_winPoints[i_playerCounter] = i_currentPoints-i_pointsBet*4;
+                            if(i_winPoints[i_playerCounter]<0)
+                                i_winPoints[i_playerCounter]=0;
+                        } else {
                             i_winPoints[i_playerCounter]=0;
+                        }
+                        if(i_looseStreak[i_playerCounter] >= i_maxLoosingStreak ) {
+                            i_maxLooseStreak[i_playerCounter]=i_looseStreak[i_playerCounter];
+                        }
                     } else {
-                        i_winPoints[i_playerCounter]=0;
-                    }
-                    if(i_looseStreak[i_playerCounter] >= i_maxLoosingStreak ) {
-                        i_maxLooseStreak[i_playerCounter]=i_looseStreak[i_playerCounter];
+                        i_looseStreak[i_playerCounter]=i_currLoosStreak;
+                        i_winStreak[i_playerCounter]=i_currStreak;
+                        i_maxLooseStreak[i_playerCounter]=i_maxLoosingStreak;
+                        i_maxWinStreak[i_playerCounter]=i_maxStreak;
+                        if(i_currentPoints != 0 ) {
+                            i_winPoints[i_playerCounter] = i_currentPoints;
+                        } else {
+                            i_winPoints[i_playerCounter]=5;
+                        }
+                        string s_playerMessage = "[Game: "+s_gamename+"] The game was drawn. Neither score nor rate or streak has changed.";
+                        MYSQL_RES *DrawMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
+                        MYSQL_RES *DrawScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
                     }
                 } else {
                     i_looseStreak[i_playerCounter]=i_currLoosStreak;
@@ -853,13 +873,11 @@ int main( int argc, char **argv )
                     } else {
                         i_winPoints[i_playerCounter]=5;
                     }
-                    string s_playerMessage = "[Game: "+s_gamename+"] The game was drawn. Neither score nor rate or streak has changed.";
+                    string s_playerMessage = "[Game: "+s_gamename+"] You left the game.Score: "+Int32_ToString(i_score-15)+", Rate: -15, Streak: +"+UTIL_ToString (i_looseStreak[i_playerCounter]);
                     MYSQL_RES *DrawMessage = QueryBuilder(Connection, "INSERT INTO oh_pm (m_from, m_to, m_time, m_read, m_message) VALUES ('PeaceMaker', '"+s_playerName[i_playerCounter]+"', NOW(), 0, '"+s_playerMessage+"');" );
-                    MYSQL_RES *DrawScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
-            if(DrawMessage)
-                vector<string> Row = MySQLFetchRow( DrawMessage );
-                }
+                    MYSQL_RES *DrawScoreUpdate = QueryBuilder (Connection, "UPDATE oh_gameplayers SET score_before='"+Int32_ToString(i_score)+"', score_after='"+Int32_ToString(i_score-15)+"' WHERE gameid='"+GameID+"' AND name='"+s_playerName[i_playerCounter]+"';");
 
+                }
                 i_playerCounter++;
                 Row = MySQLFetchRow( BasicResult );
             }
