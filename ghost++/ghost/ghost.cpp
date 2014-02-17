@@ -1592,7 +1592,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_APMAllowedMinimum = CFG->GetInt("oh_apmallowedminimum", 20);
     m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
     m_Website = CFG->GetString("oh_general_domain", "http://ohsystem.net/" );
-    m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilspath", string( ) ) );
+    m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
     m_BroadCastPort = CFG->GetInt("oh_broadcastport", 6112 );
     LoadDatas();
     LoadRules();
