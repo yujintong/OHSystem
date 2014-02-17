@@ -2765,7 +2765,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 // e.g. "1.2.3.4 6112" -> ip: "1.2.3.4", port: "6112"
 
                 string IP;
-                uint32_t Port = 6112;
+                uint32_t Port = m_GHost->m_BroadCastPort;
                 stringstream SS;
                 SS << Payload;
                 SS >> IP;

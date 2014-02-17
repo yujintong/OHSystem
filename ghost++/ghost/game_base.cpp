@@ -752,7 +752,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 BYTEARRAY MapHeight;
                 MapHeight.push_back( 0 );
                 MapHeight.push_back( 0 );
-                m_GHost->m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
             }
             else
             {
@@ -760,7 +760,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
 
                 uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
-                m_GHost->m_UDPSocket->Broadcast( 6112, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
               }
         }
 
@@ -3151,7 +3151,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         m_VotedTimeStart = 0;
         m_Voted = false;
     }
-    m_PairedINChecks.push_back( PairedINCheck( string(), m_GHost->m_DB->ThreadedInboxSummaryCheck( Player->GetName () ) ) );
+    m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, string(), 0, string(), "join" ) ) );
 }
 
 void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )

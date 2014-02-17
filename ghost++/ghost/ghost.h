@@ -255,6 +255,7 @@ public:
     uint32_t m_DisconnectAutoBanTime;
     string m_SharedFilesPath;
     vector<string> m_PlayerCache;
+    uint32_t m_BroadCastPort;
 
     CGHost( CConfig *CFG );
     ~CGHost( );
