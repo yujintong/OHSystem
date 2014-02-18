@@ -170,6 +170,11 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
 	  if ( isset($_GET["edit"]) ) OS_AddLog($_SESSION["username"], "[os_edituser] Edit member ( $name )");
 	  else OS_AddLog($_SESSION["username"], "[os_edituser] ADD member ( $name )");
 	  
+	  if ( !empty($bnet) ) {
+	    $sth = $db->prepare("UPDATE ".OSDB_STATS." SET user_level = '".$level."' WHERE player = '".$bnet."' ");
+		$result = $sth->execute();
+	  }
+	  
 	  $r=1;
 	  if ( $r ) {
 	  	  ?>
@@ -438,7 +443,9 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
   }
   
   if ( isset($_GET["search_users"]) AND strlen($_GET["search_users"])>=2 ) {
-     $search_users = safeEscape( $_GET["search_users"]);
+     $search_users = safeEscape( trim($_GET["search_users"]));
+	 if ( strstr($search_users, "@") )  $sql = " AND (user_email) LIKE ('%".$search_users."%') ";
+	 else
 	 $sql = " AND (user_name) LIKE ('%".$search_users."%') ";
   } else {
    $sql = "";
