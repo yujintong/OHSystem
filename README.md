@@ -47,7 +47,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 - ####Easy manage and control able:
   - Simple control of ban list, with lots of options and fitters:
-    ![ScreenShot](http://ohsystem.net/public_images/banad.PNG)
+    ![ScreenShot](http://ohsystem.net/public_images/banadd.PNG)
     ![ScreenShot](http://ohsystem.net/public_images/banoptions.PNG)
   
   - Easy setup role::
