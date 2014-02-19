@@ -115,7 +115,9 @@ if ( isset($_GET["code"]) AND strlen($_GET["code"]) == 2 ) {
 	 
 	//GET TOP BANS by Country code
 	if ( isset($_GET["top_bans"]) ) {
-	
+	 
+	 include("../inc/countries.php");
+	 
      $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_BANS." WHERE id>=1 LIMIT 1");
 	 $result = $sth->execute();
 	 $r = $sth->fetch(PDO::FETCH_NUM);
@@ -139,8 +141,8 @@ if ( isset($_GET["code"]) AND strlen($_GET["code"]) == 2 ) {
 	$total = number_format( ($row["top_bans"] / $numrows)*100, 1);
 	?>
 	<tr>
-	  <td width="32"><?=OS_ShowUserFlag( $row["country"], $row["country"], 175 )?></td>
-	  <td width="64"><?=$row["country"]?></td>
+	  <td width="32"><?=OS_ShowUserFlag( $row["country"], $Countries[ $row["country"] ], 175 )?></td>
+	  <td width="180"><?=$Countries[ $row["country"] ]?></td>
 	  <td width="120"><b><?=$row["top_bans"]?></b> / <?=$numrows?></td>
 	  <td><?=$total?> %</td>
 	</tr>
