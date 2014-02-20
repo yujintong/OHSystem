@@ -2279,26 +2279,45 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     string EscYear = MySQLEscapeString( conn, year );
     CDBStatsPlayerSummary *StatsPlayerSummary = NULL;
 
-    string Condition = "";
-    if( alias != 0 ) {
-        Condition += "`alias_id` = '"+UTIL_ToString(alias)+"' AND ";
+    string GlobalPlayerQuery = "SELECT id, player, player_lower, realm, country, country_code, hide, exp, points FROM oh_players WHERE player_lower='"+EscName+"'";
+    if( mysql_real_query( (MYSQL *)conn, GlobalPlayerQuery.c_str( ), GlobalPlayerQuery.size( ) ) != 0 )
+        *error = mysql_error( (MYSQL *)conn );
+    else
+    {
+        MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+        if( Result )
+        {
+            vector<string> Row = MySQLFetchRow( Result );
+
+            if( Row.size( ) == 9 )
+            {
+
+                mysql_free_result( Result );
+            }
+        }
+        else
+            *error = mysql_error( (MYSQL *)conn );
     }
-    string Query = "";
+
+    string StatsQuery = "";
+    string StatsQueryCondition = "";
+    if( alias != 0 ) {
+        StatsQueryCondition += "`alias_id` = '"+UTIL_ToString(alias)+"' AND ";
+    }
+
     if( !EscMonth.empty() && EscMonth != "0" && !EscYear.empty() && EscYear != "0" )
-        Condition += "month='"+EscMonth+"' AND year='"+EscYear+"' AND";
+        StatsQueryCondition += "month='"+EscMonth+"' AND year='"+EscYear+"' AND";
     else if( !EscMonth.empty() && EscMonth != "0" && EscYear.empty())
-        Condition += "month='"+EscMonth+"' AND year=YEAR(NOW()) AND";
+        StatsQueryCondition += "month='"+EscMonth+"' AND year=YEAR(NOW()) AND";
     else if( EscMonth.empty() && EscYear.empty())
-        Condition += "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
+        StatsQueryCondition += "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
     else if( EscMonth == "0" && EscYear == "0" && alias == 0 )
-        Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `hide`, `country`, `country_code` FROM oh_stats WHERE `player_lower` = '" + EscName + "';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"';";
     else if( EscMonth == "0" && EscYear == "0" && alias != 0 )
-        Query = "SELECT `id`, `player`, `player_lower`, SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), `realm`, SUM(`leaver`), `hide`, `country`, `country_code` FROM oh_stats WHERE `player_lower` = '" + EscName + "' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
 
-    if( Query.empty() )
-        Query = "SELECT `id`, `player`, `player_lower`, `score`, `games`, `wins`, `losses`, `draw`, `kills`, `deaths`, `assists`, `creeps`, `denies`, `neutrals`, `towers`, `rax`, `streak`, `maxstreak`, `losingstreak`, `maxlosingstreak`, `zerodeaths`, `realm`, `leaver`, `hide`, `country`, `country_code` FROM `oh_stats` WHERE "+Condition+" `player_lower` = '" + EscName + "';";
-
-
+    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths FROM `oh_stats` WHERE "+StatsQueryCondition+" `id` = '"+UTIL_ToString (PlayerID)+"';";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
