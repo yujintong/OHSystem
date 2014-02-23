@@ -2273,13 +2273,44 @@ CDBGamePlayerSummary *MySQLGamePlayerSummaryCheck( void *conn, string *error, ui
 
 CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, uint32_t botid, string name, string month, string year, uint32_t alias )
 {
-    transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+    string lowername = name;
+    transform( lowername.begin( ), lowername.end( ), lowername.begin( ), ::tolower );
     string EscName = MySQLEscapeString( conn, name );
+    string EscLowerName = MySQLEscapeString( conn, lowername );
     string EscMonth = MySQLEscapeString( conn, month);
     string EscYear = MySQLEscapeString( conn, year );
     CDBStatsPlayerSummary *StatsPlayerSummary = NULL;
 
-    string GlobalPlayerQuery = "SELECT id, player, player_lower, realm, country, country_code, hide, exp, points FROM oh_players WHERE player_lower='"+EscName+"'";
+    /* init values which should be returned */
+    uint32_t id = 0;
+    double score = 0;
+    uint32_t games = 0;
+    uint32_t wins = 0;
+    uint32_t losses = 0;
+    uint32_t draw = 0;
+    uint32_t kills = 0;
+    uint32_t deaths = 0;
+    uint32_t assists = 0;
+    uint32_t creeps = 0;
+    uint32_t denies = 0;
+    uint32_t neutrals = 0;
+    uint32_t towers = 0;
+    uint32_t rax = 0;
+    uint32_t streak = 0;
+    uint32_t maxstreak = 0;
+    uint32_t losingstreak = 0;
+    uint32_t maxlosingstreak = 0;
+    uint32_t zerodeaths = 0;
+    string realm = "unknown";
+    uint32_t leaves = 0;
+    bool hiddenacc = false;
+    string country = "unknown";
+    string countryCode = "??";
+    uint32_t exp = 0;
+    uint32_t allcount = 0;
+    uint32_t rankcount = 0;
+
+    string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points FROM oh_players WHERE player_lower='"+EscLowerName+"'";
     if( mysql_real_query( (MYSQL *)conn, GlobalPlayerQuery.c_str( ), GlobalPlayerQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     else
@@ -2290,8 +2321,15 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            if( Row.size( ) == 9 )
+            if( Row.size( ) == 7 )
             {
+                id = UTIL_ToUInt32(Row[0]);
+                realm = Row[1];
+                country = Row[2];
+                countryCode = Row[3];
+                hide = UTIL_ToUInt32(Row[4]);
+                exp = UTIL_ToUInt32(Row[5]);
+                points = UTIL_ToUInt32(Row[6]);
 
                 mysql_free_result( Result );
             }
@@ -2313,11 +2351,11 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     else if( EscMonth.empty() && EscYear.empty())
         StatsQueryCondition += "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
     else if( EscMonth == "0" && EscYear == "0" && alias == 0 )
-        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaves`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"';";
     else if( EscMonth == "0" && EscYear == "0" && alias != 0 )
-        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaves`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
 
-    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths FROM `oh_stats` WHERE "+StatsQueryCondition+" `id` = '"+UTIL_ToString (PlayerID)+"';";
+    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaves FROM `oh_stats` WHERE "+StatsQueryCondition+" `id` = '"+UTIL_ToString (PlayerID)+"';";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -2329,36 +2367,27 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            if( Row.size( ) == 26 )
+            if( Row.size( ) == 19 )
             {
-                uint32_t id = UTIL_ToUInt32( Row[0] );
-                string player = Row[1];
-                string playerlower = Row[2];
-                double score = UTIL_ToDouble( Row[3] );
-                uint32_t games = UTIL_ToUInt32( Row[4] );
-                uint32_t wins = UTIL_ToUInt32( Row[5] );
-                uint32_t losses = UTIL_ToUInt32( Row[6] );
-                uint32_t draw = UTIL_ToUInt32( Row[7] );
-                uint32_t kills = UTIL_ToUInt32( Row[8] );
-                uint32_t deaths = UTIL_ToUInt32( Row[9] );
-                uint32_t assists = UTIL_ToUInt32( Row[10] );
-                uint32_t creeps = UTIL_ToUInt32( Row[11] );
-                uint32_t denies = UTIL_ToUInt32( Row[12] );
-                uint32_t neutrals = UTIL_ToUInt32( Row[13] );
-                uint32_t towers = UTIL_ToUInt32( Row[14] );
-                uint32_t rax = UTIL_ToUInt32( Row[15] );
-                uint32_t streak = UTIL_ToUInt32( Row[16] );
-                uint32_t maxstreak = UTIL_ToUInt32( Row[17] );
-                uint32_t losingstreak = UTIL_ToUInt32( Row[18] );
-                uint32_t maxlosingstreak = UTIL_ToUInt32( Row[19] );
-                uint32_t zerodeaths = UTIL_ToUInt32( Row[20] );
-                string realm = Row[21];
-                uint32_t leaves = UTIL_ToUInt32( Row[22] );
-                bool hiddenacc = UTIL_ToUInt32( Row[23] );
-                string country = Row[24];
-                string countryCode= Row[25];
-                uint32_t allcount = 0;
-                uint32_t rankcount = 0;
+                score = UTIL_ToDouble( Row[0] );
+                games = UTIL_ToUInt32( Row[1] );
+                wins = UTIL_ToUInt32( Row[2] );
+                losses = UTIL_ToUInt32( Row[3] );
+                draw = UTIL_ToUInt32( Row[4] );
+                kills = UTIL_ToUInt32( Row[5] );
+                deaths = UTIL_ToUInt32( Row[6] );
+                assists = UTIL_ToUInt32( Row[7] );
+                creeps = UTIL_ToUInt32( Row[8] );
+                denies = UTIL_ToUInt32( Row[9] );
+                neutrals = UTIL_ToUInt32( Row[10] );
+                towers = UTIL_ToUInt32( Row[11] );
+                rax = UTIL_ToUInt32( Row[12] );
+                streak = UTIL_ToUInt32( Row[13] );
+                maxstreak = UTIL_ToUInt32( Row[14] );
+                losingstreak = UTIL_ToUInt32( Row[15] );
+                maxlosingstreak = UTIL_ToUInt32( Row[16] );
+                zerodeaths = UTIL_ToUInt32( Row[17] );
+                leaves = UTIL_ToUInt32( Row[18] );
                 if( score > 0 )
                 {
                     string ALLQuery = "SELECT COUNT(*) FROM oh_stats WHERE alias_id='"+UTIL_ToString(alias)+"';";
@@ -2388,16 +2417,14 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                         }
                     }
                 }
-                StatsPlayerSummary = new CDBStatsPlayerSummary( id, player, playerlower, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode );
             }
-            //else
-            //        *error = "error checking statsplayersummary [" + name + "] - row doesn't have 25 columns";
 
             mysql_free_result( Result );
         }
         else
             *error = mysql_error( (MYSQL *)conn );
     }
+    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode );
 
     return StatsPlayerSummary;
 }
