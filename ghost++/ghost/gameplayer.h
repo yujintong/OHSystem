@@ -654,7 +654,7 @@ public:
     void SetNoLag( bool nNoLag )                          {
         m_NoLag = nNoLag;
     }
-    void SetEXP( nEXP ) {
+    void SetEXP( uint32_t nEXP ) {
         m_EXP = nEXP;
     }
 
