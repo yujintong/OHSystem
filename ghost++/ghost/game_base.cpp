@@ -455,6 +455,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     Player->SetScore( StatsPlayerSummary->GetScore());
                     Player->SetCountry( StatsPlayerSummary->GetCountry());
                     Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
+                    Player->SetEXP (StatsPlayerSummary->GetEXP());
                 }
             }
 

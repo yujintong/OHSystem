@@ -4210,52 +4210,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SendChat( player, GetRule( Payload ) );
     }
 
-    /*
-            //
-            // !LOCK
-            //
-            else if( ( Command == "lock" || Command == "l" ) && Payload.empty( ) )
-            {
-             if( Level > 2 )
-             {
-                    if( !player->GetLocked( ) )
-                    {
-                            if( m_LockedPlayers >= 4 )
-                                    SendChat( player, "Error. There already to many locked players." );
-                            else
-                            {
-                                    SendAllChat( "Player [" + User + "] is now locked." );
-                                    player->SetLocked( true );
-                                    m_LockedPlayers++;
-                            }
-                    }
-                    else
-                            SendChat( player, "Error. You are already locked." );
-             }
-             else
-                    SendChat( player, "Error. You require a reserved slot to be able to use this command." );
-            }
-
-            //
-            // !UNLOCK
-            //
-            else if( ( Command == "unlock" || Command == "ul" ) && Payload.empty( ) )
-            {
-             if( Level > 2 )
-             {
-                    if( player->GetLocked( ) )
-                    {
-                            SendAllChat( "Player [" + User + "] is now unlocked." );
-                            player->SetLocked( false );
-                            m_LockedPlayers--;
-                    }
-                    else
-                            SendChat( player, "Error. You are not locked." );
-             }
-             else
-                    SendChat( player, "Error. You require a reserved slot to be able to use this command." );
-            }
-    */
     //
     // !VOTEMUTE
     //
@@ -4600,6 +4554,74 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     }
 
+    //
+    // !EXP !LVL !LEVEL
+    //
+    else if( Command == "exp" || Command == "lvl" || Command == "level" ) {
+        string Name = player->GetName ();
+        uint32_t EXP = player->GetEXP ();
+        uint32_t Level = 0;
+        float Percentage = 0;
+        uint32_t ExpToNextLevel = 0;
+
+        if( !Payload.empty() ) {
+            CGamePlayer *LastMatch = NULL;
+            uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+            if( Matches == 0 ) {
+                SendChat(player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                return true;
+            }
+            else if( Matches == 1)
+            {
+                Name = LastMatch->GetName ();
+                EXP = LastMatch->GetEXP();
+            }
+            else {
+                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                return true;
+            }
+        }
+
+        uint32_t calcStart = 0;
+        uint32_t calcEnd = 10;
+        uint32_t calcInc = 0;
+        uint32_t calcLevel = 6;
+        uint32_t LevelStart = 0;
+        uint32_t LevelEnd = 0;
+        uint32_t calcCount = 0;
+
+        do {
+                calcCount = ++;
+                if (calcCount % 2 == 0 ) {
+                    calcInc = calcInc + calcLevel;
+                }
+                if ((EXP < calcEnd) && (EXP >= calcStart)) {
+                    Level = calcCount;
+                    LevelStart = calcStart;
+                    LevelEnd = calcEnd;
+                }
+                calcStart = calcEnd;
+                calcEnd = calcEnd + calcInc;
+        } while (Level == 0);
+        Level--;
+
+        Percentage = ((EXP - LevelStart) / (LevelEnd - LevelStart)) * 100;
+        Percentage = round(Percentage);
+        if (Percentage == 0) {
+            Percentage = 1;
+        }
+        ExpToNextLevel = LevelEnd-EXP;
+
+        uint32_t currPerc = 5;
+        string visualPerc = "";
+        while( currPerc != 100 ) {
+            if(currPerc<=Percentage)
+                visualPerc = "║║";
+            else
+                visualPerc = "-";
+        }
+        SendAllChat("["+Name+"] Level: "+UTIL_ToString(Level)+", Process: ["+visualPerc+"] ("+UTIL_ToString(EXP)+"/"+UTIL_ToString(LevelEnd)+")");
+    }
     return HideCommand;
 }
 
