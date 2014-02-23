@@ -210,6 +210,7 @@ private:
     uint32_t m_AFKWarnings;
     uint32_t m_LastAfkWarn;
     uint32_t m_EXP;
+    uint32_t m_ID;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -466,6 +467,9 @@ public:
     uint32_t GetEXP( ) {
         return m_EXP;
     }
+    uint32_t GetID( ) {
+        return m_ID;
+    }
 
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
@@ -656,6 +660,9 @@ public:
     }
     void SetEXP( uint32_t nEXP ) {
         m_EXP = nEXP;
+    }
+    void SetID( uint32_t nID ) {
+        m_ID = nID;
     }
 
     void SetActions( )                      {

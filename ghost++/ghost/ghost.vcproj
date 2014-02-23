@@ -376,10 +376,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\game_admin.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\game_base.cpp"
 				>
 			</File>
@@ -506,10 +502,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\game_admin.h"
-				>
-			</File>
-			<File
 				RelativePath=".\game_base.h"
 				>
 			</File>
@@ -520,7 +512,7 @@
 			<File
 				RelativePath=".\gcbiprotocol.h"
 				>
-			</File>                      
+			</File>
 			<File
 				RelativePath=".\gameprotocol.h"
 				>

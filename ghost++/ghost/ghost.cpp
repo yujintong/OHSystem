@@ -41,7 +41,6 @@
 #include "gcbiprotocol.h"
 #include "game_base.h"
 #include "game.h"
-#include "game_admin.h"
 
 #include <signal.h>
 #include <stdlib.h>
@@ -482,10 +481,6 @@ CGHost :: CGHost( CConfig *CFG )
     m_Reconnect = CFG->GetInt( "bot_reconnect", 1 ) == 0 ? false : true;
     m_ReconnectPort = CFG->GetInt( "bot_reconnectport", 6114 );
     m_DefaultMap = CFG->GetString( "bot_defaultmap", "map" );
-    m_AdminGameCreate = CFG->GetInt( "admingame_create", 0 ) == 0 ? false : true;
-    m_AdminGamePort = CFG->GetInt( "admingame_port", 6113 );
-    m_AdminGamePassword = CFG->GetString( "admingame_password", string( ) );
-    m_AdminGameMap = CFG->GetString( "admingame_map", string( ) );
     m_LANWar3Version = CFG->GetInt( "lan_war3version", 26 );
     m_ReplayWar3Version = CFG->GetInt( "replay_war3version", 26 );
     m_ReplayBuildNumber = CFG->GetInt( "replay_buildnumber", 6059 );
@@ -613,49 +608,10 @@ CGHost :: CGHost( CConfig *CFG )
     MapCFG.Read( m_MapCFGPath + m_DefaultMap );
     m_Map = new CMap( this, &MapCFG, m_MapCFGPath + m_DefaultMap );
 
-    if( !m_AdminGameMap.empty( ) )
-    {
-        if( m_AdminGameMap.size( ) < 4 || m_AdminGameMap.substr( m_AdminGameMap.size( ) - 4 ) != ".cfg" )
-        {
-            m_AdminGameMap += ".cfg";
-            CONSOLE_Print( "[GHOST] adding \".cfg\" to default admin game map -> new default is [" + m_AdminGameMap + "]" );
-        }
-
-        CONSOLE_Print( "[GHOST] trying to load default admin game map" );
-        CConfig AdminMapCFG;
-        AdminMapCFG.Read( m_MapCFGPath + m_AdminGameMap );
-        m_AdminMap = new CMap( this, &AdminMapCFG, m_MapCFGPath + m_AdminGameMap );
-
-        if( !m_AdminMap->GetValid( ) )
-        {
-            CONSOLE_Print( "[GHOST] default admin game map isn't valid, using hardcoded admin game map instead" );
-            delete m_AdminMap;
-            m_AdminMap = new CMap( this );
-        }
-    }
-    else
-    {
-        CONSOLE_Print( "[GHOST] using hardcoded admin game map" );
-        m_AdminMap = new CMap( this );
-    }
-
     m_AutoHostMap = new CMap( *m_Map );
     m_SaveGame = new CSaveGame( );
 
-    // create the admin game
-
-    if( m_AdminGameCreate )
-    {
-        CONSOLE_Print( "[GHOST] creating admin game" );
-        m_AdminGame = new CAdminGame( this, m_AdminMap, NULL, m_AdminGamePort, 0, "GHost++ Admin Game", m_AdminGamePassword );
-
-        if( m_AdminGamePort == m_HostPort )
-            CONSOLE_Print( "[GHOST] warning - admingame_port and bot_hostport are set to the same value, you won't be able to host any games" );
-    }
-    else
-        m_AdminGame = NULL;
-
-    if( m_BNETs.empty( ) && !m_AdminGame )
+    if( m_BNETs.empty( ) )
     {
         CONSOLE_Print( "[GHOST] warning - no battle.net connections found and no admin game created" );
     }
@@ -680,7 +636,6 @@ CGHost :: ~CGHost( )
         delete *i;
 
     delete m_CurrentGame;
-    delete m_AdminGame;
 
     for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
         delete *i;
@@ -731,13 +686,6 @@ bool CGHost :: Update( long usecBlock )
             CONSOLE_Print( "[GHOST] deleting current game in preparation for exiting nicely" );
             delete m_CurrentGame;
             m_CurrentGame = NULL;
-        }
-
-        if( m_AdminGame )
-        {
-            CONSOLE_Print( "[GHOST] deleting admin game in preparation for exiting nicely" );
-            delete m_AdminGame;
-            m_AdminGame = NULL;
         }
 
         if( m_Games.empty( ) )
@@ -828,17 +776,12 @@ bool CGHost :: Update( long usecBlock )
     if( m_CurrentGame )
         NumFDs += m_CurrentGame->SetFD( &fd, &send_fd, &nfds );
 
-    // 3. the admin game's server and player sockets
-
-    if( m_AdminGame )
-        NumFDs += m_AdminGame->SetFD( &fd, &send_fd, &nfds );
-
-    // 4. all running games' player sockets
+    // 3. all running games' player sockets
 
     for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
         NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
 
-    // 5. the GProxy++ reconnect socket(s)
+    // 4. the GProxy++ reconnect socket(s)
 
     if( m_Reconnect && m_ReconnectSocket )
     {
@@ -918,21 +861,6 @@ bool CGHost :: Update( long usecBlock )
         }
         else if( m_CurrentGame )
             m_CurrentGame->UpdatePost( &send_fd );
-    }
-
-    // update admin game
-
-    if( m_AdminGame )
-    {
-        if( m_AdminGame->Update( &fd, &send_fd ) )
-        {
-            CONSOLE_Print( "[GHOST] deleting admin game" );
-            delete m_AdminGame;
-            m_AdminGame = NULL;
-            AdminExit = true;
-        }
-        else if( m_AdminGame )
-            m_AdminGame->UpdatePost( &send_fd );
     }
 
     // update running games
@@ -1315,47 +1243,27 @@ bool CGHost :: Update( long usecBlock )
 
 void CGHost :: EventBNETConnecting( CBNET *bnet )
 {
-    if( m_AdminGame )
-        m_AdminGame->SendAllChat( m_Language->ConnectingToBNET( bnet->GetServer( ) ) );
 
-    if( m_CurrentGame )
-        m_CurrentGame->SendAllChat( m_Language->ConnectingToBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETConnected( CBNET *bnet )
 {
-    if( m_AdminGame )
-        m_AdminGame->SendAllChat( m_Language->ConnectedToBNET( bnet->GetServer( ) ) );
 
-    if( m_CurrentGame )
-        m_CurrentGame->SendAllChat( m_Language->ConnectedToBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETDisconnected( CBNET *bnet )
 {
-    if( m_AdminGame )
-        m_AdminGame->SendAllChat( m_Language->DisconnectedFromBNET( bnet->GetServer( ) ) );
 
-    if( m_CurrentGame )
-        m_CurrentGame->SendAllChat( m_Language->DisconnectedFromBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETLoggedIn( CBNET *bnet )
 {
-    if( m_AdminGame )
-        m_AdminGame->SendAllChat( m_Language->LoggedInToBNET( bnet->GetServer( ) ) );
 
-    if( m_CurrentGame )
-        m_CurrentGame->SendAllChat( m_Language->LoggedInToBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETGameRefreshed( CBNET *bnet )
 {
-    if( m_AdminGame )
-        m_AdminGame->SendAllChat( m_Language->BNETGameHostingSucceeded( bnet->GetServer( ) ) );
 
-    if( m_CurrentGame )
-        m_CurrentGame->EventGameRefreshed( bnet->GetServer( ) );
 }
 
 void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
@@ -1369,9 +1277,6 @@ void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
             if( (*i)->GetServer( ) == m_CurrentGame->GetCreatorServer( ) )
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ), m_CurrentGame->GetCreatorName( ), true );
         }
-
-        if( m_AdminGame )
-            m_AdminGame->SendAllChat( m_Language->BNETGameHostingFailed( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
 
         m_CurrentGame->SendAllChat( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
 
@@ -1388,53 +1293,22 @@ void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
 
 void CGHost :: EventBNETConnectTimedOut( CBNET *bnet )
 {
-    if( m_AdminGame )
-        m_AdminGame->SendAllChat( m_Language->ConnectingToBNETTimedOut( bnet->GetServer( ) ) );
 
-    if( m_CurrentGame )
-        m_CurrentGame->SendAllChat( m_Language->ConnectingToBNETTimedOut( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETWhisper( CBNET *bnet, string user, string message )
 {
-    if( m_AdminGame )
-    {
-        m_AdminGame->SendAdminChat( "[W: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
 
-        if( m_CurrentGame )
-            m_CurrentGame->SendLocalAdminChat( "[W: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-        for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-            (*i)->SendLocalAdminChat( "[W: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-    }
 }
 
 void CGHost :: EventBNETChat( CBNET *bnet, string user, string message )
 {
-    if( m_AdminGame )
-    {
-        m_AdminGame->SendAdminChat( "[L: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
 
-        if( m_CurrentGame )
-            m_CurrentGame->SendLocalAdminChat( "[L: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-        for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-            (*i)->SendLocalAdminChat( "[L: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-    }
 }
 
 void CGHost :: EventBNETEmote( CBNET *bnet, string user, string message )
 {
-    if( m_AdminGame )
-    {
-        m_AdminGame->SendAdminChat( "[E: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
 
-        if( m_CurrentGame )
-            m_CurrentGame->SendLocalAdminChat( "[E: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-        for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-            (*i)->SendLocalAdminChat( "[E: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-    }
 }
 
 void CGHost :: EventGameDeleted( CBaseGame *game )
@@ -1682,9 +1556,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameDisabled( gameName ), creatorName, whisper );
         }
 
-        if( m_AdminGame )
-            m_AdminGame->SendAllChat( m_Language->UnableToCreateGameDisabled( gameName ) );
-
         return;
     }
 
@@ -1696,9 +1567,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameNameTooLong( gameName ), creatorName, whisper );
         }
 
-        if( m_AdminGame )
-            m_AdminGame->SendAllChat( m_Language->UnableToCreateGameNameTooLong( gameName ) );
-
         return;
     }
 
@@ -1709,10 +1577,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             if( (*i)->GetServer( ) == creatorServer )
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameInvalidMap( gameName ), creatorName, whisper );
         }
-
-        if( m_AdminGame )
-            m_AdminGame->SendAllChat( m_Language->UnableToCreateGameInvalidMap( gameName ) );
-
         return;
     }
 
@@ -1725,9 +1589,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
                 if( (*i)->GetServer( ) == creatorServer )
                     (*i)->QueueChatCommand( m_Language->UnableToCreateGameInvalidSaveGame( gameName ), creatorName, whisper );
             }
-
-            if( m_AdminGame )
-                m_AdminGame->SendAllChat( m_Language->UnableToCreateGameInvalidSaveGame( gameName ) );
 
             return;
         }
@@ -1746,10 +1607,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
                 if( (*i)->GetServer( ) == creatorServer )
                     (*i)->QueueChatCommand( m_Language->UnableToCreateGameSaveGameMapMismatch( gameName ), creatorName, whisper );
             }
-
-            if( m_AdminGame )
-                m_AdminGame->SendAllChat( m_Language->UnableToCreateGameSaveGameMapMismatch( gameName ) );
-
             return;
         }
 
@@ -1760,9 +1617,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
                 if( (*i)->GetServer( ) == creatorServer )
                     (*i)->QueueChatCommand( m_Language->UnableToCreateGameMustEnforceFirst( gameName ), creatorName, whisper );
             }
-
-            if( m_AdminGame )
-                m_AdminGame->SendAllChat( m_Language->UnableToCreateGameMustEnforceFirst( gameName ) );
 
             return;
         }
@@ -1776,9 +1630,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ), creatorName, whisper );
         }
 
-        if( m_AdminGame )
-            m_AdminGame->SendAllChat( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ) );
-
         return;
     }
 
@@ -1789,9 +1640,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             if( (*i)->GetServer( ) == creatorServer )
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ), creatorName, whisper );
         }
-
-        if( m_AdminGame )
-            m_AdminGame->SendAllChat( m_Language->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ) );
 
         return;
     }
@@ -1838,14 +1686,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             (*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, m_CurrentGame->GetHostCounter( ) );
         else
             (*i)->QueueGameCreate( gameState, gameName, string( ), map, NULL, m_CurrentGame->GetHostCounter( ) );
-    }
-
-    if( m_AdminGame )
-    {
-        if( gameState == GAME_PRIVATE )
-            m_AdminGame->SendAllChat( m_Language->CreatingPrivateGame( gameName, ownerName ) );
-        else if( gameState == GAME_PUBLIC )
-            m_AdminGame->SendAllChat( m_Language->CreatingPublicGame( gameName, ownerName ) );
     }
 
     // if we're creating a private game we don't need to send any game refresh messages so we can rejoin the chat immediately

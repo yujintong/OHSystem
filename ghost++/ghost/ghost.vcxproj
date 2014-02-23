@@ -187,7 +187,6 @@
     <ClCompile Include="crc32.cpp" />
     <ClCompile Include="csvparser.cpp" />
     <ClCompile Include="game.cpp" />
-    <ClCompile Include="game_admin.cpp" />
     <ClCompile Include="game_base.cpp" />
     <ClCompile Include="gameplayer.cpp" />
     <ClCompile Include="gcbiprotocol.cpp" />
@@ -220,7 +219,6 @@
     <ClInclude Include="crc32.h" />
     <ClInclude Include="csvparser.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="game_admin.h" />
     <ClInclude Include="game_base.h" />
     <ClInclude Include="gameplayer.h" />
     <ClInclude Include="gcbiprotocol.h" />
