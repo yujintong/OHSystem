@@ -4591,7 +4591,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         uint32_t calcCount = 0;
 
         do {
-                calcCount = ++;
+                calcCount++;
                 if (calcCount % 2 == 0 ) {
                     calcInc = calcInc + calcLevel;
                 }
