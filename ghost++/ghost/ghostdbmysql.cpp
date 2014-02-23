@@ -2309,6 +2309,8 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     uint32_t exp = 0;
     uint32_t allcount = 0;
     uint32_t rankcount = 0;
+    uint32_t points;
+
 
     string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points FROM oh_players WHERE player_lower='"+EscLowerName+"'";
     if( mysql_real_query( (MYSQL *)conn, GlobalPlayerQuery.c_str( ), GlobalPlayerQuery.size( ) ) != 0 )
@@ -2327,7 +2329,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 realm = Row[1];
                 country = Row[2];
                 countryCode = Row[3];
-                hide = UTIL_ToUInt32(Row[4]);
+                hiddenacc = UTIL_ToUInt32(Row[4]);
                 exp = UTIL_ToUInt32(Row[5]);
                 points = UTIL_ToUInt32(Row[6]);
 
@@ -2351,13 +2353,13 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     else if( EscMonth.empty() && EscYear.empty())
         StatsQueryCondition += "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
     else if( EscMonth == "0" && EscYear == "0" && alias == 0 )
-        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaves`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaves`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (id)+"';";
     else if( EscMonth == "0" && EscYear == "0" && alias != 0 )
-        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaves`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (PlayerID)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaves`) FROM oh_stats WHERE `id` = '"+UTIL_ToString (id)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
 
-    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaves FROM `oh_stats` WHERE "+StatsQueryCondition+" `id` = '"+UTIL_ToString (PlayerID)+"';";
+    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaves FROM `oh_stats` WHERE "+StatsQueryCondition+" `id` = '"+UTIL_ToString (id)+"';";
 
-    if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+    if( mysql_real_query( (MYSQL *)conn, StatsQuery.c_str( ), StatsQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     else
     {
