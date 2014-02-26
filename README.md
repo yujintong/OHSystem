@@ -15,7 +15,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 ---
 
-### Install
+### Install Guide for the bot
 
  - [UNIX](https://github.com/OHSystem/ohsystem/wiki/Installation---UNIX)
  - [Windows](https://github.com/OHSystem/ohsystem/wiki/Installation-WinOS)
