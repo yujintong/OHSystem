@@ -1761,7 +1761,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
     if( EscAdmin == "AutoBan" )
     {
         uint32_t RecentLeaves = 0;
-        string CheckRecentLeaves = "SELECT leaver FROM stats WHERE `player_lower` = '" + EscUser + "';";
+        string CheckRecentLeaves = "SELECT leaver FROM oh_stats WHERE `player_lower` = '" + EscUser + "';";
         if( mysql_real_query( (MYSQL *)conn, CheckRecentLeaves.c_str( ), CheckRecentLeaves.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
         else
@@ -1777,7 +1777,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
             }
         }
         if( RecentLeaves != 0 )
-            bantime = 1+(bantime*2);
+            bantime = bantime*RecentLeaves;
     }
 
     bool Success = false;
