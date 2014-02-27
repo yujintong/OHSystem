@@ -287,7 +287,7 @@ int main( int argc, char **argv )
         CONSOLE_Print( "Starting update for gameid ["+GameID+"]" );
 
         // BASIC INFORMATION UPDATE PROCESS
-        MYSQL_RES *BasicResult = QueryBuilder(Connection, "SELECT s.id, gp.name, gp.spoofedrealm, gp.reserved, gp.left, gp.ip, g.duration, gp.team, gp.colour, g.gamename FROM oh_gameplayers as gp LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON ( gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" AND s.alias_id="+Alias+") WHERE gp.gameid = " + GameID );
+        MYSQL_RES *BasicResult = QueryBuilder(Connection, "SELECT s.id, gp.name, gp.spoofedrealm, gp.reserved, gp.left, gp.ip, g.duration, gp.team, gp.colour, g.gamename FROM oh_gameplayers as gp LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats_players as s ON ( gp.name = s.player_lower AND s.month="+Month+" AND s.year="+Year+" AND s.alias_id="+Alias+") WHERE gp.gameid = " + GameID );
         if( BasicResult )
         {
             vector<string> Row = MySQLFetchRow( BasicResult );
@@ -500,7 +500,7 @@ int main( int argc, char **argv )
                 uint32_t i_maxLoosingStreak=0;
                 int32_t i_score = 0;
                 if(! b_newPlayer[i_playerCounter] ) {
-                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
+                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT points, points_bet, streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats_monthly WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
                     if( DetailedStatsQuery ) {
                         vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
                         if( Row.size( ) == 7 ) {
@@ -895,7 +895,8 @@ int main( int argc, char **argv )
                             for( int i = 0; i < i_playerCounter; i++ )
                             {
                                     if(! b_newPlayer[i] ) {
-                                        string UpdateString = "UPDATE `oh_stats` SET last_seen=CURRENT_TIMESTAMP(), points_bet = '0', points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", leaver = leaver+'"+(b_leaver[i] ? "1" : "0" )+"', banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"', user_level = '"+UTIL_ToString(i_userLevel[i])+"', maxlosingstreak = '" + UTIL_ToString( i_maxLooseStreak[i] ) + "', maxstreak = '" + UTIL_ToString( i_maxWinStreak[i] ) + "', streak='"+ UTIL_ToString( i_winStreak[i] ) +"', losingstreak='" + UTIL_ToString( i_looseStreak[i] ) +"', wins = wins+" + UTIL_ToString( i_wins[i] ) + ", losses = losses+" + UTIL_ToString( i_losses[i] ) + ", draw = draw+" + UTIL_ToString( i_draws[i] ) + ", games= games+1, ip= '" + s_playerIp[i] + "' "+ s_playerScore[i]+ " ";
+                                        string PlayerUpdateString = "UPDATE `oh_stats_players` SET last_seen=CURRENT_TIMESTAMP(), points_bet = '0', points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"', ip= '" + s_playerIp[i] + "' WHERE `id` = '"+ UTIL_ToString( i_playerId[i] )+"';";
+                                        string StatsUpdateString = "UPDATE `oh_stats_monthly` SET leaver = leaver+'"+(b_leaver[i] ? "1" : "0" )+"', user_level = '"+UTIL_ToString(i_userLevel[i])+"', maxlosingstreak = '" + UTIL_ToString( i_maxLooseStreak[i] ) + "', maxstreak = '" + UTIL_ToString( i_maxWinStreak[i] ) + "', streak='"+ UTIL_ToString( i_winStreak[i] ) +"', losingstreak='" + UTIL_ToString( i_looseStreak[i] ) +"', wins = wins+" + UTIL_ToString( i_wins[i] ) + ", losses = losses+" + UTIL_ToString( i_losses[i] ) + ", draw = draw+" + UTIL_ToString( i_draws[i] ) + ", games= games+1 "+ s_playerScore[i]+ " ";
                                         if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("dota")!=string::npos || s_gameAliasName.find("lod")!=string::npos || s_gameAliasName.find("imba")!=string::npos ) )
                                             UpdateString += ", zerodeaths = zerodeaths+"+ UTIL_ToString(i_zerodeaths[i])  +", kills=kills+"+UTIL_ToString(i_ingameKills[i])+", deaths=deaths+" + UTIL_ToString( i_ingameDeaths[i] ) + ", assists=assists+" + UTIL_ToString( i_ingameAssists[i] ) + ", creeps=creeps+" + UTIL_ToString( i_ingameCreeps[i] ) + ", denies=denies+" + UTIL_ToString( i_ingameDenies[i] ) + ", neutrals=neutrals+" + UTIL_ToString( i_ingameNeutrals[i] ) + ", towers=towers+" + UTIL_ToString( i_ingameTower[i] ) + ", rax=rax+" + UTIL_ToString( i_ingameRaxes[i] );
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
@@ -903,8 +904,9 @@ int main( int argc, char **argv )
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("tree")!=string::npos ) )
                                             UpdateString += ", kills=kills+"+UTIL_ToString(treeTagKills[i])+", deaths=deaths+"+UTIL_ToString(treeTagDeaths[i])+", assists=assists+"+UTIL_ToString(treeTagSaves[i])+", creeps=creeps+"+UTIL_ToString(treeTagEnt[i])+", denies=denies+"+UTIL_ToString(treeTagInfernal[i]);
 
-                                        UpdateString += " WHERE id='" + UTIL_ToString( i_playerId[i] )+"';";
-                                        MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, UpdateString );
+                                        UpdateString += " WHERE id='" + UTIL_ToString( i_playerId[i] )+"' AND alias_id='"+Alias+"' AND month='"+Month+"'' AND year='"+Year+"';";
+                                        MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, PlayerUpdateString );
+                                        MYSQL_RES *StatsUpdateResult = QueryBuilder(Connection, StatsUpdateString );
                                     }
                                     else
                                     {
