@@ -15,6 +15,15 @@ the Free Software Foundation, either version 3 of the License, or
 
 ---
 
+### Install guide for the bot
+
+ - [UNIX](https://github.com/OHSystem/ohsystem/wiki/Installation---UNIX)
+ - [Windows](https://github.com/OHSystem/ohsystem/wiki/Installation-WinOS)
+
+We do not support OS X
+
+---
+
 ### Visual Features:
 - ####Live games
   - Show current games via Ajax and join them directly:
