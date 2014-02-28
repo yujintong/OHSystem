@@ -458,7 +458,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     Player->SetEXP (StatsPlayerSummary->GetEXP());
                     Player->SetID (StatsPlayerSummary->GetID ());
                 } else {
-                    /* starting a new player insertion here maybe */
+                    m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedGamePlayerAdd( 0, Player->GetName( ), Player->GetIP( ), 0, Player->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) );
+
                 }
             }
 

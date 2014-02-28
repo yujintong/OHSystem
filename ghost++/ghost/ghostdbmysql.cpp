@@ -2207,21 +2207,25 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, s
 
 uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id )
 {
-    string EscNameUP = MySQLEscapeString( conn, name );
-    //transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+    transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+    string EscNameLOW = MySQLEscapeString( conn, name );
     uint32_t RowID = 0;
     string EscName = MySQLEscapeString( conn, name );
     string EscIP = MySQLEscapeString( conn, ip );
     string EscSpoofedRealm = MySQLEscapeString( conn, spoofedrealm );
     string EscLeftReason = MySQLEscapeString( conn, leftreason );
-    string Colour = colour == 0 ? "" : "colour="+UTIL_ToString(colour)+", ";
-    string Query = "UPDATE oh_gameplayers SET player_id="+UTIL_ToString(id)+", spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", "+Colour+" spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid="+UTIL_ToString(gameid)+" AND name='"+EscName+"' AND ip='"+EscIP+"';";
+    string Query = "";
+    if(id!=0 &&gamemid !=0) {
+        string Colour = colour == 0 ? "" : "colour="+UTIL_ToString(colour)+", ";
+        Query = "UPDATE oh_gameplayers SET player_id="+UTIL_ToString(id)+", spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", "+Colour+" spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid="+UTIL_ToString(gameid)+" AND name='"+EscName+"' AND ip='"+EscIP+"';";
+    } else {
+        Query = "INSERT INTO oh_stats_players (player, player_lower, ip, realm) VALUES ('"+EscName+"','"+EscNameLOW+"','"+EscIP+"', '"+EscSpoofedRealm+"');";
+    }
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     else
         RowID = mysql_insert_id( (MYSQL *)conn );
-
 
     return RowID;
 }

@@ -315,12 +315,6 @@ bool CGame :: Update( void *fd, void *send_fd )
         if( i->second->GetReady( ) )
         {
             CDBBan *Ban = i->second->GetResult( );
-            /*
-                                    if( Ban )
-                                            SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( i->second->GetServer( ), i->second->GetUser( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetRemain() ) );
-                                    else
-                                            SendAllChat( m_GHost->m_Language->UserIsNotBanned( i->second->GetServer( ), i->second->GetUser( ) ) );
-            */
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedBanChecks.erase( i );
