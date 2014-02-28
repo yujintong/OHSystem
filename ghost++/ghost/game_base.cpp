@@ -438,10 +438,10 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         if( i->second->GetReady( ) )
         {
             CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
-            if( StatsPlayerSummary )
+            CGamePlayer *Player = GetPlayerFromName( i->first, true );
+            if( Player )
             {
-                CGamePlayer *Player = GetPlayerFromName( i->first, true );
-                if( Player )
+                if( StatsPlayerSummary )
                 {
                     uint32_t wins = StatsPlayerSummary->GetWins( );
                     uint32_t losses = StatsPlayerSummary->GetLosses( );
@@ -457,6 +457,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
                     Player->SetEXP (StatsPlayerSummary->GetEXP());
                     Player->SetID (StatsPlayerSummary->GetID ());
+                } else {
+                    /* starting a new player insertion here maybe */
                 }
             }
 

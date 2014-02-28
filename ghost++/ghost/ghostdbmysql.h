@@ -29,128 +29,128 @@
  **************
 
 CREATE TABLE bans (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	server VARCHAR(100) NOT NULL,
-	name VARCHAR(15) NOT NULL,
-	ip VARCHAR(15) NOT NULL,
-	date DATETIME NOT NULL,
-	gamename VARCHAR(31) NOT NULL,
-	admin VARCHAR(15) NOT NULL,
-	reason VARCHAR(255) NOT NULL,
-	l_lefttime VARCHAR(15) NOT NULL,
-	l_reason VARCHAR(255) NOT NULL,
-	l_gameid INT NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    server VARCHAR(100) NOT NULL,
+    name VARCHAR(15) NOT NULL,
+    ip VARCHAR(15) NOT NULL,
+    date DATETIME NOT NULL,
+    gamename VARCHAR(31) NOT NULL,
+    admin VARCHAR(15) NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    l_lefttime VARCHAR(15) NOT NULL,
+    l_reason VARCHAR(255) NOT NULL,
+    l_gameid INT NOT NULL
 )
 
 CREATE TABLE games (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	server VARCHAR(100) NOT NULL,
-	map VARCHAR(100) NOT NULL,
-	datetime DATETIME NOT NULL,
-	gamename VARCHAR(31) NOT NULL,
-	ownername VARCHAR(15) NOT NULL,
-	duration INT NOT NULL,
-	gamestate INT NOT NULL,
-	creatorname VARCHAR(15) NOT NULL,
-	creatorserver VARCHAR(100) NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    server VARCHAR(100) NOT NULL,
+    map VARCHAR(100) NOT NULL,
+    datetime DATETIME NOT NULL,
+    gamename VARCHAR(31) NOT NULL,
+    ownername VARCHAR(15) NOT NULL,
+    duration INT NOT NULL,
+    gamestate INT NOT NULL,
+    creatorname VARCHAR(15) NOT NULL,
+    creatorserver VARCHAR(100) NOT NULL
 )
 
 CREATE TABLE gameplayers (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	gameid INT NOT NULL,
-	name VARCHAR(15) NOT NULL,
-	ip VARCHAR(15) NOT NULL,
-	spoofed INT NOT NULL,
-	reserved INT NOT NULL,
-	loadingtime INT NOT NULL,
-	`left` INT NOT NULL,
-	leftreason VARCHAR(100) NOT NULL,
-	team INT NOT NULL,
-	colour INT NOT NULL,
-	spoofedrealm VARCHAR(100) NOT NULL,
-	INDEX( gameid )
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    gameid INT NOT NULL,
+    name VARCHAR(15) NOT NULL,
+    ip VARCHAR(15) NOT NULL,
+    spoofed INT NOT NULL,
+    reserved INT NOT NULL,
+    loadingtime INT NOT NULL,
+    `left` INT NOT NULL,
+    leftreason VARCHAR(100) NOT NULL,
+    team INT NOT NULL,
+    colour INT NOT NULL,
+    spoofedrealm VARCHAR(100) NOT NULL,
+    INDEX( gameid )
 )
 
 CREATE TABLE dotagames (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	gameid INT NOT NULL,
-	winner INT NOT NULL,
-	min INT NOT NULL,
-	sec INT NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    gameid INT NOT NULL,
+    winner INT NOT NULL,
+    min INT NOT NULL,
+    sec INT NOT NULL
 )
 
 CREATE TABLE dotaplayers (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	gameid INT NOT NULL,
-	colour INT NOT NULL,
-	kills INT NOT NULL,
-	deaths INT NOT NULL,
-	creepkills INT NOT NULL,
-	creepdenies INT NOT NULL,
-	assists INT NOT NULL,
-	gold INT NOT NULL,
-	neutralkills INT NOT NULL,
-	item1 CHAR(4) NOT NULL,
-	item2 CHAR(4) NOT NULL,
-	item3 CHAR(4) NOT NULL,
-	item4 CHAR(4) NOT NULL,
-	item5 CHAR(4) NOT NULL,
-	item6 CHAR(4) NOT NULL,
-	hero CHAR(4) NOT NULL,
-	newcolour INT NOT NULL,
-	towerkills INT NOT NULL,
-	raxkills INT NOT NULL,
-	courierkills INT NOT NULL,
-	INDEX( gameid, colour )
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    gameid INT NOT NULL,
+    colour INT NOT NULL,
+    kills INT NOT NULL,
+    deaths INT NOT NULL,
+    creepkills INT NOT NULL,
+    creepdenies INT NOT NULL,
+    assists INT NOT NULL,
+    gold INT NOT NULL,
+    neutralkills INT NOT NULL,
+    item1 CHAR(4) NOT NULL,
+    item2 CHAR(4) NOT NULL,
+    item3 CHAR(4) NOT NULL,
+    item4 CHAR(4) NOT NULL,
+    item5 CHAR(4) NOT NULL,
+    item6 CHAR(4) NOT NULL,
+    hero CHAR(4) NOT NULL,
+    newcolour INT NOT NULL,
+    towerkills INT NOT NULL,
+    raxkills INT NOT NULL,
+    courierkills INT NOT NULL,
+    INDEX( gameid, colour )
 )
 
 CREATE TABLE downloads (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	map VARCHAR(100) NOT NULL,
-	mapsize INT NOT NULL,
-	datetime DATETIME NOT NULL,
-	name VARCHAR(15) NOT NULL,
-	ip VARCHAR(15) NOT NULL,
-	spoofed INT NOT NULL,
-	spoofedrealm VARCHAR(100) NOT NULL,
-	downloadtime INT NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    map VARCHAR(100) NOT NULL,
+    mapsize INT NOT NULL,
+    datetime DATETIME NOT NULL,
+    name VARCHAR(15) NOT NULL,
+    ip VARCHAR(15) NOT NULL,
+    spoofed INT NOT NULL,
+    spoofedrealm VARCHAR(100) NOT NULL,
+    downloadtime INT NOT NULL
 )
 
 CREATE TABLE scores (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	category VARCHAR(25) NOT NULL,
-	name VARCHAR(15) NOT NULL,
-	server VARCHAR(100) NOT NULL,
-	score REAL NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(25) NOT NULL,
+    name VARCHAR(15) NOT NULL,
+    server VARCHAR(100) NOT NULL,
+    score REAL NOT NULL
 )
 
 CREATE TABLE w3mmdplayers (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	category VARCHAR(25) NOT NULL,
-	gameid INT NOT NULL,
-	pid INT NOT NULL,
-	name VARCHAR(15) NOT NULL,
-	flag VARCHAR(32) NOT NULL,
-	leaver INT NOT NULL,
-	practicing INT NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    category VARCHAR(25) NOT NULL,
+    gameid INT NOT NULL,
+    pid INT NOT NULL,
+    name VARCHAR(15) NOT NULL,
+    flag VARCHAR(32) NOT NULL,
+    leaver INT NOT NULL,
+    practicing INT NOT NULL
 )
 
 CREATE TABLE w3mmdvars (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	botid INT NOT NULL,
-	gameid INT NOT NULL,
-	pid INT NOT NULL,
-	varname VARCHAR(25) NOT NULL,
-	value_int INT DEFAULT NULL,
-	value_real REAL DEFAULT NULL,
-	value_string VARCHAR(100) DEFAULT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    botid INT NOT NULL,
+    gameid INT NOT NULL,
+    pid INT NOT NULL,
+    varname VARCHAR(25) NOT NULL,
+    value_int INT DEFAULT NULL,
+    value_real REAL DEFAULT NULL,
+    value_string VARCHAR(100) DEFAULT NULL
 )
 
  **************
@@ -214,7 +214,7 @@ public:
     virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
     virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename,uint32_t gameid, uint32_t gamealias );
     virtual CCallableGameUpdate *ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add );
-    virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
+    virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id );
     virtual CCallableGamePlayerSummaryCheck *ThreadedGamePlayerSummaryCheck( string name );
     virtual CCallableStatsPlayerSummaryCheck *ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias );
     virtual CCallableInboxSummaryCheck *ThreadedInboxSummaryCheck( string name );
@@ -266,7 +266,7 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid );
 uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
 uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBBan *> players, string gamename, uint32_t gamealias );
 string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add );
-uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour );
+uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id );
 CDBGamePlayerSummary *MySQLGamePlayerSummaryCheck( void *conn, string *error, uint32_t botid, string name );
 CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, uint32_t botid, string name, string month, string year, uint32_t alias );
 CDBInboxSummary *MySQLInboxSummaryCheck( void *conn, string *error, uint32_t botid, string name );
@@ -718,7 +718,7 @@ public:
 class CMySQLCallableGamePlayerAdd : public CCallableGamePlayerAdd, public CMySQLCallable
 {
 public:
-    CMySQLCallableGamePlayerAdd( uint32_t nGameID, string nName, string nIP, uint32_t nSpoofed, string nSpoofedRealm, uint32_t nReserved, uint32_t nLoadingTime, uint32_t nLeft, string nLeftReason, uint32_t nTeam, uint32_t nColour, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableGamePlayerAdd( nGameID, nName, nIP, nSpoofed, nSpoofedRealm, nReserved, nLoadingTime, nLeft, nLeftReason, nTeam, nColour ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
+    CMySQLCallableGamePlayerAdd( uint32_t nGameID, string nName, string nIP, uint32_t nSpoofed, string nSpoofedRealm, uint32_t nReserved, uint32_t nLoadingTime, uint32_t nLeft, string nLeftReason, uint32_t nTeam, uint32_t nColour, uint32_t nID, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableGamePlayerAdd( nGameID, nName, nIP, nSpoofed, nSpoofedRealm, nReserved, nLoadingTime, nLeft, nLeftReason, nTeam, nColour, nID ), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
     virtual ~CMySQLCallableGamePlayerAdd( ) { }
 
     virtual void operator( )( );
