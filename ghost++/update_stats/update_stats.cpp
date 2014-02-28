@@ -432,11 +432,6 @@ int main( int argc, char **argv )
                     i_gameDuration = UTIL_ToUInt32(Row[6]);
                 }
 
-                if( Row[0].empty( ) )
-                    b_newPlayer[i_playerCounter] = true;
-                else
-                    i_playerId[i_playerCounter] = UTIL_ToUInt32(Row[0]);
-
                 s_playerName[i_playerCounter] = Row[1];
                 s_lowerPlayerName[i_playerCounter] = s_playerName[i_playerCounter];
                 std::transform( s_lowerPlayerName[i_playerCounter].begin(), s_lowerPlayerName[i_playerCounter].end(), s_lowerPlayerName[i_playerCounter].begin(), ::tolower);
@@ -447,6 +442,18 @@ int main( int argc, char **argv )
                 i_playerTeam[i_playerCounter] = UTIL_ToUInt32(Row[7]);
                 i_playerColour[i_playerCounter] = UTIL_ToUInt32(Row[8]);
                 s_gamename = Row[9];
+
+                if( Row[0].empty( ) ) {
+                    b_newPlayer[i_playerCounter] = true;
+                    MYSQL_RES *IDResult = QueryBuilder(Connection, "SELECT player_id FROM oh_gameplayers WHERE name='"+s_PlayerName[i_playerCounter]+"' AND ip='"+s_playerIp[i_playerCounter]+"';" );
+                    if( IDResult ) {
+                        vector<string> Row = MySQLFetchRow( IDResult );
+                        if(Row.size( ) == 1 ) {
+                            i_playerId[i_playerCounter] = UTIL_ToUInt32(Row[0]);
+                        }
+                    }
+                } else
+                    i_playerId[i_playerCounter] = UTIL_ToUInt32(Row[0]);
 
                 // ban check
                 MYSQL_RES *BanResult = QueryBuilder(Connection, "SELECT id FROM oh_bans WHERE name='"+s_lowerPlayerName[i_playerCounter]+"' OR ip='"+s_playerIp[i_playerCounter]+"';" );
@@ -895,7 +902,7 @@ int main( int argc, char **argv )
                             for( int i = 0; i < i_playerCounter; i++ )
                             {
                                     if(! b_newPlayer[i] ) {
-                                        string PlayerUpdateString = "UPDATE `oh_stats_players` SET last_seen=CURRENT_TIMESTAMP(), points_bet = '0', points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"', ip= '" + s_playerIp[i] + "' WHERE `id` = '"+ UTIL_ToString( i_playerId[i] )+"';";
+                                        string PlayerUpdateString = "UPDATE `oh_stats_players` SET exp=exp+5, last_seen=CURRENT_TIMESTAMP(), points_bet = '0', points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"', ip= '" + s_playerIp[i] + "' WHERE `id` = '"+ UTIL_ToString( i_playerId[i] )+"';";
                                         string StatsUpdateString = "UPDATE `oh_stats_monthly` SET leaver = leaver+'"+(b_leaver[i] ? "1" : "0" )+"', user_level = '"+UTIL_ToString(i_userLevel[i])+"', maxlosingstreak = '" + UTIL_ToString( i_maxLooseStreak[i] ) + "', maxstreak = '" + UTIL_ToString( i_maxWinStreak[i] ) + "', streak='"+ UTIL_ToString( i_winStreak[i] ) +"', losingstreak='" + UTIL_ToString( i_looseStreak[i] ) +"', wins = wins+" + UTIL_ToString( i_wins[i] ) + ", losses = losses+" + UTIL_ToString( i_losses[i] ) + ", draw = draw+" + UTIL_ToString( i_draws[i] ) + ", games= games+1 "+ s_playerScore[i]+ " ";
                                         if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("dota")!=string::npos || s_gameAliasName.find("lod")!=string::npos || s_gameAliasName.find("imba")!=string::npos ) )
                                             StatsUpdateString += ", zerodeaths = zerodeaths+"+ UTIL_ToString(i_zerodeaths[i])  +", kills=kills+"+UTIL_ToString(i_ingameKills[i])+", deaths=deaths+" + UTIL_ToString( i_ingameDeaths[i] ) + ", assists=assists+" + UTIL_ToString( i_ingameAssists[i] ) + ", creeps=creeps+" + UTIL_ToString( i_ingameCreeps[i] ) + ", denies=denies+" + UTIL_ToString( i_ingameDenies[i] ) + ", neutrals=neutrals+" + UTIL_ToString( i_ingameNeutrals[i] ) + ", towers=towers+" + UTIL_ToString( i_ingameTower[i] ) + ", rax=rax+" + UTIL_ToString( i_ingameRaxes[i] );
@@ -913,19 +920,21 @@ int main( int argc, char **argv )
                                             string EscName = MySQLEscapeString( Connection, s_playerName[i] );
                                             string EscLName = MySQLEscapeString( Connection, s_lowerPlayerName[i] );
                                             string EscServer = MySQLEscapeString( Connection, s_spoofedRealm[i] );
-                                            string InsertQuery = "INSERT INTO `oh_stats` ( month, year, alias_id, last_seen, player, player_lower, banned, realm, ip, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, leaver, points ) VALUES ("+Month+", "+Year+","+UTIL_ToString(i_gameAlias)+", CURRENT_TIMESTAMP(), '" + EscName + "', '" + EscLName + "', '" + ( b_bannedPlayer[i] ? "1" : "0") + "', '" + EscServer + "', '" + s_playerIp[i] + "', "+( Int32_ToString( i_newPlayerScore[i] ) )+", 1, ";
+                                            string UpdatePlayerValues = "UPDATE oh_stats_players SET last_seen=NOW(), exp=5, , points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"' WHERE `id` = '"+ UTIL_ToString( i_playerId[i] )+"';";
+                                            string InsertStatsQuery = "INSERT INTO `oh_stats_monthly` ( player_id, month, year, alias_id, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, leaver ) VALUES ("+UTIL_ToString( i_playerId[i] )+", "+Month+", "+Year+", "+( Int32_ToString( i_newPlayerScore[i] ) )+", 1, ";
                                             if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("dota")!=string::npos || s_gameAliasName.find("lod")!=string::npos || s_gameAliasName.find("imba")!=string::npos ) )
-                                                InsertQuery += UTIL_ToString( i_ingameKills[i] )+", " + UTIL_ToString( i_ingameDeaths[i] ) + ", "+ UTIL_ToString( i_ingameAssists[i] ) + ", " + UTIL_ToString( i_ingameCreeps[i] ) + ", "+ UTIL_ToString( i_ingameDenies[i] ) + ", " + UTIL_ToString( i_ingameNeutrals[i] ) + ", " + UTIL_ToString( i_ingameTower[i] ) + ", " + UTIL_ToString( i_ingameRaxes[i] );
+                                                InsertStatsQuery += UTIL_ToString( i_ingameKills[i] )+", " + UTIL_ToString( i_ingameDeaths[i] ) + ", "+ UTIL_ToString( i_ingameAssists[i] ) + ", " + UTIL_ToString( i_ingameCreeps[i] ) + ", "+ UTIL_ToString( i_ingameDenies[i] ) + ", " + UTIL_ToString( i_ingameNeutrals[i] ) + ", " + UTIL_ToString( i_ingameTower[i] ) + ", " + UTIL_ToString( i_ingameRaxes[i] );
                                             else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
-                                                InsertQuery += UTIL_ToString(legionTdValue[i])+", "+UTIL_ToString(legionTdSeconds[i])+", "+UTIL_ToString(legionTdWood[i])+", "+UTIL_ToString(legionTdWoodTotal[i])+", +"+UTIL_ToString(legionTdLeaked[i])+", +"+UTIL_ToString(legionTdIncome[i])+", "+UTIL_ToString(legionTdGoldTotal[i])+", "+UTIL_ToString(legionTdGoldIncome[i]);
+                                                InsertStatsQuery += UTIL_ToString(legionTdValue[i])+", "+UTIL_ToString(legionTdSeconds[i])+", "+UTIL_ToString(legionTdWood[i])+", "+UTIL_ToString(legionTdWoodTotal[i])+", +"+UTIL_ToString(legionTdLeaked[i])+", +"+UTIL_ToString(legionTdIncome[i])+", "+UTIL_ToString(legionTdGoldTotal[i])+", "+UTIL_ToString(legionTdGoldIncome[i]);
                                             else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
-                                                InsertQuery += UTIL_ToString(treeTagKills[i])+", "+UTIL_ToString(treeTagDeaths[i])+", "+UTIL_ToString(treeTagSaves[i])+", "+UTIL_ToString(treeTagEnt[i])+", +"+UTIL_ToString(treeTagInfernal[i])+", 0, 0, 0";
+                                                InsertStatsQuery += UTIL_ToString(treeTagKills[i])+", "+UTIL_ToString(treeTagDeaths[i])+", "+UTIL_ToString(treeTagSaves[i])+", "+UTIL_ToString(treeTagEnt[i])+", +"+UTIL_ToString(treeTagInfernal[i])+", 0, 0, 0";
                                             else {
-                                                InsertQuery += "0, 0, 0, 0, 0, 0, 0, 0";
+                                                InsertStatsQuery += "0, 0, 0, 0, 0, 0, 0, 0";
                                             }
-                                            InsertQuery +=  ", "+UTIL_ToString( i_wins[i]) + ", " + UTIL_ToString( i_losses[i]) + ", " + UTIL_ToString( i_draws[i]) + ", " + UTIL_ToString( i_winStreak[i]) + ", " + UTIL_ToString( i_maxWinStreak[i]) + ", " + UTIL_ToString( i_looseStreak[i]) + ", " + UTIL_ToString( i_maxLooseStreak[i]) + ", " + ( b_leaver[i] ?  "1" : "0") + ", " + Int32_ToString( i_winPoints[i]) + " )";
+                                            InsertStatsQuery +=  ", "+UTIL_ToString( i_wins[i]) + ", " + UTIL_ToString( i_losses[i]) + ", " + UTIL_ToString( i_draws[i]) + ", " + UTIL_ToString( i_winStreak[i]) + ", " + UTIL_ToString( i_maxWinStreak[i]) + ", " + UTIL_ToString( i_looseStreak[i]) + ", " + UTIL_ToString( i_maxLooseStreak[i]) + ", " + ( b_leaver[i] ?  "1" : "0") + " )";
 
-                                            MYSQL_RES *PlayerInsertResult = QueryBuilder(Connection, InsertQuery);
+                                            MYSQL_RES *PlayerInsertResult = QueryBuilder(Connection, InsertStatsQuery);
+                                            MYSQL_RES *UpdatePlayerResult = QueryBuilder(Connection, UpdatePlayerValues );
                                     }
                             }
                     }
