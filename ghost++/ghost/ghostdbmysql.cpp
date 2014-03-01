@@ -2215,7 +2215,7 @@ uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t
     string EscSpoofedRealm = MySQLEscapeString( conn, spoofedrealm );
     string EscLeftReason = MySQLEscapeString( conn, leftreason );
     string Query = "";
-    if(id!=0 &&gamemid !=0) {
+    if(id!=0 && gameid!=0) {
         string Colour = colour == 0 ? "" : "colour="+UTIL_ToString(colour)+", ";
         Query = "UPDATE oh_gameplayers SET player_id="+UTIL_ToString(id)+", spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", "+Colour+" spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid="+UTIL_ToString(gameid)+" AND name='"+EscName+"' AND ip='"+EscIP+"';";
     } else {
