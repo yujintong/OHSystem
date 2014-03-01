@@ -1170,21 +1170,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !FORCE MODE
             //
-            else if( Command == "forcemode" && Level >= 9 ) {
+            else if( Command == "forcemode" && Level >= 9 && !m_Voted) {
                 if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
                     SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
                     SendAllChat( "Player ["+player->GetName( )+" force the gamemode ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
                     player->SetVotedMode(UTIL_ToUInt32(Payload));
-                    if( GetNumHumanPlayers( ) / 2  <= c && m_VotedTimeStart != 0 ) {
-                        if( UTIL_ToUInt32(Payload) != 7 ) {
-                            m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
-                            m_Voted = true;
-                        } else {
-                            uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
-                            m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
-                            m_Voted = true;
-                        }
+                    if( UTIL_ToUInt32(Payload) != 7 ) {
+                        m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
+                        m_Voted = true;
+                    } else {
+                        uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
+                        m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
+                        m_Voted = true;
                     }
                 }
             }
