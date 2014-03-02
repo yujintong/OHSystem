@@ -446,7 +446,7 @@ if ( isset($_GET["activate"]) AND is_numeric($_GET["activate"]) ) {
      $search_users = safeEscape( trim($_GET["search_users"]));
 	 if ( strstr($search_users, "@") )  $sql = " AND (user_email) LIKE ('%".$search_users."%') ";
 	 else
-	 $sql = " AND (user_name) LIKE ('%".$search_users."%') ";
+	 $sql = " AND ( (user_name) LIKE ('%".$search_users."%') OR (bnet_username) LIKE ('%".$search_users."%') ) ";
   } else {
    $sql = "";
    $search_users= "";

@@ -285,6 +285,7 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	  $result = $sth->execute();
 	  
 	  ?>
+	  
 	  <table>
 	    <tr>
 		 <th width="190">Player</th>
@@ -329,6 +330,21 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	  include('pagination.php');
 	}
 	else {
+	
+	//RESET STATS
+	if ( isset($_GET["reset_stats"]) ) {
+	
+	   $upd = $db->prepare("UPDATE ".OSDB_STATS." SET score =0, games=0, wins=0, kills=0, losses=0, draw=0, deaths=0, assists =0, creeps=0, denies=0, neutrals=0, towers=0, rax=0, streak=0, maxstreak=0, losingstreak=0, maxlosingstreak=0, zerodeaths=0, points=0, points_bet=0, leaver=0
+	   WHERE id=:id ");
+	   
+	   $upd->bindValue(':id',(int) $_GET["reset_stats"] , PDO::PARAM_INT); 
+	   $result = $upd->execute();
+	   
+	   ?>
+	   <h2>Stats reset: <?php if (isset($_GET["search_users"])) echo $_GET["search_users"]; ?> (#<?=(int) $_GET["reset_stats"]?>)</h2>
+	   <?php
+	}
+	
 	
   //$groupBy = 'GROUP BY player';  
   $groupBy = '';
@@ -456,6 +472,7 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	   </div>
 	   
 	  <div>
+	  <a class="menuButtons" href="javascript:;" onclick="if (confirm('Reset Stats?') ) { location.href='<?=OS_HOME?>adm/?players&amp;reset_stats=<?=$row["id"]?>&amp;search_users=<?=$row["player"]?><?=$p?>' }">&raquo; Reset Stats</a>
 	   </div>
 	   
 	   <div>
