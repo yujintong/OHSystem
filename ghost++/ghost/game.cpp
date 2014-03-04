@@ -596,7 +596,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 string Time = Month+"/"+Year;
                 if(! StatsPlayerSummary->GetHidden() )
                 {
-                    SendAllChat( m_GHost->m_Language->RankOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
+                    SendAllChat( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
                 } else {
                     CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
@@ -605,7 +605,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
                             SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc(StatsPlayerSummary->GetPlayer( )) );
                         else
-                            SendAllChat( m_GHost->m_Language->RankOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
+                            SendAllChat( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
                     }
                 }
             }
@@ -966,7 +966,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
             Colour = m_Slots[SID].GetColour( );
         }
 
-        m_DBGamePlayers.push_back( new CDBGamePlayer( 0, 0, player->GetName( ), player->GetExternalIPString( ), player->GetSpoofed( ) ? 1 : 0, player->GetSpoofedRealm( ), player->GetReserved( ) ? 1 : 0, player->GetFinishedLoading( ) ? player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks : 0, m_GameTicks / 1000, player->GetLeftReason( ), Team, Colour ) );
+        m_DBGamePlayers.push_back( new CDBGamePlayer( player->GetID (), 0, player->GetName( ), player->GetExternalIPString( ), player->GetSpoofed( ) ? 1 : 0, player->GetSpoofedRealm( ), player->GetReserved( ) ? 1 : 0, player->GetFinishedLoading( ) ? player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks : 0, m_GameTicks / 1000, player->GetLeftReason( ), Team, Colour ) );
 
         // also keep track of the last player to leave for the !banlast command
 
@@ -1174,7 +1174,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
                     SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
-                    SendAllChat( "Player ["+player->GetName( )+" force the gamemode ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
+                    SendAllChat( "Player ["+player->GetName( )+"] forced the mode ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
                     player->SetVotedMode(UTIL_ToUInt32(Payload));
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
@@ -1196,7 +1196,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 //
                 // !INSULT
                 //
-                if( Command=="insult" || Command=="i")
+                if( Command=="insult" || Command=="i" && Level >= 9)
                 {
                     if( Payload.empty())
                         SendAllChat(m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
@@ -1220,7 +1220,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 //
                 // !SETINSULT
                 //
-                else if( Command=="setinsult" )
+                else if( Command=="setinsult" && Level >= 9 )
                 {
                     if(Payload.empty())
                         SendChat(player, m_GHost->m_Language->FoundNoMatchWithPlayername());
@@ -1242,7 +1242,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 //
                 // !SIMULATECHAT
                 //
-                else if(Command=="simulatechat" && !Payload.empty() )
+                else if( (  Command=="simulatechat" || Command =="sc" ) && !Payload.empty() && Level >= 9 )
                 {
                     string suser;
                     string message;
@@ -3062,7 +3062,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     // !CHECKME
     //
 
-    if( Command == "checkme" )
+    if( Command == "checkme" || Command == "cm" )
     {
         SendChat( player, "[" + User + "] (P: " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) + ") (F: " + player->GetCLetter( ) + ") (Role: " + ( LevelName.empty() ? "unknown" : LevelName ) + ") (SpoofChecked: " + ( player->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) + ")" );
         if( player->GetForfeitVote() )
@@ -3710,6 +3710,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     * GRIEF-CODE COMMANDS *
     **********************/
 
+    // !ID
+    else if(Command == "id") {
+        SendChat(player, "Your unique id is ["+UTIL_ToString(player->GetID())+"]");
+    }
+
     //
     // !WFF !WHOFF
     //
@@ -3861,9 +3866,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     }
 
     //
-    // !I   !INBOX
+    // !LG   !LASTGAME
     //
-    else if( ( Command == "i" || Command == "inbox" ) && Payload.empty( ) && m_GHost->m_MessageSystem )
+    else if( ( Command == "lg" || Command == "lastgame" ) && Payload.empty( ) && m_GHost->m_MessageSystem )
         m_PairedINChecks.push_back( PairedINCheck( User, m_GHost->m_DB->ThreadedInboxSummaryCheck( User ) ) );
 
     //
@@ -4603,7 +4608,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         uint32_t LevelStart = 0;
         uint32_t LevelEnd = 0;
         uint32_t calcCount = 0;
-
         do {
                 calcCount++;
                 if (calcCount % 2 == 0 ) {
@@ -4619,23 +4623,24 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         } while (Level == 0);
         Level--;
 
-        Percentage = ((EXP - LevelStart) / (LevelEnd - LevelStart)) * 100;
-        Percentage = round(Percentage);
-        if (Percentage == 0) {
-            Percentage = 1;
-        }
+        Percentage = (float)(((EXP - LevelStart)*100) / (LevelEnd - LevelStart));
+
         ExpToNextLevel = LevelEnd-EXP;
 
-        uint32_t currPerc = 5;
+        uint32_t currPerc = 0;
         string visualPerc = "";
         while( currPerc != 100 ) {
-            if(currPerc<=Percentage)
-                visualPerc = "║║";
+            if(currPerc<Percentage)
+                visualPerc += "#";
             else
-                visualPerc = "-";
+                visualPerc += "_";
+
+            currPerc = currPerc+5;
         }
-        SendAllChat("["+Name+"] Level: "+UTIL_ToString(Level)+", Process: ["+visualPerc+"] ("+UTIL_ToString(EXP)+"/"+UTIL_ToString(LevelEnd)+")");
+
+        SendAllChat("["+Name+"] Level: "+UTIL_ToString(Level)+", Process: ["+visualPerc+"] "+UTIL_ToString(Percentage, 2)+"% ("+UTIL_ToString(EXP)+"/"+UTIL_ToString(LevelEnd)+")");
     }
+
     return HideCommand;
 }
 

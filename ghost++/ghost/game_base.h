@@ -58,6 +58,7 @@ class CCallableConnectCheck;
 class CCallableGameDBInit;
 class CDBInbox;
 class CCallableInboxSummaryCheck;
+class CCallableGamePlayerAdd;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -67,6 +68,7 @@ typedef pair<string,CCallablepenp *> Pairedpenp;
 typedef pair<string,CCallableBanAdd *> PairedBanAdd;
 typedef pair<string,CCallableStoreLog *> PairedLogUpdate;
 typedef pair<string,CCallableInboxSummaryCheck *> PairedINCheck;
+typedef pair<string,CCallableGamePlayerAdd *> PairedGPAdd;
 
 class CBaseGame
 {
@@ -83,6 +85,7 @@ protected:
     vector<CCallableScoreCheck *> m_ScoreChecks;
     vector<PairedPWCheck> m_PairedPWChecks;				// vector for checking if a player joined with a password
     vector<Pairedpm> m_Pairedpms;
+    vector<PairedGPAdd> m_PairedGPAdds;
     vector<PairedWPCheck> m_PairedWPChecks;
     vector<PairedBanCheck2> m_PairedBanCheck2s;
     vector<PairedLogUpdate> m_PairedLogUpdates;

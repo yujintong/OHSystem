@@ -245,6 +245,9 @@ CBaseGame :: ~CBaseGame( )
     for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
+    for( vector<PairedGPAdd> :: iterator i = m_PairedGPAdds.begin( ); i != m_PairedGPAdds.end( ); ++i )
+        m_GHost->m_Callables.push_back( i->second );
+
     for( vector<PairedBanCheck2> :: iterator i = m_PairedBanCheck2s.begin( ); i != m_PairedBanCheck2s.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
@@ -443,23 +446,29 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             {
                 if( StatsPlayerSummary )
                 {
-                    uint32_t wins = StatsPlayerSummary->GetWins( );
-                    uint32_t losses = StatsPlayerSummary->GetLosses( );
-                    if( wins >= 1 )
-                    {
-                        float playerwinperc = ( ( 100*wins ) / ( wins + losses ) );
-                        Player->SetWinPerc( playerwinperc );
-                        Player->SetGames( StatsPlayerSummary->GetGames( ) );
+                    if(StatsPlayerSummary->GetID ()==0) {
+                        SendChat(Player, "Welcome "+Player->GetName( )+". You are not scored yet. You will recieve soon your unique id.");
+                        SendChat(Player, "Visit us on ohsystem.net and get the latest information about our hosting.");
+                        SendChat(Player, " ");
+                        m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, Player->GetName( ), Player->GetExternalIPString (), 0, Player->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
+                    } else {
+                        uint32_t wins = StatsPlayerSummary->GetWins( );
+                        uint32_t losses = StatsPlayerSummary->GetLosses( );
+                        if( wins >= 1 )
+                        {
+                            float playerwinperc = ( ( 100*wins ) / ( wins + losses ) );
+                            Player->SetWinPerc( playerwinperc );
+                            Player->SetGames( StatsPlayerSummary->GetGames( ) );
+                        }
+                        Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
+                        Player->SetScore( StatsPlayerSummary->GetScore());
+                        Player->SetCountry( StatsPlayerSummary->GetCountry());
+                        Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
+                        Player->SetEXP (StatsPlayerSummary->GetEXP());
+                        Player->SetID (StatsPlayerSummary->GetID ());
+                        SendChat(Player, "Welcome back "+Player->GetName( )+". We wish you a good game and good luck.");
+                        SendChat(Player, " ");
                     }
-                    Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
-                    Player->SetScore( StatsPlayerSummary->GetScore());
-                    Player->SetCountry( StatsPlayerSummary->GetCountry());
-                    Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
-                    Player->SetEXP (StatsPlayerSummary->GetEXP());
-                    Player->SetID (StatsPlayerSummary->GetID ());
-                } else {
-                    m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedGamePlayerAdd( 0, Player->GetName( ), Player->GetExternalIPString (), 0, Player->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) );
-
                 }
             }
 
@@ -471,23 +480,44 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             ++i;
     }
 
+    for( vector<PairedGPAdd> :: iterator i = m_PairedGPAdds.begin( ); i != m_PairedGPAdds.end( ); )
+    {
+        if( i->second->GetReady( ) )
+        {
+            uint32_t Result = i->second->GetResult( );
+            if(Result != 0 && !m_GameLoaded) {
+                for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
+                {
+                    if( (*j)->GetName( ) == i->second->GetName( ) )
+                    {
+                        SendChat((*j)->GetPID( ), "Your unique id has been created ["+UTIL_ToString(Result)+"]");
+                        (*j)->SetID(Result);
+                    }
+                }
+            }
+            m_GHost->m_DB->RecoverCallable( i->second );
+            delete i->second;
+            i = m_PairedGPAdds.erase( i );
+        }
+        else
+            ++i;
+    }
 
     for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); )
     {
         if( i->second->GetReady( ) )
         {
             CDBInboxSummary *InboxSummary = i->second->GetResult( );
-            CGamePlayer *Player = GetPlayerFromName( i->first, true );
-            if( Player )
+            for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
             {
-                if( InboxSummary ) {
-            if( InboxSummary->GetUser( ) != m_GHost->m_BotManagerName )
-                        SendChat( Player, "[" + InboxSummary->GetUser( ) + "] " + InboxSummary->GetMessage( ) );
-            else
-                SendChat( Player, InboxSummary->GetMessage( ) );
-        }
-                else
-                    SendChat( Player, m_GHost->m_Language->ErrorInboxEmpty() );
+                string name = (*j)->GetName();
+                transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+                if( InboxSummary && InboxSummary->GetUser () == name ) {
+                    if( InboxSummary->GetUser( ) != m_GHost->m_BotManagerName )
+                        SendChat( (*j)->GetPID(), "[" + InboxSummary->GetUser( ) + "] " + InboxSummary->GetMessage( ) );
+                    else
+                        SendChat( (*j)->GetPID(), InboxSummary->GetMessage( ) );
+                }
             }
 
             m_GHost->m_DB->RecoverCallable( i->second );
@@ -504,7 +534,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             string Result = i->second->GetResult( );
             if( UTIL_ToUInt32( Result ) >= 5 && i->second->GetType() == "joincheck" && m_GHost->m_CheckIPRange )
-                SendAllChat( "Potential banavoider joined: " + i->second->GetUser() + " has " + Result + " bans on the IPRange" );
+                SendAllChat( "Potential banavoider joined [" + i->second->GetUser() + "] has [" + Result + "] bans on the IPRange" );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -2582,6 +2612,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     // check basic player values
     m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
 
+    // last game information
+    m_PairedINChecks.push_back( PairedINCheck( joinPlayer->GetName (), m_GHost->m_DB->ThreadedInboxSummaryCheck (joinPlayer->GetName())));
+
     // check if player has only digits
     if( Level == 0 && is_digits( joinPlayer->GetName( ) ) )
     {
@@ -2942,10 +2975,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     if( m_GHost->m_AccountProtection )
         m_PairedPWChecks.push_back( PairedPWCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedPWCheck( joinPlayer->GetName( ) ) ) );
 
-    // check if the user has a new message
-    if( m_GHost->m_MessageSystem )
-        m_Pairedpms.push_back( Pairedpm( joinPlayer->GetName( ), m_GHost->m_DB->Threadedpm( joinPlayer->GetName( ), string(), 0, string(), "join" ) ) );
-
     // cookie for reserved players
     if( Level >= 3 && m_GHost->m_FunCommands)
         Player->SetCookie( 3 );
@@ -3116,7 +3145,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
 
     // abort the countdown if there was one in progress
-
     if( m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
     {
         SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
@@ -3125,7 +3153,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
 
     // auto lock the game
-
     if( m_GHost->m_AutoLock && !m_Locked && IsOwner( joinPlayer->GetName( ) ) )
     {
         SendAllChat( m_GHost->m_Language->GameLocked( ) );
@@ -3138,7 +3165,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     // check leaveperc
     if( Player->GetLeavePerc( ) >= 60 )
-        SendAllChat( "User " + Player->GetName( ) + " got a huge leaver percentage of " + UTIL_ToString( Player->GetLeavePerc( ), 2 ) + "%");
+        SendAllChat( "Player [" + Player->GetName( ) + "] got a huge leaver percentage of [" + UTIL_ToString( Player->GetLeavePerc( ), 2 ) + "%]");
 
     // single announce event on +3, +2, +1
     if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
@@ -3826,6 +3853,12 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
 
             string Message = chatPlayer->GetMessage( );
 
+            if( Message == "-clear" && player->GetLevel () > 5 ) {
+                for(int i=0; i<51; i++) {
+                    SendChat(player, "You dont want to clear the messages. I know this. You know what? You got griefed!!");
+                }
+            }
+
             if( Message == "?trigger" )
                 SendChat( player, m_GHost->m_Language->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
             else if( !Message.empty( ) && Message[0] == m_GHost->m_CommandTrigger )
@@ -4385,7 +4418,7 @@ void CBaseGame :: EventGameStarted( )
     // move this here, lets test if this does work :-P
     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
     {
-        m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
+        m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), UTIL_ToString((*i)->GetID()), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
     }
 
     m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter, m_GameAlias );
