@@ -358,6 +358,9 @@ if ($BanIPUpdate == 1) {
 	 if (!empty($row["bnet_username"])) {
 	    $upd2 = $db->prepare("UPDATE ".OSDB_STATS." SET user_level = '0' WHERE player = '".$row["bnet_username"]."' ");
 	    $result2 = $upd2->execute(); 
+		
+	    $upd3 = $db->prepare("UPDATE ".OSDB_STATS_P." SET user_level = '0' WHERE player = '".$row["bnet_username"]."' ");
+	    $result3 = $upd3->execute(); 
 	 }
 	  
     }

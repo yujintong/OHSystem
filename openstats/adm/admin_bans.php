@@ -141,8 +141,11 @@ if ( isset($_GET["code"]) AND strlen($_GET["code"]) == 2 ) {
 	$total = number_format( ($row["top_bans"] / $numrows)*100, 1);
 	?>
 	<tr>
-	  <td width="32"><?=OS_ShowUserFlag( $row["country"], $Countries[ $row["country"] ], 175 )?></td>
-	  <td width="180"><?=$Countries[ $row["country"] ]?></td>
+	  <td width="32"><?php 
+	  if (isset( $Countries[ $row["country"] ] ) ) 
+	  OS_ShowUserFlag( $row["country"], $Countries[ $row["country"] ], 175 ); 
+	  else OS_ShowUserFlag( $row["country"], $row["country"], 175 )?></td>
+	  <td width="180"><?php if (isset( $Countries[ $row["country"] ] ) ) echo $Countries[ $row["country"] ]; else echo $row["country"];?></td>
 	  <td width="120"><b><?=$row["top_bans"]?></b> / <?=$numrows?></td>
 	  <td><?=$total?> %</td>
 	</tr>
@@ -387,6 +390,9 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	  
 	  $upd = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 WHERE LOWER(player) = LOWER('".$name."') LIMIT 1");
 	  $result  = $upd->execute();
+	  
+	  $upd2 = $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = 0 WHERE LOWER(player) = LOWER('".$name."') LIMIT 1");
+	  $result  = $upd2->execute();
 	  OS_AddLog($_SESSION["username"], "[os_editban] Removed ban ($name)");
 	 
 	  ?>
@@ -485,6 +491,9 @@ if ( isset($_GET["search_bans"]) ) $s = safeEscape($_GET["search_bans"]); else $
 	  
 	  $sth = $db->prepare("UPDATE ".OSDB_STATS." SET banned = 1 WHERE LOWER(player) = LOWER('".$name."') LIMIT 1");
 	  $result  = $sth->execute();
+	  
+	  $sth2 = $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = 1 WHERE LOWER(player) = LOWER('".$name."') LIMIT 1");
+	  $result  = $sth2->execute();
 	  
 	  
 	  if ( empty($errors) ) {

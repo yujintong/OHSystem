@@ -141,6 +141,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["admin_info"] = 1;
 	}
 	
+	
+	$sth1 = $db->prepare("SELECT * FROM ".OSDB_USERS."  WHERE bnet_username = :player LIMIT 1");
+	$sth1->bindValue(':player', $PlayerName, PDO::PARAM_STR);  
+	$result = $sth1->execute();
+	$row1 = $sth1->fetch(PDO::FETCH_ASSOC);
+	$UserData[0]["member"] = $row1["bnet_username"];
+	
 	//CHECK BNET USERNAME
 	$sth2 = $db->prepare("SELECT * FROM ".OSDB_USERS." as u 
 	WHERE LOWER(bnet_username) = '".strtolower($PlayerName)."' AND user_bnet>=1 ");
@@ -252,7 +259,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($gi);
 	
 	$sth = $db->prepare("SELECT 
-	SUM(score) as totalscore,
+	MAX(score) as totalscore,
 	SUM(games) as totalgames,
 	SUM(wins)  as totalwins,
 	SUM(losses) as totallosses,
@@ -267,7 +274,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	SUM(rax) as totalrax,
 	SUM(leaver) as totalleaver,
 	SUM(zerodeaths) as totalzerodeaths,
-	SUM(maxstreak) as totalmaxstreak
+	MAX(streak) as totalstreak
 	FROM ".OSDB_STATS." 
 	WHERE LOWER(player) = '".strtolower($PlayerName)."'  ");
 	
@@ -288,7 +295,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[0]["totalrax"] = $row["totalrax"];
 	$UserData[0]["totalleaver"] = $row["totalleaver"];
 	$UserData[0]["totalzerodeaths"] = $row["totalzerodeaths"];
-	$UserData[0]["totalmaxstreak"] = $row["totalmaxstreak"];
+	$UserData[0]["totalstreak"] = $row["totalstreak"];
 	
 	if ($row["totalwins"] >0 )
 	$UserData[0]["totalwinslosses"] = round($row["totalwins"]/($row["totalwins"]+$row["totallosses"]), 3)*100;
@@ -521,7 +528,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	//LAST SEEN FROM GAME LOG
 	$sth = $db->prepare("SELECT gameid, botid, log_time, log_data
 	FROM ".OSDB_GAMELOG." 
-	WHERE id>=1 AND log_data LIKE '%".$PlayerName."%'
+	WHERE id>=1 AND log_data LIKE '%	".$PlayerName."	%'
 	ORDER BY id DESC LIMIT 1");
 	$result = $sth->execute();
 	$row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -581,6 +588,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		
 		$upd = $db->prepare("DELETE FROM ".OSDB_BANS." WHERE id='".(int)$_GET["rban"]."' ");
 	    $result = $upd->execute();
+		
+		$upd2 - $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 WHERE player = '".$PlayerName."' ");
+		$result = $upd2->execute();
+		
+		$upd3 - $db->prepare("UPDATE ".OSDB_STATS_M." SET banned = 0 WHERE player = '".$PlayerName."' ");
+		$result = $upd3->execute();
+		
 		OS_AddLog($_SESSION["username"], "[os_moderator] Removed Ban: $PlayerName ");
 		header("location: ".OS_HOME."?u=".$uid."&mcp");
 		die();
@@ -620,6 +634,12 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   "pp" => '1',
 		   "admin" => $admin
             ));
+			
+            $upd2 - $db->prepare("UPDATE ".OSDB_STATS." SET banned = 1 WHERE player = '".$PlayerName."' ");
+            $result = $upd2->execute();
+		
+            $upd3 - $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = 1 WHERE player = '".$PlayerName."' ");
+            $result = $upd3->execute();
 	  					 
 			OS_AddLog($_SESSION["username"], "[os_moderator] Banned: $PlayerName ");
 		    header("location: ".OS_HOME."?u=".$uid."&mcp");

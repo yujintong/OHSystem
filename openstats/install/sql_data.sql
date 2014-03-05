@@ -450,8 +450,8 @@ CREATE TABLE IF NOT EXISTS `oh_pm` (
 
 DROP TABLE IF EXISTS `oh_stats`;
 CREATE TABLE IF NOT EXISTS `oh_stats` (
-  `botid` int(11) unsigned NOT NULL,
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(11) unsigned NOT NULL,
   `alias_id` smallint(11) unsigned NOT NULL,
   `player` varchar(30) NOT NULL,
   `player_lower` varchar(30) NOT NULL,
@@ -488,6 +488,7 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   `points` int(11) unsigned NOT NULL,
   `points_bet` tinyint(11) unsigned NOT NULL,
   `hide` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `updated` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `games` (`games`),
   KEY `wins` (`wins`),
@@ -503,8 +504,31 @@ CREATE TABLE IF NOT EXISTS `oh_stats` (
   KEY `country_code` (`country_code`),
   KEY `month` (`month`),
   KEY `year` (`year`),
-  KEY `hide` (`hide`)
+  KEY `hide` (`hide`),
+  KEY `pid` (`pid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `oh_stats_players`;
+CREATE TABLE IF NOT EXISTS `oh_stats_players` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `player` varchar(50) NOT NULL,
+  `player_lower` varchar(50) NOT NULL,
+  `user_level` tinyint(1) unsigned NOT NULL,
+  `last_seen` datetime NOT NULL,
+  `banned` tinyint(1) unsigned NOT NULL,
+  `hide` tinyint(1) unsigned NOT NULL,
+  `realm` varchar(20) NOT NULL,
+  `ip` varchar(15) NOT NULL,
+  `country` varchar(50) NOT NULL,
+  `country_code` varchar(2) NOT NULL,
+  `points` int(11) unsigned NOT NULL,
+  `points_bet` tinyint(6) unsigned NOT NULL,
+  `blacklisted` tinyint(1) unsigned NOT NULL,
+  `exp` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `player` (`player`),
+  KEY `country_code` (`country_code`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_users`;
 CREATE TABLE IF NOT EXISTS `oh_users` (
