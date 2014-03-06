@@ -69,9 +69,12 @@ define('OSDB_NEWS',        'oh_news');
 define('OSDB_PLAYER_INFO', 'oh_playerinfo');
 
 define('OSDB_BNET_PM',     'oh_pm'); //do not change
+define('OSDB_PM',     'oh_pm'); //do not change
 
-define('OSDB_STATS',       'oh_stats');
-define('OSDB_USERS',       'oh_users');
+define('OSDB_STATS',         'oh_stats');
+define('OSDB_STATS_M',       'oh_stats_monthly');
+define('OSDB_STATS_P',       'oh_stats_players');
+define('OSDB_USERS',         'oh_users');
 
 
 

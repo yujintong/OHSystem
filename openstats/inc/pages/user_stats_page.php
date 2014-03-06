@@ -592,7 +592,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		$upd2 - $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 WHERE player = '".$PlayerName."' ");
 		$result = $upd2->execute();
 		
-		$upd3 - $db->prepare("UPDATE ".OSDB_STATS_M." SET banned = 0 WHERE player = '".$PlayerName."' ");
+		$upd3 - $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = 0 WHERE player = '".$PlayerName."' ");
 		$result = $upd3->execute();
 		
 		OS_AddLog($_SESSION["username"], "[os_moderator] Removed Ban: $PlayerName ");
