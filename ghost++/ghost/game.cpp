@@ -4641,6 +4641,23 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         SendAllChat("["+Name+"] Level: "+UTIL_ToString(Level)+", Process: ["+visualPerc+"] "+UTIL_ToString(Percentage, 2)+"% ("+UTIL_ToString(EXP)+"/"+UTIL_ToString(LevelEnd)+")");
     }
 
+    //
+    // !VOTEBALANCE
+    //
+    else if( Command == "votebalance") {
+        if(! player->GetVotedForBalance () ) {
+            m_BalanceVotes++;
+            SendAllChat( "Player ["+player->GetName ()+"] has voted to balance the game before the start.");
+
+            if(m_BalanceVotes > ( GetNumHumanPlayers () / 2 ) ) {
+                m_GameBalance = true;
+                SendAllChat( "[INFO] Balance for this game has been turned on.");
+            }
+        } else {
+            SendChat(player, "Error, you have already voted for balance the game.");
+        }
+    }
+
     return HideCommand;
 }
 

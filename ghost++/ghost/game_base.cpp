@@ -91,6 +91,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_VotedTimeStart = 0;
     m_Voted = false;
     m_PartTime = 7;
+    m_GameBalance = m_GHost->m_OHBalance;
     if( m_GHost->m_SaveReplays && !m_SaveGame )
         m_Replay = new CReplay( );
 
@@ -2183,7 +2184,7 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
 
         in.close( );
     }
-    if( m_GHost->m_OHBalance)
+    if( m_GameBalance)
         SendChat(player, "This is a balanced game, the slots will be balanced before the game will start.");
     if( m_GHost->m_VoteMode ) {
         SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
@@ -5850,7 +5851,7 @@ void CBaseGame :: StartCountDown( bool force )
                 return;
             }
 
-            if( !m_Balanced && m_GHost->m_OHBalance )
+            if( !m_Balanced && m_GameBalance )
             {
                 OHFixedBalance( );
                 m_Balanced = true;
@@ -5876,7 +5877,7 @@ void CBaseGame :: StartCountDown( bool force )
             }
             // if no problems found start the game
 
-            if( StillDownloading.empty( ) && NotSpoofChecked.empty( ) && NotPinged.empty( ) && NotPassword.empty( ) && ( m_Balanced || ( !m_Balanced && !m_GHost->m_OHBalance ) ) )
+            if( StillDownloading.empty( ) && NotSpoofChecked.empty( ) && NotPinged.empty( ) && NotPassword.empty( ) && ( m_Balanced || ( !m_Balanced && !m_GameBalance ) ) )
             {
                 m_CountDownStarted = true;
                 m_CountDownCounter = 10;
@@ -5984,7 +5985,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
         }
 
 
-        if( !m_Balanced && m_GHost->m_OHBalance )
+        if( !m_Balanced && m_GameBalance )
         {
             OHFixedBalance( );
             m_Balanced = true;
@@ -6011,7 +6012,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
 
         // if no problems found start the game
 
-        if( StillDownloading.empty( ) && NotSpoofChecked.empty( ) && NotPinged.empty( ) && NotPassword.empty( ) && ( m_Balanced || ( !m_Balanced && !m_GHost->m_OHBalance ) ) )
+        if( StillDownloading.empty( ) && NotSpoofChecked.empty( ) && NotPinged.empty( ) && NotPassword.empty( ) && ( m_Balanced || ( !m_Balanced && !m_GameBalance ) ) )
         {
             m_CountDownStarted = true;
             m_CountDownCounter = 10;

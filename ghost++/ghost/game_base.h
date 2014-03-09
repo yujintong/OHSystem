@@ -165,6 +165,7 @@ protected:
     string m_GetMapType;							// map_type
     uint32_t m_LastLogDataUpdate;
     bool m_Balanced;
+    bool m_GameBalance;
     uint32_t m_GameLoadedTime;
     bool m_SoftGameOver;
     uint32_t m_LastProcessedTicks;

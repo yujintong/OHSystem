@@ -77,6 +77,7 @@ protected:
     uint32_t m_ObservingPlayers;
     uint32_t m_LoosingTeam;
     uint32_t m_LastLeaverTime;
+    uint32_t m_BalanceVotes;
 
 public:
     CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
