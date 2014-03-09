@@ -890,6 +890,9 @@ public:
     virtual void SetResult( uint32_t nResult )	{
         m_Result = nResult;
     }
+    virtual uint32_t GetName( )				{
+        return m_Name;
+    }
 };
 
 class CCallableGamePlayerSummaryCheck : virtual public CBaseCallable
