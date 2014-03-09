@@ -56,6 +56,14 @@ private:
     uint32_t m_LatestKill[12];
     uint32_t m_KillCounter[12];
     string TypePrefix;
+    uint32_t m_KillStreakCounter[12];
+    string m_BufferedItemOne[12];
+    string m_BufferedItemTwo[12];
+    string m_BufferedItemThree[12];
+    string m_BufferedItemFour[12];
+    string m_BufferedItemFive[12];
+    string m_BufferedItemSix[12];
+    uint32_t m_BufferedItemCount[12];
 
 public:
     CStatsDOTA( CBaseGame *nGame );
