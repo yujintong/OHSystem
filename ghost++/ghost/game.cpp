@@ -1022,13 +1022,13 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
 
             uint32_t spread = CountAlly > CountEnemy ? CountAlly - CountEnemy : CountEnemy - CountAlly;
 
-            if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll)
+            if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll && player->GetLeavePerc () > 30)
             {
                 m_AutoBans.push_back( player->GetName( ) );
                 SendAllChat( m_GHost->m_Language->UserMayBanned( player->GetName( ) ) );
             }
 
-            if( m_GHost->m_MaxAllowedSpread <= spread && m_Stats )
+            if( m_GHost->m_MaxAllowedSpread <= spread && m_Stats && CountAlly < CountEnemy )
             {
                 if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
                     SendAllChat( m_GHost->m_Language->AutoEndHighSpread(UTIL_ToString(spread)) );
