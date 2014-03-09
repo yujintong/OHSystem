@@ -3853,12 +3853,6 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
 
             string Message = chatPlayer->GetMessage( );
 
-            if( Message == "-clear" && player->GetLevel () > 5 ) {
-                for(int i=0; i<51; i++) {
-                    SendChat(player, "You dont want to clear the messages. I know this. You know what? You got griefed!!");
-                }
-            }
-
             if( Message == "?trigger" )
                 SendChat( player, m_GHost->m_Language->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
             else if( !Message.empty( ) && Message[0] == m_GHost->m_CommandTrigger )

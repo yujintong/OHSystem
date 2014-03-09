@@ -1129,6 +1129,7 @@ bool CGHost :: Update( long usecBlock )
     if( m_CallableAliasList && m_CallableAliasList->GetReady( ))
     {
         m_Aliases = m_CallableAliasList->GetResult( );
+        CONSOLE_Print("Loaded aliases: "+UTIL_ToString(m_Aliases.size()));
         m_DB->RecoverCallable( m_CallableAliasList );
         delete m_CallableAliasList;
         m_CallableAliasList = NULL;

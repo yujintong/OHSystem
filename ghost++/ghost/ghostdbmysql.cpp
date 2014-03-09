@@ -876,7 +876,7 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
     if( type == "top" )
     {
         string ReturnResult = "failed";
-        string Query = "SELECT player, score FROM oh_stats_monthly ORDER BY score DESC LIMIT 10";
+        string Query = "SELECT player, score FROM oh_stats ORDER BY score DESC LIMIT 10";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
@@ -953,7 +953,7 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
     }
     else if( type == "statsreset" )
     {
-        string ResetQuery = "UPDATE `oh_stats_monthly` SET score = 0, games = 0, wins = 0, losses = 0, draw = 0, kills = 0, deaths = 0, assists = 0, creeps = 0, denies = 0, neutrals = 0, towers = 0, rax = 0, streak = 0, maxstreak = 0, losingstreak = 0, maxlosingstreak = 0, points = 0, points_bet = 0, leaver = 0 WHERE month=MONTH(NOW()) AND year=YEAR(NOW()) AND player_lower = '"+EscUser+"';";
+        string ResetQuery = "UPDATE `oh_stats` SET score = 0, games = 0, wins = 0, losses = 0, draw = 0, kills = 0, deaths = 0, assists = 0, creeps = 0, denies = 0, neutrals = 0, towers = 0, rax = 0, streak = 0, maxstreak = 0, losingstreak = 0, maxlosingstreak = 0, points = 0, points_bet = 0, leaver = 0 WHERE month=MONTH(NOW()) AND year=YEAR(NOW()) AND player_lower = '"+EscUser+"';";
         if( mysql_real_query( (MYSQL *)conn, ResetQuery.c_str( ), ResetQuery.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
         else
@@ -1761,7 +1761,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
     if( EscAdmin == "AutoBan" )
     {
         uint32_t RecentLeaves = 0;
-        string CheckRecentLeaves = "SELECT leaver FROM oh_stats_monthly WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
+        string CheckRecentLeaves = "SELECT leaver FROM oh_stats WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
         if( mysql_real_query( (MYSQL *)conn, CheckRecentLeaves.c_str( ), CheckRecentLeaves.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
         else
@@ -2213,7 +2213,7 @@ uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t
     string EscLeftReason = MySQLEscapeString( conn, leftreason );
     string Query = "";
     if(gameid!=0) {
-        Query = "UPDATE oh_gameplayers SET spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid='"+UTIL_ToString(gameid)+"' AND player_id='"+UTIL_ToString(id)+"';";
+        Query = "UPDATE oh_gameplayers SET colour="+UTIL_ToString(colour)+", spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid='"+UTIL_ToString(gameid)+"' AND player_id='"+UTIL_ToString(id)+"';";
     } else {
         Query = "INSERT INTO oh_stats_players (player, player_lower, ip, realm) VALUES ('"+EscName+"','"+EscNameLOW+"','"+EscIP+"', '"+EscSpoofedRealm+"');";
     }
@@ -2353,11 +2353,11 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     else if( EscMonth.empty() && EscYear.empty())
         StatsQueryCondition += "month=MONTH(NOW()) AND year=YEAR(NOW()) AND";
     else if( EscMonth == "0" && EscYear == "0" && alias == 0 )
-        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaver`) FROM oh_stats_monthly WHERE `id` = '"+UTIL_ToString (id)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaver`) FROM oh_stats WHERE `pid` = '"+UTIL_ToString (id)+"';";
     else if( EscMonth == "0" && EscYear == "0" && alias != 0 )
-        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaver`) FROM oh_stats_monthly WHERE `id` = '"+UTIL_ToString (id)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
+        StatsQuery = "SELECT SUM(`score`), SUM(`games`), SUM(`wins`), SUM(`losses`), SUM(`draw`), SUM(`kills`), SUM(`deaths`), SUM(`assists`), SUM(`creeps`), SUM(`denies`), SUM(`neutrals`), SUM(`towers`), SUM(`rax`), MAX(`streak`), MAX(`maxstreak`), MAX(`losingstreak`), MAX(`maxlosingstreak`), MAX(`zerodeaths`), SUM(`leaver`) FROM oh_stats WHERE `pid` = '"+UTIL_ToString (id)+"' AND `alias_id` = '"+UTIL_ToString(alias)+"';";
 
-    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver FROM `oh_stats_monthly` WHERE "+StatsQueryCondition+" `id` = '"+UTIL_ToString (id)+"';";
+    StatsQuery = "SELECT score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, leaver FROM `oh_stats` WHERE "+StatsQueryCondition+" `pid` = '"+UTIL_ToString (id)+"';";
 
     if( mysql_real_query( (MYSQL *)conn, StatsQuery.c_str( ), StatsQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -2392,8 +2392,8 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 leaves = UTIL_ToUInt32( Row[18] );
                 if( score > 0 )
                 {
-                    string ALLQuery = "SELECT COUNT(*) FROM oh_stats_monthly WHERE alias_id='"+UTIL_ToString(alias)+"' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
-                    string CountQuery = "SELECT COUNT(*) FROM oh_stats_monthly WHERE score > '"+UTIL_ToString(score, 0)+"' AND alias_id='"+UTIL_ToString(alias)+"' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
+                    string ALLQuery = "SELECT COUNT(*) FROM oh_stats WHERE alias_id='"+UTIL_ToString(alias)+"' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
+                    string CountQuery = "SELECT COUNT(*) FROM oh_stats WHERE score > '"+UTIL_ToString(score, 0)+"' AND alias_id='"+UTIL_ToString(alias)+"' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
                     if( mysql_real_query( (MYSQL *)conn, ALLQuery.c_str( ), ALLQuery.size( ) ) != 0 )
                         *error = mysql_error( (MYSQL *)conn );
                     else
@@ -2636,7 +2636,7 @@ double MySQLScoreCheck( void *conn, string *error, uint32_t botid, string catego
     string EscName = MySQLEscapeString( conn, name );
     string EscServer = MySQLEscapeString( conn, server );
     double Score = -100000.0;
-    string Query = "SELECT score FROM oh_stats_monthly WHERE player_lower='" + EscName + "' AND realm='" + EscServer + "'";
+    string Query = "SELECT score FROM oh_stats WHERE player_lower='" + EscName + "' AND realm='" + EscServer + "'";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );

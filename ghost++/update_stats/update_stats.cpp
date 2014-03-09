@@ -287,7 +287,7 @@ int main( int argc, char **argv )
         CONSOLE_Print( "Starting update for gameid ["+GameID+"]" );
 
         // BASIC INFORMATION UPDATE PROCESS
-        MYSQL_RES *BasicResult = QueryBuilder(Connection, "SELECT gp.id, gp.name, gp.spoofedrealm, gp.reserved, gp.left, gp.ip, g.duration, gp.team, gp.colour, g.gamename FROM oh_gameplayers as gp LEFT JOIN oh_games as g on g.id=gp.gameid WHERE gp.gameid = " + GameID );
+        MYSQL_RES *BasicResult = QueryBuilder(Connection, "SELECT gp.player_id, gp.name, gp.spoofedrealm, gp.reserved, gp.left, gp.ip, g.duration, gp.team, gp.colour, g.gamename FROM oh_gameplayers as gp LEFT JOIN oh_games as g on g.id=gp.gameid WHERE gp.gameid = " + GameID );
         if( BasicResult )
         {
             vector<string> Row = MySQLFetchRow( BasicResult );
@@ -396,7 +396,7 @@ int main( int argc, char **argv )
                 treeTagInfernal[i_playerCounter]=0;
 
                 //general datas
-                i_playerId[i_playerCounter]=0;
+                i_playerId[i_playerCounter]=UTIL_ToUInt32 (Row[0]);
                 s_playerName[i_playerCounter]="";
                 s_lowerPlayerName[i_playerCounter]="";
                 s_spoofedRealm[i_playerCounter]="";
@@ -444,11 +444,10 @@ int main( int argc, char **argv )
                 s_gamename = Row[9];
 
 
-                MYSQL_RES *IDResult = QueryBuilder(Connection, "SELECT id FROM oh_stats_monthly WHERE id='"+Row[0]+"' AND month='"+Month+"' AND year = '"+Year+"';" );
+                MYSQL_RES *IDResult = QueryBuilder(Connection, "SELECT id FROM oh_stats WHERE pid='"+Row[0]+"' AND month='"+Month+"' AND year = '"+Year+"';" );
                 if( IDResult ) {
                     vector<string> Row = MySQLFetchRow( IDResult );
                     if(Row.size( ) == 1 ) {
-CONSOLE_Print("New player");
                         b_newPlayer[i_playerCounter] = false;
                     }
                 }
@@ -505,7 +504,7 @@ CONSOLE_Print("New player");
                 uint32_t i_maxLoosingStreak=0;
                 int32_t i_score = 0;
                 if(! b_newPlayer[i_playerCounter] ) {
-                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats_monthly WHERE id='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
+                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE pid='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
                     if( DetailedStatsQuery ) {
                         vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
                         if( Row.size( ) == 5 ) {
@@ -899,7 +898,7 @@ CONSOLE_Print("New player");
                             {
                                     if(! b_newPlayer[i] ) {
                                         string PlayerUpdateString = "UPDATE `oh_stats_players` SET exp=exp+5, last_seen=CURRENT_TIMESTAMP(), points_bet = '0', points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"', ip= '" + s_playerIp[i] + "' WHERE `id` = '"+ UTIL_ToString( i_playerId[i] )+"';";
-                                        string StatsUpdateString = "UPDATE `oh_stats_monthly` SET banned = '"+ ( b_bannedPlayer[i] ?  Int32_ToString(1) : Int32_ToString(0)) +"', ip='"+s_playerIp[i]+"', realm = '"+s_spoofedRealm[i]+"', last_seen=NOW(), leaver = leaver+'"+(b_leaver[i] ? Int32_ToString(1) : Int32_ToString(0) )+"', maxlosingstreak = '" + UTIL_ToString( i_maxLooseStreak[i] ) + "', maxstreak = '" + UTIL_ToString( i_maxWinStreak[i] ) + "', streak='"+ UTIL_ToString( i_winStreak[i] ) +"', losingstreak='" + UTIL_ToString( i_looseStreak[i] ) +"', wins = wins+" + UTIL_ToString( i_wins[i] ) + ", losses = losses+" + UTIL_ToString( i_losses[i] ) + ", draw = draw+" + UTIL_ToString( i_draws[i] ) + ", games= games+1 "+ s_playerScore[i];
+                                        string StatsUpdateString = "UPDATE `oh_stats` SET banned = '"+ ( b_bannedPlayer[i] ?  Int32_ToString(1) : Int32_ToString(0)) +"', ip='"+s_playerIp[i]+"', realm = '"+s_spoofedRealm[i]+"', last_seen=NOW(), leaver = leaver+'"+(b_leaver[i] ? Int32_ToString(1) : Int32_ToString(0) )+"', maxlosingstreak = '" + UTIL_ToString( i_maxLooseStreak[i] ) + "', maxstreak = '" + UTIL_ToString( i_maxWinStreak[i] ) + "', streak='"+ UTIL_ToString( i_winStreak[i] ) +"', losingstreak='" + UTIL_ToString( i_looseStreak[i] ) +"', wins = wins+" + UTIL_ToString( i_wins[i] ) + ", losses = losses+" + UTIL_ToString( i_losses[i] ) + ", draw = draw+" + UTIL_ToString( i_draws[i] ) + ", games= games+1 "+ s_playerScore[i];
                                         if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("dota")!=string::npos || s_gameAliasName.find("lod")!=string::npos || s_gameAliasName.find("imba")!=string::npos ) )
                                             StatsUpdateString += ", zerodeaths = zerodeaths+"+ UTIL_ToString(i_zerodeaths[i])  +", kills=kills+"+UTIL_ToString(i_ingameKills[i])+", deaths=deaths+" + UTIL_ToString( i_ingameDeaths[i] ) + ", assists=assists+" + UTIL_ToString( i_ingameAssists[i] ) + ", creeps=creeps+" + UTIL_ToString( i_ingameCreeps[i] ) + ", denies=denies+" + UTIL_ToString( i_ingameDenies[i] ) + ", neutrals=neutrals+" + UTIL_ToString( i_ingameNeutrals[i] ) + ", towers=towers+" + UTIL_ToString( i_ingameTower[i] ) + ", rax=rax+" + UTIL_ToString( i_ingameRaxes[i] );
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )
@@ -907,7 +906,7 @@ CONSOLE_Print("New player");
                                         else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("tree")!=string::npos ) )
                                             StatsUpdateString += ", kills=kills+"+UTIL_ToString(treeTagKills[i])+", deaths=deaths+"+UTIL_ToString(treeTagDeaths[i])+", assists=assists+"+UTIL_ToString(treeTagSaves[i])+", creeps=creeps+"+UTIL_ToString(treeTagEnt[i])+", denies=denies+"+UTIL_ToString(treeTagInfernal[i]);
 
-                                        StatsUpdateString += " WHERE id='" + UTIL_ToString( i_playerId[i] )+"' AND alias_id='"+Alias+"' AND month='"+Month+"' AND year='"+Year+"';";
+                                        StatsUpdateString += " WHERE pid='" + UTIL_ToString( i_playerId[i] )+"' AND alias_id='"+Alias+"' AND month='"+Month+"' AND year='"+Year+"';";
                                         MYSQL_RES *PlayerUpdateResult = QueryBuilder(Connection, PlayerUpdateString );
                                         MYSQL_RES *StatsUpdateResult = QueryBuilder(Connection, StatsUpdateString );
                                     }
@@ -917,7 +916,7 @@ CONSOLE_Print("New player");
                                             string EscLName = MySQLEscapeString( Connection, s_lowerPlayerName[i] );
                                             string EscServer = MySQLEscapeString( Connection, s_spoofedRealm[i] );
                                             string UpdatePlayerValues = "UPDATE oh_stats_players SET last_seen=NOW(), exp=5, points=points"+( ( Int32_ToString( i_winPoints[i] ).substr( 0, 1 ) == "-" ) ?  Int32_ToString( i_winPoints[i] ) : "+"+Int32_ToString( i_winPoints[i] ) )+", banned = '"+ ( b_bannedPlayer[i] ?  "1" : "0") +"' WHERE `id` = '"+ UTIL_ToString( i_playerId[i] )+"';";
-                                            string InsertStatsQuery = "INSERT INTO `oh_stats_monthly` ( banned, ip, realm, last_seen, id, month, year, alias_id, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, leaver ) VALUES ('"+( b_bannedPlayer[i] ?  Int32_ToString(1) : Int32_ToString(0)) +"','"+s_playerIp[i]+"','"+s_spoofedRealm[i]+"', NOW(),"+UTIL_ToString( i_playerId[i] )+", "+Month+", "+Year+", "+Alias+", "+( Int32_ToString( i_newPlayerScore[i] ) )+", 1, ";
+                                            string InsertStatsQuery = "INSERT INTO `oh_stats` ( player, banned, ip, realm, last_seen, pid, month, year, alias_id, score, games, kills, deaths, assists, creeps, denies, neutrals, towers, rax, wins, losses, draw, streak, maxstreak, losingstreak, maxlosingstreak, leaver ) VALUES ('"+EscLName+"', '"+( b_bannedPlayer[i] ?  Int32_ToString(1) : Int32_ToString(0)) +"','"+s_playerIp[i]+"','"+s_spoofedRealm[i]+"', NOW(),"+UTIL_ToString( i_playerId[i] )+", "+Month+", "+Year+", "+Alias+", "+( Int32_ToString( i_newPlayerScore[i] ) )+", 1, ";
                                             if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("dota")!=string::npos || s_gameAliasName.find("lod")!=string::npos || s_gameAliasName.find("imba")!=string::npos ) )
                                                 InsertStatsQuery += UTIL_ToString( i_ingameKills[i] )+", " + UTIL_ToString( i_ingameDeaths[i] ) + ", "+ UTIL_ToString( i_ingameAssists[i] ) + ", " + UTIL_ToString( i_ingameCreeps[i] ) + ", "+ UTIL_ToString( i_ingameDenies[i] ) + ", " + UTIL_ToString( i_ingameNeutrals[i] ) + ", " + UTIL_ToString( i_ingameTower[i] ) + ", " + UTIL_ToString( i_ingameRaxes[i] );
                                             else if( ( i_gameAlias != 0 &&! s_gameAliasName.empty( ) ) && ( s_gameAliasName.find("legion")!=string::npos ) )

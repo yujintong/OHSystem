@@ -36,6 +36,8 @@
 
 CStatsDOTA :: CStatsDOTA( CBaseGame *nGame ) : CStats( nGame ), m_Winner( 0 ), m_Min( 0 ), m_Sec( 0 ), m_TowerLimit( false ), m_KillLimit( 0 ), m_TimeLimit( 0 ), m_SentinelTowers( 0 ), m_ScourgeTowers( 0 ), m_SentinelKills( 0 ), m_ScourgeKills( 0 ), m_LastCreepTime( 0 )
 {
+    CONSOLE_Print(UTIL_ToString(m_Game->m_GameAlias));
+    CONSOLE_Print(m_Game->m_GHost->GetAliasName(m_Game->m_GameAlias));
     TypePrefix=m_Game->m_GHost->GetAliasName(m_Game->m_GameAlias);
     transform( TypePrefix.begin( ), TypePrefix.end( ), TypePrefix.begin( ), (int(*)(int))toupper );
     CONSOLE_Print( "[STATS"+TypePrefix+"] using "+TypePrefix+" stats" );
@@ -333,15 +335,15 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 CGamePlayer *Killer = m_Game->GetPlayerFromColour( ValueInt );
                                 CGamePlayer *Victim = m_Game->GetPlayerFromColour( VictimColour );
                                 /*
-                                								if( Killer && Victim )
-                                									CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] killed a courier owned by player [" + Victim->GetName( ) + "]" );
-                                								else if( Victim )
-                                								{
-                                									if( ValueInt == 0 )
-                                										CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel killed a courier owned by player [" + Victim->GetName( ) + "]" );
-                                									else if( ValueInt == 6 )
-                                										CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge killed a courier owned by player [" + Victim->GetName( ) + "]" );
-                                								}
+                                                                if( Killer && Victim )
+                                                                    CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] killed a courier owned by player [" + Victim->GetName( ) + "]" );
+                                                                else if( Victim )
+                                                                {
+                                                                    if( ValueInt == 0 )
+                                                                        CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel killed a courier owned by player [" + Victim->GetName( ) + "]" );
+                                                                    else if( ValueInt == 6 )
+                                                                        CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge killed a courier owned by player [" + Victim->GetName( ) + "]" );
+                                                                }
                                 */
                             }
                             else if( KeyString.size( ) >= 8 && KeyString.substr( 0, 5 ) == "Tower" )
