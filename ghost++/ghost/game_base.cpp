@@ -3009,8 +3009,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         return;
     }
 
-    CONSOLE_Print(UTIL_ToString(Player->GetReputation(), 2 ));
-
     GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
     if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
         SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
@@ -3096,15 +3094,12 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
 
     // send a map check packet to the new player
-
     Player->Send( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
 
     // send slot info to everyone, so the new player gets this info twice but everyone else still needs to know the new slot layout
-
     SendAllSlotInfo( );
 
     // send a welcome message
-
     SendWelcomeMessage( Player );
 
     // if spoof checks are required and we won't automatically spoof check this player then tell them how to spoof check
