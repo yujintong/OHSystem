@@ -2310,6 +2310,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     uint32_t allcount = 0;
     uint32_t rankcount = 0;
     uint32_t points;
+    double reputation = 0;
 
 
     string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points FROM oh_stats_players WHERE player_lower='"+EscLowerName+"'";
@@ -2426,7 +2427,26 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         else
             *error = mysql_error( (MYSQL *)conn );
     }
-    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp );
+
+    string ReputationQuery = "SELECT SUM(rate)/COUNT(*) as reputation FROM oh_gameplayers_rating WHERE player='"+EscLowerName+"';";
+    if( mysql_real_query( (MYSQL *)conn, ReputationQuery.c_str( ), ReputationQuery.size( ) ) != 0 )
+        *error = mysql_error( (MYSQL *)conn );
+    else
+    {
+        MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+
+        if( Result )
+        {
+            vector<string> Row = MySQLFetchRow( Result );
+
+            if(! Row[0].empty()  )
+            {
+                reputation =  UTIL_ToDouble(Row[0]);
+            }
+        }
+    }
+
+    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp, reputation );
 
     return StatsPlayerSummary;
 }

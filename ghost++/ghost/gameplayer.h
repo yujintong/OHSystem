@@ -212,6 +212,7 @@ private:
     uint32_t m_EXP;
     uint32_t m_ID;
     bool m_VotedForBalance;
+    double m_Reputation;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -474,6 +475,9 @@ public:
     bool GetVotedForBalance( ) {
         return m_VotedForBalance;
     }
+    double GetReputation( ) {
+        return m_Reputation;
+    }
 
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
@@ -698,6 +702,9 @@ public:
     }
     void SetVotedForBalance( ) {
         m_VotedForBalance = true;
+    }
+    void SetReputation( double nReputation ) {
+        m_Reputation = nReputation;
     }
 
     // processing functions

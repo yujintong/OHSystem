@@ -467,6 +467,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
                         Player->SetEXP (StatsPlayerSummary->GetEXP());
                         Player->SetID (StatsPlayerSummary->GetID ());
+                        Player->SetReputation (StatsPlayerSummary->GetReputation ());
                         SendChat(Player, "Welcome back "+Player->GetName( )+". We wish you a good game and good luck.");
                         SendChat(Player, " ");
                     }

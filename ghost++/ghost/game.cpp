@@ -1187,6 +1187,23 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 }
             }
 
+            //
+            // !SET LEVEL
+            //
+            else if(Command == "setlevel" && Level == 10 &&!Payload.empty()) {
+                CGamePlayer *LastMatch = NULL;
+                uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
+                if(Matches==0)
+                    SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
+                else if(Matches==1)
+                {
+                    SendChat( LastMatch, "Your level has been set to ["+Payload+"] by ["+player->GetName ()+"]");
+                    LastMatch->SetLevel (UTIL_ToUInt32(Payload));
+                }
+                else if(Matches>1)
+                    SendChat(player,m_GHost->m_Language->FoundMultiplyMatches( ) );
+            }
+
 
             /***********************/
             /***  FUN COMMANDS :-) */
@@ -4655,6 +4672,24 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
         } else {
             SendChat(player, "Error, you have already voted for balance the game.");
+        }
+    }
+
+    //
+    // !REPUTATION
+    //
+    else if( Command == "reputation") {
+        if(!Payload.empty() ) {
+            CGamePlayer *LastMatch = NULL;
+            uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+            if( Matches == 0 )
+                SendChat(player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+            else if( Matches == 1)
+                SendChat(player, "Your reputation is ["+UTIL_ToString( LastMatch->GetReputation (), 2 )+"]");
+            else
+                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+        } else {
+            SendChat(player, "Your reputation is ["+UTIL_ToString( player->GetReputation (), 2 )+"]");
         }
     }
 
