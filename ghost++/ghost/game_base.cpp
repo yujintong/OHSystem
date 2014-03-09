@@ -442,34 +442,33 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         if( i->second->GetReady( ) )
         {
             CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
-            CGamePlayer *Player = GetPlayerFromName( i->first, true );
-            if( Player )
+            for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
             {
-                if( StatsPlayerSummary )
+                if( (*j)->GetName( ) == i->second->GetName( ) && StatsPlayerSummary )
                 {
                     if(StatsPlayerSummary->GetID ()==0) {
-                        SendChat(Player, "Welcome "+Player->GetName( )+". You are not scored yet. You will recieve soon your unique id.");
-                        SendChat(Player, "Visit us on ohsystem.net and get the latest information about our hosting.");
-                        SendChat(Player, " ");
-                        m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, Player->GetName( ), Player->GetExternalIPString (), 0, Player->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
+                        SendChat((*j)->GetPID( ), "Welcome "+(*j)->GetName( )+". You are not scored yet. You will recieve soon your unique id.");
+                        SendChat((*j)->GetPID( ), "Visit us on ohsystem.net and get the latest information about our hosting.");
+                        SendChat((*j)->GetPID( ), " ");
+                        m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, (*j)->GetName( ), (*j)->GetExternalIPString (), 0, (*j)->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
                     } else {
                         uint32_t wins = StatsPlayerSummary->GetWins( );
                         uint32_t losses = StatsPlayerSummary->GetLosses( );
                         if( wins >= 1 )
                         {
                             float playerwinperc = ( ( 100*wins ) / ( wins + losses ) );
-                            Player->SetWinPerc( playerwinperc );
-                            Player->SetGames( StatsPlayerSummary->GetGames( ) );
+                            (*j)->SetWinPerc( playerwinperc );
+                            (*j)->SetGames( StatsPlayerSummary->GetGames( ) );
                         }
-                        Player->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
-                        Player->SetScore( StatsPlayerSummary->GetScore());
-                        Player->SetCountry( StatsPlayerSummary->GetCountry());
-                        Player->SetCLetter( StatsPlayerSummary->GetCountryCode());
-                        Player->SetEXP (StatsPlayerSummary->GetEXP());
-                        Player->SetID (StatsPlayerSummary->GetID ());
-                        Player->SetReputation (StatsPlayerSummary->GetReputation ());
-                        SendChat(Player, "Welcome back "+Player->GetName( )+". We wish you a good game and good luck.");
-                        SendChat(Player, " ");
+                        (*j)->SetLeavePerc( StatsPlayerSummary->GetLeavePerc( ) );
+                        (*j)->SetScore( StatsPlayerSummary->GetScore());
+                        (*j)->SetCountry( StatsPlayerSummary->GetCountry());
+                        (*j)->SetCLetter( StatsPlayerSummary->GetCountryCode());
+                        (*j)->SetEXP (StatsPlayerSummary->GetEXP());
+                        (*j)->SetID (StatsPlayerSummary->GetID ());
+                        (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
+                        SendChat((*j)->GetPID( ), "Welcome back "+(*j)->GetName( )+". We wish you a good game and good luck.");
+                        SendChat((*j)->GetPID( ), " ");
                     }
                 }
             }
@@ -3009,6 +3008,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         Player->SetLeftMessageSent( true );
         return;
     }
+
+    SendChat(Player, UTIL_ToDouble(Player->GetReputation (),2 ));
 
     GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
     if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
