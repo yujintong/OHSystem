@@ -3009,7 +3009,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         return;
     }
 
-    SendAllChat(UTIL_ToString(Player->GetReputation(), 2 ));
+    CONSOLE_Print(UTIL_ToString(Player->GetReputation(), 2 ));
 
     GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
     if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
