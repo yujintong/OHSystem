@@ -1191,14 +1191,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !SET LEVEL
             //
             else if(Command == "setlevel" && Level == 10 &&!Payload.empty()) {
+                string user;
+                string level;
+                stringstream SS;
+                SS<<Payload;
+                SS>>level;
+                SS>>user;
                 CGamePlayer *LastMatch = NULL;
-                uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
+                uint32_t Matches=GetPlayerFromNamePartial(user,&LastMatch);
                 if(Matches==0)
                     SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
                 else if(Matches==1)
                 {
-                    SendChat( LastMatch, "Your level has been set to ["+Payload+"] by ["+player->GetName ()+"]");
-                    LastMatch->SetLevel (UTIL_ToUInt32(Payload));
+                    SendChat( LastMatch, "Your level has been set to ["+level+"] by ["+player->GetName ()+"]");
+                    LastMatch->SetLevel (UTIL_ToUInt32(level));
                 }
                 else if(Matches>1)
                     SendChat(player,m_GHost->m_Language->FoundMultiplyMatches( ) );
