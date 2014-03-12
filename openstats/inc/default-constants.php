@@ -59,6 +59,7 @@ define('OSDB_GO',        'oh_game_offenses'); //do not change
 define('OSDB_GAMESTATUS','oh_game_status'); //do not change
 define('OSDB_GAMELIST',  'oh_gamelist'); //table for gamelist patch
 define('OSDB_GP',        'oh_gameplayers'); //do not change
+define('OSDB_GPR',       'oh_gameplayers_rating');
 define('OSDB_GAMES',     'oh_games'); //do not change
 
 define('OSDB_GUIDES',   'oh_hero_guides');

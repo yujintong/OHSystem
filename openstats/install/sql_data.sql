@@ -226,6 +226,7 @@ CREATE TABLE IF NOT EXISTS `oh_gamelist` (
 DROP TABLE IF EXISTS `oh_gameplayers`;
 CREATE TABLE IF NOT EXISTS `oh_gameplayers` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `player_id` int(11) unsigned NOT NULL,
   `botid` smallint(4) unsigned NOT NULL,
   `gameid` int(11) unsigned NOT NULL,
   `name` varchar(15) NOT NULL,
@@ -243,8 +244,21 @@ CREATE TABLE IF NOT EXISTS `oh_gameplayers` (
   PRIMARY KEY (`id`),
   KEY `gameid` (`gameid`),
   KEY `colour` (`colour`),
-  KEY `name` (`name`)
+  KEY `name` (`name`),
+  KEY `playerID` (`player_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `oh_gameplayers_rating`;
+CREATE TABLE IF NOT EXISTS `oh_gameplayers_rating` (
+  `player` varchar(30) NOT NULL,
+  `voter` varchar(30) NOT NULL,
+  `gameid` int(11) unsigned NOT NULL,
+  `time` int(11) unsigned NOT NULL,
+  `rate` tinyint(2) NOT NULL,
+  KEY `pid` (`player`),
+  KEY `rate` (`rate`),
+  KEY `gameid` (`gameid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_games`;
 CREATE TABLE IF NOT EXISTS `oh_games` (
