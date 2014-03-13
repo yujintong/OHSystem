@@ -84,6 +84,11 @@ function Get_w3mmdplayers($gameid) {
            $Data[$c]["loadingtime"] = $row["loadingtime"];
            $Data[$c]["ip"] = $row["ip"];
            $Data[$c]["hideElement"] = ' hideElement';
+		   
+		   $Data[$c]["totalvotes"] = 0; 
+		   $Data[$c]["totalrate"] = 0; 
+		   $Data[$c]["player_rate"] = 0;
+		   $Data[$c]["voted"] = 1;
            
            $Data[$c]["counter"] = ''.($row["pid"]+1);
            
@@ -321,7 +326,8 @@ function Get_w3mmdplayers($gameid) {
 	 LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
 	 LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = dg.gameid AND gp.colour = dp.colour
 	 LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.pid = 0
-	 WHERE s.id = '".(int) $id."' AND g.duration>='".$MinDuration."' ".$filter."
+	 WHERE s.pid = '".(int) $id."' AND g.duration>='".$MinDuration."' 
+	 GROUP BY g.id ".$filter."
 	 LIMIT $offset, $rowsperpage";
 	 
 	return $sql;
@@ -345,8 +351,8 @@ function Get_w3mmdplayers($gameid) {
 	
     function getGameInfo($gid){
 	$sql = "
-	   SELECT winner, dp.gameid, gp.colour, newcolour, original as hero, description, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.gold,  dp.raxkills, dp.courierkills, s.id as userid, s.user_level as admin, s.banned,
-	   item1, item2, item3, item4, item5, item6, spoofedrealm, dp.level,
+	   SELECT winner, dp.gameid, gp.colour, newcolour, original as hero, description, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.gold,  dp.raxkills, dp.courierkills, s.pid as userid, s.user_level as admin, s.banned,
+	   item1, item2, item3, item4, item5, item6, spoofedrealm, dp.level, 
 	   it1.icon as itemicon1, 
 	   it2.icon as itemicon2, 
 	   it3.icon as itemicon3, 

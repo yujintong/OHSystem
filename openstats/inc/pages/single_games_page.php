@@ -6,6 +6,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $MenuClass["games"] = "active";
 	 $c=0;
 	 
+	 $PlayersList = array();
+	 
 	 //first check if this is custom map
 	 $W3mmd = Get_w3mmdplayers($gameid);
 	 $GameData = array();
@@ -31,6 +33,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
      $gametimenew = "";
 	 $gid = $gameid;
 	 $gamename = $GameData[$c]["gamename"];
+	 $PlayersList = $GameData[$c]["name"];
 	 require_once('inc/get_replay.php');
 	 if ( file_exists($replayloc) ) $GameData[$c]["replay"]  = $replayloc;
 	 } else {
@@ -55,6 +58,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $GameData[$c]["creatorname"]  = ($row["creatorname"]);
 	 $GameData[$c]["duration"]  = secondsToTime($row["duration"]);
 	 $GameData[$c]["datetime"]  = date($DateFormat,strtotime($row["datetime"]));
+	 $GameDateTime = strtotime($row["datetime"]);
 	 $GameData[$c]["dt"]  = ($row["datetime"]);
 	 $GameData[$c]["gamename"]  = ($row["gamename"]);
 	 $GameData[$c]["winner"]  = ($row["winner"]);
@@ -95,6 +99,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 
 	$sth = $db->prepare(  getGameInfo( (int) $gameid)  );
 	$result = $sth->execute();
+	
+	 if ( $sth->rowCount()<=0 ) {
+     require_once(OS_PLUGINS_DIR.'index.php');
+     os_init();
+	 header('location: '.OS_HOME.'?404&game=not_found'); die; 
+	 }
+	
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
 	$GameData[$c]["hideElement"]  = "";
 	if( $row["newcolour"] <= 5 ) $GameData[$c]["counter"] = $row["newcolour"];
@@ -130,6 +141,41 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
                         }
                 }
 	}
+	
+	 //GET PLAYER RATES
+	 $sth2 = $db->prepare("SELECT COUNT(rate) as totalvotes, SUM(rate) as totalrate FROM ".OSDB_GPR." 
+	 WHERE player = '".$row["name"]."'  AND gameid = '".$gameid."' ");
+	 $result2 = $sth2->execute();
+	 
+	 $rates = $sth2->fetch(PDO::FETCH_ASSOC);
+	 
+	 $GameData[$c]["totalvotes"] = $rates["totalvotes"]; 
+	 $GameData[$c]["totalrate"] = $rates["totalrate"]; 
+	 if($rates["totalrate"]>=1)
+	 $GameData[$c]["player_rate"] = $rates["totalrate"]/$rates["totalvotes"]; 
+	 else $GameData[$c]["player_rate"] = 0;
+	 
+	 //Check if we already rated
+	  $GameData[$c]["voted"] = 0;
+	  if(!os_is_logged()) $GameData[$c]["voted"] = 1;
+     
+	 //Limit votes for 2 days
+	 if ( $GameDateTime+3600*24*3 <= time() ) $GameData[$c]["voted"] = 1; else
+	 if( os_is_logged() AND isset($_SESSION["bnet_username"]) AND $GameData[$c]["voted"] == 0) {
+	   $voter = trim($_SESSION["bnet_username"]);
+	   
+	   if ( strtolower($voter) ==  strtolower($row["name"]) ) $GameData[$c]["voted"] = 1;
+	   else {
+	   $sth3 = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GPR." 
+		WHERE player='".$row["name"]."' AND voter = '".$voter."' AND gameid = '".$gameid."'");
+		
+		$result3 = $sth3->execute();
+		$r = $sth3->fetch(PDO::FETCH_NUM);
+	    $numrows = $r[0];
+		
+		if ( $numrows>=1 ) $GameData[$c]["voted"] = 1;
+		}
+	 }
 	 
 	 $GameData[$c]["heroid"]  = ($row["hero"]);
 	 $GameData[$c]["hero_link"]  = 1;
@@ -206,7 +252,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   $MostKillsID = ($row["userid"]);
 	 }
 	 
-	 $score_points = ($row["kills"] -  $row["deaths"]) + ($row["assists"]*0.3);
+	 $score_points = (($row["kills"]) -  $row["deaths"]) + ($row["assists"]*0.5);
 	 if ( $score_points > $temp_points ) {
 	 $BestPlayer = ($row["name"]);
 	 $BestPlayerID = ($row["userid"]);
@@ -260,6 +306,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
 	 $GameData[$c]["banname"]  = ($row["banname"]);
 	 $GameData[$c]["name"]  = ($row["name"]);
+	 
+	 $PlayersList[] = $row["name"];
 	 
 	 $GameData[$c]["banned"]  = ($row["banned"]);
 	 $GameData[$c]["admin"]  = ($row["admin"]);

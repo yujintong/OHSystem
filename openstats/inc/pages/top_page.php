@@ -32,7 +32,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 
    
    if ( isset($_GET["sort"]) ) {
-     if ( $_GET["sort"] == "score") $orderby = "`score` DESC";
+     if ( $_GET["sort"] == "score") $orderby = "`score` DESC, p.exp DESC";
+	 if ( $_GET["sort"] == "level") $orderby = "p.`exp` DESC, s.`score` DESC";
 	 if ( $_GET["sort"] == "country") $orderby = "`country_code` ASC";
 	 if ( $_GET["sort"] == "player_name") $orderby = "(`player`) ASC";
 	 if ( $_GET["sort"] == "games") $orderby = "(`games`) DESC";
@@ -66,7 +67,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    $sql = "";
 	  
    if ( isset($_GET["L"]) AND strlen($_GET["L"]) == 1 ) {
-     $sql = " AND player LIKE ('".strtolower($_GET["L"])."%') ";
+     $sql = " AND s.player LIKE ('".strtolower($_GET["L"])."%') ";
 	 
 	 $HomeTitle.=" | ".strip_tags($_GET["L"])."";
    }
@@ -74,7 +75,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
    
   if ( isset($_GET["country"]) AND strlen($_GET["country"]) == 2 ) {
     $country = strip_tags(substr($_GET["country"],0,2));
-    $sql.= " AND country_code = '".$country."' ";
+    $sql.= " AND s.country_code = '".$country."' ";
 	
 	$HomeTitle.=" | $country";
  } 
@@ -90,8 +91,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
 
  
-  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." 
-  WHERE id>=1 $sqlCurrentDate $sql AND hide=0 LIMIT 1");
+  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." as s
+  WHERE s.id>=1 $sqlCurrentDate $sql AND s.hide=0 LIMIT 1");
   $result = $sth->execute();
   
   $r = $sth->fetch(PDO::FETCH_NUM);
@@ -108,8 +109,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   include('inc/pagination.php');
   $draw_pagination = 1;
   
-  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS." 
-  WHERE id>=1  $sqlCurrentDate $sql AND hide=0 
+  $sth = $db->prepare("SELECT s.id, s.kills, s.deaths, s.assists, s.creeps, s.denies, s.country_code, s.country, s.user_level, s.score, s.games, s.wins, s.losses, s.neutrals, s.rax, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.zerodeaths, p.exp, s.player, s.leaver, s.draw, s.towers, p.banned, s.ip, s.realm, s.pid
+  FROM ".OSDB_STATS." as s
+  LEFT JOIN ".OSDB_STATS_P." as p ON p.player = s.player
+  WHERE s.id>=1  $sqlCurrentDate $sql AND s.hide=0 
   ORDER BY $orderby 
   LIMIT $offset, $rowsperpage");
   
@@ -141,10 +144,23 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$TopData[$c]["country"] = "Reserved";
 	}
 	
+   $exp = calculateXP( ( $row["exp"] ) );
+
+	
+	if( $exp["level"]<=0)    $exp["level"] = 1;
+	if( $exp["percent"]<=0)  $exp["percent"] = 1;
+	
+	$TopData[$c]["percent"] = $exp["percent"];
+	$TopData[$c]["level"]   = $exp["level"];
+	$TopData[$c]["exp"]     = $row["exp"];
+	$TopData[$c]["end"]     = $exp["end"];
+	
+	$TopData[$c]["progress"] = round($exp["end"]/($exp["end"]+$row["exp"]), 3)*100;
+	
 	$counter++;
 	
 	$TopData[$c]["counter"]        = $counter;
-	$TopData[$c]["id"]        = (int)($row["id"]);
+	$TopData[$c]["id"]        = (int)($row["pid"]);
 	$TopData[$c]["player"]  = ($row["player"]);
 	
 	$TopData[$c]["realm"] = ($row["realm"]);

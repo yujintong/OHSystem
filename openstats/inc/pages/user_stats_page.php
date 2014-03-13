@@ -1,7 +1,6 @@
 <?php
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 
-	
 	//Remove PP
 	if ( isset($_GET["removepp"]) AND isset($_GET["u"]) AND is_numeric($_GET["u"]) AND is_numeric($_GET["removepp"])  ) {
 			 $sth = $db->prepare("DELETE FROM ".OSDB_GO." WHERE id = '".(int)$_GET["removepp"]."' ");
@@ -11,25 +10,34 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 			 die();
 	}
 
-   	//GAME TYPES/ALIASES (dota, lod)
-    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
-	$result = $sth->execute();
-	$GameAliases = array();
-	$c = 0;
-
     $uid = safeEscape( (int) $_GET["u"] );
 	
-	
+	$sql = "";
 	$year  = date("Y");
 	$month = date("n");
 	
-	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  WHERE id = :user_id LIMIT 1");
+	if(isset($_GET["game_type"])) $sql.=" AND alias_id ='".(int)$_GET["game_type"]."' ";
+	else {
+	//Get default game type
+	$sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1");
+	$result = $sth->execute();
+	$game_type = $sth->fetch(PDO::FETCH_ASSOC);
+	$sql.=" AND alias_id ='".(int)$game_type["alias_id"]."' ";
+	}
+	
+	if(isset($_GET["y"]) AND isset($_GET["m"]) ) 
+	$sql.= " AND `month` = '".$_GET["m"]."' AND `year` = '".$_GET["y"]."'";
+	
+	$sth = $db->prepare("SELECT * FROM ".OSDB_STATS."  WHERE pid = :user_id $sql ORDER BY id DESC LIMIT 1");
 	$sth->bindValue(':user_id', (int)$uid, PDO::PARAM_INT);  
 	$result = $sth->execute();
 	
-	if ( $sth->rowCount()<=0 ) { 
+	if ( $sth->rowCount()<=0 ) {
     require_once(OS_PLUGINS_DIR.'index.php');
     os_init();
+	
+	if(isset($_GET["game_type"])) header('location: '.OS_HOME.'?u='.$uid);
+	else
 	header('location: '.OS_HOME.'?404'); die; 
 	
 	}
@@ -50,6 +58,19 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
     $result = $chk->execute();
 	$rowban = $chk->fetch(PDO::FETCH_ASSOC);
+	
+	 //GET PLAYER RATES
+	 $sth2 = $db->prepare("SELECT COUNT(rate) as totalvotes, SUM(rate) as totalrate FROM ".OSDB_GPR." 
+	 WHERE player = '".$row["player"]."' ");
+	 $result2 = $sth2->execute();
+	 
+	 $rates = $sth2->fetch(PDO::FETCH_ASSOC);
+	 
+	 $UserData[$c]["totalvotes"] = $rates["totalvotes"]; 
+	 $UserData[$c]["totalrate"] = $rates["totalrate"]; 
+	 if($rates["totalrate"]>=1)
+	 $UserData[$c]["player_rate"] = ROUND($rates["totalrate"]/$rates["totalvotes"],1); 
+	 else $UserData[$c]["player_rate"] = 0;
 
 	if ( isset($GeoIP) AND $GeoIP == 1) {
 	$IP = $row["ip"];
@@ -84,6 +105,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	
 	$UserData[$c]["id"]        = (int)($row["id"]);
+	$UserData[$c]["pid"]       = (int)($row["pid"]);
 	$UserData[$c]["player"]   = ($row["player"]);
 	$UserData[$c]["alias_id"]  = ($row["alias_id"]);
 	$UserAliasID = ($row["alias_id"]);
@@ -96,7 +118,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserData[$c]["expiredate"]  = ($rowban["expiredate"]);
 	$UserData[$c]["reason"]  = convEnt($rowban["reason"]);
 	$UserData[$c]["reason"] = str_replace(array("fuck", "FUCK", "Fuck"), array("f***", "F***", "F***"), $UserData[$c]["reason"]);
-	$UserData[$c]["admin"]  = ($rowban["admin"]);
+	$UserData[$c]["admin"]  = str_replace("|cFF40FF00OHS", "OHS", $rowban["admin"]);
 	
 	$UserData[$c]["points"]  = number_format($row["points"], 0);
 	$UserData[$c]["points_int"]  = ($row["points"]);
@@ -257,6 +279,25 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$c++;
 	}
 	if ( isset($GeoIP) AND $GeoIP == 1) geoip_close($gi);
+	
+	
+   $sth = $db->prepare("SELECT * FROM ".OSDB_STATS_P." WHERE player = :player ");
+   $sth->bindValue(':player', $PlayerName, PDO::PARAM_STR); 
+   $result = $sth->execute();
+   $row = $sth->fetch(PDO::FETCH_ASSOC);
+   
+   $exp = calculateXP( ( $row["exp"] ) );
+
+	
+	if( $exp["level"]<=0)    $exp["level"] = 1;
+	if( $exp["percent"]<=0)  $exp["percent"] = 1;
+	
+	$UserData[0]["percent"] = $exp["percent"];
+	$UserData[0]["level"]   = $exp["level"];
+	$UserData[0]["exp"]     = $row["exp"];
+	$UserData[0]["end"]     = $exp["end"];
+	
+	$UserData[0]["progress"] = round($exp["end"]/($exp["end"]+$row["exp"]), 3)*100;
 	
 	$sth = $db->prepare("SELECT 
 	MAX(score) as totalscore,
@@ -502,8 +543,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		
 		$PenaltyData[$c]["offence_expire"] = $row["offence_expire"];
 		$PenaltyData[$c]["pp"] = $row["pp"];
+		$row["admin"]  = str_replace("|cFF40FF00OHS", "OHS", $row["admin"]);
 		$PenaltyData[$c]["admin"] = $row["admin"];
 		if (empty($row["admin"])) $PenaltyData[$c]["admin"] = "[system]";
+		
 		$PenaltyData[$c]["total"] = $TotalPP;
 		$PenaltyData[$c]["warned"] = $Warned;
 		$PenaltyData[$c]["reason"] = $row["reason"];
@@ -554,7 +597,6 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$UserOtherGames["id"] = $row["id"];
 
 	//GAME TYPES/ALIASES (dota, lod)
-	
     $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
 	$result = $sth->execute();
 	$GameAliases = array();
@@ -577,6 +619,158 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $c++;
 	}
 	
+    $sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." ORDER BY alias_id ASC");
+	$result = $sth->execute();
+	$GameAliasesGames = array();
+	$c = 0;
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	 $GameAliasesGames[$c]["alias_id"] = $row["alias_id"];
+	 $GameAliasesGames[$c]["alias_name"] = $row["alias_name"];
+	 
+	 if ( isset($_GET["game_type"]) AND $_GET["game_type"] == $row["alias_id"] )
+	 $GameAliasesGames[$c]["selected"] = 'selected="selected"'; else $GameAliasesGames[$c]["selected"] = '';
+	 
+	 $c++;
+	}
+	
+	
+	//GAME HISTORY
+	
+	 $OrderBY = "ORDER BY g.datetime DESC";
+	 $sql = " AND g.duration>='".$MinDuration."' ";
+	 
+	 if(isset($_GET["game_type"]) AND is_numeric($_GET["game_type"])) {
+	   $sql.=" AND g.alias_id = '".(int)$_GET["game_type"]."' ";
+	 }
+	 
+     $sth = $db->prepare("SELECT COUNT(*) 
+	 FROM ".OSDB_GAMES." as g
+	 LEFT JOIN ".OSDB_GP." as gp ON gp.gameid = g.id
+	 WHERE gp.player_id = :id ".$sql."
+	 LIMIT 1");
+	 $sth->bindValue(':id', $uid, PDO::PARAM_INT); 
+	 $result = $sth->execute();
+
+     $r = $sth->fetch(PDO::FETCH_NUM);
+     $numrows = $r[0]; 
+     $result_per_page = $GamesPerPage;
+     $draw_pagination = 0;
+     include('inc/pagination.php');
+     $draw_pagination = 1;
+	
+
+	 $sth = $db->prepare("SELECT g.id, g.map, g.gamename, g.datetime, g.ownername, g.duration, g.creatorname, g.gamestate AS type, g.alias_id, dg.winner, dp.kills, dp.deaths, dp.creepkills, dp.creepdenies, dp.assists, dp.hero, dp.neutralkills, dp.newcolour, w.flag
+	 FROM ".OSDB_GAMES." as g
+	 LEFT JOIN ".OSDB_GP." as gp ON gp.gameid = g.id
+	 LEFT JOIN ".OSDB_DG." as dg ON g.id = dg.gameid 
+	 LEFT JOIN ".OSDB_DP." as dp ON dp.gameid = dg.gameid AND gp.colour = dp.colour
+	 LEFT JOIN ".OSDB_W3PL." as w ON w.gameid = g.id AND w.pid = 0
+	 WHERE gp.player_id = :id ".$sql."
+	 ".$OrderBY."
+	 LIMIT $offset, $rowsperpage
+	 ");
+	 $sth->bindValue(':id', $uid, PDO::PARAM_INT); 
+	 
+	 $result = $sth->execute();
+	 
+	$c=0;
+    $GamesData = array();
+	
+	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	
+	$GamesData[$c]["win"] = "";
+	
+	$GamesData[$c]["id"]        = (int)($row["id"]);
+	$GetMap = convEnt2(substr($row["map"], strripos($row["map"], '\\')+1));
+	$Map = explode(".w", $GetMap );
+	$GamesData[$c]["map"]  = $Map[0];
+	//$GamesData[$c]["map"]  = convEnt2(substr($row["map"], strripos($row["map"], '\\')+1));
+	//$GamesData[$c]["map"] = reset( explode(".w", $GamesData[$c]["map"] ) );
+	//$GamesData[$c]["map"] = substr($GamesData[$c]["map"],0,20);
+	$GamesData[$c]["datetime"]  = ($row["datetime"]);
+	$GamesData[$c]["gamename"]  = ($row["gamename"]);
+	$GamesData[$c]["ownername"]  = ($row["ownername"]);
+	$GamesData[$c]["duration"]  = ($row["duration"]);
+	$GamesData[$c]["creatorname"]  = ($row["creatorname"]);
+	
+	$GamesData[$c]["flag"]  = ($row["flag"]); 
+	
+	if ( isset($_GET["h"]) AND file_exists("img/heroes/".$_GET["h"].".gif") )
+	$GamesData[$c]["hero_history"]  = $_GET["h"].""; else $GamesData[$c]["hero_history"] = "";
+	
+	$GamesData[$c]["winner"]  = ($row["winner"]);
+	$GamesData[$c]["type"]  = OS_GetGameState($row["type"], $lang["gamestate_pub"] , $lang["gamestate_priv"]);
+	
+	$GamesData[$c]["gamestate"]  = ($row["type"]);
+	if (isset($row["server"]) ) $GamesData[$c]["server"]  = ($row["server"]);
+	
+	if ( isset($row["newcolour"]) ) {
+	$GamesData[$c]["newcolour"]  = ($row["newcolour"]);
+	
+	$GamesData[$c]["win"] = 0;
+	
+	if ( $row["newcolour"] <=5  AND $row["winner"] == 1 )  $GamesData[$c]["win"]  = 1; else 
+	if ( $row["newcolour"] >5   AND $row["winner"] == 1 )  $GamesData[$c]["win"]  = 2; else 
+	if ( $row["newcolour"] >5   AND $row["winner"] == 2 )  $GamesData[$c]["win"]  = 1; else 
+	if ( $row["newcolour"] <=5  AND $row["winner"] == 2 )  $GamesData[$c]["win"]  = 2; 
+	} else $GamesData[$c]["newcolour"]  = 0;
+	if ( $row["winner"] == 0 ) $GamesData[$c]["win"] = 0;
+	
+	if ( (isset($_GET["uid"]) AND is_numeric($_GET["uid"])) OR isset($_GET["u"])  )
+	if ($row["newcolour"] >5) $GamesData[$c]["newcolour"]-=1; //fix bug with colour (slot 6-7)
+
+	if ( isset( $row["left"] ) ) {
+	$GamesData[$c]["left"] = $row["left"];
+	
+	if ( $row["left"] <= ( $row["duration"] - $LeftTimePenalty) AND $row["winner"]!=0 ) $GamesData[$c]["leaver"] = 1;
+	else $GamesData[$c]["leaver"] = 0;
+	}
+	   else {
+	   $GamesData[$c]["leaver"] = 0;
+	   $GamesData[$c]["left"] = "";
+	   }
+	
+	if ( !empty($row["flag"]) ) {
+	    if ( $row["flag"] == "winner" ) $GamesData[$c]["winner"]=1;  else
+		if ( $row["flag"] == "loser" )  $GamesData[$c]["winner"]=2; else 
+		 $row["winner"]=0;
+	}
+	
+	//echo $GamesData[$c]["leaver"];
+	
+	//REPLAY
+	 $duration = secondsToTime($row["duration"]);
+     $replayDate =  strtotime($row["datetime"]);  //3*3600 = +3 HOURS,   +0 minutes.
+     $replayDate = date("Y-m-d H:i",$replayDate);
+     $gametimenew = substr(str_ireplace(":","-",date("Y-m-d H:i",strtotime($replayDate))),0,16);
+	 $gid =  (int)($row["id"]);
+	 $gamename = $GamesData[$c]["gamename"];
+	 include('inc/get_replay.php');
+	 
+	 if ( file_exists($replayloc) ) $GamesData[$c]["replay"] = $replayloc; else $GamesData[$c]["replay"] = "";
+	 //END REPLAY
+	
+	if (isset($row["hero"]) )         
+	{
+	$GamesData[$c]["hero"]  = strtoupper($row["hero"]);   
+    if ( empty($row["hero"])  ) $GamesData[$c]["hero"] = "blank";
+	
+	if ( @!file_exists("img/heroes/".$GamesData[$c]["hero"].".gif") ) $GamesData[$c]["hero"]  = "blank";
+	
+	}
+	else $GamesData[$c]["hero"]  = "blank";
+	if (isset($row["kills"]) )        $GamesData[$c]["kills"]  = ($row["kills"]);   else $GamesData[$c]["kills"]  = "0";
+	if (isset($row["deaths"]) )       $GamesData[$c]["deaths"]  = ($row["deaths"]); else $GamesData[$c]["deaths"]  = "0";
+	if (isset($row["creepkills"]) )   $GamesData[$c]["creepkills"]  = ($row["creepkills"]);   else $GamesData[$c]["creepkills"]  = "0";
+	if (isset($row["creepdenies"]) )  $GamesData[$c]["creepdenies"]  = ($row["creepdenies"]); else $GamesData[$c]["creepdenies"]  = "0";
+	if (isset($row["assists"]) )      $GamesData[$c]["assists"]  = ($row["assists"]);       else $GamesData[$c]["assists"]  = "0";
+	if (isset($row["neutralkills"]) ) $GamesData[$c]["neutrals"]  = ($row["neutralkills"]); else $GamesData[$c]["neutrals"]  = "0";
+	
+	if (isset($row["player"]) ) $GamesData[$c]["player"]  = ($row["player"]);
+	$c++;
+	}
+	
+	
 	//MODERATE USER
 	if ( os_is_logged() AND $_SESSION["level"]>=5 AND isset($_GET["mcp"]) ) {
 	  
@@ -589,10 +783,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		$upd = $db->prepare("DELETE FROM ".OSDB_BANS." WHERE id='".(int)$_GET["rban"]."' ");
 	    $result = $upd->execute();
 		
-		$upd2 - $db->prepare("UPDATE ".OSDB_STATS." SET banned = 0 WHERE player = '".$PlayerName."' ");
+		$upd2 = $db->prepare("UPDATE ".OSDB_STATS." SET banned = '0' WHERE player = '".$PlayerName."' ");
 		$result = $upd2->execute();
 		
-		$upd3 - $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = 0 WHERE player = '".$PlayerName."' ");
+		$upd3 = $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = '0' WHERE player = '".$PlayerName."' ");
 		$result = $upd3->execute();
 		
 		OS_AddLog($_SESSION["username"], "[os_moderator] Removed Ban: $PlayerName ");
@@ -635,10 +829,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		   "admin" => $admin
             ));
 			
-            $upd2 - $db->prepare("UPDATE ".OSDB_STATS." SET banned = 1 WHERE player = '".$PlayerName."' ");
+            $upd2 = $db->prepare("UPDATE ".OSDB_STATS." SET banned = '1' WHERE player = '".$PlayerName."' ");
             $result = $upd2->execute();
 		
-            $upd3 - $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = 1 WHERE player = '".$PlayerName."' ");
+            $upd3 = $db->prepare("UPDATE ".OSDB_STATS_P." SET banned = '1' WHERE player = '".$PlayerName."' ");
             $result = $upd3->execute();
 	  					 
 			OS_AddLog($_SESSION["username"], "[os_moderator] Banned: $PlayerName ");

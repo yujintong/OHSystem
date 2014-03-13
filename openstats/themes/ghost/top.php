@@ -2,8 +2,7 @@
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 ?>
 
-<div id="content" class="s-c-x">
-<div class="wrapper">   
+<div class="wrapper mainContent">   
     <div id="main-column">
      <div class="padding">
       <div class="inner">
@@ -11,11 +10,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 <form action="" method="get">
      <table>
 	   <tr>
-	    <td><?=MonthYearForm( $TopPageStartYear )?></td>
-		<td><?=DisplayGameTypesTop( $GameAliases)?></td>
-	    <td valign="middle" style="vertical-align:middle;"><?=OS_SortTopPlayers()?></td>
-	    <td><?=OS_AZ_Filter('top')?></td>
-	    <td><?=OS_DisplayCountries('country', 1, 'top' )?></td>
+	    <td class="no_border"><?=MonthYearForm( $TopPageStartYear )?></td>
+		<td class="no_border"><?=DisplayGameTypesTop( $GameAliases)?></td>
+	    <td valign="middle" style="vertical-align:middle;" class="no_border"><?=OS_SortTopPlayers()?></td>
+	    <td class="no_border"><?=OS_AZ_Filter('top')?></td>
+	    <td class="no_border"><?=OS_DisplayCountries('country', 1, 'top' )?></td>
 	   </tr>
 	 </table>
 	 </form>
@@ -27,6 +26,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   <th width="26" class="padLeft">&nbsp;</th>
 	   <?php } ?>
 	   <th width="200"><?=$lang["player"]?></th>
+	   <th width="35">Level</th>
 	   <th width="80"><?=$lang["score"]?></th>
 	   <th width="70"><?=$lang["games"]?></th>
 	   <th width="40"><span <?=ShowToolTip($lang["longest_streak"]." / ".$lang["losing_streak"], OS_HOME.'img/winner.png', 230, 32, 32)?>><img src="<?=OS_HOME?>img/streak.gif" width="20" /></span></th>
@@ -34,8 +34,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	   <th width="90"><?=$lang["wld"]?></th>
 	   <th width="70"><?=$lang["wl_percent"]?></th>
 	   <th width="120"><?=$lang["kda"]?></th>
-	   <th><?=$lang["cdn"]?></th>
-	   <!--<th width="120"><?=$lang["tr"]?></th>-->
+	   <!--<th><?=$lang["cdn"]?></th>
+	   <th width="120"><?=$lang["tr"]?></th>-->
 	  </tr>
 <?php 
 foreach ($TopData as $Data) { ?>
@@ -54,6 +54,7 @@ foreach ($TopData as $Data) { ?>
 	<!--
 	<?=OS_IsUserGameLeaver( $Data["leaver"], $lang["leaves"].": ".$Data["leaver"]."<div>".$lang["stayratio"].": ".$Data["stayratio"]."%</div>" )?>-->
 	</td>
+	<td width="35" class="font12"><?=$Data["level"]?></td>
 	<td width="80" class="font12"><?=$Data["score"]?></td>
     <td width="60" class="font12"><?=$Data["games"]?></td>
 	<td width="60" class="font12">
@@ -72,13 +73,13 @@ foreach ($TopData as $Data) { ?>
 	  <span class="lost"><?=$Data["avg_deaths"]?></span>/
 	  <span class="assists"><?=$Data["avg_assists"]?></span>
 	</td>
-	<td width="160" class="font12">
+	<!--<td width="160" class="font12">
 	  <span class="won"><?=$Data["avg_creeps"]?></span>/
 	  <span class="lost"><?=$Data["avg_denies"]?></span>/
 	  <span class="assists"><?=$Data["avg_neutrals"]?></span>
 	
 	</td>
-    <!--<td width="120" class="font12">
+    <td width="120" class="font12">
 	  <span class="won"><?=$Data["avg_towers"]?></span>/
 	  <span class="assists"><?=$Data["avg_rax"]?></span>
 	</td>-->
@@ -93,7 +94,6 @@ foreach ($TopData as $Data) { ?>
     </div>
    </div>
   </div>
-</div>
 <?php
 	 include('inc/pagination.php');
 ?>

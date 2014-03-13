@@ -92,6 +92,31 @@ if ( isset($ProfileData) AND !empty($ProfileData)  ) {
 	  </td>
 	</tr>
 	
+	
+<?php
+if ($ProfileData[0]["user_level"]>=2) {
+?>
+    <tr>
+	  <td class="padLeft" width="130">Change realm:</td>
+	  <td>
+	  <select name="admin_realm">
+	  <?php if ($ProfileData[0]["admin_realm"] == "OHConnect") $s='selected="selected"'; else $s=''; ?>
+	   <option <?=$s?> value="OHConnect">OHConnect</option>
+	  <?php if ($ProfileData[0]["admin_realm"] == "europe.battle.net") $s='selected="selected"'; else $s=''; ?>
+	   <option <?=$s?> value="europe.battle.net">europe.battle.net</option>
+	  <?php if ($ProfileData[0]["admin_realm"] == "useast.battle.net") $s='selected="selected"'; else $s=''; ?>
+	   <option <?=$s?> value="useast.battle.net">useast.battle.net</option>
+	  <?php if ($ProfileData[0]["admin_realm"] == "uswest.battle.net") $s='selected="selected"'; else $s=''; ?>
+	   <option <?=$s?> value="uswest.battle.net">uswest.battle.net</option>
+	  <?php if ($ProfileData[0]["admin_realm"] == "server.eurobattle.net") $s='selected="selected"'; else $s=''; ?>
+	   <option <?=$s?> value="server.eurobattle.net">server.eurobattle.net</option>
+	  </select> Only for +premium members
+	  </td>
+	</tr>
+<?php
+}
+?>
+	
     <tr>
 	  <td class="padLeft" width="130"><?=$lang["member_clan"] ?>:</td>
 	  <td><input name="clan" class="field" type="text" value="<?=trim($ProfileData[0]["user_clan"])?>" /></td>

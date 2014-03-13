@@ -1,16 +1,17 @@
 <?php
-
 if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 unset($_SESSION["email_send"]);
 $MenuClass["profile"] = "active"; 
 
    $UserIP = $_SERVER["REMOTE_ADDR"];
    if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
-   $UserIP = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+   $var = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+   $UserIP = @array_pop( $var );
+   if (empty($UserIP)) $UserIP = $_SERVER["REMOTE_ADDR"];
    }
-   
+	
 //LOGOUT
-if ( isset($_GET["logout"]) AND is_logged() ) {
+if ( (isset($_GET["logout"]) AND os_is_logged() ) OR (isset($_GET["forum"]) AND os_is_logged() ) ) {
   require_once(OS_PLUGINS_DIR.'index.php');
   os_init();
   os_logout();
@@ -18,8 +19,13 @@ if ( isset($_GET["logout"]) AND is_logged() ) {
   if ( isset($_SESSION["logout"]) ) {
   header("location: ".$_SESSION["logout"].""); die;
   } else {
+  if ( isset($_GET["forum"]) ) { header("location: ".OS_HOME."?login"); die; } 
   header("location: ".OS_HOME.""); die;
   }
+}
+
+if ( isset($_GET["forum"]) AND  os_is_logged() ) {
+  os_logout();
 }
 
 //Resend Activation code
@@ -152,7 +158,7 @@ if ( isset($_GET["login"]) AND isset($_GET["bnet"]) AND isset($_GET["c"]) AND st
   }
 
 //LOGIN
-if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
+if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) AND isset($_POST["login_email"]) AND isset($_POST["login_pw"]) ) {
 
    $email = safeEscape( $_POST["login_email"]);
    $password = safeEscape( $_POST["login_pw"]);
@@ -190,6 +196,8 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 	  $row = $sth->fetch(PDO::FETCH_ASSOC);
 	  $CheckPW = generate_password($password, $row["password_hash"]);
 	  
+	  if ( $CheckPW != $row["user_password"] ) $errors.="<div>".$lang["error_invalid_login"]."</div>";
+	  
 	  //Bnet user
 	  if ( $row["user_bnet"] == 1 AND $row["user_last_login"]<=0) {
 	    $rawPW = $row["user_password"];
@@ -200,6 +208,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 		 $code = generate_hash(10,0);
 	     $hashpw = generate_hash(16,1);
 	     $password_db = generate_password($password, $hashpw);
+		 
 		 $updatePW = $db->update(OSDB_USERS, array(
 		 
 		 "user_password" => $password_db, 
@@ -212,7 +221,6 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 		 ), 
 		     "user_email = '".$email."'");
 		 
-		 $CheckPW = $row["user_password"];
 		 $welcome = "?welcome";
 		 $_SESSION["welcome"] = 1;
 		 
@@ -247,11 +255,16 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 		
 		$_SESSION["points_updated"] = 2;
 	  }
-	  
+
 	  if (!empty($row["code"]) ) $errors.="<div>".$lang["error_inactive_acc"].". <a href='".OS_HOME."?login&amp;resend=$email'>Re-send activation code</a> to $email</div>";
 	  
-	  if ( $CheckPW == $row["user_password"] AND empty($errors)) {
+	 if ( empty($errors) ) {
 	  
+	$LastLogin = $db->update(OSDB_USERS, array("user_last_login" => (int)time() ), "user_email = '".$email."'");
+	  
+	if ( $CheckPW == $row["user_password"] )  {
+	if ( file_exists("inc/INTEGRATION_phpbb3.php") ) include("inc/INTEGRATION_phpbb3.php"); 
+
 	  $_SESSION["user_id"] = $row["user_id"];
 	  $_SESSION["username"] = $row["user_name"];
 	  $_SESSION["email"]    = $row["user_email"];
@@ -260,18 +273,41 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) ) {
 	  $_SESSION["logged"]    = time();
 	  $_SESSION["user_lang"]    = $row["user_lang"];
 	  $_SESSION["bnet"] = $row["user_bnet"];
-	  $_SESSION["bnet_username"] = $row["bnet_username"];
+	  $_SESSION["bnet_username"] = $row["bnet_username"]; 
 	  
-	  $LastLogin = $db->update(OSDB_USERS, array("user_last_login" => (int)time() ), "user_email = '".$email."'");
+	  if ( $row["user_level_expire"]!='0000-00-00 00:00:00' ) {
+	  $_SESSION["user_level_expire"] = $row["user_level_expire"];
+	  }
+	  }
+	  //REDIRECTIONS
+	  if ( isset($_POST["current_url"]) ) {
+	    header("location: ".(strip_tags($_POST["current_url"])).""); die; 
+	  }
 
+	  if ( isset($_GET["forum"]) ) { 
+	  header("location: http://ohsystem.net/forum/"); die; 
+	  }
+	  
+	  if ( isset($_GET["home"]) ) { 
+	  header("location: http://ohsystem.net/"); die; 
+	  }
+	  
+     if ( isset($_SERVER["HTTP_REFERER"]) AND strstr($_SERVER["HTTP_REFERER"], "?u=") AND strstr($_SERVER["HTTP_REFERER"], OS_HOME) ) {
+     header("location: ".$_SERVER["HTTP_REFERER"].""); die; 
+     } 
+	  
+	  
 	  require_once(OS_PLUGINS_DIR.'index.php');
 	  os_init();
 	  header("location: ".OS_HOME.$welcome); die;
+	  } else 
+	    if (isset($_GET["home"])) { /*header("location: http://ohsystem.net/home/?error"); die();*/  $errors.="<div>".$lang["error_invalid_login"]."</div>"; } 
+		else  $errors="<div>".$lang["error_invalid_login"]."</div>";
 	  }
-	  
-	 }  else $errors.="<div>".$lang["error_invalid_login"]."</div>";
+	 }  else 
+	    if (isset($_GET["home"])) { /*header("location: http://ohsystem.net/home/?error"); die();*/ $errors.="<div>".$lang["error_invalid_login"]."</div>"; } 
+		else  $errors="<div>".$lang["error_invalid_login"]."</div>";
    }
-}
 
 //REGISTER
 if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
@@ -285,11 +321,12 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
    $username = OS_StrToUTF8( $_POST["reg_un"] );
    $username = EscapeStr( trim( $username ));
    $email = safeEscape( trim($_POST["reg_email"]));
+   $email = strtolower( $email ); 
    $password = safeEscape( $_POST["reg_pw"]);
    $password2 = safeEscape( $_POST["reg_pw2"]);
    $registration_errors = "";
 
-   $AllowedCharacters = 'QWERTZUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklyxcvbnmљњертзуиопшђасдфгхјклчћжѕџцвбнмšđčćžŠĐČĆŽЉЊЕРТЗУИОПШЂАСДФГХЈКЛЧЋЖЅЏЦВБНМ_-';
+   $AllowedCharacters = '0123456789QWERTZUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklyxcvbnmљњертзуиопшђасдфгхјклчћжѕџцвбнмšđčćžŠĐČĆŽЉЊЕРТЗУИОПШЂАСДФГХЈКЛЧЋЖЅЏЦВБНМ_-';
    
    if (!preg_match ('/^['.$AllowedCharacters.']+$/', $username))
    $registration_errors.="<div>".$lang["error_username"]."</div>";
@@ -342,12 +379,14 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	  $password_db = generate_password($password, $hash);
 	  
 	  if ($UserActivation == 1) $code = generate_hash(16,0); else $code = '';
-	  
+  
 	  //FIND user location
 	if ( file_exists("inc/geoip/geoip.inc") ) {
 	include("inc/geoip/geoip.inc");
 	$GeoIPDatabase = geoip_open("inc/geoip/GeoIP.dat", GEOIP_STANDARD);
 	$GeoIP = 1;
+	
+	
 	$Letter  = geoip_country_code_by_addr($GeoIPDatabase, $UserIP);
 	$Country = geoip_country_name_by_addr($GeoIPDatabase, $UserIP);
 	
@@ -381,7 +420,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	    $_SESSION["logged"]    = time();
 	  
 	    $LastLogin = $db->update(OSDB_USERS, array("user_last_login" => (int)time() ), 
-		                                                                     "user_email = '".$email."'");
+
 	  }
 	  
 	  //SEND EMAIL

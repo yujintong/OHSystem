@@ -77,6 +77,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	
 	$avatar = $row["user_avatar"];
 	 if ( empty($avatar) ) $avatar = OS_HOME."img/avatar_64.png";
+	 
+	 if (empty($row["user_avatar"])) {
+     $avatar = "http://www.gravatar.com/avatar/".md5( strtolower($row["user_email"]) )."?s=220&d=monsterid&r=g";
+     }
 	
     $MemberData[$c]["avatar"]   = $avatar ;	
 	$MemberData[$c]["letter"]   = geoip_country_code_by_addr($GeoIPDatabase, $row["user_ip"]);

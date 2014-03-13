@@ -377,6 +377,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		     <td>
 			 <?=OS_ShowUserFlag( $data["letter"], $data["country"], 175 )?>  
 			 <a href="<?=OS_HOME?>?u=<?=$data["name"]?>"><b><?=$data["name"]?></b></a>
+			 <span style="float:right"><a href="javascript:;" onclick="if(confirm('Delete ban?')) { location.href='<?=OS_HOME?>?moderator&amp;option=bans&amp;delete=<?=$data["id"]?>&amp;player=<?=$data["name"]?>' }">&times;</a></span>
 			 <div style="background-color: #EAF3FF"><?=$data["reason"]?></div>
 			 </td>
 			 <td><?=$data["ip"]?></td>
@@ -414,7 +415,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 		 foreach ( $GPData as $pp ) {
 		 ?>
 		 <tr>
-		  <td><a target="_blank" href="<?=OS_HOME?>?u=<?=$pp["player"]?>"><b><?=$pp["player"]?></b></td>
+		  <td>
+		  <?php if (!empty($pp["player"]) ) { ?>
+		  <a target="_blank" href="<?=OS_HOME?>?u=<?=$pp["player"]?>"><b><?=$pp["player"]?></b>
+		  <?php } ?>
+		  </td>
 		  <td>
            <?=$pp["ip"]?>
 		  </td>

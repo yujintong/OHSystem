@@ -22,6 +22,14 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  
 	  $sql = "UPDATE ".OSDB_USERS." SET ";
 	  
+	  if ( isset($_POST["admin_realm"]) ) {
+	    if ( $_POST["admin_realm"] == "OHConnect")          $sql.= " admin_realm = 'OHConnect', ";
+		if ( $_POST["admin_realm"] == "europe.battle.net")  $sql.= " admin_realm = 'europe.battle.net', ";
+		if ( $_POST["admin_realm"] == "useast.battle.net")  $sql.= " admin_realm = 'useast.battle.net', ";
+		if ( $_POST["admin_realm"] == "uswest.battle.net")  $sql.= " admin_realm = 'uswest.battle.net', ";
+		if ( $_POST["admin_realm"] == "server.eurobattle.net")  $sql.= " admin_realm = 'server.eurobattle.net', ";
+	  }
+	  
 	  if ( !file_exists("lang/".$lang.".php") ) $lang = ""; else {
 	  $sql.="user_lang = '".$lang."', ";
 	  $_SESSION["user_lang"] = $lang;
@@ -175,6 +183,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  
 	  $ProfileData[$c]["id"]        = (int)($row["user_id"]);
 	  $ProfileData[$c]["user_bnet"]  = ($row["user_bnet"]);
+	  $ProfileData[$c]["admin_realm"]  = ($row["admin_realm"]);
 	  $ProfileData[$c]["user_name"]  = ($row["user_name"]);
 	  $ProfileData[$c]["user_email"]  = ($row["user_email"]);
 	  $ProfileData[$c]["user_joined"]  = ($row["user_joined"]);
@@ -182,6 +191,11 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $ProfileData[$c]["user_last_login"]  = ($row["user_last_login"]);
 	  $ProfileData[$c]["user_ip"]  = ($row["user_ip"]);
 	  $ProfileData[$c]["user_avatar"]  = ($row["user_avatar"]);
+	  
+	 if (empty($row["user_avatar"])) {
+     //$ProfileData[$c]["user_avatar"] = "https://www.gravatar.com/avatar/".md5( strtolower($row["user_email"]) )."?s=220&d=monsterid&r=g";
+     }
+	  
 	  $ProfileData[$c]["user_location"]  = ($row["user_location"]);
 	  $ProfileData[$c]["user_realm"]  = ($row["user_realm"]);
 	  $ProfileData[$c]["user_clan"]  = ($row["user_clan"]);

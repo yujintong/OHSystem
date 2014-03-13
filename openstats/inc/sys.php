@@ -28,6 +28,7 @@ include(OS_PAGE_PATH."add_comment_page.php");
 	    $sql = "";
 		if ( isset($_GET["game_type"]) ) { 
 		$game_type = (int)$_GET["game_type"];
+
 		$sql = "AND alias_id = '".$game_type."' ";
 		} else {
 		
@@ -55,10 +56,12 @@ include(OS_PAGE_PATH."add_comment_page.php");
 	  
 		if ( $sth->rowCount()>=1 ) {
 		   $row = $sth->fetch(PDO::FETCH_ASSOC);
-		   header( 'location: '.OS_HOME.'?u='.$row["id"] ); die;
+		   header( 'location: '.OS_HOME.'?u='.$row["pid"] ); die;
 		} else {
 		header( 'location: '.OS_HOME.'?search='.$uid ); die;
 		}
+	 } else {
+
 	 }
 	 
 	 $MenuClass = array();
@@ -82,7 +85,7 @@ include(OS_PAGE_PATH."add_comment_page.php");
 	 if ( isset( $_GET["live_games"])) $MenuClass["live"] = "active";
      if ( isset( $_GET["action"]) AND $_GET["action"] == "facebook") $MenuClass["fb"] = "active";
 	 
-  if ( isset($_GET["games"]) OR isset($_GET["u"]) )            include(OS_PAGE_PATH."games_page.php"); 
+  if ( isset($_GET["games"]))                                  include(OS_PAGE_PATH."games_page.php"); 
   if ( isset($_GET["game"]) AND is_numeric($_GET["game"]) )    include(OS_PAGE_PATH."single_games_page.php"); else
   if ( isset($_GET["live_games"]) )                            include(OS_PAGE_PATH."live_games_page.php"); else
   if ( isset( $_GET["top"]) AND $TopPage==1)                   include(OS_PAGE_PATH."top_page.php"); else
@@ -99,6 +102,7 @@ include(OS_PAGE_PATH."add_comment_page.php");
   if ( isset( $_GET["member"]) AND is_numeric($_GET["member"]))include(OS_PAGE_PATH."single_member_page.php"); else
   if ( isset($_GET["items"]) AND $ItemsPage == 1)              include(OS_PAGE_PATH."items_page.php"); else
   if ( isset($_GET["item"]) AND $ItemsPage == 1)               include(OS_PAGE_PATH."single_item_page.php"); else
+  if ( isset($_GET["common_games"]))                           include(OS_PAGE_PATH."common_games.php"); else
   
   if (  OS_is_home_page())                                     include(OS_PAGE_PATH."home_page.php"); else
   if ( isset($_GET["profile"]) AND os_is_logged() )            include(OS_PAGE_PATH."user_profile_page.php"); else

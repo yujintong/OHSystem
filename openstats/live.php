@@ -1,10 +1,9 @@
 <?php
   //if (strstr($_SERVER['REQUEST_URI'], basename(__FILE__) ) ) {header('HTTP/1.1 404 Not Found'); die; }
-  
   include("config.php");
 
   //$TotalLogs = 20000; //total log entries to keep in database. We will add this variable to config.
-  
+
   if ( isset($_SESSION["die"]) ) die;
  
   
@@ -28,7 +27,7 @@
    foreach($_POST as $key => $value) {
     $_POST[$key] = FilterData($value);
    }
-   
+
    //GET GAME LISTS
    if (isset($_POST["refresh"]) AND $_POST["refresh"] == "gamelist" ) {
 
@@ -75,7 +74,7 @@
 <span id="gamerefresher" class="h32"><img src="<?=OS_HOME?>/img/blank.gif" width="16" height="16" class="imgvalign" /></span>
 <?php	
   foreach($IDS as $cID) {
-  if ( $cID["chatid"] == $selectedGameID) $dis = 'style="color:#975D11 !important; font-weight:bold;"'; else $dis = '';
+  if ( $cID["chatid"] == $selectedGameID) $dis = 'style="color:#E5B16D !important; font-weight:bold;"'; else $dis = '';
   ?>
 <input <?=$dis?> id="b<?=$cID["chatid"]?>" type="button" class="menuButtons<?=$cID["button"]?>" onclick="clearLiveGamesTimer('<?=$cID["botid"]?>', '<?=$cID["chatid"]?>', '<?=$cID["gn"]?>');" value="<?=$cID["status"]?>#<?=$cID["chatid"]?>" />
   <?php
@@ -169,6 +168,7 @@
 	//$log_type = $row["log_type"];
 	$log_data = $row["log_data"];
 	$ID = $row["id"];
+	
 	//Reverse array to sort new logs on top
 	$DataArray = array_reverse ( explode("\n", $log_data) );
 	if (!isset($PlayerListDataArray) ) { $PlayerListDataArray = $DataArray; }
@@ -543,7 +543,7 @@
     global $GameListPatch;
 	
 	if ( isset($GameListPatch ) AND $GameListPatch  == 1 ) {
-	  $sth = $db->prepare( "SELECT * FROM ".OSDB_GAMELIST." "  );
+	  $sth = $db->prepare( "SELECT * FROM ".OSDB_GAMELIST." ORDER BY gamename ASC"  );
 	  $result = $sth->execute();
 	  $c=0;
 	  $LiveGamesData = array();
@@ -566,6 +566,30 @@
 	  $LiveGamesData[$c]["players"] = explode("\t", $row["usernames"]);
 	  
 	  $c++;
+	  }
+	  
+	 if ( $sth->rowCount()<=0 AND isset($ALT) ) {
+	 $sth = $db->prepare( "SELECT * FROM ".OSDB_GAMESTATUS." WHERE gamestatus = 1 ORDER BY gamename ASC LIMIT 50"  );
+	 $result = $sth->execute();
+	   while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	  
+	  $LiveGamesData[$c]["id"]           = "";
+	  $LiveGamesData[$c]["botid"]        = "";
+	  $LiveGamesData[$c]["gamename"]     = ($row["gamename"]);
+	  $LiveGamesData[$c]["ownername"]    = "";
+	  $LiveGamesData[$c]["creatorname"]  = "";
+	  $LiveGamesData[$c]["map"]          = "";
+	  $LiveGamesData[$c]["slotstaken"]   = "n/a";
+	  $LiveGamesData[$c]["slotstotal"]   = 1;
+	  $LiveGamesData[$c]["usernames"]    = "";
+	  $LiveGamesData[$c]["totalgames"]   = "";
+	  $LiveGamesData[$c]["totalplayers"] = "";
+	  
+	  $LiveGamesData[$c]["players"] = "Loading. Please wait...									";
+	  $LiveGamesData[$c]["players"] = explode("\t", $LiveGamesData[$c]["players"]);
+	  $c++;
+	  }
+	 
 	  }
 	  
 	?>
@@ -661,18 +685,18 @@ function HighlightKeyword($str, $search) {
     
     $search = EscapeStr( trim($_POST["search"]));
 
-	$sth = $db->prepare( "SELECT * FROM `".OSDB_STATS."` 
-	WHERE player LIKE ('%".$search."%') GROUP BY player ORDER BY id DESC, score DESC LIMIT 50");
+	$sth = $db->prepare( "SELECT * FROM `".OSDB_STATS_P."` 
+	WHERE player LIKE ('%".$search."%') GROUP BY player ORDER BY id DESC LIMIT 50");
     $result = $sth->execute();
 	?>
-	<div style="position:absolute; top: 166px; right:10px; background-color: #fff; color:#000; border:3px solid #ccc; border-radius: 2px solid #ccc; width:210px; height: 380px; overflow: scroll; padding-left: 5px; padding-top: 4px; font-size:12px; opacity:0.9; overflow-x: hidden; z-index: 80000;">
+	<div class="LiveSearchWrapper">
 	<a href="javascript:;" onclick="OS_ResetSearch()" style="float: right;"><img src="<?=OS_HOME?>img/close.png" alt="close" width="16" height="16" class="imgvalign" /></a>
 	<?php
 	while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
 
 	$player = HighlightKeyword($row["player"], $search);
 	 ?>
-	 <div><a href="<?=OS_HOME?>?u=<?=$row["player"]?>"><?=$player?></a></div>
+	 <div><a href="<?=OS_HOME?>?u=<?=$row["id"]?>"><?=$player?></a></div>
 	 <?php
 	}
 	?>
@@ -682,6 +706,95 @@ function HighlightKeyword($str, $search) {
   
     // Nothing do to here!
   
+  }
+  //PLAYER RATING
+  else
+  if ( os_is_logged() AND isset($_REQUEST["ratings"]) AND isset($_SESSION["bnet_username"]) ) {
+  
+  $blacklist = 'captivated';
+  $bl = explode(',',$blacklist);
+  if(in_array( strtolower($_SESSION["bnet_username"]), $bl ) )
+  die("<span style='color:red'>Rating is disabled for you!</span>");
+  
+	if ( isset($_POST["player"]) AND isset($_POST["gameid"]) AND isset($_POST["rate"]) AND isset($_POST["slot"]) ) {
+	   
+	   $Player = trim( strip_tags($_POST["player"]) );
+	   $gameid = trim( (int)($_POST["gameid"]) );
+	   $rate = trim( (int)($_POST["rate"]) );
+	   $slot = trim( (int)($_POST["slot"]) );
+	   $voter = trim($_SESSION["bnet_username"]);
+	   $comment = trim( strip_tags($_POST["comment"]) );
+	   
+	   //$CHECK1 = 1;
+	   if ($rate <= 4 AND isset($CHECK1) AND !empty($comment) ) {
+	     ?>
+		 <div style="position:fixed;
+     width:400px;
+     height:140px;
+     z-index:15;
+     top:50%;
+     left:50%;
+     margin:-60px 0 0 -200px;
+     background:#fff; border: 8px solid #ccc; padding:20px;" id="ratePl">
+		  <div>Enter comment (<b><?=$Player?></b>):</div>
+		  <textarea style="width: 350px; height:70px;" id="rateComment" onkeyup="countit('rateComment')" maxlength="255"></textarea>
+		  <div>
+		  <input type="button" value="Submit" class="menuButtons" onclick="RatePlayer('<?=$Player?>', '<?=$gameid?>', '<?=$rate?>', '<?=$slot?>', 'test' )" /> 
+		  <input type="button" onclick="CloseDiv('ratings-<?=$slot?>')" value="Cancel" class="menuButtons" />
+		  <div>max. 255 characters</div>
+		  </div>
+		 </div>
+		 <?php
+		 die();
+	   }
+	   
+	   if($rate<=0 OR $rate>5) die("Invalid value!");
+	   
+	   $sth = $db->prepare(  getGameInfo( $gameid ) );
+	   $result = $sth->execute();
+	   
+	   if ( $sth->rowCount()<=0 ) die();
+	   
+	   while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+	      if( strtolower($row["name"]) == strtolower($_SESSION["bnet_username"]) AND strtolower($_SESSION["bnet_username"]) !=  strtolower($Player) ) {
+		   $CanRate = 1;
+		  }
+	   }
+	   
+	   if(isset($CanRate)) {
+	    $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_GPR." 
+		WHERE player='".$Player."' AND voter = '".$voter."' AND gameid = '".$gameid."'");
+		
+		$result = $sth->execute();
+		$r = $sth->fetch(PDO::FETCH_NUM);
+	    $numrows = $r[0];
+		
+		if( $numrows>=1) { unset($CanRate); die(); }
+		
+		}
+	   
+	   if(isset($CanRate)) {
+	   
+	   	$sth = $db->prepare("INSERT INTO ".OSDB_GPR." (player, voter, gameid, time, rate)
+		VALUES('".$Player."', '".$voter."', '".$gameid."', '".time()."', '".$rate."' ) ");
+	    $result = $sth->execute();
+		
+	   	$upd = $db->prepare("UPDATE ".OSDB_STATS_P." SET exp = exp+1 WHERE player = '".$voter."' ");
+		$UPDATE = $upd->execute();
+		
+		$LeftStars = 5 - $rate;
+	   
+	    for ($x=1; $x<=$rate; $x++) {
+		?><img src="<?=OS_THEME_PATH?>images/star-1.png" width="32" height="32" alt="rating star" /> <?php }
+		
+		if ( $LeftStars >=1 ) 
+	    for ($x=1; $x<=$LeftStars; $x++) {
+		?><img src="<?=OS_THEME_PATH?>images/star-0.png" width="32" height="32" alt="rating star" /> <?php }
+	   }
+	   
+	
+	} else die("Invalid form!");
+	  
   }
   else { die; }
    
