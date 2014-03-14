@@ -33,7 +33,7 @@ if ( isset($_SESSION["user_lang"]) AND file_exists("lang/".$_SESSION["user_lang"
 }
 
 include("Hook.php");
-include("ChangeTheme.php");
+if(file_exists("ChangeTheme.php")) include("ChangeTheme.php");
 include("default-constants.php");
 include("common-queries.php");
 

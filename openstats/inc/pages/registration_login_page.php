@@ -263,7 +263,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["login_"] ) AND is
 	$LastLogin = $db->update(OSDB_USERS, array("user_last_login" => (int)time() ), "user_email = '".$email."'");
 	  
 	if ( $CheckPW == $row["user_password"] )  {
-	if ( file_exists("inc/INTEGRATION_phpbb3.php") ) include("inc/INTEGRATION_phpbb3.php"); 
+	//if ( file_exists("inc/INTEGRATION_phpbb3.php") ) include("inc/INTEGRATION_phpbb3.php"); 
 
 	  $_SESSION["user_id"] = $row["user_id"];
 	  $_SESSION["username"] = $row["user_name"];
@@ -420,7 +420,7 @@ if ( isset( $_GET["login"]) AND !is_logged() AND isset($_POST["register_"] ) ) {
 	    $_SESSION["logged"]    = time();
 	  
 	    $LastLogin = $db->update(OSDB_USERS, array("user_last_login" => (int)time() ), 
-
+		                                                                     "user_email = '".$email."'");
 	  }
 	  
 	  //SEND EMAIL
