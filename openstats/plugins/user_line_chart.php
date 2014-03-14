@@ -10,8 +10,9 @@ $PluginEnabled = '1';
 if ($PluginEnabled == 1  ) {
    
    if (isset($_GET["u"]) AND is_numeric($_GET["u"]) ) {
-   AddEvent("os_head","OS_JQuery182");
-   AddEvent("os_display_custom_fields","OS_ChartData");
+   //bugged
+   //AddEvent("os_head","OS_JQuery182");
+   //AddEvent("os_display_custom_fields","OS_ChartData");
    }
    
    if (isset($_GET["game"]) AND is_numeric($_GET["game"]) ) {
