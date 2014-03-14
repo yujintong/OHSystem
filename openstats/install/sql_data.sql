@@ -255,6 +255,7 @@ CREATE TABLE IF NOT EXISTS `oh_gameplayers_rating` (
   `gameid` int(11) unsigned NOT NULL,
   `time` int(11) unsigned NOT NULL,
   `rate` tinyint(2) NOT NULL,
+  `comment` varchar(255) NOT NULL,
   KEY `pid` (`player`),
   KEY `rate` (`rate`),
   KEY `gameid` (`gameid`)
