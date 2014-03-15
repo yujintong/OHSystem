@@ -1430,7 +1430,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_Announce = CFG->GetInt("oh_announce", 0 ) == 0 ? false : true;
     m_AnnounceHidden = CFG->GetInt("oh_hiddenAnnounce", 0 ) == 0 ? false : true;
     m_FountainFarmWarning = CFG->GetInt("oh_fountainfarm_warning", 0 ) == 0 ? false : true;
-    m_FountainFarmMessage = CFG->GetString("oh_fountainfarm_message", "Remind: Any kind or at least an attempt of fountainfarm is banable." );
+    m_FountainFarmMessage = CFG->GetString("oh_fountainfarm_message", "Reminder: Any kind of fountainfarming, or even an attempt, is bannable." );
     m_AutoDenyUsers = CFG->GetInt("oh_general_autodeny", 0) == 0 ? false : true;
     m_AllowVoteStart = CFG->GetInt("oh_allowvotestart", 0) == 0 ? false : true;
     m_VoteStartMinPlayers = CFG->GetInt("oh_votestartminimumplayers", 3);

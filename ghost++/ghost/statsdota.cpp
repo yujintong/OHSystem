@@ -323,8 +323,8 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     }
                                     else if( ( deaths - kills - ( assists * 0.5 ) ) > 5 )
                                     {
-                                        m_Game->SendChat( Victim, "[INFO] Feed Detection triggered. Please stop dieing to avoi a potential kick due feed." );
-                                        m_Game->SendChat( Victim, "[INFO] Purpose feeding is banable, for more informations checkout '!rule feeding'." );
+                                        m_Game->SendChat( Victim, "[INFO] Feed Detection triggered. Please stop dying to avoid a potential kick for feeding." );
+                                        m_Game->SendChat( Victim, "[INFO] Feeding on purpose is bannable, for more information check out '!rule feeding'." );
                                         Victim->SetFeedLevel( 1 );
                                     }
                                 }
@@ -765,7 +765,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                             }
                             else if(KeyString.size( ) >= 11 && KeyString.substr( 0, 11 ) == "GameStarted")
                             {
-                                m_Game->GAME_Print( 1, MinString, SecString, "System", "", "Game started, Creeps spwaned" );
+                                m_Game->GAME_Print( 1, MinString, SecString, "System", "", "Game started, Creeps spawned" );
                                 CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Game Started, creeps spawned" );
                                 m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "creep_spawn" + "\t" + "" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "" + "\n";
                             }
