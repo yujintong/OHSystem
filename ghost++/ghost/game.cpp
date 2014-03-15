@@ -2014,7 +2014,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !CLOSE (close slot)
             //
-            else if( Command == "close" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && Level >= 8 )
+            else if( Command == "close" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && Level >= 9 )
             {
                 // close as many slots as specified, e.g. "5 10" closes slots 5 and 10
 
@@ -2576,7 +2576,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !OPEN (open slot)
             //
-            else if( Command == "open" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && Level >= 6 )
+            else if( Command == "open" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && Level >= 8 )
             {
                 // open as many slots as specified, e.g. "5 10" opens slots 5 and 10
 
@@ -2604,7 +2604,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !OPENALL
             //
-            else if( Command == "openall" && !m_GameLoading && !m_GameLoaded && Level >= 8 )
+            else if( Command == "openall" && !m_GameLoading && !m_GameLoaded && Level >= 9 )
                 OpenAllSlots( );
 
             //
@@ -2887,7 +2887,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SWAP (swap slots)
             //
-            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 6 )
+            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 8 )
             {
                 uint32_t SID1;
                 uint32_t SID2;
@@ -4684,7 +4684,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !REPUTATION
     //
-    else if( Command == "reputation") {
+    else if( Command == "reputation" || Command == "rep" ) {
         if(!Payload.empty() ) {
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
