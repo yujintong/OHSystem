@@ -498,4 +498,5 @@ $lang["show_all"]        = "Prikaži sve";
 $lang["choose_game_type"]        = "Izaberi tip igre";
 $lang["game_type"]               = "Tip Igre";
 $lang["live_games_disable"]      = "Trenutno si u igri. Podaci nisu dostupni.";
+$lang["common_games"]      = "Zajedničke igre";
 ?>
