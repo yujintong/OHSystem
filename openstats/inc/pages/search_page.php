@@ -39,7 +39,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  $draw_pagination = 1;
 	  
 	  
-	  $sth = $db->prepare("SELECT MAX(id) as id, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip, alias_id
+	  $sth = $db->prepare("SELECT MAX(id) as id, pid, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip, alias_id
 	  FROM ".OSDB_STATS." WHERE (player) LIKE ? AND alias_id = ? 
 	  GROUP BY player
 	  ORDER BY id DESC, score DESC
@@ -65,7 +65,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$SearchData[$c]["letter"] = "blank";
 	$SearchData[$c]["country"]  = "Reserved";
 	}
-	$SearchData[$c]["id"]        = (int)($row["id"]);
+	$SearchData[$c]["id"]        = (int)($row["pid"]);
 	$SearchData[$c]["alias_id"]  = (($row["alias_id"])-1);
 	$SearchData[$c]["player"]  = ($row["player"]);
 	$SearchData[$c]["score"]  = number_format($row["score"],0);
