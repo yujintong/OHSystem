@@ -235,7 +235,7 @@ if ( isset($_GET["game_id"]) AND is_numeric($_GET["game_id"]) ) {
 </td>
 <td>
 	<select name="alias" onchange="location.href=this.value">
-	<?php if ($ShowEmpty == 1) { ?>
+	<?php if (isset($ShowEmpty) AND $ShowEmpty == 1) { ?>
 	<option value="<?=OS_HOME?>adm/?games"><?=$lang["choose_game_type"]?></option>
 	<?php } ?>
 	<?php 
