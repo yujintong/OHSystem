@@ -54,6 +54,7 @@ protected:
     CIncomingGarenaUser *m_IncomingGarenaUser;
     string m_RoomName;
     bool m_Banned;
+	string m_CachedIP;
 
 public:
     CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket );

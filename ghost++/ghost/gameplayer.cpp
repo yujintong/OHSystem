@@ -42,7 +42,7 @@
 
 CPotentialPlayer :: CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket ) : m_Protocol( nProtocol ), m_Game( nGame ), m_Socket( nSocket ), m_DeleteMe( false ), m_Error( false ), m_IncomingJoinPlayer( NULL ), m_IncomingGarenaUser( NULL ), m_Banned( false )
 {
-
+	m_CachedIP = string();
 }
 
 CPotentialPlayer :: ~CPotentialPlayer( )
@@ -88,13 +88,13 @@ string CPotentialPlayer :: GetExternalIPString( )
     if( m_Socket ) {
         if( m_IncomingGarenaUser != NULL ) {
             BYTEARRAY GarenaIP = GetGarenaIP( );
-            return UTIL_ToString(GarenaIP[0]) + "." + UTIL_ToString(GarenaIP[1]) + "." + UTIL_ToString(GarenaIP[2]) + "." + UTIL_ToString(GarenaIP[3]);
+			m_CachedIP = UTIL_ToString(GarenaIP[0]) + "." + UTIL_ToString(GarenaIP[1]) + "." + UTIL_ToString(GarenaIP[2]) + "." + UTIL_ToString(GarenaIP[3]);
         } else {
-            return m_Socket->GetIPString( );
+			m_CachedIP = m_Socket->GetIPString();
         }
     }
 
-    return string( );
+	return m_CachedIP;
 }
 
 bool CPotentialPlayer :: Update( void *fd )
@@ -844,4 +844,5 @@ void CGamePlayer :: EventGProxyReconnect( CTCPSocket *NewSocket, uint32_t LastPa
     m_GProxyBuffer = TempBuffer;
     m_GProxyDisconnectNoticeSent = false;
     m_Game->SendAllChat( m_Game->m_GHost->m_Language->PlayerReconnectedWithGProxy( m_Name ) );
+	m_CachedIP = m_Socket->GetIPString();
 }
