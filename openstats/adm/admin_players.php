@@ -157,14 +157,14 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
 	$result = $sth->execute();
 	if ( $del ) echo '<h2>User removed from Warns</h2>';
 	$sth = $db->query("UPDATE ".OSDB_STATS." SET banned = 0
-	WHERE (player) = ('".$remove."')");
+	WHERE (s.player) = ('".$remove."')");
 	$result = $sth->execute();
   }
     $sql = "";
    //SEARCH
    if ( isset($_GET["search_users"]) AND strlen($_GET["search_users"])>=2 ) {
      $search_users = safeEscape( $_GET["search_users"]);
-	 $sql = " AND (player) LIKE ('%".$search_users."%') ";
+	 $sql = " AND (s.player) LIKE ('%".$search_users."%') ";
   } else {
    $sql = "";
    $search_users= "";
@@ -173,7 +173,7 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
    //SEARCH COUNTREIS
    if ( isset($_GET["country"]) AND strlen($_GET["country"])>=2 ) {
      $search_country = safeEscape( trim( $_GET["country"]));
-	 $sql = " AND country_code = '".$search_country."' ";
+	 $sql = " AND s.country_code = '".$search_country."' ";
   } else {
    //$sql = "";
    $search_country= "";
@@ -201,16 +201,16 @@ if ( isset($_GET["search_users"]) ) $s = safeEscape($_GET["search_users"]); else
   $ord = "score DESC";
   if ( !isset($_GET["find_leavers"]) ) {
   
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'admins' )   $sql.=' AND user_level>=9 '; 
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'banned' )   $sql.=' AND banned>=1 '; 
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'safelist' ) $sql.=' AND user_level=2 OR user_level=3'; 
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'hidden' )   $sql.=" AND hide>=1"; 
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'gproxy' )   $sql.=" AND forced_gproxy>=1"; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'admins' )   $sql.=' AND s.user_level>=9 '; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'banned' )   $sql.=' AND s.banned>=1 '; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'safelist' ) $sql.=' AND s.user_level=2 OR s.user_level=3'; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'hidden' )   $sql.=" AND s.hide>=1"; 
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'gproxy' )   $sql.=" AND s.forced_gproxy>=1"; 
+  //if ( isset($_GET["sort"])   AND $_GET["sort"] == 'bl' )       $sql.=" AND blacklisted>=1"; 
   
+  if ( isset($_GET["realm"])   AND !empty($_GET["realm"]) )   $sql.=" AND s.realm = '".strip_tags($_GET["realm"])."' "; 
   
-  if ( isset($_GET["realm"])   AND !empty($_GET["realm"]) )   $sql.=" AND realm = '".strip_tags($_GET["realm"])."' "; 
-  
-  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'points' )   $ord = "points DESC";
+  if ( isset($_GET["sort"])   AND $_GET["sort"] == 'points' )   $ord = "s.points DESC";
   
   if ( isset($_GET["points"]) AND isset($_GET["id"]) AND OS_IsRoot() ) {
     $pid = (int) $_GET["id"];
@@ -248,7 +248,6 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
   <?php } ?>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=points">Sort by Points</a>
   <a class="menuButtons" href="<?=OS_HOME?>adm/?players&amp;sort=gproxy">GProxy</a>
-  
   <?php
     //SHOW ALL PLAYER IPs
   if (isset($_GET["show"]) AND $_GET["show"] == "ips" AND isset($_GET["player"]) AND strlen($_GET["player"])>=2) {
@@ -345,13 +344,127 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	   <?php
 	}
 	
+	//EDIT PLAYER
+    if(isset($_GET["edit"]) ) {
+	
+	if ( isset($_POST["save_player"]) ) {
+	
+	   $sth = $db->prepare("UPDATE ".OSDB_STATS_P." SET 
+	   user_level = '".(int)$_POST["user_level"]."',
+	   banned = '".(int)$_POST["banned"]."',
+	   hide = '".(int)$_POST["hide"]."',
+	   realm = '".trim( strip_tags($_POST["realm"]))."',
+	   points = '".trim( strip_tags($_POST["points"]))."',
+	   points_bet = '".trim( strip_tags($_POST["points_bet"]))."',
+	   blacklisted = '".trim( strip_tags($_POST["blacklisted"]))."',
+	   exp = '".trim( strip_tags($_POST["exp"]))."'
+	   WHERE player = '".trim($_GET["edit"])."' LIMIT 1 ");
+	   $result = $sth->execute();
+	   
+	   OS_AddLog($_SESSION["username"], "[os_players_edit] ".$_GET["edit"].": Lev: ".$_POST["user_level"].", EXP: ".$_POST["exp"]." ");
+	
+	}
+	
+	  $Player = trim($_GET["edit"]);
+	  $sth = $db->prepare("SELECT * FROM ".OSDB_STATS_P." WHERE player = '".$Player."'  ");
+	  $result = $sth->execute();
+	  
+	  $row = $sth->fetch(PDO::FETCH_ASSOC);
+	$exp = calculateXP( ( $row["exp"] ) ); 
+	$percent = $exp["percent"];
+	$level  = $exp["level"];
+	$expts    = $row["exp"];
+	$end    = $exp["end"];
+	
+	$progress = round($exp["end"]/($exp["end"]+$row["exp"]), 3)*100;
+	  
+	  $level = $row["user_level"];
+	  if ( $_SESSION["level"] >9) $dis = "";   else $dis = "disabled";
+	  ?>
+	  <h2><?=$row["player"]?></h2>
+	  <form action="" method="post">
+	  <table>
+	  	    <tr>
+		  <td width="100">Player: </td><td><?=$row["player"]?></td>
+		</tr>
+	    <tr>
+		  <td width="100">ID: </td><td><?=$row["id"]?></td>
+		</tr>
+	    <tr>
+		  <td width="100">User level: </td>
+		  <td>
+		 <select name="user_level">
+		 <?php if ($level<=0) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel?> value="0">[0] Member</option>
+		 <?php if ($level==1) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel?> value="1">[1] <?=$lang["member_reserved"]?></option>
+		 <?php if ($level==2) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel?> value="2">[2] <?=$lang["member_safe"]?></option>
+		 <?php if ($level==3) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel?> value="3">[3] <?=$lang["member_safe_reserved"]?></option>
+		   
+		 <?php if ($level==4) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="4">[4] <?=$lang["member_web_moderator"]?></option>
+		   
+		 <?php if ($level==5) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="5">[5] <?=$lang["member_bot_moderator"]?></option>
+		 <?php if ($level==6) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="6">[6] <?=$lang["member_bot_full_mod"]?></option>
+		 <?php if ($level==7) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="7">[7] <?=$lang["member_global_mod"]?></option>
+		 <?php if ($level==8) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="8">[8] <?=$lang["member_bot_hoster"]?></option>
+		 <?php if ($level==8) $sel='selected="selected"'; else $sel = ""; ?>
+
+		 <?php if ($level>=9 AND $level<10) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="9">[9] <?=$lang["member_admin"]?></option>
+		<?php if ($level>=10) $sel='selected="selected"'; else $sel = ""; ?>
+		   <option <?=$sel.$dis?> value="10">[10] <?=$lang["member_root"]?></option>
+		 </select>
+		  </td>
+		</tr>
+	    <tr>
+		  <td width="100">Banned: </td><td><input type="text" size="1" name="banned" value="<?=$row["banned"]?>" /></td>
+		</tr>
+	    <tr>
+		  <td width="100">Hide: </td><td><input type="text" size="1" name="hide" value="<?=$row["hide"]?>" /></td>
+		</tr>
+	    <tr>
+		  <td width="100">Realm: </td><td><input type="text" size="25" name="realm" value="<?=$row["realm"]?>" /></td>
+		</tr>
+	    <tr>
+		  <td width="100">Points: </td><td><input type="text" size="1" name="points" value="<?=$row["points"]?>" /></td>
+		</tr>
+	    <tr>
+		  <td width="100">Bet: </td><td><input type="text" size="1" name="points_bet" value="<?=$row["points_bet"]?>" /></td>
+		</tr>
+	    <tr>
+		  <td width="100">Blacklisted: </td><td><input type="text" size="1" name="blacklisted" value="<?=$row["blacklisted"]?>" /></td>
+		</tr>
+	    <tr>
+		  <td width="100">EXP: </td><td>
+		  <input type="text" size="2" name="exp" value="<?=$row["exp"]?>" /> /<?=$end?>, 
+		  Level: <?=$level?>
+		  </td>
+		</tr>
+	    <tr>
+		  <td width="100"></td><td><input class="menuButtons" type="submit"  name="save_player" value="Save Player" /></td>
+		</tr>
+	  </table>
+	  </form>
+	  <?php
+	  
+	}
+	
+	
+	//END - EDIT PLAYER
 	
   //$groupBy = 'GROUP BY player';  
   $groupBy = '';
   $where = '';
-  if (!isset($_GET["search_users"])) $where = " AND `month` = '".date("n")."' AND `year` = '".date("Y")."' ";
+  if (!isset($_GET["search_users"])) $where = " AND s.`month` = '".date("n")."' AND `year` = '".date("Y")."' ";
   //else { $groupBy = 'GROUP BY player';   }
-  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy ");
+  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." as s WHERE s.id>=1 $sql $where $groupBy ");
   $result = $sth->execute();
   $r = $sth->fetch(PDO::FETCH_NUM);
   $numrows = $r[0];
@@ -361,10 +474,14 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
   $SHOW_TOTALS = 1;
   include('pagination.php');
   
-  $sth = $db->prepare("SELECT id, ip, user_level, banned, player, leaver, forced_gproxy, realm, wins, points, score, games, losses, alias_id, month, year
-  FROM ".OSDB_STATS." WHERE id>=1 $sql $where $groupBy 
+  $sth = $db->prepare("SELECT s.`pid` as id, s.ip, s.user_level, s.banned, s.player, s.leaver, s.forced_gproxy, s.realm, s.wins, s.points, s.score, s.games, s.losses, s.alias_id, s.month, s.year, p.exp
+  FROM ".OSDB_STATS." as s
+  LEFT JOIN ".OSDB_STATS_P." as p ON p.player = s.player
+  WHERE s.id>=1 $sql $where $groupBy 
   ORDER BY $ord LIMIT $offset, $rowsperpage");
   $result = $sth->execute();
+  
+
   ?>
   
    <table>
@@ -372,7 +489,7 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	  <th width="160" class="padLeft">Player/Game Type</th>
 	  <th width="95" class="padLeft">Realm/Date</th>
 	  <th width="240">Action</th>
-	  <th width="80">Score</th>
+	  <th width="80">Score/EXP</th>
 	  <th width="125">Games (W/L/<span style="color:red">Left</span>)</th>
 	  <th width="100">Points</th>
 	  <th class="padLeft">Status</th>
@@ -384,11 +501,12 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	 $GeoIP = 1;
 	 }
 	 
+	 $p = '';
+	 
 	 if ( isset($_GET["page"]) AND is_numeric($_GET["page"]) ) $p = '&amp;page='.safeEscape( $_GET["page"] );
 	 else $p = '';
 	 
 	 if ( isset($_GET["sort"]) ) $p.= '&amp;sort='.safeEscape( $_GET["sort"] );
-	 else $p = '';
 	 
 	 //LOOP
 	 while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
@@ -401,6 +519,19 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	$Letter = "blank";
 	$Country  = "Reserved";
 	}
+	
+   $exp = calculateXP( ( $row["exp"] ) );
+
+	
+	if( $exp["level"]<=0)    $exp["level"] = 1;
+	if( $exp["percent"]<=0)  $exp["percent"] = 1;
+	
+	$percent = $exp["percent"];
+	$level  = $exp["level"];
+	$expts    = $row["exp"];
+	$end    = $exp["end"];
+	
+	$progress = round($exp["end"]/($exp["end"]+$row["exp"]), 3)*100;
 	
 	if ( $row["user_level"] >= 1 )    
 	$is_admin = '<img width="16" height="16" src="ranked.png" alt="" class="imgvalign"/> Admin'; 
@@ -424,6 +555,7 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	  <?php
 	  }
 	  ?>
+	  <a style="float:right;" href="<?=OS_HOME?>adm/?players&amp;edit=<?=$row["player"].$p?>"><img class="imgvalign" src="<?=OS_HOME?>adm/edit.png" alt="" /></a>
 	  </td>
 	  <td>
 	  <?=($row["realm"])?>
@@ -481,7 +613,9 @@ $Countries["<?=$row["country_code"]?>"] = "<?=$row["country"]?>";
 	  </div>
 	  </td>
 	  
-	  <td><b><?=number_format($row["score"],0)?></b></td>
+	  <td><b><?=number_format($row["score"],0)?></b>
+	  <div>Exp: <?=$expts?>, L: <?=$level?></div>
+	  </td>
 	  <td><b><?=$row["games"]?></b> (<?=$row["wins"]?> / <?=$row["losses"]?> / <span style="color:<?=$col?>"><?=$row["leaver"]?></span>)</td>
 	  <td>
 	  <?=number_format($row["points"],0)?> <a href="javascript:;" onclick="showhide('po_<?=$row["id"]?>')">[+]</a>
