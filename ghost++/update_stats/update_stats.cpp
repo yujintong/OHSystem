@@ -443,7 +443,6 @@ int main( int argc, char **argv )
                 i_playerColour[i_playerCounter] = UTIL_ToUInt32(Row[8]);
                 s_gamename = Row[9];
 
-
                 MYSQL_RES *IDResult = QueryBuilder(Connection, "SELECT id FROM oh_stats WHERE pid='"+Row[0]+"' AND month='"+Month+"' AND year = '"+Year+"';" );
                 if( IDResult ) {
                     vector<string> Row = MySQLFetchRow( IDResult );
@@ -504,7 +503,7 @@ int main( int argc, char **argv )
                 uint32_t i_maxLoosingStreak=0;
                 int32_t i_score = 0;
                 if(! b_newPlayer[i_playerCounter] ) {
-                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE pid='"+UTIL_ToString(i_playerId[i_playerCounter])+"';" );
+                    MYSQL_RES *DetailedStatsQuery = QueryBuilder(Connection, "SELECT streak, maxstreak, losingstreak, maxlosingstreak, score FROM oh_stats WHERE pid='"+UTIL_ToString(i_playerId[i_playerCounter])+"' AND month=MONTH(NOW()) AND year=YEAR(NOW());" );
                     if( DetailedStatsQuery ) {
                         vector<string> Row = MySQLFetchRow( DetailedStatsQuery );
                         if( Row.size( ) == 5 ) {
