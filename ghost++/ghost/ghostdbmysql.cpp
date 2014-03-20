@@ -963,25 +963,9 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
     }
     else if( type == "aliascheck" )
     {
-        string GetIP = "SELECT `ip` FROM `oh_gameplayers` WHERE name = '" + EscUser + "' AND `ip` != '0' AND `ip` != '0.0.0.0' ORDER BY `id` DESC;";
-        string UserIP = "";
-        if( mysql_real_query( (MYSQL *)conn, GetIP.c_str( ), GetIP.size( ) ) != 0 )
-            *error = mysql_error( (MYSQL *)conn );
-        else
-        {
-            MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
-            if( Result )
-            {
-                vector<string> Row = MySQLFetchRow( Result );
-                if( Row.size( ) == 1 )
-                    UserIP = Row[0];
-                mysql_free_result( Result );
-            }
-        }
-
         string Aliases = "";
-        string Query = "SELECT DISTINCT name, spoofedrealm FROM oh_gameplayers WHERE ip = '" + UserIP + "' ORDER BY id DESC LIMIT 4;";
-
+        string Query = "SELECT name,spoofedrealm,COUNT(*) FROM oh_gameplayers INNER JOIN (SELECT DISTINCT ip FROM oh_gameplayers WHERE AND ip != '0' AND ip != '0.0.0.0' WHERE  name='"+EscUser+"') a USING (ip) GROUP  BY player_id ORDER BY COUNT(*) DESC LIMIT 5"
+        
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
         else
@@ -992,9 +976,9 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
             {
                 vector<string> Row = MySQLFetchRow( Result );
 
-                while( Row.size( ) == 2 )
+                while( Row.size( ) == 3 )
                 {
-                    Aliases += ", " + Row[0] + "@" + Row[1];
+                    Aliases += ", " + Row[0] + "@" + Row[1]+"("+Row[2]+")";
                     Row = MySQLFetchRow( Result );
                 }
 
@@ -1003,11 +987,12 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
             else
                 *error = mysql_error( (MYSQL *)conn );
         }
-
-        if( Aliases.length( ) < 3 )
+        
+        if( Aliases.length( ) < 5 )
             return "failed";
         else
             return "Aliases: " + Aliases.substr( 2 );
+        
     }
     else if( type == "rpp" )
     {
