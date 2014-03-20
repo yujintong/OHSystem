@@ -396,7 +396,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                                       Streak,
                                       m_GHost->GetMonthInWords(Month),
                                       Year
-                                                                                            ) );
+                                                                                              ) );
                         }
                     }
                 }
