@@ -964,7 +964,7 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
     else if( type == "aliascheck" )
     {
         string Aliases = "";
-        string Query = "SELECT name,spoofedrealm,COUNT(*) FROM oh_gameplayers INNER JOIN (SELECT DISTINCT ip FROM oh_gameplayers WHERE AND ip != '0' AND ip != '0.0.0.0' WHERE  name='"+EscUser+"') a USING (ip) GROUP  BY player_id ORDER BY COUNT(*) DESC LIMIT 5"
+		string Query = "SELECT name,spoofedrealm,COUNT(*) FROM oh_gameplayers INNER JOIN (SELECT DISTINCT ip FROM oh_gameplayers WHERE AND ip != '0' AND ip != '0.0.0.0' WHERE  name='" + EscUser + "') a USING (ip) GROUP  BY player_id ORDER BY COUNT(*) DESC LIMIT 5";
         
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
