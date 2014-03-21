@@ -503,5 +503,8 @@ $lang["show_all"]        = "Show All";
 $lang["choose_game_type"]        = "Choose game type";
 $lang["game_type"]               = "Game type";
 $lang["live_games_disable"]      = "You are in the game. Data not available.";
-$lang["common_games"]      = "Common Games";
+$lang["common_games"]            = "Common Games";
+
+$lang["top_teammates"]      = "Top Teammates";
+$lang["top_opponents"]      = "Top Opponents";
 ?>  

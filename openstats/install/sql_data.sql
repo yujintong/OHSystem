@@ -245,7 +245,9 @@ CREATE TABLE IF NOT EXISTS `oh_gameplayers` (
   KEY `gameid` (`gameid`),
   KEY `colour` (`colour`),
   KEY `name` (`name`),
-  KEY `playerID` (`player_id`)
+  KEY `playerID` (`player_id`),
+  KEY `team` (`team`),
+  KEY `ip` (`ip`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_gameplayers_rating`;

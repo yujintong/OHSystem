@@ -24,7 +24,7 @@ $lang["expires"]    = "Expires";
 $lang["expired"]    = "Expired";
 $lang["search"]     = "Search";
 $lang["search_players"] = "Search players...";
-$lang["admins"]     = "Admins";
+$lang["admins"]     = "OHS Team";
 $lang["safelist"]   = "Safelist";
 $lang["about_us"]   = "About Us";
 $lang["members"]    = "Members";
@@ -500,4 +500,7 @@ $lang["choose_game_type"]        = "Choose game type";
 $lang["game_type"]               = "Game type";
 $lang["live_games_disable"]      = "You are in the game. Data not available.";
 $lang["common_games"]      = "Common Games";
+
+$lang["top_teammates"]      = "Top Teammates";
+$lang["top_opponents"]      = "Top Opponents";
 ?>
