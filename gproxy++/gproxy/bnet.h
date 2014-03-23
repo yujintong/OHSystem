@@ -46,7 +46,6 @@ private:
 //	CBNLSClient *m_BNLSClient;						// the BNLS client (for external warden handling)
 	queue<CCommandPacket *> m_Packets;				// queue of incoming packets
 	CBNCSUtilInterface *m_BNCSUtil;					// the interface to the bncsutil library (used for logging into battle.net)
-	queue<BYTEARRAY> m_OutPackets;					// queue of outgoing packets to be sent (to prevent getting kicked for flooding)
 	string m_Server;								// battle.net server to connect to
 	string m_ServerIP;								// battle.net server to connect to (the IP address so we don't have to resolve it every time we connect)
 	string m_BNLSServer;							// BNLS server to connect to (for warden handling)
@@ -90,6 +89,7 @@ public:
 	CBNET( CGProxy *nGProxy, string nServer, string nBNLSServer, uint16_t nBNLSPort, uint32_t nBNLSWardenCookie, string nCDKeyROC, string nCDKeyTFT, string nCountryAbbrev, string nCountry, string nUserName, string nUserPassword, string nFirstChannel, unsigned char nWar3Version, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, uint32_t nMaxMessageLength );
 	~CBNET( );
 
+	queue<BYTEARRAY> m_OutPackets;					// queue of outgoing packets to be sent (to prevent getting kicked for flooding)
 	string GetServer( )					{ return m_Server; }
 	string GetCDKeyROC( )				{ return m_CDKeyROC; }
 	string GetCDKeyTFT( )				{ return m_CDKeyTFT; }

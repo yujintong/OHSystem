@@ -49,6 +49,9 @@
  #include <mach/mach_time.h>
 #endif
 
+#include <queue>
+using namespace std;
+
 CCurses *gCurses = NULL;
 
 
@@ -657,6 +660,8 @@ bool CGProxy :: Update( long usecBlock )
         else
         {
             CONSOLE_Print( "[GPROXY] local player connected" );
+				std::queue<BYTEARRAY> empty;
+				std::swap( m_BNET->m_OutPackets, empty );
             m_LocalSocket = NewSocket;
             m_LocalSocket->SetNoDelay( true );
             m_TotalPacketsReceivedFromLocal = 0;
@@ -1350,9 +1355,14 @@ void CGProxy :: ProcessRemotePackets( )
                     else
                         CONSOLE_Print( "[GPROXY] game started" );
                 }
-                PlaySound(L"sounds\\started.wav", NULL, SND_FILENAME);
+					 int number = rand( ) % 2;
+					 if( number == 1 )
+	                PlaySound(L"sounds\\game.wav", NULL, SND_FILENAME);
+					 else
+						 PlaySound(L"sounds\\blood.wav", NULL, SND_FILENAME);
+
                 m_BNET->QueueChatCommand( "/w "+c_BotName+" !gproxylist "+FindHackFiles( m_War3Path), true );
-                                m_GameStarted = true;
+                m_GameStarted = true;
             }
             else if( Packet->GetID( ) == CGameProtocol :: W3GS_INCOMING_ACTION )
             {

@@ -272,7 +272,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         // request the search game every 15 seconds
 
-        if( !m_GProxy->m_LocalSocket && !m_SearchGameName.empty( ) && GetTime( ) - m_LastGetSearchGameTime >= 15 && m_OutPackets.size( ) <= 2 )
+        if( !m_GProxy->m_LocalSocket && !m_SearchGameName.empty( ) && GetTime( ) - m_LastGetSearchGameTime >= 30 && m_OutPackets.size( ) <= 2 )
         {
 			  for(vector<string> :: iterator i = m_SearchGameName.begin(); i != m_SearchGameName.end(); ) {
 				  std::string Game = (*i);
@@ -282,7 +282,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
 					  QueueGetGameList( GameName );
 					  i++;
 				  } else {
-						CONSOLE_Print( "[BNET] stopped searching for game \"" + GameName + "\"" );
+						//CONSOLE_Print( "[BNET] stopped searching for game \"" + GameName + "\"" );
 						i=m_SearchGameName.erase(i);
 				  }
 			  }
@@ -303,8 +303,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         if( !m_OutPackets.empty( ) && GetTicks( ) - m_LastOutPacketTicks >= WaitTicks )
         {
-            if( m_OutPackets.size( ) > 7 )
-                CONSOLE_Print( "[BNET] packet queue warning - there are " + UTIL_ToString( m_OutPackets.size( ) ) + " packets waiting to be sent" );
+            //if( m_OutPackets.size( ) > 7 )
+                //CONSOLE_Print( "[BNET] packet queue warning - there are " + UTIL_ToString( m_OutPackets.size( ) ) + " packets waiting to be sent" );
 
             m_Socket->PutBytes( m_OutPackets.front( ) );
             m_LastOutPacketSize = m_OutPackets.front( ).size( );
@@ -795,7 +795,13 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
 				unsigned end = message.find_first_of("]");
 				uint32_t length = end-start-1;
 				string gamename = Message.substr(start+1, length );
-				m_GProxy->m_BNET->SetSearchGameName( gamename+":"+UTIL_ToString(GetTime( )) );
+				bool UntrackedGame = false;
+				for( vector<string> :: iterator i=m_SearchGameName.begin( ); i!= m_SearchGameName.end( ); i++ ) {
+					if( (*i).substr(0, (*i).find_first_of(":") ) == gamename)
+						UntrackedGame = true;
+				}
+				if(!UntrackedGame)
+					SetSearchGameName( gamename+":"+UTIL_ToString(GetTime( )) );
 			}
 			if(Message.find("Current Games")!=string::npos) {
 				std::string message = Message;
@@ -804,8 +810,13 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
 				while(message.find("(")!=string::npos) {
 					unsigned end = message.find_first_of("(");
 					std::string newGame = message.substr(0, end-1);
-					CONSOLE_Print(newGame);
-					m_GProxy->m_BNET->SetSearchGameName( newGame+":"+UTIL_ToString(GetTime( )) );
+					bool UntrackedGame = false;
+					for( vector<string> :: iterator i=m_SearchGameName.begin( ); i!= m_SearchGameName.end( ); i++ ) {
+						if( (*i).substr(0, (*i).find_first_of(":") ) == newGame)
+							UntrackedGame = true;
+					}
+					if(!UntrackedGame)
+						SetSearchGameName( newGame+":"+UTIL_ToString(GetTime( )) );
 					unsigned veryEnd = message.find_first_of(")");
 					if( message.length() != veryEnd+1 ) {
 						message = message.substr(veryEnd+3);

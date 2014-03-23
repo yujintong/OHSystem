@@ -1059,6 +1059,13 @@ bool CCurses :: Update( )
 				m_GProxy->m_BNET->SetListPublicGames( false );
 				CONSOLE_Print( "[BNET] listing of public games disabled" );
 			}
+			else if( Command == "/sound" ) {
+				int number = rand( ) % 2;
+					 if( number == 1 )
+	                PlaySound(L"sounds\\game.wav", NULL, SND_FILENAME);
+					 else
+						 PlaySound(L"sounds\\blood.wav", NULL, SND_FILENAME);
+			}
 #ifdef WIN32
 			else if( Command == "/start" )
 			{
