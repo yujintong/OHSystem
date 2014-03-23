@@ -661,7 +661,6 @@ void CUDPSocket :: SetBroadcastTarget( string subnet )
 		// this function does not check whether the given subnet is a valid subnet the user is on
 		// convert string representation of ip/subnet to in_addr
 
-		CONSOLE_Print( "[UDPSOCKET] using broadcast target [" + subnet + "]" );
 		m_BroadcastTarget.s_addr = inet_addr( subnet.c_str( ) );
 
 		// if conversion fails, inet_addr( ) returns INADDR_NONE

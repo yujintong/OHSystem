@@ -62,7 +62,7 @@ private:
 	string m_CurrentChannel;						// the current chat channel
 	bool m_ListPublicGames;
 	string m_PublicGameFilter;
-	string m_SearchGameName;
+	vector<string> m_SearchGameName;
 	uint32_t m_SearchGameNameTime;
 	string m_ReplyTarget;
 	unsigned char m_War3Version;					// custom warcraft 3 version for PvPGN users
@@ -99,7 +99,7 @@ public:
 	string GetCurrentChannel( )			{ return m_CurrentChannel; }
 	bool GetListPublicGames( )			{ return m_ListPublicGames; }
 	string GetPublicGameFilter( )		{ return m_PublicGameFilter; }
-	string GetSearchGameName( )			{ return m_SearchGameName; }
+	vector<string> GetSearchGameName( )			{ return m_SearchGameName; }
 	string GetReplyTarget( )			{ return m_ReplyTarget; }
 	BYTEARRAY GetEXEVersion( )			{ return m_EXEVersion; }
 	BYTEARRAY GetEXEVersionHash( )		{ return m_EXEVersionHash; }
@@ -112,7 +112,7 @@ public:
 
 	void SetListPublicGames( bool nListPublicGames )		{ m_ListPublicGames = nListPublicGames; }
 	void SetPublicGameFilter( string nPublicGameFilter )	{ m_PublicGameFilter = nPublicGameFilter; }
-	void SetSearchGameName( string nSearchGameName )		{ m_SearchGameName = nSearchGameName; m_SearchGameNameTime = GetTime( ); }
+	void SetSearchGameName( string nSearchGameName )		{ m_SearchGameName.push_back( nSearchGameName ); }
 	vector<pair<string, int> > GetFriends( );
 	vector<pair<string, int> > GetClan( );
 

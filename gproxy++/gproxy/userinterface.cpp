@@ -1,4 +1,3 @@
-
 #include "bnet.h"
 #include "bnetprotocol.h"
 #include "userinterface.h"
@@ -275,27 +274,9 @@ void CCurses :: SetGProxy( CGProxy* nGProxy )
 	AddTab( m_GProxy->m_BNET->GetServer( ), T_REALM, 0, B_REALM, W_TAB );
 
 	Print( "", true );
-	Print( ">>> /commands", true );
+	Print( "Use '/commands' to see any possible commands you can run.", true );
 	Print( "", true );
-	Print( "  In the GProxy++ console:", true );
-	Print( "   /<bnet-command> <...>    : Battle.net command", true );
-	Print( "   /resize <width> <height> : Resizes console", true );
-	Print( "   /split                   : Toggles split view in realm tabs", true );
-	Print( "   /exit or /quit           : Close GProxy++", true );
-	Print( "   /filter <f>              : Start filtering public game names for <f>", true );
-	Print( "   /filteroff               : Stop filtering public game names", true );
-	Print( "   /help                    : Show help text", true );
-    Print( "   /public                  : Enable listing of games", true );
-    Print( "   /publicoff               : Disable listing of games", true );
-#ifdef WIN32
-	Print( "   /start                   : Start warcraft 3", true );
-#endif
-	Print( "  In game:", true );
-	Print( "   /re <message>            : Reply to the last received whisper", true );
-	Print( "   /sc                      : Whispers \"spoofcheck\" to the game host", true );
-	Print( "   /status                  : Show status information", true );
-	Print( "   /w <user> <message>      : Whispers <message> to <user>", true );
-	Print( "", false );
+
 
 }
 
@@ -1064,7 +1045,7 @@ bool CCurses :: Update( )
 
 				if( !GameName.empty( ) && GameName.size( ) <= 31 )
 				{
-					m_GProxy->m_BNET->SetSearchGameName( GameName );
+					m_GProxy->m_BNET->SetSearchGameName( GameName+":"+UTIL_ToString(GetTime( )) );
 					CONSOLE_Print( "[BNET] looking for a game named \"" + GameName + "\" for up to two minutes" );
 				}
 			}

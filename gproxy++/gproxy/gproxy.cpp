@@ -448,16 +448,13 @@ int main( int argc, char **argv )
     }
 
     if ( CFG.GetInt( "curses_enabled", 1 ) == 1 )
-        gCurses = new CCurses( CFG.GetInt( "term_width", 135 ), CFG.GetInt( "term_height", 52 ), !!CFG.GetInt( "curses_splitview", 1 ), CFG.GetInt( "curses_listtype", 1 ) );
+        gCurses = new CCurses( CFG.GetInt( "term_width", 170 ), CFG.GetInt( "term_height", 70 ), !!CFG.GetInt( "curses_splitview", 1 ), CFG.GetInt( "curses_listtype", 1 ) );
 
+	 CONSOLE_Print( "" );
+    CONSOLE_Print( "Welcome " + Username + "!" );
+    CONSOLE_Print( "Server: " + Server );
+    CONSOLE_Print( "Channel: " + Channel );
     CONSOLE_Print( "" );
-    CONSOLE_Print( "  Welcome to GProxy++." );
-    CONSOLE_Print( "  Server: " + Server );
-    CONSOLE_Print( "  Username: " + Username );
-    CONSOLE_Print( "  Channel: " + Channel );
-    CONSOLE_Print( "" );
-
-    // initialize gproxy
 
     gGProxy = new CGProxy( !CDKeyTFT.empty( ), War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, Port, EXEVersion, EXEVersionHash, PasswordHashType, l_ProtectPassword );
 
@@ -503,8 +500,7 @@ CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKey
 
     //CONFIGURATION NEEDED!
     c_BotName = "ChannelBotName";
-    m_VersionNum = "1_10";
-    m_Version = "Public Release " + m_VersionNum + " {OHSystem Mod 1.0}";
+    m_Version = "OHSystem GProxy++ Mod v1.01";
     m_LocalServer = new CTCPServer( );
     m_LocalSocket = NULL;
     m_RemoteSocket = new CTCPClient( );
@@ -546,7 +542,7 @@ CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKey
     m_LocalServer->Listen( string( ), m_Port );
     m_SendInfo = false;
     ProtectPassword=protectPassword;
-    CONSOLE_Print( "[GPROXY] GProxy++ Version " + m_Version );
+    CONSOLE_Print( m_Version );
 }
 
 CGProxy :: ~CGProxy( )
@@ -1617,8 +1613,16 @@ bool CGProxy :: AddGame( CIncomingGameHost *game )
             break;
         }
 
-        if( game->GetGameName( ) != m_BNET->GetSearchGameName( ) && game->GetReceivedTime( ) < OldestReceivedTime )
-            OldestReceivedTime = game->GetReceivedTime( );
+        if( game->GetReceivedTime( ) < OldestReceivedTime ) {
+			  vector<string> games = m_BNET->GetSearchGameName( );
+			  for(vector<string> :: iterator i=games.begin(); i!=games.end(); i++ ) {
+				std::string Game = (*i);
+				std::string GameName = Game.substr(0, Game.find_first_of(":"));
+				if( GameName != game->GetGameName( ) ) {
+	            OldestReceivedTime = game->GetReceivedTime( );
+				}
+			  }
+		  }
     }
 
     if( !DuplicateFound )
@@ -1633,12 +1637,19 @@ bool CGProxy :: AddGame( CIncomingGameHost *game )
     {
         for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); i++ )
         {
-            if( game->GetGameName( ) != m_BNET->GetSearchGameName( ) && game->GetReceivedTime( ) == OldestReceivedTime )
+            if( game->GetReceivedTime( ) == OldestReceivedTime )
             {
-                m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_DECREATEGAME( (*i)->GetUniqueGameID( ) ) );
-                delete *i;
-                m_Games.erase( i );
-                break;
+					vector<string> games = m_BNET->GetSearchGameName( );
+					for(vector<string> :: iterator j=games.begin(); j!=games.end(); j++ ) {
+						std::string Game = (*j);
+						std::string GameName = Game.substr(0, Game.find_first_of(":"));
+						if( GameName != game->GetGameName( ) ) {
+						 m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_DECREATEGAME( (*i)->GetUniqueGameID( ) ) );
+						 delete *i;
+						 m_Games.erase( i );
+						 break;
+						}
+					}
             }
         }
     }

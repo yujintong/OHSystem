@@ -272,17 +272,21 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         // request the search game every 15 seconds
 
-        if( !m_SearchGameName.empty( ) && GetTime( ) - m_SearchGameNameTime >= 120 )
-        {
-            CONSOLE_Print( "[BNET] stopped searching for game \"" + m_SearchGameName + "\"" );
-            m_SearchGameName.clear( );
-            m_SearchGameNameTime = GetTime( );
-        }
-
         if( !m_GProxy->m_LocalSocket && !m_SearchGameName.empty( ) && GetTime( ) - m_LastGetSearchGameTime >= 15 && m_OutPackets.size( ) <= 2 )
         {
-            QueueGetGameList( m_SearchGameName );
-            m_LastGetSearchGameTime = GetTime( );
+			  for(vector<string> :: iterator i = m_SearchGameName.begin(); i != m_SearchGameName.end(); ) {
+				  std::string Game = (*i);
+				  std::string GameName = Game.substr(0, Game.find_first_of(":"));
+				  std::string Time = Game.substr(Game.find_last_of(":")+1, Game.length( ) );
+				  if(GetTime( ) - UTIL_ToUInt32(Time) < 120 ) {
+					  QueueGetGameList( GameName );
+					  i++;
+				  } else {
+						CONSOLE_Print( "[BNET] stopped searching for game \"" + GameName + "\"" );
+						i=m_SearchGameName.erase(i);
+				  }
+			  }
+           m_LastGetSearchGameTime = GetTime( );
         }
 
         // check if at least one packet is waiting to be sent and if we've waited long enough to prevent flooding
@@ -367,7 +371,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
             if( !m_Socket->HasError( ) )
             {
                 m_ServerIP = m_Socket->GetIPString( );
-                CONSOLE_Print( "[BNET] resolved and cached server IP address " + m_ServerIP );
+                //CONSOLE_Print( "[BNET] resolved and cached server IP address " + m_ServerIP );
             }
         }
         else
@@ -491,19 +495,24 @@ void CBNET :: ProcessPackets( )
                             //continue;
                     //}
 
-                    if( !m_PublicGameFilter.empty( ) && (*i)->GetGameName( ) != m_SearchGameName )
+                    if( !m_PublicGameFilter.empty( ) )
                     {
-                        string FilterLower = m_PublicGameFilter;
-                        string GameNameLower = (*i)->GetGameName( );
-                        transform( FilterLower.begin( ), FilterLower.end( ), FilterLower.begin( ), (int(*)(int))tolower );
-                        transform( GameNameLower.begin( ), GameNameLower.end( ), GameNameLower.begin( ), (int(*)(int))tolower );
+							  for( vector<string> :: iterator j=m_SearchGameName.begin(); j!=m_SearchGameName.end(); j++ ) {
+								  std::string GameName = (*j).substr(0, (*j).find_first_of(":")-2);
+									if((*i)->GetGameName( ) != GameName ) {
+										string FilterLower = m_PublicGameFilter;
+										string GameNameLower = (*i)->GetGameName( );
+										transform( FilterLower.begin( ), FilterLower.end( ), FilterLower.begin( ), (int(*)(int))tolower );
+										transform( GameNameLower.begin( ), GameNameLower.end( ), GameNameLower.begin( ), (int(*)(int))tolower );
 
-                        if( GameNameLower.find( FilterLower ) == string :: npos )
-                        {
-                            delete *i;
-                            i = Games.erase( i );
-                            continue;
-                        }
+										if( GameNameLower.find( FilterLower ) == string :: npos )
+										{
+											 delete *i;
+											 i = Games.erase( i );
+											 continue;
+										}
+								  }
+							}
                     }
 
                     if( m_GProxy->AddGame( *i ) )
@@ -522,7 +531,7 @@ void CBNET :: ProcessPackets( )
             case CBNETProtocol :: SID_ENTERCHAT:
                 if( m_Protocol->RECEIVE_SID_ENTERCHAT( Packet->GetData( ) ) )
                 {
-                    CONSOLE_Print( "[BNET] joining channel [" + m_FirstChannel + "]" );
+                    //CONSOLE_Print( "[BNET] joining channel [" + m_FirstChannel + "]" );
                     m_InChat = true;
                     m_InGame = false;
                     m_Socket->PutBytes( m_Protocol->SEND_SID_JOINCHANNEL( m_FirstChannel ) );
@@ -579,10 +588,10 @@ void CBNET :: ProcessPackets( )
                             m_BNCSUtil->SetEXEVersionHash( m_EXEVersionHash );
                         }
 
-                        if( m_GProxy->m_TFT )
-                            CONSOLE_Print( "[BNET] attempting to auth as Warcraft III: The Frozen Throne" );
-                        else
-                            CONSOLE_Print( "[BNET] attempting to auth as Warcraft III: Reign of Chaos" );
+                        //if( m_GProxy->m_TFT )
+                        //    CONSOLE_Print( "[BNET] attempting to auth as Warcraft III: The Frozen Throne" );
+                        //else
+                        //    CONSOLE_Print( "[BNET] attempting to auth as Warcraft III: Reign of Chaos" );
 
                         m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_CHECK( m_GProxy->m_TFT, m_Protocol->GetClientToken( ), m_BNCSUtil->GetEXEVersion( ), m_BNCSUtil->GetEXEVersionHash( ), m_BNCSUtil->GetKeyInfoROC( ), m_BNCSUtil->GetKeyInfoTFT( ), m_BNCSUtil->GetEXEInfo( ), "GProxy" ) );
 
@@ -660,7 +669,7 @@ void CBNET :: ProcessPackets( )
                     {
                         // pvpgn logon
 
-                        CONSOLE_Print( "[BNET] using pvpgn logon type (for pvpgn servers only)" );
+                        //CONSOLE_Print( "[BNET] using pvpgn logon type (for pvpgn servers only)" );
                         m_BNCSUtil->HELP_PvPGNPasswordHash( m_UserPassword );
                         m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_ACCOUNTLOGONPROOF( m_BNCSUtil->GetPvPGNPasswordHash( ) ) );
                     }
@@ -668,7 +677,7 @@ void CBNET :: ProcessPackets( )
                     {
                         // battle.net logon
 
-                        CONSOLE_Print( "[BNET] using battle.net logon type (for official battle.net servers only)" );
+                        //CONSOLE_Print( "[BNET] using battle.net logon type (for official battle.net servers only)" );
                         m_BNCSUtil->HELP_SID_AUTH_ACCOUNTLOGONPROOF( m_Protocol->GetSalt( ), m_Protocol->GetServerPublicKey( ) );
                         m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_ACCOUNTLOGONPROOF( m_BNCSUtil->GetM1( ) ) );
                     }
@@ -778,8 +787,34 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         CONSOLE_Print( "[WHISPER] <" + User + "> " + Message, false );
         m_GProxy->SendLocalChat( User + " whispered: " + Message );
     }
-    else if( Event == CBNETProtocol :: EID_TALK )
+    else if( Event == CBNETProtocol :: EID_TALK )  {
         CONSOLE_Print( "<" + User + "> " + Message, false );
+			if( Message.find("Creating")!=string::npos && Message.find("[")!=string::npos ) {
+				const std::string message = Message;
+				unsigned start = message.find_first_of("[");
+				unsigned end = message.find_first_of("]");
+				uint32_t length = end-start-1;
+				string gamename = Message.substr(start+1, length );
+				m_GProxy->m_BNET->SetSearchGameName( gamename+":"+UTIL_ToString(GetTime( )) );
+			}
+			if(Message.find("Current Games")!=string::npos) {
+				std::string message = Message;
+				unsigned start = message.find_first_of(":");
+				message = Message.substr(start+2);
+				while(message.find("(")!=string::npos) {
+					unsigned end = message.find_first_of("(");
+					std::string newGame = message.substr(0, end-1);
+					CONSOLE_Print(newGame);
+					m_GProxy->m_BNET->SetSearchGameName( newGame+":"+UTIL_ToString(GetTime( )) );
+					unsigned veryEnd = message.find_first_of(")");
+					if( message.length() != veryEnd+1 ) {
+						message = message.substr(veryEnd+3);
+					} else {
+						break;
+					}
+				}
+			}
+	 }
     else if( Event == CBNETProtocol :: EID_BROADCAST )
         CONSOLE_Print( "[BROADCAST] " + Message, false );
     else if( Event == CBNETProtocol :: EID_CHANNEL )
@@ -851,7 +886,7 @@ void CBNET :: QueueChatCommand( string chatCommand, bool hidden )
                 if ( r == 3 || r == 9 )
                 {
                     int nameEndpos = chatCommand.find_first_of( " ", r );
-                    if (chatCommand.length() >=14 && nameEndpos != -1 &&! chatCommand.find("gproxylist")!=string::npos )
+                    if (chatCommand.length() >=14 && nameEndpos != -1 &&(! chatCommand.find("gproxylist")!=string::npos || ! chatCommand.find("rconpw")!=string::npos ) )
                     {
                         string target = chatCommand.substr( r, nameEndpos - r );
                         CONSOLE_Print( "[WHISPERED: " + target + "] " + chatCommand.substr( nameEndpos + 1, chatCommand.length( ) ) , false );
@@ -923,7 +958,6 @@ void CBNET :: RequestListUpdates( )
 
 void CBNET :: QueueJoinGame( string gameName )
 {
-    CONSOLE_Print("queuejoingame");
     if( m_LoggedIn )
     {
         m_FirstChannel = m_CurrentChannel;
