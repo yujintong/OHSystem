@@ -897,11 +897,13 @@ void CBNET :: QueueChatCommand( string chatCommand, bool hidden )
                 if ( r == 3 || r == 9 )
                 {
                     int nameEndpos = chatCommand.find_first_of( " ", r );
-                    if (chatCommand.length() >=14 && nameEndpos != -1 &&(! chatCommand.find("gproxylist")!=string::npos || ! chatCommand.find("rconpw")!=string::npos ) )
+                    if (nameEndpos != -1 )
                     {
-                        string target = chatCommand.substr( r, nameEndpos - r );
-                        CONSOLE_Print( "[WHISPERED: " + target + "] " + chatCommand.substr( nameEndpos + 1, chatCommand.length( ) ) , false );
-                        m_GProxy->SendLocalChat( "Whispered to " + target + ": " + chatCommand.substr( nameEndpos + 1, chatCommand.length( ) ) );
+								if( ( ( chatCommand.find("gproxylist") != string::npos ) == 0 ) || ( ( chatCommand.find("rconpw") != string::npos ) == 0 ) ) {
+									string target = chatCommand.substr( r, nameEndpos - r );
+									CONSOLE_Print( "[WHISPERED: " + target + "] " + chatCommand.substr( nameEndpos + 1, chatCommand.length( ) ) , false );
+									m_GProxy->SendLocalChat( "Whispered to " + target + ": " + chatCommand.substr( nameEndpos + 1, chatCommand.length( ) ) );
+								}
                     }
                 }
                 else
