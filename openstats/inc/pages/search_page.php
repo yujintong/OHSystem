@@ -26,10 +26,10 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	}
 
       $s = safeEscape( $_GET["search"]);
-	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ?  AND alias_id = ? LIMIT 1");
+	  $sth = $db->prepare("SELECT COUNT(*) FROM ".OSDB_STATS." WHERE (player) LIKE ?  LIMIT 1");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
-	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
+	  //$sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
 	  $result = $sth->execute();
 	  $r = $sth->fetch(PDO::FETCH_NUM);
 	  $numrows = $r[0];
@@ -40,13 +40,13 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	  
 	  
 	  $sth = $db->prepare("SELECT MAX(id) as id, pid, player, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, banned, ip, alias_id
-	  FROM ".OSDB_STATS." WHERE (player) LIKE ? AND alias_id = ? 
+	  FROM ".OSDB_STATS." WHERE (player) LIKE ? 
 	  GROUP BY player
 	  ORDER BY id DESC, score DESC
 	  LIMIT $offset, $rowsperpage");
 	  
 	  $sth->bindValue(1, "%".strtolower($s)."%", PDO::PARAM_STR);
-	  $sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
+	  //$sth->bindValue(2, $DefaultGameType, PDO::PARAM_INT);
 	  $result = $sth->execute();
 	  
 	$c=0;

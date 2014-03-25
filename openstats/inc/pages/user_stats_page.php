@@ -22,7 +22,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	$sth = $db->prepare("SELECT * FROM ".OSDB_ALIASES." WHERE default_alias = 1");
 	$result = $sth->execute();
 	$game_type = $sth->fetch(PDO::FETCH_ASSOC);
-	$sql.=" AND alias_id ='".(int)$game_type["alias_id"]."' ";
+	//$sql.=" AND alias_id ='".(int)$game_type["alias_id"]."' ";
 	}
 	
 	if(isset($_GET["y"]) AND isset($_GET["m"]) ) 
