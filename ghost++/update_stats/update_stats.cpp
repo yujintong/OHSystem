@@ -515,6 +515,8 @@ int main( int argc, char **argv )
                         }
                     }
                 }
+                i_maxWinStreak[i_playerCounter] =  i_maxStreak;
+                i_maxLooseStreak[i_playerCounter] = i_maxLoosingStreak;
                 /**
                  * Dota Specific games should be filtered here
                  */
@@ -828,7 +830,7 @@ int main( int argc, char **argv )
                         if(i_pointsBet != 0 ) {
                             i_winPoints[i_playerCounter] = i_currentPoints+i_pointsBet*2;
                         }
-                        if(i_winStreak[i_playerCounter] >= i_maxStreak ) {
+                        if(i_winStreak[i_playerCounter] > i_maxStreak ) {
                             i_maxWinStreak[i_playerCounter]=i_winStreak[i_playerCounter];
                         }
                     } else if( i_losses[i_playerCounter] == 1 ) {
@@ -847,7 +849,7 @@ int main( int argc, char **argv )
                         } else {
                             i_winPoints[i_playerCounter]=0;
                         }
-                        if(i_looseStreak[i_playerCounter] >= i_maxLoosingStreak ) {
+                        if(i_looseStreak[i_playerCounter] > i_maxLoosingStreak ) {
                             i_maxLooseStreak[i_playerCounter]=i_looseStreak[i_playerCounter];
                         }
                     } else {
