@@ -4068,7 +4068,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 string SeWP = UTIL_ToString( ( m_SentinelWinPoints / m_TotalWinPoints ) * 100, 1);
                 string ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 100, 1);
-                SendAllChat( "Win Chance [Sentinel: " + SeWP + "%] [Scourge: " + ScWP + "%]" );
+                SendChat( player, "Win Chance [Sentinel: " + SeWP + "%] [Scourge: " + ScWP + "%]" );
             }
             else
                 SendChat( player, m_GHost->m_Language->ErrorOneTeamHasNoPlayers( ) );
@@ -4096,19 +4096,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if( ( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias ) && m_GHost->m_RanksLoaded )
             {
                 VLevel = (*i)->IsLevel( LastMatch->GetName( ) );
-                VLevelName = (*i)->GetLevelName( Level );
+                VLevelName = (*i)->GetLevelName( VLevel );
                 break;
             }
         }
 
-        if( VLevel > Level )
+        if( VLevel > player->GetLevel () )
         {
             SendChat( player->GetPID( ), "You can't slap a " + VLevelName );
             return HideCommand;
         }
 
         srand( (unsigned)time( NULL ) );
-        int RandomNumber = ( rand( ) % 8 );
+        int RandomNumber = rand( ) % 8;
 
         if ( LastMatch->GetName( ) != User )
         {
@@ -4128,7 +4128,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     player->SetCookie( LastMatch->GetCookies( ) );
                     LastMatch->SetCookie( 0 );
                     SendChat( player, "You can now eat cookies by using '!eat'" );
-                    SendAllChat( LastMatch->GetName( ) + " had "+ UTIL_ToString( LastMatch->GetCookies( ) ) + " cookie(s)." );
+                    SendAllChat( LastMatch->GetName( ) + " had ["+ UTIL_ToString( LastMatch->GetCookies( ) ) + "] cookie(s)." );
                 }
                 else
                     SendAllChat( "But " + LastMatch->GetName( ) + " hadn't any cookies :( " );

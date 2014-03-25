@@ -1989,6 +1989,12 @@ string CGHost :: GetLODMode( string fullmode ) {
         shortenmode = "rgc2";
     else if(fullmode == "sds6d2oseb")
         shortenmode = "rgc3";
+    else if(fullmode == "md3lsebzm" )
+        shortenmode = "rgc4";
+    else if(fullmode == "mds5zmebulos" )
+        shortenmode = "rgc5";
+    else if(fullmode == "mdd2s6ebzmulos" )
+        shortenmode = "rgc6";
     else if(fullmode == "mds6d5ulabosfnzm")
         shortenmode = "md";
     else if(fullmode == "sds6d5ulabosfnzm")
@@ -2003,7 +2009,8 @@ string CGHost :: GetLODMode( string fullmode ) {
         shortenmode = "chev2";
     else if(fullmode == "aps6fnulboabssosls")
         shortenmode = "chev3";
-
+    else if(fullmode == "sdd5s6soulabbofnfrer")
+        shortenmode = "chev5";
     return shortenmode;
 }
 

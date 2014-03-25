@@ -2481,10 +2481,6 @@ void CBaseGame :: EventPlayerDisconnectTimedOut( CGamePlayer *player )
         player->SetDeleteMe( true );
         player->SetLeftReason( m_GHost->m_Language->HasLostConnectionTimedOut( ) );
         player->SetLeftCode( PLAYERLEAVE_DISCONNECT );
-        if( player->GetLeavePerc() >= 20 && !player->GetGProxy() && !player->GetSafeDrop( ) && m_GHost->m_AutobanAll)
-        {
-            player->SetAutoban( true );
-        }
 
         if( !m_GameLoading && !m_GameLoaded )
             OpenSlot( GetSIDFromPID( player->GetPID( ) ), false );
@@ -3197,11 +3193,6 @@ void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
     else
     {
         player->SetLeftReason( m_GHost->m_Language->HasLeftVoluntarily( ) );
-        if( player->GetLeavePerc() >= 30 && !player->GetSafeDrop( ) )
-        {
-            player->SetAutoban( true );
-        }
-
     }
 
     player->SetLeftCode( PLAYERLEAVE_LOST );
@@ -6041,8 +6032,6 @@ void CBaseGame :: StopLaggers( string reason )
             (*i)->SetDeleteMe( true );
             (*i)->SetLeftReason( reason );
             (*i)->SetLeftCode( PLAYERLEAVE_DISCONNECT );
-            if( (*i)->GetLeavePerc() >= 30 && !(*i)->GetGProxy() && !(*i)->GetSafeDrop( ) && m_GHost->m_AutobanAll )
-                (*i)->SetAutoban( true );
             (*i)->SetLeft( true );
         }
     }
