@@ -859,7 +859,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
         for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if((i->Level==1&&((GetTime()-i->Time)>=45))||(i->Level==2&&((GetTime()-i->Time)>=90))) {
-                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+		SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+		m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+		SendAllSlotInfo( );
                 i = m_ReservedPlayers.erase( i );
             }
             else
@@ -1994,7 +1996,8 @@ void CBaseGame :: SendFakePlayerInfo( CGamePlayer *player )
 }
 
 void CBaseGame :: ReservedSlotInfo( CGamePlayer *player ) {
-    for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin( ); i != m_ReservedPlayers.end( ); i++ ) {
+
+    for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin( ); i != m_ReservedPlayers.end( ); ++i ) {
         BYTEARRAY IP;
         IP.push_back( 0 );
         IP.push_back( 0 );
@@ -2880,8 +2883,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         uint32_t reservedSID = 255;
         for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if( i->Name == LowerName ) {
-                reservedSID = i->SID;
-                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+		SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+		m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+                SendAllSlotInfo( );
                 EnforcePID = m_Slots[i->SID].GetPID();
                 i= m_ReservedPlayers.erase(i);
             }
@@ -4620,6 +4624,13 @@ unsigned char CBaseGame :: GetNewPID( )
                 break;
             }
         }
+	for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin( ); i != m_ReservedPlayers.end( ); ++i )
+	{
+		if( m_Slots[i->SID].GetPID( ) == TestPID ) {
+			InUse = true;
+			break;
+		}
+	}
 
         if( !InUse )
             return TestPID;
@@ -5704,7 +5715,6 @@ void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level 
         resPlayer.Name = name;
         resPlayer.SID = SID;
         resPlayer.Level = level;
-        m_ReservedPlayers.push_back( resPlayer );
     }
 
     unsigned char rSID = GetEmptySlot( false );
@@ -5714,7 +5724,7 @@ void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level 
         if( GetSlotsAllocated( ) >= m_Slots.size() - 1 )
             DeleteVirtualHost( );
 
-        unsigned int PID = GetNewPID( );
+        unsigned char PID = GetNewPID( );
         if( SID != 255 ) {
             if( m_Slots[SID].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED ) {
                 CGamePlayer *Player = GetPlayerFromSID( SID );
@@ -5731,8 +5741,9 @@ void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level 
             IP.push_back( 0 );
             IP.push_back( 0 );
             SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( PID, "|cFFFFBF00!Res!", IP, IP, string( ) ) );
-            m_Slots[resPlayer.SID] = CGameSlot( PID, 100, SLOTSTATUS_OCCUPIED, 0, m_Slots[resPlayer.SID].GetTeam( ), m_Slots[resPlayer.SID].GetColour( ), m_Slots[resPlayer.SID].GetRace( ) );
+            m_Slots[SID] = CGameSlot( PID, 100, SLOTSTATUS_OCCUPIED, 0, m_Slots[SID].GetTeam( ), m_Slots[SID].GetColour( ), m_Slots[SID].GetRace( ) );
             SendAllSlotInfo( );
+	    m_ReservedPlayers.push_back( resPlayer );
         }
 
         // check that the user is not already reserved
