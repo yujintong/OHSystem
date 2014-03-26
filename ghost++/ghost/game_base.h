@@ -352,6 +352,7 @@ public:
     virtual void SendAllSlotInfo( );
     virtual void SendVirtualHostPlayerInfo( CGamePlayer *player );
     virtual void SendFakePlayerInfo( CGamePlayer *player );
+    virtual void ReservedSlotInfo( CGamePlayer *player );
     virtual void SendAllActions( );
     virtual void SendWelcomeMessage( CGamePlayer *player );
     virtual void SendEndMessage( );

@@ -1993,6 +1993,17 @@ void CBaseGame :: SendFakePlayerInfo( CGamePlayer *player )
         Send( player, m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, "CheV",IP, IP, string( ) ) );
 }
 
+void CBaseGame :: ReservedSlotInfo( CGamePlayer *player ) {
+    for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin( ); i != m_ReservedPlayers.end( ); i++ ) {
+        BYTEARRAY IP;
+        IP.push_back( 0 );
+        IP.push_back( 0 );
+        IP.push_back( 0 );
+        IP.push_back( 0 );
+        Send( player, m_Protocol->SEND_W3GS_PLAYERINFO( m_Slots[i->SID].GetPID(), "|cFFFFBF00!Res!",IP, IP, string( ) ) );
+    }
+}
+
 void CBaseGame :: SendAllActions( )
 {
     bool UsingGProxy = false;
@@ -3088,6 +3099,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     SendVirtualHostPlayerInfo( Player );
     SendFakePlayerInfo( Player );
+    ReservedSlotInfo( Player );
 
     BYTEARRAY BlankIP;
     BlankIP.push_back( 0 );
