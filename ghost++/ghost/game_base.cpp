@@ -829,29 +829,42 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         m_LastRefreshTime = GetTime( );
     }
 
-    // refresh every 3 seconds
+    //process a diffrent things all 3 seconds
 
-    if( !m_RefreshError && !m_CountDownStarted && m_GameState == GAME_PUBLIC && GetSlotsOpen( ) > 0 && GetTime( ) - m_LastRefreshTime >= 3 )
+    if( !m_CountDownStarted && GetTime( ) - m_LastRefreshTime >= 3 )
     {
-        // send a game refresh packet to each battle.net connection
+        // refresh every 3 seconds
 
-        bool Refreshed = false;
+        if( !m_RefreshError && m_GameState == GAME_PUBLIC && GetSlotsOpen( ) > 0 ) {
+            // send a game refresh packet to each battle.net connection
 
-        for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
-        {
-            // don't queue a game refresh message if the queue contains more than 1 packet because they're very low priority
+            bool Refreshed = false;
 
-            if( (*i)->GetOutPacketsQueued( ) <= 1 )
+            for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
             {
-                (*i)->QueueGameRefresh( m_GameState, m_GameName, string( ), m_Map, m_SaveGame, 0, m_HostCounter );
-                Refreshed = true;
+                // don't queue a game refresh message if the queue contains more than 1 packet because they're very low priority
+
+                if( (*i)->GetOutPacketsQueued( ) <= 1 )
+                {
+                    (*i)->QueueGameRefresh( m_GameState, m_GameName, string( ), m_Map, m_SaveGame, 0, m_HostCounter );
+                    Refreshed = true;
+                }
             }
+
+            // only print the "game refreshed" message if we actually refreshed on at least one battle.net server
+
+            if( m_RefreshMessages && Refreshed )
+                SendAllChat( m_GHost->m_Language->GameRefreshed( ) );
         }
 
-        // only print the "game refreshed" message if we actually refreshed on at least one battle.net server
-
-        if( m_RefreshMessages && Refreshed )
-            SendAllChat( m_GHost->m_Language->GameRefreshed( ) );
+        for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers; ) {
+            if((i->Level==1&&((GetTime()-i->Time( ))>=45))||(i->Level==2&&((GetTime()-i->Time( ))>=90))) {
+                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+                i = m_ReservedPlayers.erase( i );
+            }
+            else
+                i++;
+        }
 
         m_LastRefreshTime = GetTime( );
     }
@@ -2852,24 +2865,70 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
     else
     {
-        // try to find an empty slot
+        // check if the player is reserved
+        uint32_t reservedSID = 255;
+        for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begion(); i != m_ReservedPlayers.end( ); ) {
+            if( i->Name == LowerName ) {
+                reservedSID = i->SID;
+                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+                EnforcePID = m_Slots[i->SID].GetPID();
+                i= m_ReservedPlayers.erase(i);
+            }
+            else
+                i++;
+        }
+        if(reservedSID == 255 ) {
 
-        SID = GetEmptySlot( false );
+            // try to find an empty slot
+            SID = GetEmptySlot( false );
 
-        if( SID == 255 && Reserved )
-        {
-            // a reserved player is trying to join the game but it's full, try to find a reserved slot
-
-            SID = GetEmptySlot( true );
-
-            if( SID != 255 )
+            if( SID == 255 && Reserved )
             {
+                // a reserved player is trying to join the game but it's full, try to find a reserved slot
+
+                SID = GetEmptySlot( true );
+
+                if( SID != 255 )
+                {
+                    CGamePlayer *KickedPlayer = GetPlayerFromSID( SID );
+
+                    if( KickedPlayer )
+                    {
+                        KickedPlayer->SetDeleteMe( true );
+                        KickedPlayer->SetLeftReason( m_GHost->m_Language->WasKickedForReservedPlayer( joinPlayer->GetName( ) ) );
+                        KickedPlayer->SetLeftCode( PLAYERLEAVE_LOBBY );
+
+                        // send a playerleave message immediately since it won't normally get sent until the player is deleted which is after we send a playerjoin message
+                        // we don't need to call OpenSlot here because we're about to overwrite the slot data anyway
+
+                        SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( KickedPlayer->GetPID( ), KickedPlayer->GetLeftCode( ) ) );
+                        KickedPlayer->SetLeftMessageSent( true );
+                    }
+                }
+            }
+
+            if( SID == 255 && IsOwner( joinPlayer->GetName( ) ) )
+            {
+                // the owner player is trying to join the game but it's full and we couldn't even find a reserved slot, kick the player in the lowest numbered slot
+                // updated this to try to find a player slot so that we don't end up kicking a computer
+
+                SID = 0;
+
+                for( unsigned char i = 0; i < m_Slots.size( ); ++i )
+                {
+                    if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED && m_Slots[i].GetComputer( ) == 0 )
+                    {
+                        SID = i;
+                        break;
+                    }
+                }
+
                 CGamePlayer *KickedPlayer = GetPlayerFromSID( SID );
 
                 if( KickedPlayer )
                 {
                     KickedPlayer->SetDeleteMe( true );
-                    KickedPlayer->SetLeftReason( m_GHost->m_Language->WasKickedForReservedPlayer( joinPlayer->GetName( ) ) );
+                    KickedPlayer->SetLeftReason( m_GHost->m_Language->WasKickedForOwnerPlayer( joinPlayer->GetName( ) ) );
                     KickedPlayer->SetLeftCode( PLAYERLEAVE_LOBBY );
 
                     // send a playerleave message immediately since it won't normally get sent until the player is deleted which is after we send a playerjoin message
@@ -2878,38 +2937,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( KickedPlayer->GetPID( ), KickedPlayer->GetLeftCode( ) ) );
                     KickedPlayer->SetLeftMessageSent( true );
                 }
-            }
-        }
-
-        if( SID == 255 && IsOwner( joinPlayer->GetName( ) ) )
-        {
-            // the owner player is trying to join the game but it's full and we couldn't even find a reserved slot, kick the player in the lowest numbered slot
-            // updated this to try to find a player slot so that we don't end up kicking a computer
-
-            SID = 0;
-
-            for( unsigned char i = 0; i < m_Slots.size( ); ++i )
-            {
-                if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED && m_Slots[i].GetComputer( ) == 0 )
-                {
-                    SID = i;
-                    break;
-                }
-            }
-
-            CGamePlayer *KickedPlayer = GetPlayerFromSID( SID );
-
-            if( KickedPlayer )
-            {
-                KickedPlayer->SetDeleteMe( true );
-                KickedPlayer->SetLeftReason( m_GHost->m_Language->WasKickedForOwnerPlayer( joinPlayer->GetName( ) ) );
-                KickedPlayer->SetLeftCode( PLAYERLEAVE_LOBBY );
-
-                // send a playerleave message immediately since it won't normally get sent until the player is deleted which is after we send a playerjoin message
-                // we don't need to call OpenSlot here because we're about to overwrite the slot data anyway
-
-                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( KickedPlayer->GetPID( ), KickedPlayer->GetLeftCode( ) ) );
-                KickedPlayer->SetLeftMessageSent( true );
             }
         }
     }
@@ -2932,7 +2959,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     // we also have to be careful to not modify the m_Potentials vector since we're currently looping through it
     CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] joined the game" );
     TempPlayer =  NULL;
-    CGamePlayer *Player = new CGamePlayer( potential, m_SaveGame ? EnforcePID : GetNewPID( ), JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
+    CGamePlayer *Player = new CGamePlayer( potential, EnforcePID!=255 ? EnforcePID : GetNewPID( ), JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
 
     // check if the new player's name is banned but only if bot_banmethod is 0
     // this is because if bot_banmethod is 0 we need to wait to announce the ban until now because they could have been rejected because the game was full
@@ -5656,29 +5683,68 @@ void CBaseGame :: AddToSpoofed( string server, string name, bool sendMessage )
     }
 }
 
-void CBaseGame :: AddToReserved( string name )
+void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level )
 {
     transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
-
-    // check that the user is not already reserved
-
-    for( vector<string> :: iterator i = m_Reserved.begin( ); i != m_Reserved.end( ); ++i )
-    {
-        if( *i == name )
-            return;
+    if( SID != 255 ) {
+        ReservedPlayer resPlayer;
+        resPlayer.Time = GetTime();
+        resPlayer.Name = name;
+        resPlayer.SID = SID;
+        resplayer.Level = level;
+        m_ReservedPlayers.push_back( resPlayer );
     }
 
-    m_Reserved.push_back( name );
+    unsigned char rSID = GetEmptySlot( false );
 
-    // upgrade the user if they're already in the game
-
-    for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+    if( rSID < m_Slots.size( ) )
     {
-        string NameLower = (*i)->GetName( );
-        transform( NameLower.begin( ), NameLower.end( ), NameLower.begin( ), ::tolower );
+        if( GetSlotsAllocated( ) >= m_Slots.size() - 1 )
+            DeleteVirtualHost( );
 
-        if( NameLower == name )
-            (*i)->SetReserved( true );
+        unsigned int PID = GetNewPID( );
+        if( SID != 255 ) {
+            if( m_Slots[SID].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED ) {
+                CGamePlayer *Player = GetPlayerFromSID( SID );
+                if( Player )
+                {
+                    Player->SetDeleteMe( true );
+                    Player->SetLeftReason( "was kicked when reserving a specific slot" );
+                    Player->SetLeftCode( PLAYERLEAVE_LOBBY );
+                }
+            }
+            BYTEARRAY IP;
+            IP.push_back( 0 );
+            IP.push_back( 0 );
+            IP.push_back( 0 );
+            IP.push_back( 0 );
+            SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( PID, "|cFFFFBF00!Res!", IP, IP, string( ) ) );
+            m_Slots[resPlayer.SID] = CGameSlot( PID, 100, SLOTSTATUS_OCCUPIED, 0, m_Slots[resPlayer.SID].GetTeam( ), m_Slots[resPlayer.SID].GetColour( ), m_Slots[resPlayer.SID].GetRace( ) );
+            SendAllSlotInfo( );
+        }
+
+        // check that the user is not already reserved
+
+        for( vector<string> :: iterator i = m_Reserved.begin( ); i != m_Reserved.end( ); ++i )
+        {
+            if( *i == name )
+                return;
+        }
+
+        m_Reserved.push_back( name );
+
+        // upgrade the user if they're already in the game
+
+        for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
+        {
+            string NameLower = (*i)->GetName( );
+            transform( NameLower.begin( ), NameLower.end( ), NameLower.begin( ), ::tolower );
+
+            if( NameLower == name )
+                (*i)->SetReserved( true );
+        }
+    } else {
+        SendAllChat( "An error occured while adding ["+name+"] to the reserved list.");
     }
 }
 

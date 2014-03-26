@@ -59,6 +59,7 @@ class CCallableGameDBInit;
 class CDBInbox;
 class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
+struct ReservedPlayer;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -74,6 +75,7 @@ class CBaseGame
 {
 public:
     CGHost *m_GHost;
+    vector<ReservedPlayer> m_ReservedPlayers;
 
 protected:
     CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
@@ -413,7 +415,7 @@ public:
     virtual void BalanceSlots( );
     virtual void OHFixedBalance( );
     virtual void AddToSpoofed( string server, string name, bool sendMessage );
-    virtual void AddToReserved( string name );
+    virtual void AddToReserved( string name, unsigned char SID, uint32_t level );
     virtual bool IsOwner( string name );
     virtual bool IsReserved( string name );
     virtual bool IsDownloading( );
@@ -458,6 +460,13 @@ public:
     string m_lGameAliasName;
     virtual void StartVoteMode( );
     void GetVotingModes( string allmodes );
+};
+
+struct ReservedPlayer {
+    unsigned char SID;
+    string Name;
+    uint32_t Time;
+    uint32_t Level;
 };
 
 #endif

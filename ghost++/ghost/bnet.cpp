@@ -1566,9 +1566,36 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             transform( RCONCommand.begin( ), RCONCommand.end( ), RCONCommand.begin( ), ::tolower );
 
             //
+            // !RESERVE
+            //
+            if( RCONCommand == "reserve" && m_GHost->m_CurrentGame ) {
+                string username;
+                string sid;
+                sring level;
+                stringstream SS;
+                SS<<RCONPayload;
+                SS>>username;
+                if(SS.fail())
+                    CONSOLE_Print("Bad input for reserve a slot.");
+                else {
+                    SS>>sid;
+                    if(SS.fail())
+                        CONSOLE_Print("Bad input for reserve a slot.");
+                    else {
+                        SS>>level;
+                        if( SS.fail()) {
+                            m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), 1);
+                        } else {
+                            m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), UTIL_ToString(level));
+                        }
+                    }
+                }
+            }
+
+            //
             // !MUTE
             //
-            if( RCONCommand == "mute" )
+            else if( RCONCommand == "mute" )
             {
                 bool Success = false;
                 string User;

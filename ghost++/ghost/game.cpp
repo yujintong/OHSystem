@@ -2405,9 +2405,41 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     else
                     {
                         SendAllChat( m_GHost->m_Language->AddedPlayerToTheHoldList( HoldName ) );
-                        AddToReserved( HoldName );
+                        AddToReserved( HoldName, 255, 1 );
                     }
                 }
+            }
+
+            //
+            // !HOLDSLOT
+            //
+            else if( ( Command == "holdslot" || Command == "hs" ) && !Payload.empty() && !m_GameLoading && !m_GameLoaded && Level >= 9) {
+                string username;
+                string playersid;
+                stringstream SS;
+                SS << Payload;
+                SS >> username;
+
+                if( SS.fail() )  {
+                    SendChat(player, "Bad input for holdslot. !hs <name> <slot>");
+                    return true;
+                } else {
+                    SS >> playersid;
+                    if(SS.fail()) {
+                        SendChat(player, "Bad input for holdslot. !hs <name> <slot>");
+                        return true;
+                    } else {
+                        unsigned int SID = UTIL_ToUInt32(playersid);
+                        if( SID < m_Slots.size()) {
+                            SendAllChat("Reserving slot ["+playersid+"] for user ["+username+"]").
+                            AddToReserved( username, SID, 1 );
+                        }
+                        else {
+                            SendChat(player, "Bad input for holdslot.");
+                        }
+                    }
+                }
+
             }
 
             //
