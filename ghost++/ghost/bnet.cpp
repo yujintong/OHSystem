@@ -2978,7 +2978,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 else
                 {
                     QueueChatCommand( m_GHost->m_Language->AddedPlayerToTheHoldList( HoldName ), User, Whisper );
-                    m_GHost->m_CurrentGame->AddToReserved( HoldName );
+                    m_GHost->m_CurrentGame->AddToReserved( HoldName, 255, 1 );
                 }
             }
         }
@@ -4351,7 +4351,7 @@ void CBNET :: HoldFriends( CBaseGame *game )
     if( game )
     {
         for( vector<CIncomingFriendList *> :: iterator i = m_Friends.begin( ); i != m_Friends.end( ); ++i )
-            game->AddToReserved( (*i)->GetAccount( ) );
+            game->AddToReserved( (*i)->GetAccount( ), 255, 1 );
     }
 }
 
@@ -4360,6 +4360,6 @@ void CBNET :: HoldClan( CBaseGame *game )
     if( game )
     {
         for( vector<CIncomingClanList *> :: iterator i = m_Clans.begin( ); i != m_Clans.end( ); ++i )
-            game->AddToReserved( (*i)->GetName( ) );
+            game->AddToReserved( (*i)->GetName( ), 255, 1 );
     }
 }
