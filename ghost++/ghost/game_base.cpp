@@ -857,8 +857,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 SendAllChat( m_GHost->m_Language->GameRefreshed( ) );
         }
 
-        for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers; ) {
-            if((i->Level==1&&((GetTime()-i->Time( ))>=45))||(i->Level==2&&((GetTime()-i->Time( ))>=90))) {
+        for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
+            if((i->Level==1&&((GetTime()-i->Time)>=45))||(i->Level==2&&((GetTime()-i->Time)>=90))) {
                 SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
                 i = m_ReservedPlayers.erase( i );
             }
@@ -2867,7 +2867,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     {
         // check if the player is reserved
         uint32_t reservedSID = 255;
-        for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begion(); i != m_ReservedPlayers.end( ); ) {
+        for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if( i->Name == LowerName ) {
                 reservedSID = i->SID;
                 SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
@@ -5686,12 +5686,12 @@ void CBaseGame :: AddToSpoofed( string server, string name, bool sendMessage )
 void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level )
 {
     transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+    ReservedPlayer resPlayer;
     if( SID != 255 ) {
-        ReservedPlayer resPlayer;
         resPlayer.Time = GetTime();
         resPlayer.Name = name;
         resPlayer.SID = SID;
-        resplayer.Level = level;
+        resPlayer.Level = level;
         m_ReservedPlayers.push_back( resPlayer );
     }
 

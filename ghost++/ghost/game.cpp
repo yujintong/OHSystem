@@ -2431,7 +2431,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     } else {
                         unsigned int SID = UTIL_ToUInt32(playersid);
                         if( SID < m_Slots.size()) {
-                            SendAllChat("Reserving slot ["+playersid+"] for user ["+username+"]").
+                            SendAllChat("Reserving slot ["+playersid+"] for user ["+username+"]");
                             AddToReserved( username, SID, 1 );
                         }
                         else {
