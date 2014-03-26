@@ -1571,7 +1571,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             if( RCONCommand == "reserve" && m_GHost->m_CurrentGame ) {
                 string username;
                 string sid;
-                sring level;
+                string level;
                 stringstream SS;
                 SS<<RCONPayload;
                 SS>>username;
@@ -1586,7 +1586,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         if( SS.fail()) {
                             m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), 1);
                         } else {
-                            m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), UTIL_ToString(level));
+                            m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), UTIL_ToUInt32(level));
                         }
                     }
                 }
