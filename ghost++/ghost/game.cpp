@@ -1174,7 +1174,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
                     SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
-                    SendAllChat( "Player ["+player->GetName( )+"] forced the mode ["+m_ModesToVote[UTIL_ToUInt32(Payload)-1]+"]" );
+                    SendAllChat( m_GHost->m_Language->UserForcedMode ( player->GetName( ), m_ModesToVote[UTIL_ToUInt32(Payload)-1]) );
                     player->SetVotedMode(UTIL_ToUInt32(Payload));
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
@@ -1594,7 +1594,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     else if( Matches == 1 )
                     {
                         LastMatch->SetCookie( 3 );
-                        SendAllChat( "Player "+player->GetName()+" refilled "+LastMatch->GetName()+"'s cookie jar." );
+                        SendAllChat( m_GHost->m_Language->UserRefilledCookieChar (player->GetName(), LastMatch->GetName() ) );
                     }
                     else if( Matches > 1 )
                         SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
@@ -2537,12 +2537,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload == "on" )
                 {
-                    SendAllChat( "Enabled autobalance" );
+                    SendAllChat( m_GHost->m_Language->EnabledAutobalance ());
                     m_GHost->m_OHBalance = true;
                 }
                 else if( Payload == "off" )
                 {
-                    SendAllChat( "Disabled autobalance" );
+                    SendAllChat( m_GHost->m_Language->DisabledAutobalance ());
                     m_GHost->m_OHBalance = false;
                 }
             }
@@ -4099,7 +4099,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 string SeWP = UTIL_ToString( ( m_SentinelWinPoints / m_TotalWinPoints ) * 100, 1);
                 string ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 100, 1);
-                SendChat( player, "Win Chance [Sentinel: " + SeWP + "%] [Scourge: " + ScWP + "%]" );
+                SendChat( player,  m_GHost->m_Language->WinChance( SeWP, ScWP  ) );
             }
             else
                 SendChat( player, m_GHost->m_Language->ErrorOneTeamHasNoPlayers( ) );
@@ -4575,9 +4575,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         player->SetNoLag( !player->GetNoLag( ) );
 
         if( player->GetNoLag( ) )
-            SendAllChat( "No lag has been enabled for player [" + player->GetName( ) + "]." );
+            SendAllChat( m_GHost->m_Language->UserEnabledNoLag (player->GetName( ) ) );
         else
-            SendAllChat( "No lag has been disabled for player [" + player->GetName( ) + "]." );
+            SendAllChat( m_GHost->m_Language->UserDisabledNoLag ( player->GetName( ) ) );
 
         player->SetStatsDotASentTime( GetTime( ) );
     }
@@ -4701,14 +4701,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     else if( Command == "votebalance") {
         if(! player->GetVotedForBalance () ) {
             m_BalanceVotes++;
-            SendAllChat( "Player ["+player->GetName ()+"] has voted to balance the game before the start.");
+            SendAllChat( m_GHost->m_Language->UserVotedForBalance ( player->GetName ()  ) );
 
             if(m_BalanceVotes > ( GetNumHumanPlayers () / 2 ) ) {
                 m_GameBalance = true;
-                SendAllChat( "[INFO] Balance for this game has been turned on.");
+                SendAllChat( m_GHost->m_Language->EnabledBalanceForThisGame () );
             }
         } else {
-            SendChat(player, "Error, you have already voted for balance the game.");
+            SendChat(player, m_GHost->m_Language->ErrorVotedAlreadyForBalance () );
         }
     }
 
@@ -4722,11 +4722,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if( Matches == 0 )
                 SendChat(player, m_GHost->m_Language->FoundNoMatchWithPlayername());
             else if( Matches == 1)
-                SendChat(player, "Your reputation is ["+UTIL_ToString( LastMatch->GetReputation (), 2 )+"]");
+                SendAllChat( m_GHost->m_Language->UsersReputation ( LastMatch->GetName (), UTIL_ToString( LastMatch->GetReputation (), 2 ) ) );
             else
                 SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
         } else {
-            SendChat(player, "Your reputation is ["+UTIL_ToString( player->GetReputation (), 2 )+"]");
+            SendChat(player, m_GHost->m_Language->UsersOwnReputation (UTIL_ToString( player->GetReputation (), 2 ) ) ;
         }
     }
 

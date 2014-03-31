@@ -2822,3 +2822,363 @@ string CLanguage :: NoUserDefined( )
     return Out;
 }
 
+string CLanguage :: UserForcedMode( string user, string mode )
+{
+    string Out = m_CFG->GetString( "oh_178", "oh_178" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$MODE$", mode );
+    return Out;
+}
+
+string CLanguage :: UserRefilledCookieChar( string user, string player )
+{
+    string Out = m_CFG->GetString( "oh_179", "oh_179" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$PLAYER$", player);
+    return Out;
+}
+
+string CLanguage :: EnabledAutobalance( )
+{
+    string Out = m_CFG->GetString( "oh_180", "oh_180" );
+    return Out;
+}
+
+string CLanguage :: DisabledAutobalance( )
+{
+    string Out = m_CFG->GetString( "oh_181", "oh_181" );
+    return Out;
+}
+
+string CLanguage :: UserEnabledNoLag( string user )
+{
+    string Out = m_CFG->GetString( "oh_182", "oh_182" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserDisabledNoLag( string user )
+{
+    string Out = m_CFG->GetString( "oh_183", "oh_183" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+
+string CLanguage :: UserVotedForBalance( string user )
+{
+    string Out = m_CFG->GetString( "oh_184", "oh_184" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+string CLanguage :: EnabledBalanceForThisGame( )
+{
+    string Out = m_CFG->GetString( "oh_185", "oh_185" );
+    return Out;
+}
+
+string CLanguage :: ErrorVotedAlreadyForBalance( )
+{
+    string Out = m_CFG->GetString( "oh_186", "oh_186" );
+    return Out;
+}
+
+string CLanguage :: UsersReputation( string user, string reputation )
+{
+    string Out = m_CFG->GetString( "oh_187", "oh_187" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$REPUTATION$", reputation);
+    return Out;
+}
+
+string CLanguage :: UsersOwnReputation( string reputation )
+{
+    string Out = m_CFG->GetString( "oh_188", "oh_188" );
+    UTIL_Replace( Out, "$REPUTATION$", reputation);
+    return Out;
+}
+
+string CLanguage :: WelcomeUserCreateUniqueId( string user )
+{
+    string Out = m_CFG->GetString( "oh_189", "oh_189" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: DomainOnJoinNotify( )
+{
+    string Out = m_CFG->GetString( "oh_190", "oh_190" );
+    return Out;
+}
+
+string CLanguage :: WelcomeBackUser( string user )
+{
+    string Out = m_CFG->GetString( "oh_191", "oh_191" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: CreatedUniqueIdForNewUser( string id )
+{
+    string Out = m_CFG->GetString( "oh_192", "oh_192" );
+    UTIL_Replace( Out, "$ID$", id);
+    return Out;
+}
+
+string CLanguage :: PotentialBanAvoider( string user, string count )
+{
+    string Out = m_CFG->GetString( "oh_193", "oh_193" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$COUNT$", count);
+    return Out;
+}
+
+string CLanguage :: KickedUserForBeingAFK( string user )
+{
+    string Out = m_CFG->GetString( "oh_194", "oh_194" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: WarnedUserForBeingAFK( string user )
+{
+    string Out = m_CFG->GetString( "oh_195", "oh_195" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: KickedUserForBeingAfk( string user )
+{
+    string Out = m_CFG->GetString( "oh_196", "oh_196" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: ErrorForAPMAFKSystem( )
+{
+    string Out = m_CFG->GetString( "oh_197", "oh_197" );
+    return Out;
+}
+
+string CLanguage :: UserHasBeenMarkedAPMAFK( string user, string apm )
+{
+    string Out = m_CFG->GetString( "oh_198", "oh_198" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$APM$", apm);
+    return Out;
+}
+
+string CLanguage :: UserWarningAPMAFK( string min, string warns )
+{
+    string Out = m_CFG->GetString( "oh_199", "oh_199" );
+    UTIL_Replace( Out, "$MIN$", min );
+    UTIL_Replace( Out, "$WARN$", warns);
+    return Out;
+}
+
+string CLanguage :: UserKickedAPMAFK( string user, string apm, string times, string min )
+{
+    string Out = m_CFG->GetString( "oh_200", "oh_200" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$APM$", apm);
+    UTIL_Replace( Out, "$TIMES$", times );
+    UTIL_Replace( Out, "$MIN$", min);
+    return Out;
+}
+
+string CLanguage :: VoteStartExpired( )
+{
+    string Out = m_CFG->GetString( "oh_201", "oh_201" );
+    return Out;
+}
+
+string CLanguage :: VoteMuteExpired( string user )
+{
+    string Out = m_CFG->GetString( "oh_202", "oh_202" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: GameWillBePausedInTicks( string ticks )
+{
+    string Out = m_CFG->GetString( "oh_203", "oh_203" );
+    UTIL_Replace( Out, "$TICKS$", ticks);
+    return Out;
+}
+
+string CLanguage :: GameWillBeResumedInTicks( string ticks )
+{
+    string Out = m_CFG->GetString( "oh_204", "oh_204" );
+    UTIL_Replace( Out, "$TICKS$", ticks);
+    return Out;
+}
+
+string CLanguage :: GameWillBeUnpauseInTenSeconds( )
+{
+    string Out = m_CFG->GetString( "oh_205", "oh_205" );
+    return Out;
+}
+
+string CLanguage :: UserHaveAHighPingMark( string ping, string times)
+{
+    string Out = m_CFG->GetString( "oh_206", "oh_206" );
+    UTIL_Replace( Out, "$PING$", ping );
+    UTIL_Replace( Out, "$TIMES$", times);
+    return Out;
+}
+
+string CLanguage :: UserCanLeaveBecauseHighPing( )
+{
+    string Out = m_CFG->GetString( "oh_207", "oh_207" );
+    return Out;
+}
+
+string CLanguage :: UserCanLeaveBecausePing( string user )
+{
+    string Out = m_CFG->GetString( "oh_208", "oh_208" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: UserTriedToPause( string user )
+{
+    string Out = m_CFG->GetString( "oh_209", "oh_209" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: UserTriedToPauseWarnng( )
+{
+    string Out = m_CFG->GetString( "oh_210", "oh_210" );
+    return Out;
+}
+
+string CLanguage :: UserGorPunishedForPausing( string user )
+{
+    string Out = m_CFG->GetString( "oh_211", "oh_211" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: UserGorPunishedForSaving( string user )
+{
+    string Out = m_CFG->GetString( "oh_212", "oh_212" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: VoteHasBeenEnabledNotify( )
+{
+    string Out = m_CFG->GetString( "oh_213", "oh_213" );
+    return Out;
+}
+
+string CLanguage :: VoteStartIsEnabledVotesRequired( string votes )
+{
+    string Out = m_CFG->GetString( "oh_214", "oh_214" );
+    UTIL_Replace( Out, "$VOTES$", votes);
+    return Out;
+}
+
+string CLanguage :: UserWasKickedForJoiningFromGarena( string user )
+{
+    string Out = m_CFG->GetString( "oh_215", "oh_215" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: UserJoinedFromGarena( string rank, string user, string realm, string room )
+{
+    string Out = m_CFG->GetString( "oh_216", "oh_216" );
+    UTIL_Replace( Out, "$RANK$", rank);
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$REALM$", realm);
+    UTIL_Replace( Out, "$ROOM$", room);
+    return Out;
+}
+
+string CLanguage :: UserJoined( string rank, string user, string realm )
+{
+    string Out = m_CFG->GetString( "oh_217", "oh_217" );
+    UTIL_Replace( Out, "$RANK$", rank);
+    UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$REALM$", realm);
+    return Out;
+}
+
+string CLanguage :: UserJoinedWithHighLeaveRate( string user, string perc)
+{
+    string Out = m_CFG->GetString( "oh_218", "oh_218" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$PERC$", perc);
+    return Out;
+}
+
+string CLanguage :: PreventUserFromTransferResources( string user )
+{
+    string Out = m_CFG->GetString( "oh_219", "oh_219" );
+    UTIL_Replace( Out, "$USER$", user);
+    return Out;
+}
+
+string CLanguage :: Balance( string sent, string scou)
+{
+    string Out = m_CFG->GetString( "oh_220", "oh_220" );
+    UTIL_Replace( Out, "$SENT$", sent );
+    UTIL_Replace( Out, "$SCOU$", scou);
+    return Out;
+}
+
+string CLanguage :: SpreadWithLockedPlayers( string spread, string locked)
+{
+    string Out = m_CFG->GetString( "oh_221", "oh_221" );
+    UTIL_Replace( Out, "$SPREAD$", spread );
+    UTIL_Replace( Out, "$LOCKED$", locked);
+    return Out;
+}
+
+
+string CLanguage :: WinChance( string sent, string scou)
+{
+    string Out = m_CFG->GetString( "oh_222", "oh_222" );
+    UTIL_Replace( Out, "$SENT$", sent );
+    UTIL_Replace( Out, "$SCOU$", scou);
+    return Out;
+}
+
+string CLanguage :: YouHaventVotedYet( )
+{
+    string Out = m_CFG->GetString( "oh_223", "oh_223" );
+    return Out;
+}
+
+string CLanguage :: PlayersNotVerifiedYet( )
+{
+    string Out = m_CFG->GetString( "oh_224", "oh_224" );
+    return Out;
+}
+
+string CLanguage :: PlayersNotVotedYet( )
+{
+    string Out = m_CFG->GetString( "oh_225", "oh_225" );
+    return Out;
+}
+
+string CLanguage :: TimeLeftBeforeRandomMode( string left )
+{
+    string Out = m_CFG->GetString( "oh_226", "oh_226" );
+    UTIL_Replace( Out, "$LEFT$", left);
+    return Out;
+}
+
+string CLanguage :: TimeLeftBeforeTopVotedMode( string left )
+{
+    string Out = m_CFG->GetString( "oh_227", "oh_227" );
+    UTIL_Replace( Out, "$LEFT$", left);
+    return Out;
+}
+
+string CLanguage :: VoteModeHasStarted( )
+{
+    string Out = m_CFG->GetString( "oh_228", "oh_228" );
+    return Out;
+}

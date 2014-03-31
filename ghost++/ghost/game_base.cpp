@@ -447,8 +447,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 if( (*j)->GetName( ) == i->second->GetName( ) && StatsPlayerSummary )
                 {
                     if(StatsPlayerSummary->GetID ()==0) {
-                        SendChat((*j)->GetPID( ), "Welcome "+(*j)->GetName( )+". You are not scored yet. You will recieve soon your unique id.");
-                        SendChat((*j)->GetPID( ), "Visit us on ohsystem.net and get the latest information about our hosting.");
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language->WelcomeUserCreateUniqueId( (*j)->GetName( )));
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language->DomainOnJoinNotify( ));
                         SendChat((*j)->GetPID( ), " ");
                         m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, (*j)->GetName( ), (*j)->GetExternalIPString (), 0, (*j)->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
                     } else {
@@ -467,7 +467,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetEXP (StatsPlayerSummary->GetEXP());
                         (*j)->SetID (StatsPlayerSummary->GetID ());
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
-                        SendChat((*j)->GetPID( ), "Welcome back "+(*j)->GetName( )+". We wish you a good game and good luck.");
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( (*j)->GetName( ) ) );
                         SendChat((*j)->GetPID( ), " ");
                     }
                 }
@@ -491,7 +491,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     if( (*j)->GetName( ) == i->second->GetName( ) )
                     {
-                        SendChat((*j)->GetPID( ), "Your unique id has been created ["+UTIL_ToString(Result)+"]");
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language->CreatedUniqueIdForNewUser( UTIL_ToString(Result ) ) );
                         (*j)->SetID(Result);
                     }
                 }
@@ -535,7 +535,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             string Result = i->second->GetResult( );
             if( UTIL_ToUInt32( Result ) >= 5 && i->second->GetType() == "joincheck" && m_GHost->m_CheckIPRange )
-                SendAllChat( "Potential banavoider joined [" + i->second->GetUser() + "] has [" + Result + "] bans on the IPRange" );
+                SendAllChat( m_GHost->m_Language->PotentialBanAvoider( i->second->GetUser(), Result  ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -553,28 +553,28 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             if( i->second->GetType( ) == "check" )
             {
                 if( Result != 0 )
-                    SendAllChat( "User [" + i->second->GetName() + "] has [" + UTIL_ToString( Result ) + "] penality point(s)." );
+                    SendAllChat( m_GHost->m_Language->UserGotPenalityPoints( i->second->GetName(), UTIL_ToString( Result ) ) );
                 else
-                    SendAllChat( "User [" + i->second->GetName() + "] has no penality points." );
+                    SendAllChat( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ) );
             }
             if( i->second->GetType( ) == "checkall" )
             {
                 if( Result != 0 )
-                    SendAllChat( "User [" + i->second->GetName() + "] has [" + UTIL_ToString( Result ) + "] penality point(s)." );
+                    SendAllChat( m_GHost->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ) );
                 else
-                    SendAllChat( "User [" + i->second->GetName() + "] has no penality points." );
+                    SendAllChat( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ) );
             }
             else if( i->second->GetType( ) == "add" )
             {
                 if( Result == 1 )
-                    SendAllChat( "Added [" + UTIL_ToString( i->second->GetAmount( ) ) + "] penality point(s) for [" + i->second->GetName() + "] by [" + i->second->GetAdmin() + "]" );
+                    SendAllChat(  m_GHost->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ) ) );
                 else if(  Result == 2 )
-                    SendAllChat( "User [" + i->second->GetName() + "] got banned by reaching to many penality points" );
+                    SendAllChat( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetName() ) );
                 else
-                    CONSOLE_Print( "Couldn't add a penality point" );
+                    CONSOLE_Print( m_GHost->m_Language->FailedToAddPPoint( ) );
             }
             else
-                CONSOLE_Print( "Error. Something gone wrong" );
+                CONSOLE_Print( m_GHost->m_Language->WrongContactBotOwner( ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -591,9 +591,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             uint32_t Result = i->second->GetResult( );
 
             if( Result == 1 )
-                SendAllChat( "Error banning user. The User ["+i->second->GetUser( )+"] is already permanent banned" );
+                SendAllChat( m_GHost->m_Language->ErrorBanningUserAlreadyPermBanned( i->second->GetUser( ) ) );
             else if( Result == 2 )
-                SendAllChat( "Error banning user. The User ["+i->second->GetUser( )+"] is already banned for a longer amount." );
+                SendAllChat( m_GHost->m_Language->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ) );
             else if( Result >= 3 && Result <= 5 )
             {
                 for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); ++j )
@@ -602,16 +602,16 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->AddBan( i->second->GetUser( ), i->second->GetIP( ), i->second->GetGameName( ), i->second->GetAdmin( ), i->second->GetReason( ) );
                 }
                 if( Result == 3)
-                    SendAllChat( "Successfully IP-Banned ["+i->second->GetUser()+"] on ["+i->second->GetServer( )+"]" );
+                    SendAllChat( m_GHost->m_Language->SuccessfullyBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
                 else if( Result == 4 )
-                    SendAllChat( "Successfully updated user ban: ["+i->second->GetUser()+"] on ["+i->second->GetServer( )+"]" );
+                    SendAllChat( m_GHost->m_Language->SuccessfullyUpdatedBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
                 else if( Result == 5 )
-                    SendAllChat( "Successfully perma banned user ["+i->second->GetUser()+"] on ["+i->second->GetServer( )+"]" );
+                    SendAllChat( m_GHost->m_Language->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
 
                 SendAllChat( "Ban Reason: "+i->second->GetReason( ) );
             }
             else
-                SendAllChat( "Something gone wrong, report this please to the bot owner." );
+                SendAllChat( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -859,9 +859,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
         for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if((i->Level==1&&((GetTime()-i->Time)>=45))||(i->Level==2&&((GetTime()-i->Time)>=90))) {
-		SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
-		m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
-		SendAllSlotInfo( );
+        SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+        m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+        SendAllSlotInfo( );
                 i = m_ReservedPlayers.erase( i );
             }
             else
@@ -956,7 +956,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     if( (*i)->GetAFKMarked( ) )
                     {
-                        SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for being afk twice for 3 minutes." );
+                        SendAllChat( m_GHost->m_Language->KickedUserForBeingAFK( (*i)->GetName() ) );
                         (*i)->SetTimeActive( GetTime( ) );
                         (*i)->SetDeleteMe( true );
                         (*i)->SetLeftReason( "was kicked by anti-afk" );
@@ -965,14 +965,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     }
                     else
                     {
-                        SendAllChat( "[ANTI-AFK] Player ["+(*i)->GetName()+"] has been marked as AFK. Autokick will occur in 2 minutes." );
+                        SendAllChat( m_GHost->m_Language->WarnedUserForBeingAFK( (*i)->GetName() ) );
                         (*i)->SetTimeActive( GetTime( ) );
                         (*i)->SetAFKMarked( true );
                     }
                 }
                 else if( TimeActive > 0 && ( (TimeNow - TimeActive ) > ( TimeLimit-60) ) && (*i)->GetAFKMarked( ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
                 {
-                    SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for being afk more than 5 minutes." );
+                    SendAllChat( m_GHost->m_Language->KickedUserForBeingAfk( (*i)->GetName() ) );
                     (*i)->SetTimeActive( GetTime( ) );
                     (*i)->SetDeleteMe( true );
                     (*i)->SetLeftReason( "was kicked by anti-afk" );
@@ -997,16 +997,16 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     else if( m_PartTime == 6 )
                         (*i)->SetFirstActionsForSixthPart( (*i)->GetActions( ) );
                     else
-                        CONSOLE_Print("[INFO] Something gone wrong on the APM based afk system. Please report this.");
+                        CONSOLE_Print(m_GHost->m_Language->ErrorForAPMAFKSystem( ));
 
                     if( m_GameLoadedTime >= 300 ) {
                         uint32_t APM = (*i)->GetFirstActionsForFirstPart( )+(*i)->GetFirstActionsForSecondPart( )+(*i)->GetFirstActionsForThirdPart( )+(*i)->GetFirstActionsForFourthPart( )+(*i)->GetFirstActionsForFifthPart( )+(*i)->GetFirstActionsForSixthPart( );
                         if( GetTime( ) - (*i)->GetLastAFKWarn() >= 20 && APM < m_GHost->m_APMAllowedMinimum ) {
                             if( (*i)->GetAFKWarnings( ) <= m_GHost->m_APMMaxAfkWarnings ) {
-                                SendAllChat( "[ANTI-AFK] Player ["+(*i)->GetName()+"] has been marked as AFK. His APM is only ["+UTIL_ToString(APM)+"]" );
-                                SendChat((*i)->GetPID( ), "[ANTI-AFK] You need as minimum ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"], or you will be kicked on ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings( ))+"] more warnings.");
+                                SendAllChat( m_GHost->m_Language->UserHasBeenMarkedAPMAFK( (*i)->GetName(), UTIL_ToString(APM) ) );
+                                SendChat((*i)->GetPID( ), m_GHost->m_Language->UserWarningAPMAFK( UTIL_ToString(m_GHost->m_APMAllowedMinimum), UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings( )) ) );
                             } else {
-                                SendAllChat( "[ANTI-AFK] Kicking player ["+(*i)->GetName()+"] for having an APM of ["+UTIL_ToString(APM)+"] which was ["+UTIL_ToString(m_GHost->m_APMMaxAfkWarnings)+"] lower than ["+UTIL_ToString(m_GHost->m_APMAllowedMinimum)+"]" );
+                                SendAllChat( m_GHost->m_Language->UserKickedAPMAFK( (*i)->GetName(), UTIL_ToString(APM), UTIL_ToString(m_GHost->m_APMMaxAfkWarnings), UTIL_ToString(m_GHost->m_APMAllowedMinimum) ) );
                                 (*i)->SetDeleteMe( true );
                                 (*i)->SetLeftReason( "was kicked by anti-afk" );
                                 (*i)->SetLeftCode( PLAYERLEAVE_LOST );
@@ -1573,7 +1573,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
     if( m_StartedVoteStartTime != 0 && GetTime( ) - m_StartedVoteStartTime >= 60 && ( !m_GameLoaded || !m_GameLoading) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] votestart expired" );
-        SendAllChat( "Votestart expired (sixty seconds without pass)." );
+        SendAllChat( m_GHost->m_Language->VoteStartExpired( ) );
         m_StartedVoteStartTime = 0;
     }
 
@@ -1653,7 +1653,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
     if( m_VoteMuteEventTime != 0 && GetTime() - m_VoteMuteEventTime >= m_GHost->m_VoteMuteTime )
     {
-        SendAllChat("A votemute against Player ["+m_VoteMutePlayer+"] expired.");
+        SendAllChat( m_GHost->m_Language->VoteMuteExpired( m_VoteMutePlayer) );
         m_VoteMuteEventTime = 0;
         m_VoteMutePlayer.clear();
         m_VoteMuteTargetTeam = 0;
@@ -1668,7 +1668,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             if( m_PauseTicks > 0 )
             {
-                SendAllChat( "Game will be paused in " + UTIL_ToString( m_PauseTicks )  + ". . ." );
+                SendAllChat( m_GHost->m_Language->GameWillBePausedInTicks( UTIL_ToString( m_PauseTicks )  ) );
                 --m_PauseTicks;
             }
             else if( m_PauseTicks == 0 )
@@ -1686,14 +1686,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         }
         if( m_Paused && GetTime() - m_PauseTime == 50 && !m_SendPauseInfo )
         {
-            SendAllChat( "Game will resume in 10 seconds" );
+            SendAllChat( m_GHost->m_Language->GameWillBeUnpauseInTenSeconds( ) );
             m_SendPauseInfo = true;
         }
         if( m_Paused && GetTime() - m_PauseTime >= 55 && GetTicks( ) - m_LastCountDownTicks >= 1000 )
         {
             if( m_PauseTicks > 0 )
             {
-                SendAllChat( "Game will resume in " + UTIL_ToString( m_PauseTicks )  + ". . ." );
+                SendAllChat( m_GHost->m_Language->GameWillBeResumedInTicks(  UTIL_ToString( m_PauseTicks )  ) );
                 --m_PauseTicks;
             }
             else if( m_PauseTicks == 0 )
@@ -1748,13 +1748,13 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             if( (*i)->GetPing( m_GHost->m_LCPings ) >= 750 && (*i)->GetHighPingTimes( ) <= 4 )
             {
-                SendChat( (*i)->GetPID( ), "[INFO] You have a high ping of ["+UTIL_ToString( (*i)->GetPing( m_GHost->m_LCPings ) )+"] marked now for ["+UTIL_ToString((*i)->GetHighPingTimes( ))+"] times." );
+                SendChat( (*i)->GetPID( ), m_GHost->m_Language->UserHaveAHighPingMark( UTIL_ToString( (*i)->GetPing( m_GHost->m_LCPings ) ), UTIL_ToString((*i)->GetHighPingTimes( ) ) ) );
                 (*i)->SetHighPingTimes( );
             }
             if( (*i)->GetPing( m_GHost->m_LCPings ) >= 750 && (*i)->GetHighPingTimes( ) == 5 )
             {
-                SendChat( (*i)->GetPID( ), "[INFO] You have been marked now [5] Times for a to high ping. You may leave at any time. Autoban will not occur on you." );
-                SendAllChat( "[INFO] Player ["+(*i)->GetName( )+"] has been already marked [5] times with a too high ping. He can leave at any time now." );
+                SendChat( (*i)->GetPID( ), m_GHost->m_Language->UserCanLeaveBecauseHighPing( ) );
+                SendAllChat( m_GHost->m_Language->UserCanLeaveBecausePing( (*i)->GetName( ) ) );
                 (*i)->SetSafeDrop( true );
                 (*i)->SetHighPingTimes( );
             }
@@ -2072,17 +2072,17 @@ void CBaseGame :: SendAllActions( )
                 if ( m_FakePlayerPID != 255 && !m_PauseReq )
                 {
                     CGamePlayer *Player = GetPlayerFromPID( Action->GetPID( ) );
-                    SendAllChat( "["+m_GHost->m_BotManagerName+"] " + Player->GetName( ) + " tried to pause the game. Unpausing." );
+                    SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_Language->UserTriedToPause( Player->GetName( ) ) );
                     BYTEARRAY CRC;
                     BYTEARRAY Action;
                     Action.push_back( 2 );
                     m_Actions.push( new CIncomingAction( m_FakePlayerPID, CRC, Action ) );
                     Player->SetPauseTried();
                     if( Player->GetPauseTried() == 2 )
-                        SendChat( Player->GetPID(), "["+m_GHost->m_BotManagerName+"] On the next attemp to pause the game you will be punished" );
+                        SendChat( Player->GetPID(), "["+m_GHost->m_BotManagerName+"] " + m_GHost->m_Language->UserTriedToPauseWarnng( ) );
                     if( Player->GetPauseTried() == 3 )
                     {
-                        SendAllChat( "["+m_GHost->m_BotManagerName+"] " + Player->GetName( ) + " got punished for trying to gameruin!" );
+                        SendAllChat( "["+m_GHost->m_BotManagerName+"] " + m_GHost->m_Language->UserGorPunishedForPausing( Player->GetName( ) ) );
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "3rd Pause attemp" , m_GHost->m_BotManagerName, 1, "add" ) ) );
                     }
                 }
@@ -2090,7 +2090,7 @@ void CBaseGame :: SendAllActions( )
 
             if ((*Action->GetAction())[0] == 0x6) {
                 CGamePlayer *Player = GetPlayerFromPID( Action->GetPID( ) );
-                SendAllChat("["+m_GHost->m_BotManagerName+"] " + Player->GetName() + " tried to save the game. Justice has served.");
+                SendAllChat("["+m_GHost->m_BotManagerName+"] " + m_GHost->m_Language->UserGorPunishedForSaving( Player->GetName() ) );
                 m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "game save" , m_GHost->m_BotManagerName, 1, "add" ) ) );
             }
 
@@ -2179,12 +2179,6 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
 
         if( !m_HCLCommandString.empty( ) )
             SendChat( player, "     HCL Command String:  " + m_HCLCommandString );
-        if( m_GHost->m_VoteMode ) {
-            SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
-        }
-        if( m_GHost->m_AllowVoteStart ) {
-            SendChat( player, "Use '!votestart' for an early beginning. ["+UTIL_ToString(m_GHost->m_VoteStartMinPlayers)+"] are at least required.");
-        }
     }
     else
     {
@@ -2212,12 +2206,12 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         in.close( );
     }
     if( m_GameBalance)
-        SendChat(player, "This is a balanced game, the slots will be balanced before the game will start.");
+        SendChat(player, m_GHost->m_Language->EnabledBalanceForThisGame ());
     if( m_GHost->m_VoteMode ) {
-        SendChat( player, "Voting for the mode is enabled. Type '!voteoptions' to see the available modes.");
+        SendChat( player, m_GHost->m_Language->VoteHasBeenEnabledNotify( ) );
     }
     if( m_GHost->m_AllowVoteStart ) {
-        SendChat( player, "Use '!votestart' for an early beginning. ["+UTIL_ToString(m_GHost->m_VoteStartMinPlayers)+"] are at least required.");
+        SendChat( player, m_GHost->m_Language->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
     }
 
 }
@@ -2624,7 +2618,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             if( Level != 0 && m_GHost->m_RanksLoaded )
                 LevelName = m_GHost->m_Ranks[Level-1];
             else if( Level != 0)
-                CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
+                CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded ());
             break;
         }
     }
@@ -2883,8 +2877,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         uint32_t reservedSID = 255;
         for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if( i->Name == LowerName ) {
-		SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
-		m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+        SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+        m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
                 SendAllSlotInfo( );
                 EnforcePID = m_Slots[i->SID].GetPID();
                 i= m_ReservedPlayers.erase(i);
@@ -3039,7 +3033,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     {
         if(m_GHost->m_AutoDenyUsers)
             m_Denied.push_back( joinPlayer->GetName( ) + " " + Player->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-        SendAllChat( "Player ["+joinPlayer->GetName( )+"] got kicked for joining from Garena." );
+        SendAllChat( m_GHost->m_Language->UserWasKickedForJoiningFromGarena( joinPlayer->GetName( ) ) );
         Player->SetDeleteMe( true );
         Player->SetLeftReason( "was kicked for joining from Garena." );
         Player->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -3049,9 +3043,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
     if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
-        SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "] from ["+potential->GetRoomName()+"]" );
+        SendAllChat( m_GHost->m_Language->UserJoinedFromGarena (LevelName, joinPlayer->GetName(), JoinedRealm, potential->GetRoomName() ) );
     else
-        SendAllChat( LevelName+" joined [" + joinPlayer->GetName() + "@" + JoinedRealm + "]" );
+        SendAllChat( m_GHost->m_Language->UserJoined (LevelName, joinPlayer->GetName(), JoinedRealm ) );
 
     Player->SetWhoisShouldBeSent( m_GHost->m_SpoofChecks == 1 || ( m_GHost->m_SpoofChecks == 2 && ( Level >= 5 ) ) );
     m_Players.push_back( Player );
@@ -3202,7 +3196,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     // check leaveperc
     if( Player->GetLeavePerc( ) >= 60 )
-        SendAllChat( "Player [" + Player->GetName( ) + "] got a huge leaver percentage of [" + UTIL_ToString( Player->GetLeavePerc( ), 2 ) + "%]");
+        SendAllChat( m_GHost->m_Language->UserJoinedWithHighLeaveRate( Player->GetName( ), UTIL_ToString( Player->GetLeavePerc( ), 2 ) ) );
 
     // single announce event on +3, +2, +1
     if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
@@ -3464,8 +3458,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                 case 0x51 :
                     n += 10;
                     if( !m_AllowMapTrading ) {
-                        SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] prevented from transferring gold/lumber." );
-                        SendAllChat( "["+m_GHost->m_BotManagerName+"] Player [" + player->GetName( ) + "] got permanently banned for hacking!" );
+                        SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_Language->PreventUserFromTransferResources( player->GetName( ) ) );
                         player->SetDeleteMe( true );
                         player->SetLeftReason( "was kicked by host" );
                         player->SetLeftCode( PLAYERLEAVE_LOST );
@@ -4624,13 +4617,13 @@ unsigned char CBaseGame :: GetNewPID( )
                 break;
             }
         }
-	for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin( ); i != m_ReservedPlayers.end( ); ++i )
-	{
-		if( m_Slots[i->SID].GetPID( ) == TestPID ) {
-			InUse = true;
-			break;
-		}
-	}
+    for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin( ); i != m_ReservedPlayers.end( ); ++i )
+    {
+        if( m_Slots[i->SID].GetPID( ) == TestPID ) {
+            InUse = true;
+            break;
+        }
+    }
 
         if( !InUse )
             return TestPID;
@@ -5506,9 +5499,9 @@ void CBaseGame :: OHFixedBalance( )
             ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 100, 1);
         }
 
-        SendAllChat( "[Sentinel rating: " + UTIL_ToString( m_SentinelWinPoints, 2 ) + "] [Scourge rating: " + UTIL_ToString( m_ScourgeWinPoints, 2 ) + "]" );
-        SendAllChat( "[Total Spread: " + UTIL_ToString( (m_SentinelWinPoints-m_ScourgeWinPoints), 2 ) + "] with ["+UTIL_ToString(m_LockedPlayers)+"] locked players" );
-        SendAllChat( "[Team WinChance: (Sentinel:" + SeWP + "%) (Scourge:" + ScWP + "%)]" );
+        SendAllChat( m_GHost->m_Language->Balance (UTIL_ToString( m_SentinelWinPoints, 2 ), UTIL_ToString( m_ScourgeWinPoints, 2 ) ) );
+        SendAllChat( m_GHost->m_Language->SpreadWithLockedPlayers ( UTIL_ToString( (m_SentinelWinPoints-m_ScourgeWinPoints), 2 ), UTIL_ToString(m_LockedPlayers ) ) );
+        SendAllChat( m_GHost->m_Language->WinChance( SeWP, ScWP  ) );
 
     }
     else
@@ -5743,7 +5736,7 @@ void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level 
             SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( PID, "|cFFFFBF00!Res!", IP, IP, string( ) ) );
             m_Slots[SID] = CGameSlot( PID, 100, SLOTSTATUS_OCCUPIED, 0, m_Slots[SID].GetTeam( ), m_Slots[SID].GetColour( ), m_Slots[SID].GetRace( ) );
             SendAllSlotInfo( );
-	    m_ReservedPlayers.push_back( resPlayer );
+        m_ReservedPlayers.push_back( resPlayer );
         }
 
         // check that the user is not already reserved
@@ -5901,7 +5894,7 @@ void CBaseGame :: StartCountDown( bool force )
                 }
 
                 if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
-                    SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
+                    SendChat( (*i)->GetPID( ), m_GHost->m_Language->YouHaventVotedYet( ));
                     if( NotVoted.empty( ) )
                         NotVoted = (*i)->GetName( );
                     else
@@ -5924,7 +5917,7 @@ void CBaseGame :: StartCountDown( bool force )
 
             if( !NotPassword.empty( ) )
             {
-                SendAllChat( "Players who are not yet verified: " + NotPassword );
+                SendAllChat( m_GHost->m_Language->PlayersNotVerifiedYet( ) + " " + NotPassword );
                 return;
             }
 
@@ -5937,12 +5930,12 @@ void CBaseGame :: StartCountDown( bool force )
             if( m_GHost->m_VoteMode &&! m_Voted ) {
                 if(m_ModesToVote.size() != 0 ) {
                     if(! NotVoted.empty())
-                        SendAllChat( "Players who not voted yet: " + NotVoted );
+                        SendAllChat( m_GHost->m_Language->PlayersNotVotedYet( ) + " " + NotVoted );
                     if( m_VotedTimeStart != 0) {
                         if( m_GHost->m_RandomMode ) {
-                            SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                            SendAllChat( m_GHost->m_Language->TimeLeftBeforeRandomMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                         } else {
-                            SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the top voted mode will be taken." );
+                            SendAllChat( m_GHost->m_Language->TimeLeftBeforeTopVotedMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                         }
                     } else {
                         StartVoteMode( );
@@ -6035,7 +6028,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                     NotPassword += ", " + (*i)->GetName( );
             }
             if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
-                SendChat( (*i)->GetPID( ), "You havent voted yet for a mode. To see vote options use '!voteoptions'.");
+                SendChat( (*i)->GetPID( ), m_GHost->m_Language->YouHaventVotedYet( ));
                 if( NotVoted.empty( ) )
                     NotVoted = (*i)->GetName( );
                 else
@@ -6057,7 +6050,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
 
         if( !NotPassword.empty( ) )
         {
-            SendAllChat( "Players who are not yet verified: " + NotPassword );
+            SendAllChat( m_GHost->m_Language->PlayersNotVerifiedYet( ) + " " + NotPassword );
             return;
         }
 
@@ -6071,12 +6064,12 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
         if( m_GHost->m_VoteMode &&! m_Voted ) {
             if(m_ModesToVote.size() != 0 ) {
                 if(! NotVoted.empty())
-                    SendAllChat( "Players who not voted yet: " + NotVoted );
+                    SendAllChat( m_GHost->m_Language->PlayersNotVotedYet( ) + " " + NotVoted );
                 if( m_VotedTimeStart != 0) {
                     if( m_GHost->m_RandomMode ) {
-                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before a mode will be randomed." );
+                        SendAllChat( m_GHost->m_Language->TimeLeftBeforeRandomMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                     } else {
-                        SendAllChat( "There is no clear mode voted yet. ["+UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( ))+"] left before the top voted mode will be taken." );
+                        SendAllChat( m_GHost->m_Language->TimeLeftBeforeTopVotedMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                     }
                 } else {
                     StartVoteMode( );
@@ -6551,7 +6544,7 @@ string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
 
 void CBaseGame :: StartVoteMode( ) {
     m_VotedTimeStart = GetTime( );
-    SendAllChat( "Voting for the mode is started. You can vote with !vote <number> command. Options:");
+    SendAllChat( m_GHost->m_Language->VoteModeHasStarted( ) );
     string Modes;
     uint32_t c = 1;
     for( vector<string> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
