@@ -611,7 +611,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 SendAllChat( "Ban Reason: "+i->second->GetReason( ) );
             }
             else
-                SendAllChat( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
+                SendAllChat( m_GHost->m_Language->WrongContactBotOwner( ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
