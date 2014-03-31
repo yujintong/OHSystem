@@ -4726,7 +4726,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             else
                 SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
         } else {
-            SendChat(player, m_GHost->m_Language->UsersOwnReputation (UTIL_ToString( player->GetReputation (), 2 ) ) ;
+            SendChat(player, m_GHost->m_Language->UsersOwnReputation (UTIL_ToString( player->GetReputation (), 2 ) ) );
         }
     }
 

@@ -487,7 +487,7 @@ public:
     string WinChance( string sent, string scou);
     string YouHaventVotedYet( );
     string PlayersNotVerifiedYet( );
-    strng PlayersNotVotedYet( );
+    string PlayersNotVotedYet( );
     string TimeLeftBeforeRandomMode( string left );
     string TimeLeftBeforeTopVotedMode( string left );
     string VoteModeHasStarted( );
