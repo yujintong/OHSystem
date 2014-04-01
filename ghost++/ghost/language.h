@@ -491,6 +491,7 @@ public:
     string TimeLeftBeforeRandomMode( string left );
     string TimeLeftBeforeTopVotedMode( string left );
     string VoteModeHasStarted( );
+    string UserKickedAPMAFK( string user, string apm, string times, string min );
 };
 
 #endif
