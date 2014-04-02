@@ -111,7 +111,7 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
   
   $sth = $db->prepare("SELECT s.id, s.kills, s.deaths, s.assists, s.creeps, s.denies, s.country_code, s.country, s.user_level, s.score, s.games, s.wins, s.losses, s.neutrals, s.rax, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.zerodeaths, p.exp, s.player, s.leaver, s.draw, s.towers, p.banned, s.ip, s.realm, s.pid
   FROM ".OSDB_STATS." as s
-  LEFT JOIN ".OSDB_STATS_P." as p ON p.player = s.player
+  LEFT JOIN ".OSDB_STATS_P." as p ON p.id = s.pid
   WHERE s.id>=1  $sqlCurrentDate $sql AND s.hide=0 
   ORDER BY $orderby 
   LIMIT $offset, $rowsperpage");
