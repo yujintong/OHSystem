@@ -114,7 +114,7 @@ function Get_w3mmdplayers($gameid) {
            $Data[$c]["heroid"] = $Hero ; $Data[$c]["hero"] = $Hero; $Data[$c]["description"] = "";
            }
            
-           $Data[$c]["level"] = ""; 
+           $Data[$c]["level"] = "";  $Data[$c]["class"] = ""; 
            $Data[$c]["banned"] = ""; $Data[$c]["admin"] = ""; $Data[$c]["score_points"] = "";   
            $Data[$c]["kills"] = "";  $Data[$c]["deaths"] = ""; $Data[$c]["assists"] = "";
            $Data[$c]["creepkills"] = "";  $Data[$c]["creepdenies"] = ""; $Data[$c]["towerkills"] = "";

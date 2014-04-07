@@ -279,6 +279,8 @@ if (!isset($website) ) { header('HTTP/1.1 404 Not Found'); die; }
 	 $GameData[$c]["left"]  = secondsToTime($row["left"]);
 	 $GameData[$c]["leftreason"]  = ($row["leftreason"]);
 	 $ScoreGain = "";
+	 $GameData[$c]["class"] = '';
+	 
 	 if ($row["newcolour"]<=5 AND $row["winner"] == 1)  $ScoreGain=1; else
 	 if ($row["newcolour"]>5  AND $row["winner"] == 2)  $ScoreGain=1; else
 	 if ($row["newcolour"]<=5 AND $row["winner"] == 2)  $ScoreGain=2; else
