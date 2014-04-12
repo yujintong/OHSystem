@@ -92,6 +92,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_Voted = false;
     m_PartTime = 7;
     m_GameBalance = m_GHost->m_OHBalance;
+    m_LobbyLanguage  = "en";
     if( m_GHost->m_SaveReplays && !m_SaveGame )
         m_Replay = new CReplay( );
 
@@ -447,8 +448,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 if( (*j)->GetName( ) == i->second->GetName( ) && StatsPlayerSummary )
                 {
                     if(StatsPlayerSummary->GetID ()==0) {
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->WelcomeUserCreateUniqueId( (*j)->GetName( )));
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->DomainOnJoinNotify( ));
+                        SendChat((*j)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->WelcomeUserCreateUniqueId( (*j)->GetName( )));
+                        SendChat((*j)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->DomainOnJoinNotify( ));
                         SendChat((*j)->GetPID( ), " ");
                         m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, (*j)->GetName( ), (*j)->GetExternalIPString (), 0, (*j)->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
                     } else {
@@ -467,7 +468,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetEXP (StatsPlayerSummary->GetEXP());
                         (*j)->SetID (StatsPlayerSummary->GetID ());
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( (*j)->GetName( ) ) );
+                        SendChat((*j)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation-> WelcomeBackUser( (*j)->GetName( ) ) );
                         SendChat((*j)->GetPID( ), " ");
                     }
                 }
@@ -491,7 +492,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     if( (*j)->GetName( ) == i->second->GetName( ) )
                     {
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->CreatedUniqueIdForNewUser( UTIL_ToString(Result ) ) );
+                        SendChat((*j)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->CreatedUniqueIdForNewUser( UTIL_ToString(Result ) ) );
                         (*j)->SetID(Result);
                     }
                 }
@@ -535,7 +536,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             string Result = i->second->GetResult( );
             if( UTIL_ToUInt32( Result ) >= 5 && i->second->GetType() == "joincheck" && m_GHost->m_CheckIPRange )
-                SendAllChat( m_GHost->m_Language->PotentialBanAvoider( i->second->GetUser(), Result  ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PotentialBanAvoider( i->second->GetUser(), Result  ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -553,28 +554,28 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             if( i->second->GetType( ) == "check" )
             {
                 if( Result != 0 )
-                    SendAllChat( m_GHost->m_Language->UserGotPenalityPoints( i->second->GetName(), UTIL_ToString( Result ) ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserGotPenalityPoints( i->second->GetName(), UTIL_ToString( Result ) ) );
                 else
-                    SendAllChat( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserGotNoPenalityPoints( i->second->GetName() ) );
             }
             if( i->second->GetType( ) == "checkall" )
             {
                 if( Result != 0 )
-                    SendAllChat( m_GHost->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ) );
                 else
-                    SendAllChat( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserGotNoPenalityPoints( i->second->GetName() ) );
             }
             else if( i->second->GetType( ) == "add" )
             {
                 if( Result == 1 )
-                    SendAllChat(  m_GHost->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ) ) );
+                    SendAllChat(  m_GHost->m_LanguageBundle[0].m_Translation->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ) ) );
                 else if(  Result == 2 )
-                    SendAllChat( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetName() ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->BannedUserForReachingTooManyPPoints( i->second->GetName() ) );
                 else
-                    CONSOLE_Print( m_GHost->m_Language->FailedToAddPPoint( ) );
+                    CONSOLE_Print( m_GHost->m_LanguageBundle[0].m_Translation->FailedToAddPPoint( ) );
             }
             else
-                CONSOLE_Print( m_GHost->m_Language->WrongContactBotOwner( ) );
+                CONSOLE_Print( m_GHost->m_LanguageBundle[0].m_Translation->WrongContactBotOwner( ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -591,9 +592,9 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             uint32_t Result = i->second->GetResult( );
 
             if( Result == 1 )
-                SendAllChat( m_GHost->m_Language->ErrorBanningUserAlreadyPermBanned( i->second->GetUser( ) ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->ErrorBanningUserAlreadyPermBanned( i->second->GetUser( ) ) );
             else if( Result == 2 )
-                SendAllChat( m_GHost->m_Language->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ) );
             else if( Result >= 3 && Result <= 5 )
             {
                 for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); ++j )
@@ -602,16 +603,16 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->AddBan( i->second->GetUser( ), i->second->GetIP( ), i->second->GetGameName( ), i->second->GetAdmin( ), i->second->GetReason( ) );
                 }
                 if( Result == 3)
-                    SendAllChat( m_GHost->m_Language->SuccessfullyBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->SuccessfullyBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
                 else if( Result == 4 )
-                    SendAllChat( m_GHost->m_Language->SuccessfullyUpdatedBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->SuccessfullyUpdatedBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
                 else if( Result == 5 )
-                    SendAllChat( m_GHost->m_Language->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
 
                 SendAllChat( "Ban Reason: "+i->second->GetReason( ) );
             }
             else
-                SendAllChat( m_GHost->m_Language->WrongContactBotOwner( ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->WrongContactBotOwner( ) );
 
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -731,7 +732,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
     if( m_Locked && !GetPlayerFromName( m_OwnerName, false ) )
     {
-        SendAllChat( m_GHost->m_Language->GameUnlocked( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GameUnlocked( ) );
         m_Locked = false;
     }
 
@@ -854,14 +855,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             // only print the "game refreshed" message if we actually refreshed on at least one battle.net server
 
             if( m_RefreshMessages && Refreshed )
-                SendAllChat( m_GHost->m_Language->GameRefreshed( ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GameRefreshed( ) );
         }
 
         for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if((i->Level==1&&((GetTime()-i->Time)>=45))||(i->Level==2&&((GetTime()-i->Time)>=90))) {
-        SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
-        m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
-        SendAllSlotInfo( );
+                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+                m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+                SendAllSlotInfo( );
                 i = m_ReservedPlayers.erase( i );
             }
             else
@@ -956,7 +957,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     if( (*i)->GetAFKMarked( ) )
                     {
-                        SendAllChat( m_GHost->m_Language->KickedUserForBeingAFK( (*i)->GetName() ) );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->KickedUserForBeingAFK( (*i)->GetName() ) );
                         (*i)->SetTimeActive( GetTime( ) );
                         (*i)->SetDeleteMe( true );
                         (*i)->SetLeftReason( "was kicked by anti-afk" );
@@ -965,14 +966,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     }
                     else
                     {
-                        SendAllChat( m_GHost->m_Language->WarnedUserForBeingAFK( (*i)->GetName() ) );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->WarnedUserForBeingAFK( (*i)->GetName() ) );
                         (*i)->SetTimeActive( GetTime( ) );
                         (*i)->SetAFKMarked( true );
                     }
                 }
                 else if( TimeActive > 0 && ( (TimeNow - TimeActive ) > ( TimeLimit-60) ) && (*i)->GetAFKMarked( ) && m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam() != 12 )
                 {
-                    SendAllChat( m_GHost->m_Language->KickedUserForBeingAfk( (*i)->GetName() ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->KickedUserForBeingAfk( (*i)->GetName() ) );
                     (*i)->SetTimeActive( GetTime( ) );
                     (*i)->SetDeleteMe( true );
                     (*i)->SetLeftReason( "was kicked by anti-afk" );
@@ -997,16 +998,16 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     else if( m_PartTime == 6 )
                         (*i)->SetFirstActionsForSixthPart( (*i)->GetActions( ) );
                     else
-                        CONSOLE_Print(m_GHost->m_Language->ErrorForAPMAFKSystem( ));
+                        CONSOLE_Print(m_GHost->m_LanguageBundle[0].m_Translation->ErrorForAPMAFKSystem( ));
 
                     if( m_GameLoadedTime >= 300 ) {
                         uint32_t APM = (*i)->GetFirstActionsForFirstPart( )+(*i)->GetFirstActionsForSecondPart( )+(*i)->GetFirstActionsForThirdPart( )+(*i)->GetFirstActionsForFourthPart( )+(*i)->GetFirstActionsForFifthPart( )+(*i)->GetFirstActionsForSixthPart( );
                         if( GetTime( ) - (*i)->GetLastAFKWarn() >= 20 && APM < m_GHost->m_APMAllowedMinimum ) {
                             if( (*i)->GetAFKWarnings( ) <= m_GHost->m_APMMaxAfkWarnings ) {
-                                SendAllChat( m_GHost->m_Language->UserHasBeenMarkedAPMAFK( (*i)->GetName(), UTIL_ToString(APM) ) );
-                                SendChat((*i)->GetPID( ), m_GHost->m_Language->UserWarningAPMAFK( UTIL_ToString(m_GHost->m_APMAllowedMinimum), UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings( )) ) );
+                                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserHasBeenMarkedAPMAFK( (*i)->GetName(), UTIL_ToString(APM) ) );
+                                SendChat((*i)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->UserWarningAPMAFK( UTIL_ToString(m_GHost->m_APMAllowedMinimum), UTIL_ToString(m_GHost->m_APMMaxAfkWarnings-(*i)->GetAFKWarnings( )) ) );
                             } else {
-                                SendAllChat( m_GHost->m_Language->UserKickedAPMAFK( (*i)->GetName(), UTIL_ToString(APM), UTIL_ToString(m_GHost->m_APMMaxAfkWarnings), UTIL_ToString(m_GHost->m_APMAllowedMinimum) ) );
+                                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserKickedAPMAFK( (*i)->GetName(), UTIL_ToString(APM), UTIL_ToString(m_GHost->m_APMMaxAfkWarnings), UTIL_ToString(m_GHost->m_APMAllowedMinimum) ) );
                                 (*i)->SetDeleteMe( true );
                                 (*i)->SetLeftReason( "was kicked by anti-afk" );
                                 (*i)->SetLeftCode( PLAYERLEAVE_LOST );
@@ -1073,7 +1074,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             if( !(*i)->GetSpoofed( ) && GetTime( ) - (*i)->GetJoinTime( ) >= 60 )
             {
                 (*i)->SetDeleteMe( true );
-                (*i)->SetLeftReason( m_GHost->m_Language->WasKickedForNotSpoofChecking( ) );
+                (*i)->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->WasKickedForNotSpoofChecking( ) );
                 (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                 OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
             }
@@ -1452,7 +1453,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
             if( GetTime( ) - m_StartedLaggingTime >= WaitTime )
             {
-                StopLaggers( m_GHost->m_Language->WasAutomaticallyDroppedAfterSeconds( UTIL_ToString( WaitTime ) ) );
+                StopLaggers( m_GHost->m_LanguageBundle[0].m_Translation->WasAutomaticallyDroppedAfterSeconds( UTIL_ToString( WaitTime ) ) );
             }
             // we cannot allow the lag screen to stay up for more than ~65 seconds because Warcraft III disconnects if it doesn't receive an action packet at least this often
             // one (easy) solution is to simply drop all the laggers if they lag for more than 60 seconds
@@ -1563,7 +1564,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
     if( !m_KickVotePlayer.empty( ) && GetTime( ) - m_StartedKickVoteTime >= 60 )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] votekick against player [" + m_KickVotePlayer + "] expired" );
-        SendAllChat( m_GHost->m_Language->VoteKickExpired( m_KickVotePlayer ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->VoteKickExpired( m_KickVotePlayer ) );
         m_KickVotePlayer.clear( );
         m_StartedKickVoteTime = 0;
     }
@@ -1573,7 +1574,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
     if( m_StartedVoteStartTime != 0 && GetTime( ) - m_StartedVoteStartTime >= 60 && ( !m_GameLoaded || !m_GameLoading) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] votestart expired" );
-        SendAllChat( m_GHost->m_Language->VoteStartExpired( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->VoteStartExpired( ) );
         m_StartedVoteStartTime = 0;
     }
 
@@ -1653,7 +1654,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
     if( m_VoteMuteEventTime != 0 && GetTime() - m_VoteMuteEventTime >= m_GHost->m_VoteMuteTime )
     {
-        SendAllChat( m_GHost->m_Language->VoteMuteExpired( m_VoteMutePlayer) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->VoteMuteExpired( m_VoteMutePlayer) );
         m_VoteMuteEventTime = 0;
         m_VoteMutePlayer.clear();
         m_VoteMuteTargetTeam = 0;
@@ -1668,7 +1669,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             if( m_PauseTicks > 0 )
             {
-                SendAllChat( m_GHost->m_Language->GameWillBePausedInTicks( UTIL_ToString( m_PauseTicks )  ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GameWillBePausedInTicks( UTIL_ToString( m_PauseTicks )  ) );
                 --m_PauseTicks;
             }
             else if( m_PauseTicks == 0 )
@@ -1686,14 +1687,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         }
         if( m_Paused && GetTime() - m_PauseTime == 50 && !m_SendPauseInfo )
         {
-            SendAllChat( m_GHost->m_Language->GameWillBeUnpauseInTenSeconds( ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GameWillBeUnpauseInTenSeconds( ) );
             m_SendPauseInfo = true;
         }
         if( m_Paused && GetTime() - m_PauseTime >= 55 && GetTicks( ) - m_LastCountDownTicks >= 1000 )
         {
             if( m_PauseTicks > 0 )
             {
-                SendAllChat( m_GHost->m_Language->GameWillBeResumedInTicks(  UTIL_ToString( m_PauseTicks )  ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GameWillBeResumedInTicks(  UTIL_ToString( m_PauseTicks )  ) );
                 --m_PauseTicks;
             }
             else if( m_PauseTicks == 0 )
@@ -1748,13 +1749,13 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         {
             if( (*i)->GetPing( m_GHost->m_LCPings ) >= 750 && (*i)->GetHighPingTimes( ) <= 4 )
             {
-                SendChat( (*i)->GetPID( ), m_GHost->m_Language->UserHaveAHighPingMark( UTIL_ToString( (*i)->GetPing( m_GHost->m_LCPings ) ), UTIL_ToString((*i)->GetHighPingTimes( ) ) ) );
+                SendChat( (*i)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->UserHaveAHighPingMark( UTIL_ToString( (*i)->GetPing( m_GHost->m_LCPings ) ), UTIL_ToString((*i)->GetHighPingTimes( ) ) ) );
                 (*i)->SetHighPingTimes( );
             }
             if( (*i)->GetPing( m_GHost->m_LCPings ) >= 750 && (*i)->GetHighPingTimes( ) == 5 )
             {
-                SendChat( (*i)->GetPID( ), m_GHost->m_Language->UserCanLeaveBecauseHighPing( ) );
-                SendAllChat( m_GHost->m_Language->UserCanLeaveBecausePing( (*i)->GetName( ) ) );
+                SendChat( (*i)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->UserCanLeaveBecauseHighPing( ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserCanLeaveBecausePing( (*i)->GetName( ) ) );
                 (*i)->SetSafeDrop( true );
                 (*i)->SetHighPingTimes( );
             }
@@ -2072,17 +2073,17 @@ void CBaseGame :: SendAllActions( )
                 if ( m_FakePlayerPID != 255 && !m_PauseReq )
                 {
                     CGamePlayer *Player = GetPlayerFromPID( Action->GetPID( ) );
-                    SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_Language->UserTriedToPause( Player->GetName( ) ) );
+                    SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_LanguageBundle[0].m_Translation->UserTriedToPause( Player->GetName( ) ) );
                     BYTEARRAY CRC;
                     BYTEARRAY Action;
                     Action.push_back( 2 );
                     m_Actions.push( new CIncomingAction( m_FakePlayerPID, CRC, Action ) );
                     Player->SetPauseTried();
                     if( Player->GetPauseTried() == 2 )
-                        SendChat( Player->GetPID(), "["+m_GHost->m_BotManagerName+"] " + m_GHost->m_Language->UserTriedToPauseWarnng( ) );
+                        SendChat( Player->GetPID(), "["+m_GHost->m_BotManagerName+"] " + m_GHost->m_LanguageBundle[0].m_Translation->UserTriedToPauseWarnng( ) );
                     if( Player->GetPauseTried() == 3 )
                     {
-                        SendAllChat( "["+m_GHost->m_BotManagerName+"] " + m_GHost->m_Language->UserGorPunishedForPausing( Player->GetName( ) ) );
+                        SendAllChat( "["+m_GHost->m_BotManagerName+"] " + m_GHost->m_LanguageBundle[0].m_Translation->UserGorPunishedForPausing( Player->GetName( ) ) );
                         m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "3rd Pause attemp" , m_GHost->m_BotManagerName, 1, "add" ) ) );
                     }
                 }
@@ -2090,7 +2091,7 @@ void CBaseGame :: SendAllActions( )
 
             if ((*Action->GetAction())[0] == 0x6) {
                 CGamePlayer *Player = GetPlayerFromPID( Action->GetPID( ) );
-                SendAllChat("["+m_GHost->m_BotManagerName+"] " + m_GHost->m_Language->UserGorPunishedForSaving( Player->GetName() ) );
+                SendAllChat("["+m_GHost->m_BotManagerName+"] " + m_GHost->m_LanguageBundle[0].m_Translation->UserGorPunishedForSaving( Player->GetName() ) );
                 m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Player->GetName(), "game save" , m_GHost->m_BotManagerName, 1, "add" ) ) );
             }
 
@@ -2206,12 +2207,12 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         in.close( );
     }
     if( m_GameBalance)
-        SendChat(player, m_GHost->m_Language->EnabledBalanceForThisGame ());
+        SendChat(player, m_GHost->m_LanguageBundle[0].m_Translation->EnabledBalanceForThisGame ());
     if( m_GHost->m_VoteMode ) {
-        SendChat( player, m_GHost->m_Language->VoteHasBeenEnabledNotify( ) );
+        SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->VoteHasBeenEnabledNotify( ) );
     }
     if( m_GHost->m_AllowVoteStart ) {
-        SendChat( player, m_GHost->m_Language->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
+        SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
     }
 
 }
@@ -2344,7 +2345,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
                 else
                     (*i)->UnqueueChatCommand( "/whois " + player->GetName( ) );
 
-                (*i)->UnqueueChatCommand( "/w " + player->GetName( ) + " " + m_GHost->m_Language->SpoofCheckByReplying( ) );
+                (*i)->UnqueueChatCommand( "/w " + player->GetName( ) + " " + m_GHost->m_LanguageBundle[0].m_Translation->SpoofCheckByReplying( ) );
 
             }
         }
@@ -2435,7 +2436,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
     // abort the votekick
 
     if( !m_KickVotePlayer.empty( ) )
-        SendAllChat( m_GHost->m_Language->VoteKickCancelled( m_KickVotePlayer ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->VoteKickCancelled( m_KickVotePlayer ) );
 
     if( !m_GameLoading && !m_GameLoaded )
     {
@@ -2451,7 +2452,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
         // abort the countdown if there was one in progress
         if( m_CountDownStarted )
         {
-            SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->CountDownAborted( ) );
             m_CountDownStarted = false;
             m_Balanced = false;
         }
@@ -2475,7 +2476,7 @@ void CBaseGame :: EventPlayerDisconnectTimedOut( CGamePlayer *player )
     {
         if( !player->GetGProxyDisconnectNoticeSent( ) )
         {
-            SendAllChat( player->GetName( ) + " " + m_GHost->m_Language->HasLostConnectionTimedOutGProxy( ) + "." );
+            SendAllChat( player->GetName( ) + " " + m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionTimedOutGProxy( ) + "." );
             player->SetGProxyDisconnectNoticeSent( true );
         }
 
@@ -2486,7 +2487,7 @@ void CBaseGame :: EventPlayerDisconnectTimedOut( CGamePlayer *player )
             if( TimeRemaining > ( (uint32_t)m_GProxyEmptyActions + 1 ) * 60 )
                 TimeRemaining = ( m_GProxyEmptyActions + 1 ) * 60;
 
-            SendAllChat( player->GetPID( ), m_GHost->m_Language->WaitForReconnectSecondsRemain( UTIL_ToString( TimeRemaining ) ) );
+            SendAllChat( player->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->WaitForReconnectSecondsRemain( UTIL_ToString( TimeRemaining ) ) );
             player->SetLastGProxyWaitNoticeSentTime( GetTime( ) );
         }
 
@@ -2500,7 +2501,7 @@ void CBaseGame :: EventPlayerDisconnectTimedOut( CGamePlayer *player )
     if( GetTime( ) - m_LastLagScreenTime >= 10 )
     {
         player->SetDeleteMe( true );
-        player->SetLeftReason( m_GHost->m_Language->HasLostConnectionTimedOut( ) );
+        player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionTimedOut( ) );
         player->SetLeftCode( PLAYERLEAVE_DISCONNECT );
 
         if( !m_GameLoading && !m_GameLoaded )
@@ -2516,7 +2517,7 @@ void CBaseGame :: EventPlayerDisconnectPlayerError( CGamePlayer *player )
     // since TCP has checks and balances for data corruption the chances of this are pretty slim
 
     player->SetDeleteMe( true );
-    player->SetLeftReason( m_GHost->m_Language->HasLostConnectionPlayerError( player->GetErrorString( ) ) );
+    player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionPlayerError( player->GetErrorString( ) ) );
     player->SetLeftCode( PLAYERLEAVE_DISCONNECT );
 
     if( !m_GameLoading && !m_GameLoaded )
@@ -2531,7 +2532,7 @@ void CBaseGame :: EventPlayerDisconnectSocketError( CGamePlayer *player )
     {
         if( !player->GetGProxyDisconnectNoticeSent( ) )
         {
-            SendAllChat( player->GetName( ) + " " + m_GHost->m_Language->HasLostConnectionSocketErrorGProxy( player->GetSocket( )->GetErrorString( ) ) + "." );
+            SendAllChat( player->GetName( ) + " " + m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionSocketErrorGProxy( player->GetSocket( )->GetErrorString( ) ) + "." );
             player->SetGProxyDisconnectNoticeSent( true );
         }
 
@@ -2542,7 +2543,7 @@ void CBaseGame :: EventPlayerDisconnectSocketError( CGamePlayer *player )
             if( TimeRemaining > ( (uint32_t)m_GProxyEmptyActions + 1 ) * 60 )
                 TimeRemaining = ( m_GProxyEmptyActions + 1 ) * 60;
 
-            SendAllChat( player->GetPID( ), m_GHost->m_Language->WaitForReconnectSecondsRemain( UTIL_ToString( TimeRemaining ) ) );
+            SendAllChat( player->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->WaitForReconnectSecondsRemain( UTIL_ToString( TimeRemaining ) ) );
             player->SetLastGProxyWaitNoticeSentTime( GetTime( ) );
         }
 
@@ -2550,7 +2551,7 @@ void CBaseGame :: EventPlayerDisconnectSocketError( CGamePlayer *player )
     }
 
     player->SetDeleteMe( true );
-    player->SetLeftReason( m_GHost->m_Language->HasLostConnectionSocketError( player->GetSocket( )->GetErrorString( ) ) );
+    player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionSocketError( player->GetSocket( )->GetErrorString( ) ) );
     player->SetLeftCode( PLAYERLEAVE_DISCONNECT );
 
     if( !m_GameLoading && !m_GameLoaded )
@@ -2565,7 +2566,7 @@ void CBaseGame :: EventPlayerDisconnectConnectionClosed( CGamePlayer *player )
     {
         if( !player->GetGProxyDisconnectNoticeSent( ) )
         {
-            SendAllChat( player->GetName( ) + " " + m_GHost->m_Language->HasLostConnectionClosedByRemoteHostGProxy( ) + "." );
+            SendAllChat( player->GetName( ) + " " + m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionClosedByRemoteHostGProxy( ) + "." );
             player->SetGProxyDisconnectNoticeSent( true );
         }
 
@@ -2576,7 +2577,7 @@ void CBaseGame :: EventPlayerDisconnectConnectionClosed( CGamePlayer *player )
             if( TimeRemaining > ( (uint32_t)m_GProxyEmptyActions + 1 ) * 60 )
                 TimeRemaining = ( m_GProxyEmptyActions + 1 ) * 60;
 
-            SendAllChat( player->GetPID( ), m_GHost->m_Language->WaitForReconnectSecondsRemain( UTIL_ToString( TimeRemaining ) ) );
+            SendAllChat( player->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->WaitForReconnectSecondsRemain( UTIL_ToString( TimeRemaining ) ) );
             player->SetLastGProxyWaitNoticeSentTime( GetTime( ) );
         }
 
@@ -2584,7 +2585,7 @@ void CBaseGame :: EventPlayerDisconnectConnectionClosed( CGamePlayer *player )
     }
 
     player->SetDeleteMe( true );
-    player->SetLeftReason( m_GHost->m_Language->HasLostConnectionClosedByRemoteHost( ) );
+    player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->HasLostConnectionClosedByRemoteHost( ) );
     player->SetLeftCode( PLAYERLEAVE_DISCONNECT );
 
     if( !m_GameLoading && !m_GameLoaded )
@@ -2618,7 +2619,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             if( Level != 0 && m_GHost->m_RanksLoaded )
                 LevelName = m_GHost->m_Ranks[Level-1];
             else if( Level != 0)
-                CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded ());
+                CONSOLE_Print(m_GHost->m_LanguageBundle[0].m_Translation->RanksNotLoaded ());
             break;
         }
     }
@@ -2694,7 +2695,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     if( GetPlayerFromName( joinPlayer->GetName( ), false ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but that name is already taken" );
-        // SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButTaken( joinPlayer->GetName( ) ) );
+        // SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TryingToJoinTheGameButTaken( joinPlayer->GetName( ) ) );
         if(m_GHost->m_AutoDenyUsers)
             m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
         potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
@@ -2751,8 +2752,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game but is banned by name" );
                     if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
                     {
-                        SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
-                        //SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TryingToJoinTheGameButBannedByName( joinPlayer->GetName( ) ) );
+                        //SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths() ) );
                         m_IgnoredNames.insert( joinPlayer->GetName( ) );
                     }
                     // let banned players "join" the game with an arbitrary PID then immediately close the connection
@@ -2791,8 +2792,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
                     if( m_IgnoredNames.find( joinPlayer->GetName( ) ) == m_IgnoredNames.end( ) )
                     {
-                        SendAllChat( m_GHost->m_Language->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
-                        //SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TryingToJoinTheGameButBannedByIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
+                        //SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
                         m_IgnoredNames.insert( joinPlayer->GetName( ) );
                     }
 
@@ -2904,7 +2905,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                     if( KickedPlayer )
                     {
                         KickedPlayer->SetDeleteMe( true );
-                        KickedPlayer->SetLeftReason( m_GHost->m_Language->WasKickedForReservedPlayer( joinPlayer->GetName( ) ) );
+                        KickedPlayer->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->WasKickedForReservedPlayer( joinPlayer->GetName( ) ) );
                         KickedPlayer->SetLeftCode( PLAYERLEAVE_LOBBY );
 
                         // send a playerleave message immediately since it won't normally get sent until the player is deleted which is after we send a playerjoin message
@@ -2937,7 +2938,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
                 if( KickedPlayer )
                 {
                     KickedPlayer->SetDeleteMe( true );
-                    KickedPlayer->SetLeftReason( m_GHost->m_Language->WasKickedForOwnerPlayer( joinPlayer->GetName( ) ) );
+                    KickedPlayer->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->WasKickedForOwnerPlayer( joinPlayer->GetName( ) ) );
                     KickedPlayer->SetLeftCode( PLAYERLEAVE_LOBBY );
 
                     // send a playerleave message immediately since it won't normally get sent until the player is deleted which is after we send a playerjoin message
@@ -2983,8 +2984,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             if( Ban )
             {
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is using a banned name" );
-                SendAllChat( m_GHost->m_Language->HasBannedName( joinPlayer->GetName( ) ) );
-                SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths( ) ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->HasBannedName( joinPlayer->GetName( ) ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserWasBannedOnByBecause( Ban->GetServer( ), Ban->GetName( ), Ban->GetDate( ), Ban->GetAdmin( ), Ban->GetReason( ), Ban->GetExpire( ), Ban->GetMonths( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                 break;
@@ -2995,15 +2996,15 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             if( IPBan )
             {
                 CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is using a banned IP address" );
-                SendAllChat( m_GHost->m_Language->HasBannedIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
-                SendAllChat( m_GHost->m_Language->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->HasBannedIP( joinPlayer->GetName( ), potential->GetExternalIPString( ), IPBan->GetName( ) ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserWasBannedOnByBecause( IPBan->GetServer( ), IPBan->GetName( ), IPBan->GetDate( ), IPBan->GetAdmin( ), IPBan->GetReason( ), IPBan->GetExpire( ), IPBan->GetMonths( ) ) );
                 if(m_GHost->m_AutoDenyUsers)
                     m_Denied.push_back( joinPlayer->GetName( ) + " " + potential->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
                 break;
             }
         }
     }
-
+    Player->SetPlayerLangauge (m_LobbyLanguage);
     // check if this is a protected account
     if( m_GHost->m_AccountProtection )
         m_PairedPWChecks.push_back( PairedPWCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedPWCheck( joinPlayer->GetName( ) ) ) );
@@ -3033,7 +3034,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     {
         if(m_GHost->m_AutoDenyUsers)
             m_Denied.push_back( joinPlayer->GetName( ) + " " + Player->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-        SendAllChat( m_GHost->m_Language->UserWasKickedForJoiningFromGarena( joinPlayer->GetName( ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserWasKickedForJoiningFromGarena( joinPlayer->GetName( ) ) );
         Player->SetDeleteMe( true );
         Player->SetLeftReason( "was kicked for joining from Garena." );
         Player->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -3043,9 +3044,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
     if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
-        SendAllChat( m_GHost->m_Language->UserJoinedFromGarena (LevelName, joinPlayer->GetName(), JoinedRealm, potential->GetRoomName() ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserJoinedFromGarena (LevelName, joinPlayer->GetName(), JoinedRealm, potential->GetRoomName() ) );
     else
-        SendAllChat( m_GHost->m_Language->UserJoined (LevelName, joinPlayer->GetName(), JoinedRealm ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserJoined (LevelName, joinPlayer->GetName(), JoinedRealm ) );
 
     Player->SetWhoisShouldBeSent( m_GHost->m_SpoofChecks == 1 || ( m_GHost->m_SpoofChecks == 2 && ( Level >= 5 ) ) );
     m_Players.push_back( Player );
@@ -3150,7 +3151,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             BYTEARRAY UniqueName = (*i)->GetUniqueName( );
 
             if( (*i)->GetServer( ) == JoinedRealm )
-                SendChat( Player, m_GHost->m_Language->SpoofCheckByWhispering( string( UniqueName.begin( ), UniqueName.end( ) )  ) );
+                SendChat( Player, m_GHost->m_LanguageBundle[0].m_Translation->SpoofCheckByWhispering( string( UniqueName.begin( ), UniqueName.end( ) )  ) );
         }
     }
 
@@ -3172,13 +3173,13 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
 
         if( !Others.empty( ) )
-            SendAllChat( m_GHost->m_Language->MultipleIPAddressUsageDetected( joinPlayer->GetName( ), Others ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->MultipleIPAddressUsageDetected( joinPlayer->GetName( ), Others ) );
     }
 
     // abort the countdown if there was one in progress
     if( m_CountDownStarted && !m_GameLoading && !m_GameLoaded )
     {
-        SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->CountDownAborted( ) );
         m_CountDownStarted = false;
         m_Balanced = false;
     }
@@ -3186,7 +3187,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     // auto lock the game
     if( m_GHost->m_AutoLock && !m_Locked && IsOwner( joinPlayer->GetName( ) ) )
     {
-        SendAllChat( m_GHost->m_Language->GameLocked( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GameLocked( ) );
         m_Locked = true;
     }
 
@@ -3196,17 +3197,17 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     // check leaveperc
     if( Player->GetLeavePerc( ) >= 60 )
-        SendAllChat( m_GHost->m_Language->UserJoinedWithHighLeaveRate( Player->GetName( ), UTIL_ToString( Player->GetLeavePerc( ), 2 ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserJoinedWithHighLeaveRate( Player->GetName( ), UTIL_ToString( Player->GetLeavePerc( ), 2 ) ) );
 
     // single announce event on +3, +2, +1
     if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
     {
-        SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
     }
     // abort the countdown if there was one in progress
     if( m_CountDownStarted )
     {
-        SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->CountDownAborted( ) );
         m_CountDownStarted = false;
         m_Balanced = false;
     }
@@ -3224,12 +3225,12 @@ void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
 
     if( reason == PLAYERLEAVE_GPROXY )
     {
-        player->SetLeftReason( m_GHost->m_Language->WasUnrecoverablyDroppedFromGProxy( ) );
+        player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->WasUnrecoverablyDroppedFromGProxy( ) );
         player->SetSafeDrop( true );
     }
     else
     {
-        player->SetLeftReason( m_GHost->m_Language->HasLeftVoluntarily( ) );
+        player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->HasLeftVoluntarily( ) );
     }
 
     player->SetLeftCode( PLAYERLEAVE_LOST );
@@ -3292,11 +3293,11 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         {
             if( *i != player && (*i)->GetFinishedLoading( ) )
-                SendChat( *i, m_GHost->m_Language->PlayerFinishedLoading( player->GetName( ) ) );
+                SendChat( *i, m_GHost->m_LanguageBundle[0].m_Translation->PlayerFinishedLoading( player->GetName( ) ) );
         }
 
         if( !FinishedLoading )
-            SendChat( player, m_GHost->m_Language->PleaseWaitPlayersStillLoading( ) );
+            SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->PleaseWaitPlayersStillLoading( ) );
     }
     else
         SendAll( m_Protocol->SEND_W3GS_GAMELOADED_OTHERS( player->GetPID( ) ) );
@@ -3370,7 +3371,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
                     // notify everyone that a player is saving the game
                     CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + player->GetName( ) + "] is saving the game" );
-                    SendAllChat( m_GHost->m_Language->PlayerIsSavingTheGame( player->GetName( ) ) );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayerIsSavingTheGame( player->GetName( ) ) );
                     break;
                 case 0x07 :
                     n += 5;
@@ -3458,7 +3459,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                 case 0x51 :
                     n += 10;
                     if( !m_AllowMapTrading ) {
-                        SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_Language->PreventUserFromTransferResources( player->GetName( ) ) );
+                        SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_LanguageBundle[0].m_Translation->PreventUserFromTransferResources( player->GetName( ) ) );
                         player->SetDeleteMe( true );
                         player->SetLeftReason( "was kicked by host" );
                         player->SetLeftCode( PLAYERLEAVE_LOST );
@@ -3667,7 +3668,7 @@ void CBaseGame :: EventPlayerKeepAlive( CGamePlayer *player, uint32_t checkSum )
         if( !(*i)->GetDeleteMe( ) && (*i)->GetCheckSums( )->front( ) != FirstCheckSum )
         {
             CONSOLE_Print( "[GAME: " + m_GameName + "] desync detected" );
-            SendAllChat( m_GHost->m_Language->DesyncDetected( ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->DesyncDetected( ) );
 
             // try to figure out who desynced
             // this is complicated by the fact that we don't know what the correct game state is so we let the players vote
@@ -3710,7 +3711,7 @@ void CBaseGame :: EventPlayerKeepAlive( CGamePlayer *player, uint32_t checkSum )
                     }
                 }
 
-                SendAllChat( m_GHost->m_Language->PlayersInGameState( UTIL_ToString( StateNumber ), Players ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersInGameState( UTIL_ToString( StateNumber ), Players ) );
                 ++StateNumber;
             }
 
@@ -3726,7 +3727,7 @@ void CBaseGame :: EventPlayerKeepAlive( CGamePlayer *player, uint32_t checkSum )
                 // todotodo: it would be possible to split the game at this point and create a "new" game for each game state
 
                 CONSOLE_Print( "[GAME: " + m_GameName + "] can't kick desynced players because there is a tie, kicking all players instead" );
-                StopPlayers( m_GHost->m_Language->WasDroppedDesync( ) );
+                StopPlayers( m_GHost->m_LanguageBundle[0].m_Translation->WasDroppedDesync( ) );
                 AddToReplay = false;
             }
             else
@@ -3750,7 +3751,7 @@ void CBaseGame :: EventPlayerKeepAlive( CGamePlayer *player, uint32_t checkSum )
                             {
                                 Player->SetSafeDrop( true );
                                 Player->SetDeleteMe( true );
-                                Player->SetLeftReason( m_GHost->m_Language->WasDroppedDesync( ) );
+                                Player->SetLeftReason( m_GHost->m_LanguageBundle[0].m_Translation->WasDroppedDesync( ) );
                                 Player->SetLeftCode( PLAYERLEAVE_LOST );
                             }
                         }
@@ -3879,7 +3880,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
             string Message = chatPlayer->GetMessage( );
 
             if( Message == "?trigger" )
-                SendChat( player, m_GHost->m_Language->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
+                SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
             else if( !Message.empty( ) && Message[0] == m_GHost->m_CommandTrigger )
             {
                 // extract the command trigger, the command, and the payload
@@ -4089,7 +4090,7 @@ void CBaseGame :: EventPlayerDropRequest( CGamePlayer *player )
     if( m_Lagging )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + player->GetName( ) + "] voted to drop laggers" );
-        SendAllChat( m_GHost->m_Language->PlayerVotedToDropLaggers( player->GetName( ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayerVotedToDropLaggers( player->GetName( ) ) );
 
         // check if at least half the players voted to drop
 
@@ -4102,7 +4103,7 @@ void CBaseGame :: EventPlayerDropRequest( CGamePlayer *player )
         }
 
         if( (float)Votes / m_Players.size( ) > 0.49 )
-            StopLaggers( m_GHost->m_Language->LaggedOutDroppedByVote( ) );
+            StopLaggers( m_GHost->m_LanguageBundle[0].m_Translation->LaggedOutDroppedByVote( ) );
     }
 }
 
@@ -4162,7 +4163,7 @@ void CBaseGame :: EventPlayerMapSize( CGamePlayer *player, CIncomingMapSize *map
             float Seconds = (float)( GetTicks( ) - player->GetStartedDownloadingTicks( ) ) / 1000;
             float Rate = (float)MapSize / 1024 / Seconds;
             CONSOLE_Print( "[GAME: " + m_GameName + "] map download finished for player [" + player->GetName( ) + "] in " + UTIL_ToString( Seconds, 1 ) + " seconds" );
-            SendAllChat( m_GHost->m_Language->PlayerDownloadedTheMap( player->GetName( ), UTIL_ToString( Seconds, 1 ), UTIL_ToString( Rate, 1 ) ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayerDownloadedTheMap( player->GetName( ), UTIL_ToString( Seconds, 1 ), UTIL_ToString( Rate, 1 ) ) );
             player->SetDownloadFinished( true );
             player->SetFinishedDownloadingTime( GetTime( ) );
 
@@ -4206,7 +4207,7 @@ void CBaseGame :: EventPlayerPongToHost( CGamePlayer *player, uint32_t pong )
     {
         // send a chat message because we don't normally do so when a player leaves the lobby
 
-        SendAllChat( m_GHost->m_Language->AutokickingPlayerForExcessivePing( player->GetName( ), UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->AutokickingPlayerForExcessivePing( player->GetName( ), UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) ) );
         player->SetDeleteMe( true );
         player->SetLeftReason( "was autokicked for excessive ping of " + UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) );
         player->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -4222,7 +4223,7 @@ void CBaseGame :: EventGameRefreshed( string server )
         // but since we unqueue game refreshes when rehosting, the only way this can happen is due to network delay
         // it's a risk we're willing to take but can result in a false positive here
 
-        SendAllChat( m_GHost->m_Language->RehostWasSuccessful( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->RehostWasSuccessful( ) );
         m_RefreshRehosted = false;
     }
 }
@@ -4466,12 +4467,12 @@ void CBaseGame :: EventGameLoaded( )
 
     if( Shortest && Longest )
     {
-        SendAllChat( m_GHost->m_Language->ShortestLoadByPlayer( Shortest->GetName( ), UTIL_ToString( (float)( Shortest->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
-        SendAllChat( m_GHost->m_Language->LongestLoadByPlayer( Longest->GetName( ), UTIL_ToString( (float)( Longest->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->ShortestLoadByPlayer( Shortest->GetName( ), UTIL_ToString( (float)( Shortest->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->LongestLoadByPlayer( Longest->GetName( ), UTIL_ToString( (float)( Longest->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
     }
 
     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
-        SendChat( *i, m_GHost->m_Language->YourLoadingTimeWas( UTIL_ToString( (float)( (*i)->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
+        SendChat( *i, m_GHost->m_LanguageBundle[0].m_Translation->YourLoadingTimeWas( UTIL_ToString( (float)( (*i)->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
 
 
     m_GameLoadedTime = GetTime();
@@ -5224,7 +5225,7 @@ void CBaseGame :: OHFixedBalance( )
 
     // Getting values
     vector<double> PlayerWins;
-    double totalwinpoints;
+    double totalwinpoints = 0.00;
     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
     {
         if( m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam( ) != 12 && !(*i)->GetLocked( ) )
@@ -5499,9 +5500,9 @@ void CBaseGame :: OHFixedBalance( )
             ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 100, 1);
         }
 
-        SendAllChat( m_GHost->m_Language->Balance (UTIL_ToString( m_SentinelWinPoints, 2 ), UTIL_ToString( m_ScourgeWinPoints, 2 ) ) );
-        SendAllChat( m_GHost->m_Language->SpreadWithLockedPlayers ( UTIL_ToString( (m_SentinelWinPoints-m_ScourgeWinPoints), 2 ), UTIL_ToString(m_LockedPlayers ) ) );
-        SendAllChat( m_GHost->m_Language->WinChance( SeWP, ScWP  ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->Balance (UTIL_ToString( m_SentinelWinPoints, 2 ), UTIL_ToString( m_ScourgeWinPoints, 2 ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->SpreadWithLockedPlayers ( UTIL_ToString( (m_SentinelWinPoints-m_ScourgeWinPoints), 2 ), UTIL_ToString(m_LockedPlayers ) ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->WinChance( SeWP, ScWP  ) );
 
     }
     else
@@ -5593,7 +5594,7 @@ void CBaseGame :: BalanceSlots( )
         // a possible alternative: stop after enough iterations and/or time has passed
 
         CONSOLE_Print( "[GAME: " + m_GameName + "] shuffling slots instead of balancing - the algorithm is too slow (with a cost of " + UTIL_ToString( AlgorithmCost ) + ") for this team configuration" );
-        SendAllChat( m_GHost->m_Language->ShufflingPlayers( ) );
+        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->ShufflingPlayers( ) );
         ShuffleSlots( );
         return;
     }
@@ -5644,7 +5645,7 @@ void CBaseGame :: BalanceSlots( )
             else
             {
                 CONSOLE_Print( "[GAME: " + m_GameName + "] shuffling slots instead of balancing - the balancing algorithm tried to do an invalid swap (this shouldn't happen)" );
-                SendAllChat( m_GHost->m_Language->ShufflingPlayers( ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->ShufflingPlayers( ) );
                 ShuffleSlots( );
                 return;
             }
@@ -5655,7 +5656,7 @@ void CBaseGame :: BalanceSlots( )
     }
 
     CONSOLE_Print( "[GAME: " + m_GameName + "] balancing slots completed in " + UTIL_ToString( EndTicks - StartTicks ) + "ms (with a cost of " + UTIL_ToString( AlgorithmCost ) + ")" );
-    SendAllChat( m_GHost->m_Language->BalancingSlotsCompleted( ) );
+    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->BalancingSlotsCompleted( ) );
     SendAllSlotInfo( );
 
     for( unsigned char i = 0; i < 12; ++i )
@@ -5681,7 +5682,7 @@ void CBaseGame :: BalanceSlots( )
         }
 
         if( TeamHasPlayers )
-            SendAllChat( m_GHost->m_Language->TeamCombinedScore( UTIL_ToString( i + 1 ), UTIL_ToString( TeamScore, 2 ) ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TeamCombinedScore( UTIL_ToString( i + 1 ), UTIL_ToString( TeamScore, 2 ) ) );
     }
 }
 
@@ -5695,7 +5696,7 @@ void CBaseGame :: AddToSpoofed( string server, string name, bool sendMessage )
         Player->SetSpoofed( true );
 
         if( sendMessage )
-            SendAllChat( m_GHost->m_Language->SpoofCheckAcceptedFor( server, name ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->SpoofCheckAcceptedFor( server, name ) );
     }
 }
 
@@ -5823,7 +5824,7 @@ void CBaseGame :: StartCountDown( bool force )
 
             if( m_HCLCommandString.size( ) > GetSlotsOccupied( ) )
             {
-                SendAllChat( m_GHost->m_Language->TheHCLIsTooLongUseForceToStart( ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TheHCLIsTooLongUseForceToStart( ) );
                 return;
             }
 
@@ -5849,7 +5850,7 @@ void CBaseGame :: StartCountDown( bool force )
 
             if( !StillDownloading.empty( ) )
             {
-                SendAllChat( m_GHost->m_Language->PlayersStillDownloading( StillDownloading ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersStillDownloading( StillDownloading ) );
                 return;
             }
 
@@ -5894,7 +5895,7 @@ void CBaseGame :: StartCountDown( bool force )
                 }
 
                 if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
-                    SendChat( (*i)->GetPID( ), m_GHost->m_Language->YouHaventVotedYet( ));
+                    SendChat( (*i)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->YouHaventVotedYet( ));
                     if( NotVoted.empty( ) )
                         NotVoted = (*i)->GetName( );
                     else
@@ -5905,19 +5906,19 @@ void CBaseGame :: StartCountDown( bool force )
 
             if( !NotPinged.empty( ) )
             {
-                SendAllChat( m_GHost->m_Language->PlayersNotYetPinged( NotPinged ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotYetPinged( NotPinged ) );
                 return;
             }
 
             if( !NotSpoofChecked.empty( ) )
             {
-                SendAllChat( m_GHost->m_Language->PlayersNotYetSpoofChecked( NotSpoofChecked ) );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotYetSpoofChecked( NotSpoofChecked ) );
                 return;
             }
 
             if( !NotPassword.empty( ) )
             {
-                SendAllChat( m_GHost->m_Language->PlayersNotVerifiedYet( ) + " " + NotPassword );
+                SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotVerifiedYet( ) + " " + NotPassword );
                 return;
             }
 
@@ -5930,12 +5931,12 @@ void CBaseGame :: StartCountDown( bool force )
             if( m_GHost->m_VoteMode &&! m_Voted ) {
                 if(m_ModesToVote.size() != 0 ) {
                     if(! NotVoted.empty())
-                        SendAllChat( m_GHost->m_Language->PlayersNotVotedYet( ) + " " + NotVoted );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotVotedYet( ) + " " + NotVoted );
                     if( m_VotedTimeStart != 0) {
                         if( m_GHost->m_RandomMode ) {
-                            SendAllChat( m_GHost->m_Language->TimeLeftBeforeRandomMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
+                            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TimeLeftBeforeRandomMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                         } else {
-                            SendAllChat( m_GHost->m_Language->TimeLeftBeforeTopVotedMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
+                            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TimeLeftBeforeTopVotedMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                         }
                     } else {
                         StartVoteMode( );
@@ -5987,7 +5988,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
 
         if( !StillDownloading.empty( ) )
         {
-            SendAllChat( m_GHost->m_Language->PlayersStillDownloading( StillDownloading ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersStillDownloading( StillDownloading ) );
             return;
         }
 
@@ -6028,7 +6029,7 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
                     NotPassword += ", " + (*i)->GetName( );
             }
             if( m_GHost->m_VoteMode && (*i)->GetVotedMode( ) == 0 && m_VotedTimeStart != 0 ) {
-                SendChat( (*i)->GetPID( ), m_GHost->m_Language->YouHaventVotedYet( ));
+                SendChat( (*i)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation->YouHaventVotedYet( ));
                 if( NotVoted.empty( ) )
                     NotVoted = (*i)->GetName( );
                 else
@@ -6038,19 +6039,19 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
 
         if( !NotPinged.empty( ) )
         {
-            SendAllChat( m_GHost->m_Language->PlayersNotYetPinged( NotPinged ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotYetPinged( NotPinged ) );
             return;
         }
 
         if( !NotSpoofChecked.empty( ) )
         {
-            SendAllChat( m_GHost->m_Language->PlayersNotYetSpoofChecked( NotSpoofChecked ) );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotYetSpoofChecked( NotSpoofChecked ) );
             return;
         }
 
         if( !NotPassword.empty( ) )
         {
-            SendAllChat( m_GHost->m_Language->PlayersNotVerifiedYet( ) + " " + NotPassword );
+            SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotVerifiedYet( ) + " " + NotPassword );
             return;
         }
 
@@ -6064,12 +6065,12 @@ void CBaseGame :: StartCountDownAuto( bool requireSpoofChecks )
         if( m_GHost->m_VoteMode &&! m_Voted ) {
             if(m_ModesToVote.size() != 0 ) {
                 if(! NotVoted.empty())
-                    SendAllChat( m_GHost->m_Language->PlayersNotVotedYet( ) + " " + NotVoted );
+                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->PlayersNotVotedYet( ) + " " + NotVoted );
                 if( m_VotedTimeStart != 0) {
                     if( m_GHost->m_RandomMode ) {
-                        SendAllChat( m_GHost->m_Language->TimeLeftBeforeRandomMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TimeLeftBeforeRandomMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                     } else {
-                        SendAllChat( m_GHost->m_Language->TimeLeftBeforeTopVotedMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
+                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->TimeLeftBeforeTopVotedMode( UTIL_ToString( m_VotedTimeStart+m_GHost->m_MaxVotingTime - GetTime( )) ) );
                     }
                 } else {
                     StartVoteMode( );
@@ -6544,7 +6545,7 @@ string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
 
 void CBaseGame :: StartVoteMode( ) {
     m_VotedTimeStart = GetTime( );
-    SendAllChat( m_GHost->m_Language->VoteModeHasStarted( ) );
+    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->VoteModeHasStarted( ) );
     string Modes;
     uint32_t c = 1;
     for( vector<string> :: iterator i = m_ModesToVote.begin( ); i != m_ModesToVote.end( ); ++i ) {
