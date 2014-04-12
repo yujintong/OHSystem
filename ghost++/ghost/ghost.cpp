@@ -2152,7 +2152,10 @@ void CGHost :: LoadLanguages( ) {
                     delete m_Language;
                     m_Language = new CLanguage( FileName );
                     translationTree translation;
-                    translation.suffix = FileName;
+                    string languageSuffix = FileName.substr(0, 2);
+                    if ( languageSuffix == "en" )
+                        m_FallBackLanguage = i;
+                    translation.suffix = languageSuffix;
                     translation.m_Translation = m_Language;
                     m_LanguageBundle.push_back(translation);
                 }

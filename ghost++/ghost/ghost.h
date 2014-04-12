@@ -260,6 +260,7 @@ public:
     vector<string> m_PlayerCache;
     uint32_t m_BroadCastPort;
     string m_LanCFGPath;
+    uint32_t m_FallBackLanguage;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

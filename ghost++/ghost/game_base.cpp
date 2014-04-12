@@ -468,6 +468,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetEXP (StatsPlayerSummary->GetEXP());
                         (*j)->SetID (StatsPlayerSummary->GetID ());
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
+                        (*j)->SetPlayerLanguage(StatsPlayerSummary->GetLanguageSuffix ());
                         SendChat((*j)->GetPID( ), m_GHost->m_LanguageBundle[0].m_Translation-> WelcomeBackUser( (*j)->GetName( ) ) );
                         SendChat((*j)->GetPID( ), " ");
                     }

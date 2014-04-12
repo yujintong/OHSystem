@@ -542,6 +542,7 @@ CREATE TABLE IF NOT EXISTS `oh_stats_players` (
   `points_bet` tinyint(6) unsigned NOT NULL,
   `blacklisted` tinyint(1) unsigned NOT NULL,
   `exp` int(10) unsigned NOT NULL,
+  `player_language` varchar(2) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `player` (`player`),
   KEY `country_code` (`country_code`)

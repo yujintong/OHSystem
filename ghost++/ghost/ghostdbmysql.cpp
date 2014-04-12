@@ -964,8 +964,8 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
     else if( type == "aliascheck" )
     {
         string Aliases = "";
-		string Query = "SELECT name,spoofedrealm,COUNT(*) FROM oh_gameplayers INNER JOIN (SELECT DISTINCT ip FROM oh_gameplayers WHERE AND ip != '0' AND ip != '0.0.0.0' WHERE  name='" + EscUser + "') a USING (ip) GROUP  BY player_id ORDER BY COUNT(*) DESC LIMIT 5";
-        
+        string Query = "SELECT name,spoofedrealm,COUNT(*) FROM oh_gameplayers INNER JOIN (SELECT DISTINCT ip FROM oh_gameplayers WHERE AND ip != '0' AND ip != '0.0.0.0' WHERE  name='" + EscUser + "') a USING (ip) GROUP  BY player_id ORDER BY COUNT(*) DESC LIMIT 5";
+
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
         else
@@ -987,12 +987,12 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
             else
                 *error = mysql_error( (MYSQL *)conn );
         }
-        
+
         if( Aliases.length( ) < 5 )
             return "failed";
         else
             return "Aliases: " + Aliases.substr( 2 );
-        
+
     }
     else if( type == "rpp" )
     {
@@ -2200,7 +2200,7 @@ uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t
     if(gameid!=0) {
         Query = "UPDATE oh_gameplayers SET colour="+UTIL_ToString(colour)+", spoofed="+UTIL_ToString( spoofed )+", reserved="+UTIL_ToString( reserved )+", loadingtime="+UTIL_ToString( loadingtime )+", `left`="+UTIL_ToString( left )+", leftreason='"+EscLeftReason+"', team="+UTIL_ToString( team )+", spoofedrealm='"+EscSpoofedRealm+"' WHERE gameid='"+UTIL_ToString(gameid)+"' AND player_id='"+UTIL_ToString(id)+"';";
     } else {
-        Query = "INSERT INTO oh_stats_players (player, player_lower, ip, realm) VALUES ('"+EscName+"','"+EscNameLOW+"','"+EscIP+"', '"+EscSpoofedRealm+"');";
+        Query = "INSERT INTO oh_stats_players (player, player_lower, ip, realm, player_language) VALUES ('"+EscName+"','"+EscNameLOW+"','"+EscIP+"', '"+EscSpoofedRealm+"', 'en');";
     }
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
@@ -2296,9 +2296,10 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     uint32_t rankcount = 0;
     uint32_t points;
     double reputation = 0;
+    string languageSuffix = "en";
 
 
-    string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points FROM oh_stats_players WHERE player_lower='"+EscLowerName+"'";
+    string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points, player_language FROM oh_stats_players WHERE player_lower='"+EscLowerName+"'";
     if( mysql_real_query( (MYSQL *)conn, GlobalPlayerQuery.c_str( ), GlobalPlayerQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     else
@@ -2309,7 +2310,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            if( Row.size( ) == 7 )
+            if( Row.size( ) == 8 )
             {
                 id = UTIL_ToUInt32(Row[0]);
                 realm = Row[1];
@@ -2318,6 +2319,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 hiddenacc = UTIL_ToUInt32(Row[4]);
                 exp = UTIL_ToUInt32(Row[5]);
                 points = UTIL_ToUInt32(Row[6]);
+                languageSuffix = Row[7];
 
                 mysql_free_result( Result );
             }
@@ -2431,7 +2433,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         }
     }
 
-    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp, reputation );
+    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp, reputation, languageSuffix );
 
     return StatsPlayerSummary;
 }
