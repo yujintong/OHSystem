@@ -44,7 +44,7 @@ using namespace std;
 #include "config.h"
 #include "includes.h"
 #include "util.h"
-
+#include "rating.h"
 #include <string.h>
 
 #ifdef WIN32
