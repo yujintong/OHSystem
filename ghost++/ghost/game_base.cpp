@@ -2208,12 +2208,12 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         in.close( );
     }
     if( m_GameBalance)
-        SendChat(player, m_GHost->m_LanguageBundle[0].m_Translation->EnabledBalanceForThisGame ());
+        SendChat(player, m_GHost->m_LanguageBundle[player->GetPlayerLanguage ()].m_Translation->EnabledBalanceForThisGame ());
     if( m_GHost->m_VoteMode ) {
-        SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->VoteHasBeenEnabledNotify( ) );
+        SendChat( player, m_GHost->m_LanguageBundle[player->GetPlayerLanguage ()].m_Translation->VoteHasBeenEnabledNotify( ) );
     }
     if( m_GHost->m_AllowVoteStart ) {
-        SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
+        SendChat( player, m_GHost->m_LanguageBundle[player->GetPlayerLanguage ()].m_Translation->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
     }
 
 }
@@ -3152,7 +3152,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             BYTEARRAY UniqueName = (*i)->GetUniqueName( );
 
             if( (*i)->GetServer( ) == JoinedRealm )
-                SendChat( Player, m_GHost->m_LanguageBundle[0].m_Translation->SpoofCheckByWhispering( string( UniqueName.begin( ), UniqueName.end( ) )  ) );
+                SendChat( player, m_GHost->m_LanguageBundle[player->GetPlayerLanguage ()].m_Translation->SpoofCheckByWhispering( string( UniqueName.begin( ), UniqueName.end( ) )  ) );
         }
     }
 
@@ -3298,7 +3298,7 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
         }
 
         if( !FinishedLoading )
-            SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->PleaseWaitPlayersStillLoading( ) );
+            SendChat( player, m_GHost->m_LanguageBundle[player->GetPlayerLanguage ()].m_Translation->PleaseWaitPlayersStillLoading( ) );
     }
     else
         SendAll( m_Protocol->SEND_W3GS_GAMELOADED_OTHERS( player->GetPID( ) ) );
@@ -3881,7 +3881,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
             string Message = chatPlayer->GetMessage( );
 
             if( Message == "?trigger" )
-                SendChat( player, m_GHost->m_LanguageBundle[0].m_Translation->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
+                SendChat( player, m_GHost->m_LanguageBundle[player->GetPlayerLanguage ()].m_Translation->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
             else if( !Message.empty( ) && Message[0] == m_GHost->m_CommandTrigger )
             {
                 // extract the command trigger, the command, and the payload
