@@ -93,6 +93,7 @@ public:
     virtual bool CustomVoteKickReason( string reason );
     virtual string GetRule( string tag );
     virtual string GetRuleTags( );
+    virtual void PlayerUsed( string thething, uint32_t thetype, string playername );
 };
 
 #endif

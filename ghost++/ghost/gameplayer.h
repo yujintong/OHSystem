@@ -215,6 +215,9 @@ private:
     bool m_VotedForBalance;
     double m_Reputation;
     string m_PlayerLanguage;
+    uint32_t m_TheThingAmount;
+    string m_TheThing;
+    uint32_t m_TheThingType;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -483,6 +486,15 @@ public:
     string GetPlayerLanguage( ) {
         return m_PlayerLanguage;
     }
+    uint32_t GetTheThingAmount( ) {
+        return m_TheThingAmount;
+    }
+    string GetTheThing( ) {
+        return m_TheThing;
+    }
+    uint32_t GetTheThingType( ) {
+        return m_TheThingType;
+    }
 
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
@@ -713,6 +725,16 @@ public:
     }
     void SetPlayerLangauge( string nPlayerLanguage ) {
         m_PlayerLanguage = nPlayerLanguage;
+    }
+
+    void SetTheThingAmount(uint32_t nTheThingAmount) {
+        m_TheThingAmount = nTheThingAmount;
+    }
+    void SetTheThing( string nTheThing ) {
+        m_TheThing = nTheThing;
+    }
+    void SetTheThingType(uint32_t nType) {
+        m_TheThingType = nType;
     }
 
     // processing functions

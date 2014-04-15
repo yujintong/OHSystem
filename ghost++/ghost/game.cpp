@@ -1575,32 +1575,79 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
 
             //
-            //setcookies
+            // give
             //
-            else if( Command == "setcookies" && Level >= 9 && m_GHost->m_FunCommands)
+            else if( Command == "give" && Level >= 6 && m_GHost->m_FunCommands)
             {
-                if( Payload.empty( ) )
-                {
-                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->RefilledCookies( player->GetName( ) ) );
-                    player->SetCookie( 3 );
-                }
+                string User;
+                string TheThing;
+                uint32_t TheThingAmount;
+                uint32_t TheThingType;
+                stringstream SS;
+                SS << Payload;
+                SS >> User;
+
+                if( SS.fail( ) || User.empty() )
+                    CONSOLE_Print( "Bad input for give command." );
                 else
                 {
-                    CGamePlayer *LastMatch = NULL;
-                    uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
-
-                    if( Matches == 0 )
-                        SendChat( Player, m_GHost->m_LanguageBundle[Player->GetPlayerLanguage ()].m_Translation->FoundNoMatchWithPlayername() );
-                    else if( Matches == 1 )
+                    SS >> TheThingAmount;
+                    if( SS.fail( ) || TheThingAmount==0 )
+                        CONSOLE_Print( "Bad input for give command." );
+                    else
                     {
-                        LastMatch->SetCookie( 3 );
-                        SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserRefilledCookieChar (player->GetName(), LastMatch->GetName() ) );
+                        SS >> TheThingType;
+
+                        if( SS.fail( ) )
+                            CONSOLE_Print( "Bad input for give command." );
+                        else
+                        {
+                            SS >> TheThing;
+
+                            if( !SS.eof( ) )
+                            {
+                                getline( SS, TheThing );
+                                string :: size_type Start = TheThing.find_first_not_of( " " );
+
+                                if( Start != string :: npos )
+                                    TheThing = TheThing.substr( Start );
+                            }
+                            if(!TheThing.empty()) {
+
+                                CGamePlayer *LastMatch = NULL;
+                                uint32_t Matches = GetPlayerFromNamePartial( User, &LastMatch );
+
+                                if( Matches == 0 )
+                                    SendChat( Player, m_GHost->m_LanguageBundle[Player->GetPlayerLanguage ()].m_Translation->FoundNoMatchWithPlayername() );
+                                else if( Matches == 1 )
+                                {
+                                    LastMatch->SetTheThing (TheThing);
+                                    LastMatch->SetTheThingType (TheThingType);
+                                    LastMatch->SetTheThingAmount(TheThingAmount);
+                                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserRefilledCookieChar (player->GetName(), LastMatch->GetName() ) );
+                                }
+                                else if( Matches > 1 )
+                                    SendChat( Player, m_GHost->m_LanguageBundle[Player->GetPlayerLanguage ()].m_Translation->FoundMultiplyMatches() );
+                            }
+                        }
                     }
-                    else if( Matches > 1 )
-                        SendChat( Player, m_GHost->m_LanguageBundle[Player->GetPlayerLanguage ()].m_Translation->FoundMultiplyMatches() );
+
                 }
             }
 
+            //
+            // !use
+            //
+            else if(Command=="use" && m_GHost->m_FunCommands ) {
+                uint32_t thingsleft = player->GetTheThingAmount ();
+                if( thingsleft != 0) {
+                    PlayerUsed(player->GetTheThing (), player->GetTheThingType (), player->GetName ());
+                    thingsleft--;
+                    player->SetTheThingAmount (thingsleft);
+                }
+                else
+                    SendChat(player, "You have no things left.");
+            }
             /*****************
             * ADMIN COMMANDS *
             ******************/
@@ -4846,4 +4893,27 @@ string CGame :: GetRule( string tag )
         }
     }
     return m_GHost->m_LanguageBundle[0].m_Translation->RuleTagNotify();
+}
+
+void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
+    switch(thetype) {
+    case 1:
+        SendAllChat("["+playername+"] ate "+thething+"! Mhhh, that was tasty!");
+        break;
+    case 2:
+        SendAllChat("["+playername+"] raped "+thething+"! That was hard!");
+        break;
+    case 3:
+        SendAllChat("["+playername+"] abused "+thething+"! What a smartass!");
+        break;
+    case 4:
+        SendAllChat("["+playername+"] tried to throw "+thething+" away!");
+        break;
+    case 5:
+        SendAllChat("["+playername+"] want to be like a "+thething+"! But he is too ugly!");
+        break;
+    default:
+        SendAllChat("["+playername+"] used "+thething+"!");
+        break;
+    }
 }
