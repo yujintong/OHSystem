@@ -1624,7 +1624,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                     LastMatch->SetTheThing (TheThing);
                                     LastMatch->SetTheThingType (TheThingType);
                                     LastMatch->SetTheThingAmount(TheThingAmount);
-                                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->UserRefilledCookieChar (player->GetName(), LastMatch->GetName() ) );
+                                    SendAllChat( m_GHost->m_LanguageBundle[0].m_Translation->GaveTheThing(player->GetName(), LastMatch->GetName() ) );
                                 }
                                 else if( Matches > 1 )
                                     SendChat( Player, m_GHost->m_LanguageBundle[Player->GetPlayerLanguage ()].m_Translation->FoundMultiplyMatches() );
@@ -4898,22 +4898,22 @@ string CGame :: GetRule( string tag )
 void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
     switch(thetype) {
     case 1:
-        SendAllChat("["+playername+"] ate "+thething+"! Mhhh, that was tasty!");
+        SendAllChat(m_GHost->m_LanguageBundle[0].m_Translation->UserUsed1( playername, thething ) );
         break;
     case 2:
-        SendAllChat("["+playername+"] raped "+thething+"! That was hard!");
+        SendAllChat(m_GHost->m_LanguageBundle[0].m_Translation->UserUsed2( playername, thething ) );
         break;
     case 3:
-        SendAllChat("["+playername+"] abused "+thething+"! What a smartass!");
+        SendAllChat(m_GHost->m_LanguageBundle[0].m_Translation->UserUsed3( playername, thething ) );
         break;
     case 4:
-        SendAllChat("["+playername+"] tried to throw "+thething+" away!");
+        SendAllChat(m_GHost->m_LanguageBundle[0].m_Translation->UserUsed4( playername, thething ) );
         break;
     case 5:
-        SendAllChat("["+playername+"] want to be like a "+thething+"! But he is too ugly!");
+        SendAllChat(m_GHost->m_LanguageBundle[0].m_Translation->UserUsed5( playername, thething ) );
         break;
     default:
-        SendAllChat("["+playername+"] used "+thething+"!");
+        SendAllChat(m_GHost->m_LanguageBundle[0].m_Translation->UserUsed6( playername, thething ) );
         break;
     }
 }

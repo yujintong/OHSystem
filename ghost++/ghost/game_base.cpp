@@ -3010,10 +3010,6 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     if( m_GHost->m_AccountProtection )
         m_PairedPWChecks.push_back( PairedPWCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedPWCheck( joinPlayer->GetName( ) ) ) );
 
-    // cookie for reserved players
-    if( Level >= 3 && m_GHost->m_FunCommands)
-        Player->SetCookie( 3 );
-
     // set level / levelName
     Player->SetLevel( Level );
     Player->SetLevelName( LevelName );

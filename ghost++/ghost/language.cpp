@@ -2290,10 +2290,11 @@ string CLanguage :: DeniedUser( string user)
     return Out;
 }
 
-string CLanguage :: RefilledCookies( string user)
+string CLanguage :: GaveTheThing( string player, string user )
 {
     string Out = m_CFG->GetString( "oh_098", "oh_098" );
     UTIL_Replace( Out, "$USER$", user);
+    UTIL_Replace( Out, "$PLAYER$", player);
     return Out;
 }
 
@@ -3180,5 +3181,53 @@ string CLanguage :: TimeLeftBeforeTopVotedMode( string left )
 string CLanguage :: VoteModeHasStarted( )
 {
     string Out = m_CFG->GetString( "oh_228", "oh_228" );
+    return Out;
+}
+
+string CLanguage :: UserUsed1( string user, string thing)
+{
+    string Out = m_CFG->GetString( "oh_229", "oh_229" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$THING$", thing);
+    return Out;
+}
+
+string CLanguage :: UserUsed2( string user, string thing)
+{
+    string Out = m_CFG->GetString( "oh_230", "oh_230" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$THING$", thing);
+    return Out;
+}
+
+string CLanguage :: UserUsed3( string user, string thing)
+{
+    string Out = m_CFG->GetString( "oh_231", "oh_231" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$THING$", thing);
+    return Out;
+}
+
+string CLanguage :: UserUsed4( string user, string thing)
+{
+    string Out = m_CFG->GetString( "oh_232", "oh_232" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$THING$", thing);
+    return Out;
+}
+
+string CLanguage :: UserUsed5( string user, string thing)
+{
+    string Out = m_CFG->GetString( "oh_233", "oh_233" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$THING$", thing);
+    return Out;
+}
+
+string CLanguage :: UserUsed6( string user, string thing)
+{
+    string Out = m_CFG->GetString( "oh_234", "oh_234" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$THING$", thing);
     return Out;
 }

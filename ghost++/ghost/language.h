@@ -361,7 +361,7 @@ public:
     string DeniedGarenaKickNotify( );
     string KickedPlayerForDeniedGarena( string user);
     string DeniedUser( string user);
-    string RefilledCookies( string user);
+    string GaveTheThing( string player, string user );
     string MutedAllChatOfUser( string user, string admin);
     string UnMutedAllChatOfUser( string user, string admin);
     string SetWinnerByUser( string user, string team);
@@ -492,6 +492,12 @@ public:
     string TimeLeftBeforeTopVotedMode( string left );
     string VoteModeHasStarted( );
     string UserKickedAPMAFK( string user, string apm, string times, string min );
+    string UserUsed1( string user, string thing);
+    string UserUsed2( string user, string thing);
+    string UserUsed3( string user, string thing);
+    string UserUsed4( string user, string thing);
+    string UserUsed5( string user, string thing);
+    string UserUsed6( string user, string thing);
 };
 
 #endif
