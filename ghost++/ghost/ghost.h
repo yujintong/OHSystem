@@ -55,6 +55,7 @@ class CCallableDCountryList;
 class CCallableGameDBInit;
 class CCallableDeniedNamesList;
 class CCallableAliasList;
+struct translationTree;
 
 class CGHost
 {
@@ -75,6 +76,8 @@ public:
     vector<CBaseCallable *> m_Callables;	// vector of orphaned callables waiting to die
     vector<BYTEARRAY> m_LocalAddresses;		// vector of local IP addresses
     CLanguage *m_Language;					// language
+    vector<translationTree> m_LanguageBundle;
+    string LanCFGPath;
     CMap *m_Map;							// the currently loaded map
     CMap *m_AdminMap;						// the map to use in the admin game
     CMap *m_AutoHostMap;					// the map to use when autohosting
@@ -256,6 +259,8 @@ public:
     string m_SharedFilesPath;
     vector<string> m_PlayerCache;
     uint32_t m_BroadCastPort;
+    string m_LanCFGPath;
+    uint32_t m_FallBackLanguage;
 
     CGHost( CConfig *CFG );
     ~CGHost( );
@@ -301,6 +306,12 @@ public:
     bool IsForcedGProxy(string input );
     bool FindHackFiles( string input );
     bool PlayerCached( string playername );
+    void LoadLanguages( );
+};
+
+struct translationTree {
+    string suffix;
+    CLanguage *m_Translation;
 };
 
 #endif

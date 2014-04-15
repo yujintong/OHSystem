@@ -64,6 +64,7 @@
 #define ETOOMANYREFS WSAETOOMANYREFS
 #define EUSERS WSAEUSERS
 #define EWOULDBLOCK WSAEWOULDBLOCK
+
 #else
 #include <arpa/inet.h>
 #include <errno.h>

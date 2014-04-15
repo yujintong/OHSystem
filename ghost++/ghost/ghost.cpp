@@ -67,6 +67,10 @@
 #include <mach/mach_time.h>
 #endif
 
+#include <boost/filesystem.hpp>
+
+using namespace boost :: filesystem;
+
 string gCFGFile;
 string gLogFile;
 uint32_t gLogMethod;
@@ -450,7 +454,6 @@ CGHost :: CGHost( CConfig *CFG )
     }
 #endif
 
-    m_Language = NULL;
     m_Exiting = false;
     m_ExitingNice = false;
     m_Enabled = true;
@@ -649,7 +652,6 @@ CGHost :: ~CGHost( )
 //	if( !m_Callables.empty( ) )
 //		CONSOLE_Print( "[GHOST] warning - " + UTIL_ToString( m_Callables.size( ) ) + " orphaned callables were leaked (this is not an error)" );
 
-    delete m_Language;
     delete m_Map;
     delete m_AdminMap;
     delete m_AutoHostMap;
@@ -1273,13 +1275,13 @@ void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
     {
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         {
-            (*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
+            (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
 
             if( (*i)->GetServer( ) == m_CurrentGame->GetCreatorServer( ) )
-                (*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ), m_CurrentGame->GetCreatorName( ), true );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ), m_CurrentGame->GetCreatorName( ), true );
         }
 
-        m_CurrentGame->SendAllChat( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
+        m_CurrentGame->SendAllChat( m_LanguageBundle[0].m_Translation->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
 
         // we take the easy route and simply close the lobby if a refresh fails
         // it's possible at least one refresh succeeded and therefore the game is still joinable on at least one battle.net (plus on the local network) but we don't keep track of that
@@ -1316,10 +1318,10 @@ void CGHost :: EventGameDeleted( CBaseGame *game )
 {
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
     {
-        (*i)->QueueChatCommand( m_Language->GameIsOver( game->GetDescription( ) ) );
+        (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->GameIsOver( game->GetDescription( ) ) );
 
         if( (*i)->GetServer( ) == game->GetCreatorServer( ) )
-            (*i)->QueueChatCommand( m_Language->GameIsOver( game->GetDescription( ) ), game->GetCreatorName( ), true );
+            (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->GameIsOver( game->GetDescription( ) ), game->GetCreatorName( ), true );
     }
 }
 
@@ -1335,10 +1337,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
 {
     // this doesn't set EVERY config value since that would potentially require reconfiguring the battle.net connections
     // it just set the easily reloadable values
-
-    m_LanguageFile = CFG->GetString( "bot_language", "language.cfg" );
-    delete m_Language;
-    m_Language = new CLanguage( m_LanguageFile );
+    m_LanCFGPath = UTIL_AddPathSeperator( CFG->GetString( "languages_path", "languages" ) );
+    LoadLanguages( );
     m_Warcraft3Path = UTIL_AddPathSeperator( CFG->GetString( "bot_war3path", "C:\\Program Files\\Warcraft III\\" ) );
     m_BindAddress = CFG->GetString( "bot_bindaddress", string( ) );
     m_ReconnectWaitTime = CFG->GetInt( "bot_reconnectwaittime", 3 );
@@ -1554,7 +1554,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         {
             if( (*i)->GetServer( ) == creatorServer )
-                (*i)->QueueChatCommand( m_Language->UnableToCreateGameDisabled( gameName ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameDisabled( gameName ), creatorName, whisper );
         }
 
         return;
@@ -1565,7 +1565,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         {
             if( (*i)->GetServer( ) == creatorServer )
-                (*i)->QueueChatCommand( m_Language->UnableToCreateGameNameTooLong( gameName ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameNameTooLong( gameName ), creatorName, whisper );
         }
 
         return;
@@ -1576,7 +1576,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         {
             if( (*i)->GetServer( ) == creatorServer )
-                (*i)->QueueChatCommand( m_Language->UnableToCreateGameInvalidMap( gameName ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameInvalidMap( gameName ), creatorName, whisper );
         }
         return;
     }
@@ -1588,7 +1588,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
             {
                 if( (*i)->GetServer( ) == creatorServer )
-                    (*i)->QueueChatCommand( m_Language->UnableToCreateGameInvalidSaveGame( gameName ), creatorName, whisper );
+                    (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameInvalidSaveGame( gameName ), creatorName, whisper );
             }
 
             return;
@@ -1606,7 +1606,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
             {
                 if( (*i)->GetServer( ) == creatorServer )
-                    (*i)->QueueChatCommand( m_Language->UnableToCreateGameSaveGameMapMismatch( gameName ), creatorName, whisper );
+                    (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameSaveGameMapMismatch( gameName ), creatorName, whisper );
             }
             return;
         }
@@ -1616,7 +1616,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
             {
                 if( (*i)->GetServer( ) == creatorServer )
-                    (*i)->QueueChatCommand( m_Language->UnableToCreateGameMustEnforceFirst( gameName ), creatorName, whisper );
+                    (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameMustEnforceFirst( gameName ), creatorName, whisper );
             }
 
             return;
@@ -1628,7 +1628,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         {
             if( (*i)->GetServer( ) == creatorServer )
-                (*i)->QueueChatCommand( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ), creatorName, whisper );
         }
 
         return;
@@ -1639,7 +1639,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         {
             if( (*i)->GetServer( ) == creatorServer )
-                (*i)->QueueChatCommand( m_Language->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ), creatorName, whisper );
         }
 
         return;
@@ -1669,18 +1669,18 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             // note that we send this whisper only on the creator server
 
             if( gameState == GAME_PRIVATE )
-                (*i)->QueueChatCommand( m_Language->CreatingPrivateGame( gameName, ownerName ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->CreatingPrivateGame( gameName, ownerName ), creatorName, whisper );
             else if( gameState == GAME_PUBLIC )
-                (*i)->QueueChatCommand( m_Language->CreatingPublicGame( gameName, ownerName ), creatorName, whisper );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->CreatingPublicGame( gameName, ownerName ), creatorName, whisper );
         }
         else
         {
             // note that we send this chat message on all other bnet servers
 
             if( gameState == GAME_PRIVATE )
-                (*i)->QueueChatCommand( m_Language->CreatingPrivateGame( gameName, ownerName ) );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->CreatingPrivateGame( gameName, ownerName ) );
             else if( gameState == GAME_PUBLIC )
-                (*i)->QueueChatCommand( m_Language->CreatingPublicGame( gameName, ownerName ) );
+                (*i)->QueueChatCommand( m_LanguageBundle[0].m_Translation->CreatingPublicGame( gameName, ownerName ) );
         }
 
         if( saveGame )
@@ -2123,4 +2123,47 @@ bool CGHost ::  PlayerCached( string playername ) {
     }
 
     return false;
+}
+
+void CGHost :: LoadLanguages( ) {
+
+    try
+    {
+        path LanCFGPath( m_LanCFGPath );
+
+        if( !exists( LanCFGPath ) )
+        {
+            CONSOLE_Print ("[ERROR] Could not find any language file. Shutting down.");
+            m_Exiting = true;
+        }
+        else
+        {
+            directory_iterator EndIterator;
+
+            for( directory_iterator i( LanCFGPath ); i != EndIterator; ++i )
+            {
+                string FileName = i->path( ).filename( ).string( );
+                string Stem = i->path( ).stem( ).string( );
+                transform( FileName.begin( ), FileName.end( ), FileName.begin( ), ::tolower );
+                transform( Stem.begin( ), Stem.end( ), Stem.begin( ), ::tolower );
+
+                if( !is_directory( i->status( ) ) && i->path( ).extension( ) == ".cfg" )
+                {
+                    delete m_Language;
+                    m_Language = new CLanguage( FileName );
+                    translationTree translation;
+                    string languageSuffix = FileName.substr(0, 2);
+                    if ( languageSuffix == "en" )
+                        m_FallBackLanguage = i;
+                    translation.suffix = languageSuffix;
+                    translation.m_Translation = m_Language;
+                    m_LanguageBundle.push_back(translation);
+                }
+            }
+        }
+    }
+    catch( const exception &ex )
+    {
+        CONSOLE_Print( "[ERROR] error listing language files - caught exception " + *ex.what( ) );
+    }
 }

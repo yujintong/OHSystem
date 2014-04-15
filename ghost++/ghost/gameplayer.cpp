@@ -42,7 +42,7 @@
 
 CPotentialPlayer :: CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket ) : m_Protocol( nProtocol ), m_Game( nGame ), m_Socket( nSocket ), m_DeleteMe( false ), m_Error( false ), m_IncomingJoinPlayer( NULL ), m_IncomingGarenaUser( NULL ), m_Banned( false )
 {
-	m_CachedIP = string();
+    m_CachedIP = string();
 }
 
 CPotentialPlayer :: ~CPotentialPlayer( )
@@ -88,13 +88,13 @@ string CPotentialPlayer :: GetExternalIPString( )
     if( m_Socket ) {
         if( m_IncomingGarenaUser != NULL ) {
             BYTEARRAY GarenaIP = GetGarenaIP( );
-			m_CachedIP = UTIL_ToString(GarenaIP[0]) + "." + UTIL_ToString(GarenaIP[1]) + "." + UTIL_ToString(GarenaIP[2]) + "." + UTIL_ToString(GarenaIP[3]);
+            m_CachedIP = UTIL_ToString(GarenaIP[0]) + "." + UTIL_ToString(GarenaIP[1]) + "." + UTIL_ToString(GarenaIP[2]) + "." + UTIL_ToString(GarenaIP[3]);
         } else {
-			m_CachedIP = m_Socket->GetIPString();
+            m_CachedIP = m_Socket->GetIPString();
         }
     }
 
-	return m_CachedIP;
+    return m_CachedIP;
 }
 
 bool CPotentialPlayer :: Update( void *fd )
@@ -228,7 +228,7 @@ CGamePlayer :: CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSock
     m_LoggedIn( false ), m_Spoofed( false ), m_PasswordProt( 0 ), m_Registered( false ), m_Reserved( nReserved ), m_WhoisShouldBeSent( false ), m_WhoisSent( false ), m_DownloadAllowed( false ), m_DownloadStarted( false ), m_DownloadFinished( false ), m_FinishedLoading( false ), m_Lagging( false ),
     m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "X?" ), m_Country( "unknown" ), m_Cookies( 0 ), m_Count( 0 ), m_Silence( false ), m_HasLeft( false ),
     m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
-    m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 )
+    m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 ), m_PlayerLanguage( "en" )
 {
 
 }
@@ -239,7 +239,7 @@ CGamePlayer :: CGamePlayer( CPotentialPlayer *potential, unsigned char nPID, str
     m_LoggedIn( false ), m_Spoofed( false ), m_PasswordProt( 0 ), m_Registered( false ), m_Reserved( nReserved ), m_WhoisShouldBeSent( false ), m_WhoisSent( false ), m_DownloadAllowed( false ), m_DownloadStarted( false ), m_DownloadFinished( false ), m_FinishedLoading( false ), m_Lagging( false ),
     m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "??" ), m_Country( "unknown" ), m_Cookies( 0 ), m_Count( 0 ), m_Silence( false ), m_HasLeft( false ),
     m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
-    m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 )
+    m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 ), m_PlayerLanguage( "en" )
 {
     // todotodo: properly copy queued packets to the new player, this just discards them
     // this isn't a big problem because official Warcraft III clients don't send any packets after the join request until they receive a response
@@ -844,5 +844,5 @@ void CGamePlayer :: EventGProxyReconnect( CTCPSocket *NewSocket, uint32_t LastPa
     m_GProxyBuffer = TempBuffer;
     m_GProxyDisconnectNoticeSent = false;
     m_Game->SendAllChat( m_Game->m_GHost->m_Language->PlayerReconnectedWithGProxy( m_Name ) );
-	m_CachedIP = m_Socket->GetIPString();
+    m_CachedIP = m_Socket->GetIPString();
 }

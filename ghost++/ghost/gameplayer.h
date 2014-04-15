@@ -54,7 +54,7 @@ protected:
     CIncomingGarenaUser *m_IncomingGarenaUser;
     string m_RoomName;
     bool m_Banned;
-	string m_CachedIP;
+    string m_CachedIP;
 
 public:
     CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket );
@@ -214,6 +214,7 @@ private:
     uint32_t m_ID;
     bool m_VotedForBalance;
     double m_Reputation;
+    string m_PlayerLanguage;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -479,6 +480,9 @@ public:
     double GetReputation( ) {
         return m_Reputation;
     }
+    string GetPlayerLanguage( ) {
+        return m_PlayerLanguage;
+    }
 
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
@@ -706,6 +710,9 @@ public:
     }
     void SetReputation( double nReputation ) {
         m_Reputation = nReputation;
+    }
+    void SetPlayerLangauge( string nPlayerLanguage ) {
+        m_PlayerLanguage = nPlayerLanguage;
     }
 
     // processing functions
