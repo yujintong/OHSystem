@@ -1,13 +1,16 @@
 <?php
+/** 
+* Translated by [v3rlaine]
+*/
 if ( !isset($website ) ) { header('HTTP/1.1 404 Not Found'); die; }
 
 $lang = array();
 
 $lang["home"]       = "Home";
 $lang["top"]        = "Top Players";
-$lang["game_archive"]  = "Games";
+$lang["game_archive"]  = "Juegos";
 $lang["media"]      = "Misc";
-$lang["guides"]     = "Guides";
+$lang["guides"]     = "Guias";
 $lang["heroes"]     = "Heroes";
 $lang["heroes_vote"]= "Heroes Vote";
 $lang["item"]       = "Item";
@@ -23,7 +26,7 @@ $lang["expire"]     = "Expire";
 $lang["expires"]    = "Expires";
 $lang["expired"]    = "Expired";
 $lang["search"]     = "Search";
-$lang["search_players"] = "Search players...";
+$lang["search_players"] = "Buscar jugadores...";
 $lang["admins"]     = "Admins";
 $lang["safelist"]   = "Safelist";
 $lang["about_us"]   = "About Us";
@@ -31,13 +34,13 @@ $lang["members"]    = "Members";
 $lang["live_games"]      = "Live Games";
 
 
-$lang["username"]   = "Username";
+$lang["username"]   = "Usuario";
 
 //ROLES
 $lang["member_admin"]          = "Admin";
 $lang["member_root"]           = "root";
 $lang["member_reserved"]       = "Vouched";
-$lang["member_safe"]           = "Reserved Slot";
+$lang["member_safe"]           = "Slot Reservado";
 $lang["member_safe_reserved"]  = "Safelisted";
 $lang["member_web_moderator"]  = "Website Moderator";
 $lang["member_bot_moderator"]  = "Simple Bot Moderator";
@@ -45,41 +48,41 @@ $lang["member_bot_full_mod"]   = "Full Bot Moderator";
 $lang["member_global_mod"]     = "Global Moderator";
 $lang["member_bot_hoster"]     = "Hoster";
 
-$lang["sort_by_role"]      = "Sort by role";
-$lang["sort_by_bnet"]      = "Sort by bnet";
-$lang["sort_by_default"]   = "Sort by default";
+$lang["sort_by_role"]      = "Ordenar por role";
+$lang["sort_by_bnet"]      = "Ordenar por bnet";
+$lang["sort_by_default"]   = "Ordenar por defecto";
 
-$lang["recent_games"]   = "Recent Games";
-$lang["recent_news"]    = "Recent News";
+$lang["recent_games"]   = "Juegos Recientes";
+$lang["recent_news"]    = "Noticias Recientes";
 
 $lang["profile"]         = "Profile";
 $lang["admin_panel"]     = "Admin Panel";
 $lang["moderator_panel"] = "Moderator Panel";
 $lang["logout"]          = "Logout &times; ";
 $lang["login_register"]  = "Login/Register";
-$lang["login_fb_info"]   = "Click on the button above to sign in with your FB account";
-$lang["total_comments"]  = "comment(s)";
-$lang["succes_registration"]  = "You have successfully registered";
+$lang["login_fb_info"]   = "Haga clic en el botón de arriba para iniciar sesión con tu cuenta de FB";
+$lang["total_comments"]  = "comentario(s)";
+$lang["succes_registration"]  = "Registrado correctamente";
 
-$lang["profile_changed"]  = "Profile has been successfully updated";
-$lang["password_changed"] = "Password has been successfully updated";
+$lang["profile_changed"]  = "El perfil ha sido actualizado correctamente";
+$lang["password_changed"] = "La contraseña ha sido actualizada correctamente";
 
-$lang["bnet_welcome_email_subject"] = "Registration successful - Bnet account";
-$lang["bnet_welcome_email"] = "You have successfully registered your Battle.net account on our website.<br />Click the link below to verify your account.<br />";
-$lang["bnet_mystats"]     = "View Stats";
+$lang["bnet_welcome_email_subject"] = "Registro de éxito - cuenta Bnet";
+$lang["bnet_welcome_email"] = "Has registrado correctamente tu cuenta de Battle.net en nuestro sitio web.<br />Haga clic en el enlace de abajo para verificar su cuenta.<br />";
+$lang["bnet_mystats"]     = "Ver Stats";
 
-$lang["unconfirmed_email"]     = "Unconfirmed email";
+$lang["unconfirmed_email"]     = "Email sin confirmar";
 
 //APPEAL
-$lang["verify_appeal"]      = "Verify Banned Account";
-$lang["verify_appeal_info"] = "Enter the name below to check whether the user is banned";
-$lang["appeal_here"]        = "You can appeal this ban ";
-$lang["here"]               = "here";
-$lang["you_must_be"]        = "You must be";
-$lang["logged_in"]          = "logged in";
-$lang["to_appeal"]          = "to appeal";
-$lang["to_use_feature"]     = "to use this feature";
-$lang["appeal_ban_date"]    = "This account was banned on";
+$lang["verify_appeal"]      = "Verificar usuario Baneado";
+$lang["verify_appeal_info"] = "Escriba el nombre a continuación para comprobar si el usuario está baneado";
+$lang["appeal_here"]        = "Usted puede apelar este ban ";
+$lang["here"]               = "Aquí";
+$lang["you_must_be"]        = "Usted debe ser";
+$lang["logged_in"]          = "Conectado";
+$lang["to_appeal"]          = "a la apelación";
+$lang["to_use_feature"]     = "para utilizar esta función";
+$lang["appeal_ban_date"]    = "Esta cuenta fue baneada en";
 $lang["was_banned"]         = "was banned by";
 $lang["appeal_for"]         = "Ban Appeal for user";
 $lang["subject"]            = "Subject";
