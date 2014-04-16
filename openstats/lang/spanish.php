@@ -1,7 +1,7 @@
 <?php
-/** 
-* Translated by [v3rlaine]
-*/
+
+// Translated by [v3rlaine]
+
 if ( !isset($website ) ) { header('HTTP/1.1 404 Not Found'); die; }
 
 $lang = array();
@@ -370,63 +370,63 @@ $lang["compare_add"]          = "Add to compare list";
 $lang["compare_clear"]        = "Clear list";
 $lang["compare_remove_player"]   = "Remove player from list?";
 $lang["compare_players"]      = "Player Comparison";
-$lang["compare_empty_info"]   = "Your list of players to compare is empty";
-$lang["overall"]              = "Overall";
-$lang["stay"]              = "Stay";
+$lang["compare_empty_info"]   = "Su lista de jugadores para comparar está vacía";
+$lang["overall"]              = "Total";
+$lang["stay"]              = "Permanecer";
 
 //Chat/GameLog
-$lang["chat_attention"]     = "<b>Attention:</b> Do not abuse this feature or spam players, because this is not allowed and will be punished.";
-$lang["chat_title_player"]  = "- send a message directly to the player in the game";
-$lang["chat_successfull"]   = "<b>Message was successfully sent</b>";
-$lang["chat_error1"]        = "Not enough characters";
+$lang["chat_attention"]     = "<b>Atención:</b> No abuse de esta función o jugadores spam, porque esto no está permitido y será castigado.";
+$lang["chat_title_player"]  = "- enviar un mensaje directamente al jugador en el juego";
+$lang["chat_successfull"]   = "<b>El mensaje se envió con éxito</b>";
+$lang["chat_error1"]        = "No hay suficientes caracteres";
 
 $lang["gl_lobby"]    = "[Lobby]";
 $lang["gl_system"]   = "[System]";
 $lang["gl_bot"]      = "[BOT]";
-$lang["gl_picked"]   = "picked up";
-$lang["gl_swap"]     = "suggested to swap with";
-$lang["gl_mode"]     = "Mode is set to:";
-$lang["gl_heropick"] = "picked a hero";
-$lang["gl_level"]    = "is now level";
-$lang["gl_assists"]  = "Assists:";
-$lang["gl_killed"]   = "killed";
-$lang["gl_suicide"]  = "committed suicide.";
-$lang["gl_used"]     = "used ";
-$lang["gl_stored"]   = "stored ";
-$lang["gl_rune"]     = "rune.";
-$lang["gl_killed_t"] = "killed the";
-$lang["gl_tower"]    = "tower.";
+$lang["gl_picked"]   = "compró o recogió";
+$lang["gl_swap"]     = "sugerió intercambiar con";
+$lang["gl_mode"]     = "Modo se ha establecido a:";
+$lang["gl_heropick"] = "Escogido un héroe";
+$lang["gl_level"]    = "Ahora es de nivel";
+$lang["gl_assists"]  = "Asistencias:";
+$lang["gl_killed"]   = "asesinados";
+$lang["gl_suicide"]  = "se suicidó.";
+$lang["gl_used"]     = "usó ";
+$lang["gl_stored"]   = "almacenado ";
+$lang["gl_rune"]     = "runa.";
+$lang["gl_killed_t"] = "mató a";
+$lang["gl_tower"]    = "torre.";
 $lang["gl_rax"]      = "rax.";
-$lang["gl_attack"]   = "attacks";
-$lang["gl_killed_by"]= "was killed by the";
-$lang["gl_item"]     = "bought";
+$lang["gl_attack"]   = "ataques";
+$lang["gl_killed_by"]= "fue asesinado por el";
+$lang["gl_item"]     = "compró";
 
-$lang["gl_playerlist_sentinel_title"] = "Player (Level) - Sentinel";
-$lang["gl_playerlist_scourge_title"] = "Player (Level) - Scourge";
+$lang["gl_playerlist_sentinel_title"] = "Jugador (Level) - Sentinel";
+$lang["gl_playerlist_scourge_title"] = "Jugador (Level) - Scourge";
 $lang["gl_playerlist_kda"]        = "K/D/A";
-$lang["gl_playerlist_send"]       = "Send a message directly to the player in the game";
+$lang["gl_playerlist_send"]       = "Enviar un mensaje directamente al jugador en el juego";
 $lang["gl_playerlist_sentinel"]       = "Sentinel";
 $lang["gl_playerlist_scourge"]        = "Scourge";
-$lang["gl_game_started"]              = "The game is started";
+$lang["gl_game_started"]              = "El juego ha iniciado";
 
-$lang["gl_compare_sentinel"] = "Player - Sentinel";
-$lang["gl_compare_scourge"]  = "Player - Scourge";
+$lang["gl_compare_sentinel"] = "Jugador - Sentinel";
+$lang["gl_compare_scourge"]  = "Jugador - Scourge";
 $lang["gl_compare_wl"]       = "W/L";
 $lang["gl_compare_perc"]     = "%";
-$lang["gl_compare_wl_sentinel"]       = "Wins/Loses - SENTINEL";
-$lang["gl_compare_sentinel_chance_t"]   = "Chance to win - SENTINEL";
-$lang["gl_compare_sentinel_chance"]     = "Sentinel have a chance to win";
+$lang["gl_compare_wl_sentinel"]       = "Ganados/Perdidos - SENTINEL";
+$lang["gl_compare_sentinel_chance_t"]   = "Oportunidad de ganar - SENTINEL";
+$lang["gl_compare_sentinel_chance"]     = "Sentinel tiene la oportunidad de ganar";
 
-$lang["gl_compare_no"]     = "There are not enough players.";
+$lang["gl_compare_no"]     = "No hay suficientes jugadores.";
 
-$lang["gl_compare_wl_scourge"]         = "Wins/Loses - SCOURGE";
-$lang["gl_compare_scourge_chance_t"]   = "Chance to win - SCOURGE";
-$lang["gl_compare_scourge_chance"]     = "Scourge have a chance to win";
+$lang["gl_compare_wl_scourge"]         = "Ganados/Perdidos - SCOURGE";
+$lang["gl_compare_scourge_chance_t"]   = "Oportunidad de ganar - SCOURGE";
+$lang["gl_compare_scourge_chance"]     = "Scourge tiene la oportunidad de ganar";
 
-$lang["gl_calculate"]                  = "Calculate a chance to win";
-$lang["gl_not_ranked"]                 = "not ranked yet";
-$lang["gl_no_accesss"]                 = "You do not have access!";
-$lang["gl_no_stats_data"]              = "Not enough statistical data";
+$lang["gl_calculate"]                  = "Calcular la oportunidad de ganar";
+$lang["gl_not_ranked"]                 = "Sin calificación";
+$lang["gl_no_accesss"]                 = "Usted no tiene acceso!";
+$lang["gl_no_stats_data"]              = "No hay suficientes datos estadísticos";
 
 $lang["gl_login"] = "Please <a href='".$website."?login'>login</a> to view all the action in the game";
 
@@ -435,75 +435,75 @@ $lang["member_registered"]   = "Registered";
 $lang["member_location"]     = "Location";
 $lang["member_realm"]        = "Realm";
 $lang["member_website"]      = "Website";
-$lang["member_gender"]       = "Gender";
-$lang["member_last_login"]   = "Last login";
+$lang["member_gender"]       = "Género";
+$lang["member_last_login"]   = "último acceso";
 $lang["member_clan"]         = "Clan";
 
 
-$lang["realm_username"]      = "Realm username";
-$lang["protected_account"]   = "Protected Account";
-$lang["protect_account"]     = "Protect Account";
-$lang["acount_is_protected"] = "Your account is protected on Battle.net";
-$lang["acount_is_not_protected"] = "Your account is not protected on Battle.net";
-$lang["acount_protected_step"] = "One more step to protect your account";
-$lang["set_password"]        = "Set Password";
-$lang["protect_info1"]       = "You can protect your account with a password.";
-$lang["protect_info2"]       = "<b>!pw</b> <i>[password]</i> - verify your account in game/lobby";
-$lang["protect_info3"]       = "<b>!pw</b> <i>[password] clear</i> - remove protection";
-$lang["protect_info4"]       = "More info";
-$lang["protect_info5"]       = "By setting a password, your account can not be abused by someone else on Battle.net (use the same name as yours)";
-$lang["protect_info6"]       = "Usage";
-$lang["protect_info7"]       = "If you write the password in the field above <b>mypassword</b>, you can use the command";
-$lang["protect_info8"]       = "<b>!pw mypassword</b> to protect your account";
-$lang["protect_info9"]       = "<b>!pw mypassword clear</b> - remove protection or";
-$lang["protect_info10"]      = "<b>!pw mypassword 0</b> - remove protection";
-$lang["protect_info11"]      = "<b>Note:</b> If the password is set, and you <b>did not</b> use the command <b>!pw</b> you will be kicked within 10 seconds";
-$lang["protect_info12"]      = "<i>Password can not contain blank spaces</i>";
+$lang["realm_username"]      = "Nombre de Usuario en el Realm";
+$lang["protected_account"]   = "Cuenta protegida";
+$lang["protect_account"]     = "Proteger la cuenta";
+$lang["acount_is_protected"] = "Su cuenta está protegida en el Battle.net";
+$lang["acount_is_not_protected"] = "Su cuenta no está protegida en el Battle.net";
+$lang["acount_protected_step"] = "Un paso más para proteger su cuenta";
+$lang["set_password"]        = "Establecer contraseña";
+$lang["protect_info1"]       = "Usted puede proteger su cuenta con una contraseña.";
+$lang["protect_info2"]       = "<b>!pw</b> <i>[password]</i> - verificar su cuenta en el juego / lobby";
+$lang["protect_info3"]       = "<b>!pw</b> <i>[password] clear</i> - quitar la protección";
+$lang["protect_info4"]       = "Más información";
+$lang["protect_info5"]       = "Al establecer una contraseña, la cuenta no puede ser objeto de abuso por alguien más en Battle.net (utilice el mismo nombre que el suyo)";
+$lang["protect_info6"]       = "Uso";
+$lang["protect_info7"]       = "Si usted escribe la contraseña en el campo de arriba <b>mipassword</b>, puede utilizar el comando";
+$lang["protect_info8"]       = "<b>!pw mipassword</b> para proteger su cuenta";
+$lang["protect_info9"]       = "<b>!pw mipassword clear</b> - eliminar la protección o";
+$lang["protect_info10"]      = "<b>!pw mipassword 0</b> - quitar la protección";
+$lang["protect_info11"]      = "<b>Nota:</b> Si la contraseña está definida, y usted <b>no lo hizo</b> utilice el comando <b>!pw</b> o usted será expulsado a los 10 segundos";
+$lang["protect_info12"]      = "<i>La contraseña no puede contener espacios en blanco</i>";
 
-$lang["protect_info13"]      = "You have entered the password, but your account is not yet verified on Battle.net";
-$lang["protect_info14"]      = "To verify your account on Battle.net, use the command <b>!confirm email password</b>";
-$lang["protect_info15"]      = "<b>Example:</b> Your email is <b>example@mail.com</b> and password is <b>password123</b>";
-$lang["protect_info16"]      = "<b>Command:</b> !confirm example@mail.com password123";
-$lang["protect_info17"]      = "Confirmed account has 2 icons next to the account name: ";
+$lang["protect_info13"]      = "Ha introducido la contraseña, pero tu cuenta aún no está verificada en Battle.net";
+$lang["protect_info14"]      = "Para verificar su cuenta en Battle.net, utilice el comando <b>!confirm email password</b>";
+$lang["protect_info15"]      = "<b>Ejemplo:</b> Su email es <b>ejemplo@mail.com</b> y la contraseña es <b>password123</b>";
+$lang["protect_info16"]      = "<b>Comando:</b> !confirm ejemplo@mail.com password123";
+$lang["protect_info17"]      = "Cuenta confirmada tiene 2 iconos al lado del nombre de la cuenta: ";
 
-$lang["protect_info18"]      = "<i>This is not a password for your account on the website/Bnet, but a password to protect your account on Battle.net</i>";
-$lang["protect_info19"]      = "<i>This password is only used for our hosting bots</i>";
-$lang["protect_info20"]      = "<i>When you use the command <b>!pw</b>, other users can not see what you're typing</i>";
-$lang["protect_info21"]      = "Show me the command";
-$lang["protect_info22"]      = "After your account is verified, you can remove the password (if you want).";
+$lang["protect_info18"]      = "<i>Esto no es una contraseña para su cuenta en el sitio web / Bnet, pero una contraseña para proteger su cuenta de Battle.net</i>";
+$lang["protect_info19"]      = "<i>Esta contraseña se utiliza únicamente para nuestros bots de hosting</i>";
+$lang["protect_info20"]      = "<i>Cuando se utiliza el comando<b>!pw</b>, otros usuarios no pueden ver lo que estás escribiendo</i>";
+$lang["protect_info21"]      = "Muéstrame el comando";
+$lang["protect_info22"]      = "Después de que su cuenta se verifica, puede eliminar la contraseña (si quieres).";
 
 //OFFENCES
-$lang["player_offences"]     = "Player Offences";
-$lang["player_warned"]       = "This player was warned";
-$lang["has_total_of"]        = "times and has total of";
-$lang["penalty_points"]      = "penalty points";
+$lang["player_offences"]     = "Infracciones del jugador";
+$lang["player_warned"]       = "Este jugador fue advertido";
+$lang["has_total_of"]        = "Tiempos y tiene total de";
+$lang["penalty_points"]      = "Puntos de penalización";
 $lang["pp"]                  = "PP";
 
-$lang["points"]              = "Points";
+$lang["points"]              = "Puntos";
 
-$lang["points_info1"]        = "You just got ";
-$lang["points_info2"]        = "points";
-$lang["points_info3"]        = "for daily login";
-$lang["points_info4"]        = "Note: You must be ranked in order to get these points";
+$lang["points_info1"]        = "Usted acaba de conseguir ";
+$lang["points_info2"]        = "puntos";
+$lang["points_info3"]        = "por iniciar sesión a diario";
+$lang["points_info4"]        = "Nota: Usted debe ser clasificado con el fin de obtener estos puntos";
 
-$lang["hide_stats"]          = "Do not show my stats";
-$lang["show_stats"]          = "Show my stats";
-$lang["hide_stats_info"]     = "If you hide the statistics, no one will be able to see your statistics (except for individual games).<div>You must confirm your Battle net account to change this option.</div>";
-$lang["hide_stats_message"]  = "The user does not want to show his statistics";
-$lang["last_seen"]           = "Last seen";
-$lang["displlay_stats_for"]  = "Displaying statistics for";
-$lang["select_country"]      = "Select country";
+$lang["hide_stats"]          = "No volver a mostrar mis estadísticas";
+$lang["show_stats"]          = "Mostrar mis estadísticas";
+$lang["hide_stats_info"]     = "Si oculta las estadísticas, nadie será capaz de ver sus estadísticas (a excepción de los juegos individuales).<div>Debe confirmar su cuenta del battle para cambiar esta opción.</div>";
+$lang["hide_stats_message"]  = "El usuario no desea mostrar sus estadísticas";
+$lang["last_seen"]           = "Visto por última vez";
+$lang["displlay_stats_for"]  = "Viendo las estadísticas de";
+$lang["select_country"]      = "Seleccione el país";
 
-$lang["most_recent_stats"]  = "Show most recent statistics";
+$lang["most_recent_stats"]  = "Mostrar estadísticas más recientes";
 
 $lang["game_log_lobby"]  = "Lobby Log";
-$lang["game_log_game"]   = "Game Log";
-$lang["show_all"]        = "Show All";
-$lang["choose_game_type"]        = "Choose game type";
-$lang["game_type"]               = "Game type";
-$lang["live_games_disable"]      = "You are in the game. Data not available.";
-$lang["common_games"]      = "Common Games";
+$lang["game_log_game"]   = "Registro de Juego";
+$lang["show_all"]        = "Mostrar todo";
+$lang["choose_game_type"]        = "Elija el tipo de juego";
+$lang["game_type"]               = "Tipo de juego";
+$lang["live_games_disable"]      = "Usted está en el juego. Datos no disponibles.";
+$lang["common_games"]      = "Juegos comunes";
 
-$lang["top_teammates"]      = "Top Teammates";
-$lang["top_opponents"]      = "Top Opponents";
+$lang["top_teammates"]      = "Mejores compañeros de Equipo";
+$lang["top_opponents"]      = "Mejores Oponentes";
 ?>
