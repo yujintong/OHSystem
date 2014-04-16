@@ -3005,7 +3005,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             }
         }
     }
-    Player->SetPlayerLangauge (m_LobbyLanguage);
+    Player->SetPlayerLanguage (m_LobbyLanguage);
     // check if this is a protected account
     if( m_GHost->m_AccountProtection )
         m_PairedPWChecks.push_back( PairedPWCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedPWCheck( joinPlayer->GetName( ) ) ) );
