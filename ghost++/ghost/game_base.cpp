@@ -3148,7 +3148,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
             BYTEARRAY UniqueName = (*i)->GetUniqueName( );
 
             if( (*i)->GetServer( ) == JoinedRealm )
-                SendChat( player, m_GHost->m_Language->SpoofCheckByWhispering( string( UniqueName.begin( ), UniqueName.end( ) )  ) );
+                SendChat( Player, m_GHost->m_Language->SpoofCheckByWhispering( string( UniqueName.begin( ), UniqueName.end( ) )  ) );
         }
     }
 

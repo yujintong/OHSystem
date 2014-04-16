@@ -723,7 +723,7 @@ public:
     void SetReputation( double nReputation ) {
         m_Reputation = nReputation;
     }
-    void SetPlayerLangauge( string nPlayerLanguage ) {
+    void SetPlayerLanguage( string nPlayerLanguage ) {
         m_PlayerLanguage = nPlayerLanguage;
     }
 
