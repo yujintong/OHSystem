@@ -343,8 +343,8 @@ CREATE TABLE IF NOT EXISTS `oh_game_offenses` (
 
 DROP TABLE IF EXISTS `oh_game_status`;
 CREATE TABLE IF NOT EXISTS `oh_game_status` (
-  `botid` smallint(4) unsigned NOT NULL,
-  `gameid` smallint(4) unsigned NOT NULL,
+  `botid` int(11) unsigned NOT NULL,
+  `gameid` int(11) unsigned NOT NULL,
   `alias_id` smallint(4) unsigned NOT NULL,
   `gametime` datetime NOT NULL,
   `gamename` varchar(30) NOT NULL,
