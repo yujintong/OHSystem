@@ -111,8 +111,8 @@ $lang["error_report_login"]    = "You need to login to write a report";
 $lang["error_report_time"]     = "You can't quickly write ban reports. Please wait";
 $lang["error_report_time2"]    = "You can't quickly write ban appeals. Please wait";
 
-$lang["appeal_successfull"]    = "Appeal successfully added.";
-$lang["report_successfull"]    = "Report successfully added.";
+$lang["appeal_successfull"]    = "Solicitud añadida con éxito.";
+$lang["report_successfull"]    = "Informe agregado con éxito.";
 
 //Time played. Ex. 10h 23m 16s
 $lang["h"]             = "h ";
@@ -123,10 +123,10 @@ $lang["s"]             = "s ";
 $lang["time_played"]             = "Time Played";
 $lang["average_loading"]         = "Average loading time";
 $lang["total_loading"]           = "Total loading time";
-$lang["seconds"]                 = "sec.";
+$lang["seconds"]                 = "seg.";
 $lang["s"]                       = "s"; //seconds short
-$lang["favorite_hero"]           = "Favorite Hero:";
-$lang["most_wins"]               = "Most Wins:";
+$lang["favorite_hero"]           = "Héroe favorito:";
+$lang["most_wins"]               = "Más Ganados:";
 $lang["played"]                  = "Played";
 
 //Seconds
@@ -164,212 +164,212 @@ $lang["wld"]     = "W/L/D";
 $lang["wl"]     = "W/L";
 $lang["tr"]     = "T/R";
 
-$lang["sortby"]     = "Sort by:";
-$lang["wins"]       = "Wins";
-$lang["losses"]     = "Losses";
-$lang["draw"]       = "Draw";
+$lang["sortby"]     = "Mostrar por:";
+$lang["wins"]       = "Ganados";
+$lang["losses"]     = "Perdidos";
+$lang["draw"]       = "Dejados";
 
 $lang["kills"]       = "Kills";
-$lang["player_name"] = "Player name";
+$lang["player_name"] = "Nombre del Jugador";
 $lang["deaths"]      = "Deaths";
 $lang["assists"]     = "Assists";
 $lang["ck"]          = "Creep Kills";
 $lang["cd"]          = "Creep Denies";
 $lang["nk"]          = "Neutral Kills";
 
-$lang["towers"]      = "Towers";
+$lang["towers"]      = "Torres";
 $lang["rax"]         = "Rax";
-$lang["neutrals"]    = "Neutrals";
+$lang["neutrals"]    = "Neutrales";
 $lang["submit"]          = "Submit";
 
-$lang["page"]          = "Page";
-$lang["pageof"]        = "of";
+$lang["page"]          = "página";
+$lang["pageof"]        = "de";
 $lang["total"]         = "total";
-$lang["next_page"]     = "Next page";
-$lang["previous_page"] = "Previous page";
+$lang["next_page"]     = "página siguiente";
+$lang["previous_page"] = "página anterior";
 
-$lang["fastest_game"]   = 'Fastest Game Won';
-$lang["longest_game"]   = 'Longest Game Won';
+$lang["fastest_game"]   = 'Partida más rápida ganada';
+$lang["longest_game"]   = 'Partida más larga ganada';
 
-$lang["game_history"]         = "Game History:";
-$lang["user_game_history"]    = "User Game History";
-$lang["best_player"]          = "Best Player: ";
-$lang["show_hero_history"]    = "Show all games with this hero";
+$lang["game_history"]         = "Historial de partidas:";
+$lang["user_game_history"]    = "Historial de Juegos del usuario";
+$lang["best_player"]          = "Mejor Jugador: ";
+$lang["show_hero_history"]    = "Mostrar todos los juegos con este héroe";
 
-$lang["download_replay"]      = "Download replay";
-$lang["view_gamelog"]         = "View Gamelog";
+$lang["download_replay"]      = "Descargar replay";
+$lang["view_gamelog"]         = "Ver registro del juego";
 
 $lang["win_percent"]          = "Win %";
 $lang["wl_percent"]           = "W/L%";
 $lang["kd_ratio"]             = "K/D Ratio";
 $lang["kd"]                   = "K/D";
-$lang["kpg"]                  = "KPG";
-$lang["kills_per_game"]       = "Kills per game";
-$lang["dpg"]                  = "DPG";
-$lang["apg"]                  = "APG";
-$lang["assists_per_game"]     = "Assists per game";
-$lang["ckpg"]                 = "CKPG";
-$lang["creeps_per_game"]      = "Creep kills per game";
-$lang["cdpg"]                 = "CDPG";
-$lang["denies_per_game"]      = "Denies per game";
-$lang["deaths_per_game"]      = "Deaths per game";
-$lang["npg"]                  = "NPG";
-$lang["neutrals_per_game"]    = "Neutrals per game";
-$lang["search_results"]       = "Search results for: ";
-$lang["user_not_found"]       = "User not found";
-$lang["left_info"]            = "How many times a player has left the game before the end of the game";
+$lang["kpg"]                  = "KPJ";
+$lang["kills_per_game"]       = "Matados por juego";
+$lang["dpg"]                  = "DPJ";
+$lang["apg"]                  = "APJuego";
+$lang["assists_per_game"]     = "Asistidos por juego";
+$lang["ckpg"]                 = "CKPJ";
+$lang["creeps_per_game"]      = "Creep matados por juego";
+$lang["cdpg"]                 = "CDPJ";
+$lang["denies_per_game"]      = "Denegados por juego";
+$lang["deaths_per_game"]      = "Muertes por juego";
+$lang["npg"]                  = "NPJ";
+$lang["neutrals_per_game"]    = "Neutrales por partido";
+$lang["search_results"]       = "Buscar resultados para: ";
+$lang["user_not_found"]       = "Usuario no encontrado";
+$lang["left_info"]            = "Cuántas veces un jugador ha abandonado el juego antes del final";
 
 $lang["admin"]       = "Admin";
-$lang["server"]      = "Server";
-$lang["voucher"]     = "Voucher";
-$lang["role"]        = "Role";
+$lang["server"]      = "Servidor";
+$lang["voucher"]     = "Vale";
+$lang["role"]        = "Función";
 
-$lang["banned"]     = "BANNED";
-$lang["permanent_ban"]   = "Permanent";
-$lang["reason"]     = "Reason";
-$lang["game_name"]  = "Game Name";
-$lang["bannedby"]   = "Banned by";
-$lang["leaves"]     = "Leaves";
-$lang["stayratio"]     = "Stay ratio";
-$lang["leaver"]        = "Leaver";
-$lang["streak"]        = "Streak";
-$lang["longest_streak"]= "Winning Streak";
-$lang["losing_streak"] = "Losing Streak";
-$lang["zero_deaths"]   = "The total number of games where the player has 0 deaths";
+$lang["banned"]     = "BANEADO";
+$lang["permanent_ban"]   = "Permanente";
+$lang["reason"]     = "Razón";
+$lang["game_name"]  = "Nombre del Juego";
+$lang["bannedby"]   = "Baneado by";
+$lang["leaves"]     = "Hojas";
+$lang["stayratio"]     = "Proporción de quedadas";
+$lang["leaver"]        = "Dejador";
+$lang["streak"]        = "Racha";
+$lang["longest_streak"]= "Racha de Victorias";
+$lang["losing_streak"] = "Mala Racha";
+$lang["zero_deaths"]   = "El número total de juegos donde el jugador tiene 0 muertes";
 
-$lang["comments"]             = "Comments";
-$lang["latest_comments"]      = "Latest Comments";
-$lang["add_comment"]          = "Add Comment";
-$lang["add_comment_button"]   = "Add Comment";
-$lang["reply"]                = "[reply]";
+$lang["comments"]             = "Comentarios";
+$lang["latest_comments"]      = "Últimos Comentarios";
+$lang["add_comment"]          = "Añadir comentario";
+$lang["add_comment_button"]   = "Añadir comentario";
+$lang["reply"]                = "[responder]";
 
-$lang["error_comment_not_allowed"]   = "Writing comments is not allowed for this post";
-$lang["error_invalid_form"]          = "Invalid form";
-$lang["error_text_char"]             = "Text does not have enough characters";
+$lang["error_comment_not_allowed"]   = "Escribir comentarios no está permitido para este post";
+$lang["error_invalid_form"]          = "Formulario inválido";
+$lang["error_text_char"]             = "El texto no tiene suficientes caracteres";
 
 $lang["gamestate_priv"]       = "PRIV";
 $lang["gamestate_pub"]        = "PUB";
 
 //Login / Registration
-$lang["login"]       = "Login";
-$lang["logged_as"]   = "Logged as ";
-$lang["email"]       = "E-mail";
+$lang["login"]       = "Iniciar Sesión";
+$lang["logged_as"]   = "Logueado como ";
+$lang["email"]       = "Email";
 $lang["avatar"]      = "Avatar";
-$lang["location"]    = "Location";
+$lang["location"]    = "Ubicación";
 $lang["realm"]       = "Realm";
-$lang["website"]     = "Website";
-$lang["gender"]      = "Gender";
-$lang["male"]        = "Male";
-$lang["female"]      = "Female";
-$lang["password"]    = "Password";
-$lang["register"]    = "Register";
-$lang["username"]    = "Username";
-$lang["language"]    = "Language";
-$lang["confirm_password"]       = "Confirm Password";
-$lang["change_password"]        = "Change Password";
-$lang["change_password_info"]   = "Check this if you want to change the password";
-$lang["comment_not_logged"]     = "You need to be logged in to post a comment.";
-$lang["acc_activated"]          = "Account successfully activated. Now you can login.";
-$lang["invalid_link"]           = "Link is not valid or expired.";
+$lang["website"]     = "Sitio Web";
+$lang["gender"]      = "Género";
+$lang["male"]        = "Masculino";
+$lang["female"]      = "Femenino";
+$lang["password"]    = "Contraseña";
+$lang["register"]    = "Registrar";
+$lang["username"]    = "Nombre de Usuario";
+$lang["language"]    = "Idioma";
+$lang["confirm_password"]       = "Confirmar contraseña";
+$lang["change_password"]        = "Cambiar contraseña";
+$lang["change_password_info"]   = "Seleccione esta opción si desea cambiar la contraseña";
+$lang["comment_not_logged"]     = "Tienes que estar logueado para escribir un comentario.";
+$lang["acc_activated"]          = "Cuenta activada correctamente. Ahora puede iniciar sesión.";
+$lang["invalid_link"]           = "Link no es válido o ha caducado.";
 
 //Heroes and items
 $lang["hero"]   = "Hero";
-$lang["description"]     = "Description";
-$lang["stats"]           = "Stats";
-$lang["skills"]          = "Skills";
+$lang["description"]     = "Descricción";
+$lang["stats"]           = "Estadísticas";
+$lang["skills"]          = "Habilidades";
 
-$lang["search"]          = "Search";
-$lang["search_bans"]     = "Search bans...";
-$lang["search_members"]  = "Search Members...";
-$lang["search_heroes"]   = "Search heroes...";
-$lang["search_items"]    = "Search items...";
+$lang["search"]          = "Buscar";
+$lang["search_bans"]     = "Buscar bans...";
+$lang["search_members"]  = "Buscar Miembros...";
+$lang["search_heroes"]   = "Buscar héroes...";
+$lang["search_items"]    = "Buscar artículos...";
 
 //Errors
-$lang["error_email"]      = "E-mail address is not valid";
-$lang["error_email_banned"]      = "Email address is banned";
-$lang["error_short_pw"]   = "Field Password does not have enough characters";
-$lang["error_passwords"]  = "Password and confirmation password do not match";
-$lang["error_inactive_acc"]   = "Account is not activated yet";
-$lang["error_invalid_login"]  = "Invalid e-mail or password";
-$lang["error_short_un"]   = "Field Username does not have enough characters";
-$lang["error_un_taken"]   = "Username already taken";
-$lang["error_username"]   = "Invalid username";
-$lang["error_email_taken"]= "E-mail already taken";
-$lang["error_email_send"] = "E-mail has already been sent";
+$lang["error_email"]      = "La dirección de correo electrónico no es válida";
+$lang["error_email_banned"]      = "La dirección de correo electrónico está prohibida";
+$lang["error_short_pw"]   = "El campo Contraseña no tiene suficientes caracteres";
+$lang["error_passwords"]  = "Contraseña y confirmación de contraseña no coinciden";
+$lang["error_inactive_acc"]   = "La cuenta no está activada todavía";
+$lang["error_invalid_login"]  = "No válido correo electrónico o contraseña";
+$lang["error_short_un"]   = "El campo del nombre de usuario no tiene suficientes caracteres";
+$lang["error_un_taken"]   = "El nombre de usuario ya ha sido tomado";
+$lang["error_username"]   = "Nombre de usuario no válido";
+$lang["error_email_taken"]= "Correo electrónico ya está tomado";
+$lang["error_email_send"] = "El correo electrónico ya ha sido enviado";
 
 //Email
 $lang["email_charset"] = "UTF-8";
-$lang["email_subject_activation"] = "Account Activation";
+$lang["email_subject_activation"] = "activación de la cuenta";
 $lang["email_from"] = "no-reply@ohsystem.net";
 $lang["email_from_full"] = "OpenHosting";
-$lang["email_send"] = "Email message was sent successfully";
+$lang["email_send"] = "Mensaje de correo electrónico se ha enviado correctamente";
 
 //Email text
-$lang["email_activation1"] = "Hello";
-$lang["email_activation2"] = "You have successfully registered to the site ";
-$lang["email_activation3"] = "Click on the following link to confirm your email address and activate your account";
+$lang["email_activation1"] = "Hola";
+$lang["email_activation2"] = "Se ha registrado correctamente el sitio";
+$lang["email_activation3"] = "Haga clic en el siguiente enlace para confirmar su dirección de correo electrónico y activar su cuenta";
 
 //GAME LOG
-$lang["game_log"]            = "Game Log";
-$lang["log_player"]          = "Player";
-$lang["log_priv"]            = "[Priv]";
-$lang["log_ally"]            = "[Allies]";
-$lang["log_first_blood"]     = "for first blood";
-$lang["log_suicide"]         = "has killed himself!";
-$lang["log_denied_teammate"] = "denied his teammate";
-$lang["log_level"]           = "level";
-$lang["log_tower"]           = "tower";
-$lang["log_barracks"]        = "barracks";
+$lang["game_log"]            = "Registro del Juego";
+$lang["log_player"]          = "Jugador";
+$lang["log_priv"]            = "[Privado]";
+$lang["log_ally"]            = "[Aliados]";
+$lang["log_first_blood"]     = "por la primera sangre";
+$lang["log_suicide"]         = "se mató a sí mismo!";
+$lang["log_denied_teammate"] = "negado a su compañero de equipo";
+$lang["log_level"]           = "nivel";
+$lang["log_tower"]           = "torres";
+$lang["log_barracks"]        = "barracas";
 
-$lang["404_error"]           = "Oops, page not found";
+$lang["404_error"]           = "Ups, página no encontrada";
 
 //VOTES
-$lang["vote_title"]          = "Vote for favorite";
-$lang["votes_won"]           = "Votes Won";
-$lang["votes_lost"]          = "Votes Lost";
-$lang["votes_total"]         = "Total Votes";
-$lang["votes_best"]          = "Best";
+$lang["vote_title"]          = "Voto por favorito";
+$lang["votes_won"]           = "Votos a Ganados";
+$lang["votes_lost"]          = "Votos a Perdidos";
+$lang["votes_total"]         = "Votos Totales";
+$lang["votes_best"]          = "Mejor";
 $lang["vote_vs"]             = "VS";
 $lang["vote_sort"]           = "Submit";
-$lang["vote_results"]        = "Vote Results";
-$lang["vote_back"]           = "Back to Vote";
+$lang["vote_results"]        = "Resultados del voto";
+$lang["vote_back"]           = "Volver al voto";
 
-$lang["vote_won"]           = "Won:";
-$lang["vote_lost"]          = "Lost:";
-$lang["vote_again"]         = "Vote again?";
+$lang["vote_won"]           = "Ganados:";
+$lang["vote_lost"]          = "Perdidos:";
+$lang["vote_again"]         = "Votar de nuevo?";
 
-$lang["vote_error1"]        = "Please click on the hero to vote.";
-$lang["vote_display"]       = "Display results";
+$lang["vote_error1"]        = "Por favor, haz clic en el héroe para votar.";
+$lang["vote_display"]       = "Mostrar resultados";
 
-$lang["read_more"]          = "...[more]";
+$lang["read_more"]          = "...[más]";
 
-$lang["upload_image"]      = "Upload image";
-$lang["remove_avatar"]     = "Remove avatar";
+$lang["upload_image"]      = "Subir una foto";
+$lang["remove_avatar"]     = "Eliminar avatar";
 
 //Gamelist patch
-$lang["current_games"]      = "Current Games";
-$lang["refresh"]            = "Refresh";
-$lang["slots"]              = "Slots";
-$lang["empty"]              = "Empty";
+$lang["current_games"]      = "Juegos actuales";
+$lang["refresh"]            = "Actualizar";
+$lang["slots"]              = "Ranuras";
+$lang["empty"]              = "Vacío";
 $lang["ms"]                 = "ms";
-$lang["players"]            = "Players";
+$lang["players"]            = "Jugadores";
 
 //Members
-$lang["joined"]         = "Joined";
-$lang["user_info"]      = "Info";
+$lang["joined"]         = "Unido";
+$lang["user_info"]      = "Información";
 
-$lang["choose"]         = "Choose";
-$lang["all_guides"]     = "---All guides---";
+$lang["choose"]         = "Elegir";
+$lang["all_guides"]     = "---Todas las guías---";
 
 //Compare players
-$lang["compare_back"]         = "&laquo; Back to Top players";
-$lang["compare_list"]         = "List";
-$lang["compare_list_empty"]   = "List is empty";
-$lang["compare_compare"]      = "Compare";
-$lang["compare_add"]          = "Add to compare list";
-$lang["compare_clear"]        = "Clear list";
-$lang["compare_remove_player"]   = "Remove player from list?";
-$lang["compare_players"]      = "Player Comparison";
+$lang["compare_back"]         = "&laquo; Volver a los mejores jugadores";
+$lang["compare_list"]         = "Lista";
+$lang["compare_list_empty"]   = "La lista está vacía";
+$lang["compare_compare"]      = "Comparar";
+$lang["compare_add"]          = "Añadir a la lista de comparación";
+$lang["compare_clear"]        = "Borrar lista";
+$lang["compare_remove_player"]   = "Quitar jugador de la lista?";
+$lang["compare_players"]      = "Comparación de Jugador";
 $lang["compare_empty_info"]   = "Su lista de jugadores para comparar está vacía";
 $lang["overall"]              = "Total";
 $lang["stay"]              = "Permanecer";
@@ -381,7 +381,7 @@ $lang["chat_successfull"]   = "<b>El mensaje se envió con éxito</b>";
 $lang["chat_error1"]        = "No hay suficientes caracteres";
 
 $lang["gl_lobby"]    = "[Lobby]";
-$lang["gl_system"]   = "[System]";
+$lang["gl_system"]   = "[Sistema]";
 $lang["gl_bot"]      = "[BOT]";
 $lang["gl_picked"]   = "compró o recogió";
 $lang["gl_swap"]     = "sugerió intercambiar con";
@@ -428,13 +428,13 @@ $lang["gl_not_ranked"]                 = "Sin calificación";
 $lang["gl_no_accesss"]                 = "Usted no tiene acceso!";
 $lang["gl_no_stats_data"]              = "No hay suficientes datos estadísticos";
 
-$lang["gl_login"] = "Please <a href='".$website."?login'>login</a> to view all the action in the game";
+$lang["gl_login"] = "Por favor <a href='".$website."?login'>iniciar sesión</a> para ver toda la acción en el juego";
 
-$lang["member_comments"]     = "Comments";
-$lang["member_registered"]   = "Registered";
-$lang["member_location"]     = "Location";
+$lang["member_comments"]     = "Comentarios";
+$lang["member_registered"]   = "Registrado";
+$lang["member_location"]     = "Ubicación";
 $lang["member_realm"]        = "Realm";
-$lang["member_website"]      = "Website";
+$lang["member_website"]      = "Sitio Web";
 $lang["member_gender"]       = "Género";
 $lang["member_last_login"]   = "último acceso";
 $lang["member_clan"]         = "Clan";
