@@ -3529,7 +3529,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         return HideCommand;
                     }
 
-                    if( VLevel > 2 && Level < VLevel )
+                    if( VLevel > 2 || Level <= VLevel )
                         SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
                     else if( OnlyPlayer )
                         SendChat( player, m_GHost->m_Language->VoteKickNotPossiblePlayerIsInAnotherTeam( LastMatch->GetName( ) ) );
