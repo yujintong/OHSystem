@@ -4097,7 +4097,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 int Win = 0;
                 if((*i)->GetGames( ) > 0 )
-                    Win = (GetScore( ) / (*i)->GetGames( ));
+                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
                 m_SentinelWinPoints += Win;
                 m_TotalWinPoints += Win;
             }
@@ -4105,7 +4105,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 int Win = 0;
                 if((*i)->GetGames( ) > 0 )
-                    Win = (GetScore( ) / (*i)->GetGames( ));
+                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
                 m_ScourgeWinPoints += Win;
                 m_TotalWinPoints += Win;
             }
