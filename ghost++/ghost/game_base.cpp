@@ -5228,7 +5228,8 @@ void CBaseGame :: OHFixedBalance( )
         if( m_Slots[GetSIDFromPID( (*i)->GetPID( ) )].GetTeam( ) != 12 && !(*i)->GetLocked( ) )
         {
             int Win = 0;
-            Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
+            if((*i)->GetGames( ) > 0 )
+                Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
 
             CONSOLE_Print( "Name: " + (*i)->GetName() + " | Win Points: " + UTIL_ToString( Win ) );
             totalwinpoints += Win;
@@ -5327,7 +5328,7 @@ void CBaseGame :: OHFixedBalance( )
                 uint32_t g = 4;
                 for( vector<double> :: iterator h = BestOrder.begin( ); h != BestOrder.end( ); ++h )
                 {
-                    if( ( (*i)->GetScore( ) / (*i)->GetGames( ) ) == *h )
+                    if((*i)->GetGames( ) > 0 && ( (*i)->GetScore( ) / (*i)->GetGames( ) ) == *h )
                     {
                         int oldpid = GetSIDFromPID( (*i)->GetPID( ) );
 
@@ -5352,7 +5353,8 @@ void CBaseGame :: OHFixedBalance( )
                 if( oldpid > 5 )
                 {
                     int Win = 0;
-                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
+                    if((*i)->GetGames( ) > 0 )
+                        Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
 
                     OrderOtherTeam.push_back( Win );
                 }
@@ -5371,7 +5373,7 @@ void CBaseGame :: OHFixedBalance( )
                     uint32_t g = 9;
                     for( vector<double> :: iterator h = OrderOtherTeam.begin( ); h != OrderOtherTeam.end( ); ++h )
                     {
-                        if( ( (*i)->GetScore( ) / (*i)->GetGames( ) ) == *h )
+                        if((*i)->GetGames( ) > 0  && ( (*i)->GetScore( ) / (*i)->GetGames( ) ) == *h )
                         {
                             int oldpid = GetSIDFromPID( (*i)->GetPID( ) );
 
@@ -5404,7 +5406,8 @@ void CBaseGame :: OHFixedBalance( )
                 if( GetSIDFromPID( (*i)->GetPID( ) ) < 5 )
                 {
                     int Win = 0;
-                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
+                    if((*i)->GetGames( ) > 0 )
+                        Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
 
                     m_SentinelWinPoints += Win;
                     m_TotalWinPoints += Win;
@@ -5412,8 +5415,8 @@ void CBaseGame :: OHFixedBalance( )
                 if( GetSIDFromPID( (*i)->GetPID( ) ) >= 5 )
                 {
                     int Win = 0;
-                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
-
+                    if((*i)->GetGames( ) > 0 )
+                        Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
 
                     m_ScourgeWinPoints += Win;
                     m_TotalWinPoints += Win;

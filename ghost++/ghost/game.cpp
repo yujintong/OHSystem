@@ -4096,14 +4096,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if (sid <= 4 && sid >= 0)
             {
                 int Win = 0;
-                Win = (GetScore( ) / (*i)->GetGames( ));
+                if((*i)->GetGames( ) > 0 )
+                    Win = (GetScore( ) / (*i)->GetGames( ));
                 m_SentinelWinPoints += Win;
                 m_TotalWinPoints += Win;
             }
             else if(sid >= 5 && sid <= 9)
             {
                 int Win = 0;
-                Win = (GetScore( ) / (*i)->GetGames( ));
+                if((*i)->GetGames( ) > 0 )
+                    Win = (GetScore( ) / (*i)->GetGames( ));
                 m_ScourgeWinPoints += Win;
                 m_TotalWinPoints += Win;
             }
