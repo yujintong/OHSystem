@@ -1014,7 +1014,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                         char team = m_Slots[sid].GetTeam( );
                         if( team == Team )
                             CountAlly++;
-                        else
+                        else if(team!=12)
                             CountEnemy++;
                     }
                 }
