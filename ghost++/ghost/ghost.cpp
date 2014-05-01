@@ -583,6 +583,9 @@ CGHost :: CGHost( CConfig *CFG )
 #endif
         }
 
+        if(counter==1) {
+            m_DB->ThreadedBotStatusCreate( UserName, m_AutoHostGameName, m_BindAddress, m_HostPort, CDKeyROC, CDKeyTFT );
+        }
         m_BNETs.push_back( new CBNET( this, Server, ServerAlias, BNLSServer, (uint16_t)BNLSPort, (uint32_t)BNLSWardenCookie, CDKeyROC, CDKeyTFT, CountryAbbrev, Country, LocaleID, UserName, UserPassword, FirstChannel, BNETCommandTrigger[0], HoldFriends, HoldClan, PublicCommands, War3Version, EXEVersion, EXEVersionHash, PasswordHashType, PVPGNRealmName, MaxMessageLength, i ) );
         counter++;
     }
@@ -1477,6 +1480,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     ReadRoomData();
     if( m_FunCommands )
         LoadInsult( );
+
+    //now update the bot settings and info
 }
 
 void CGHost :: ExtractScripts( )

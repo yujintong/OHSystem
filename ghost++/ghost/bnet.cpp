@@ -213,6 +213,9 @@ CBNET :: ~CBNET( )
     for( vector<PairedGameUpdate> :: iterator i = m_PairedGameUpdates.begin( ); i != m_PairedGameUpdates.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
+    for( vector<BotStatusUpdate> :: iterator i = m_BotStatusUpdate.begin( ); i != m_BotStatusUpdate.end( ); ++i )
+        m_GHost->m_Callables.push_back( i->second );
+
     if( m_CallablePList )
         m_GHost->m_Callables.push_back( m_CallablePList );
 
@@ -816,6 +819,19 @@ bool CBNET :: Update( void *fd, void *send_fd )
             ++i;
     }
 
+
+    for( vector<BotStatusUpdate> :: iterator i = m_BotStatusUpdate.begin( ); i != m_BotStatusUpdate.end( ); )
+    {
+        if( i->second->GetReady( ) )
+        {
+            m_GHost->m_DB->RecoverCallable( i->second );
+            delete i->second;
+            i = m_BotStatusUpdate.erase( i );
+        }
+        else
+            ++i;
+    }
+
     if( GetTime( ) - m_LastLogUpdateTime >= 1800 )
     {
         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedStoreLog( 0, string(), m_AdminLog ) );
@@ -892,6 +908,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
         if( m_Socket->GetError( ) == ECONNRESET && GetTime( ) - m_LastConnectionAttemptTime <= 15 )
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - you are probably using an IP temporarilythe  banned from battle.net" );
 
+        m_BotStatusUpdate.push_back( BotStatusUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 2 ) ) );
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
         m_GHost->EventBNETDisconnected( this );
         delete m_BNLSClient;
@@ -909,6 +926,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
     {
         // the socket was disconnected
 
+        m_BotStatusUpdate.push_back( BotStatusUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 3 ) ) );
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] disconnected from battle.net" );
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
         m_GHost->EventBNETDisconnected( this );
@@ -1020,12 +1038,14 @@ bool CBNET :: Update( void *fd, void *send_fd )
             while( !m_OutPackets.empty( ) )
                 m_OutPackets.pop( );
 
+            m_BotStatusUpdate.push_back( BotStatusUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
             return m_Exiting;
         }
         else if( GetTime( ) - m_LastConnectionAttemptTime >= 15 )
         {
             // the connection attempt timed out (15 seconds)
 
+            m_BotStatusUpdate.push_back( BotStatusUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 3 ) ) );
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] connect timed out" );
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
             m_GHost->EventBNETConnectTimedOut( this );

@@ -55,6 +55,7 @@ class CCallableInboxSummaryCheck;
 class CCallableDotAPlayerSummaryCheck;
 class CDBBan;
 class CCallableGameUpdate;
+class CCallableBotStatusUpdate;
 
 typedef pair<string,CCallablePassCheck *> PairedPassCheck;
 typedef pair<string,CCallableRegAdd *> PairedRegAdd;
@@ -72,6 +73,7 @@ typedef pair<string,CCallableInboxSummaryCheck *> PairedINCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedSCheck;
 typedef pair<string,CCallableGameUpdate *> PairedGameUpdate;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedRankCheck;
+typedef pair<string,CCallableBotStatusUpdate *> BotStatusUpdate;
 
 class CBNET
 {
@@ -99,6 +101,7 @@ private:
     vector<PairedGSCheck> m_PairedGSChecks;		// vector of paired threaded database game player summary checks in progress
     vector<PairedRankCheck> m_PairedRankChecks;
     vector<PairedStreakCheck> m_PairedStreakChecks;               // vector of paired threaded database streak in progress
+    vector<BotStatusUpdate> m_BotStatusUpdate;
     vector<PairedINCheck> m_PairedINChecks;               // vector of paired threaded database inbox checks in progress
     vector<PairedSCheck> m_PairedSChecks;		// vector of paired threaded database DotA player summary checks in progress
     vector<PairedGameUpdate> m_PairedGameUpdates;	// vector of paired threaded database gamelist queue
