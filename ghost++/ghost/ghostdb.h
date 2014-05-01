@@ -148,8 +148,8 @@ public:
     virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints );
     virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals );
     virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings );
-    virtual bool ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft);
-    virtual bool ThreadedBotStatusUpdate( string server, uint32_t status );
+    virtual bool BotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft);
+    virtual bool BotStatusUpdate( string server, uint32_t status );
 
     // threaded database functions
 
