@@ -1037,7 +1037,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
     {
 
         if(!m_GHost->isCreated) {
-            m_BotStatusCreated.push_back( BotStatusCreated( string( ),m_GHost->m_DB->ThreadedBotStatusCreate( m_UserName, m_GHost->m_AutoHostGameName, m_GHost->m_BindAddress, m_GHost->m_HostPort, m_CDKeyROC, m_CDKeyTFT ) ) );
+            m_BotStatusCreate.push_back( BotStatusCreate( string( ),m_GHost->m_DB->ThreadedBotStatusCreate( m_UserName, m_GHost->m_AutoHostGameName, m_GHost->m_BindAddress, m_GHost->m_HostPort, m_CDKeyROC, m_CDKeyTFT ) ) );
             m_GHost->isCreated = true;
         }
         // we are currently attempting to connect to battle.net
