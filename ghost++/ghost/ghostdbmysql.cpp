@@ -3292,7 +3292,7 @@ void CMySQLCallableBotStatusCreate :: operator( )( )
     Init( );
 
     if( m_Error.empty( ) )
-        m_Result = MySQLBotStatusCreate ( m_Connection, &m_Error, m_SQLBotID, m_Gamename, m_Ip, m_Hostport, m_Roc, m_Tft);
+        m_Result = MySQLBotStatusCreate ( m_Connection, &m_Error, m_SQLBotID, m_Username, m_Gamename, m_Ip, m_Hostport, m_Roc, m_Tft);
 
     Close( );
 }
