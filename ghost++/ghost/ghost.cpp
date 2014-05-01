@@ -454,6 +454,7 @@ CGHost :: CGHost( CConfig *CFG )
     }
 #endif
     m_Language = NULL;
+    isCreated = false;
     m_Exiting = false;
     m_ExitingNice = false;
     m_Enabled = true;
@@ -1194,11 +1195,16 @@ bool CGHost :: Update( long usecBlock )
 
     if( m_CallableDCountryList && m_CallableDCountryList->GetReady( ) )
     {
-        m_DB->ThreadedBotStatusCreate( m_BNETs[0]->m_UserName, m_AutoHostGameName, m_BindAddress, m_HostPort, m_BNETs[0]->m_CDKeyROC, m_BNETs[0]->m_CDKeyTFT );
         m_DCountries = m_CallableDCountryList->GetResult( );
         m_DB->RecoverCallable( m_CallableDCountryList );
         delete m_CallableDCountryList;
         m_CallableDCountryList = NULL;
+    }
+
+    if(!isCreated && !m_BNETs.empty() ) {
+        CONSOLE_Log("Added the bot to the status list");
+        m_DB->ThreadedBotStatusCreate( m_BNETs[0]->m_UserName, m_AutoHostGameName, m_BindAddress, m_HostPort, m_BNETs[0]->m_CDKeyROC, m_BNETs[0]->m_CDKeyTFT );
+        isCreated = true;
     }
 
     // load a new m_ReservedHostCounter
