@@ -905,7 +905,7 @@ class CMySQLCallableBotStatusCreate : public CCallableBotStatusCreate, public CM
 {
 public:
     CMySQLCallableBotStatusCreate( string nUsername, string nGamename, string nIP, uint16_t nHostport, string nRoc, string nTft, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableBotStatusCreate(nUsername, nGamename, nIP, nHostport, nRoc, nTft), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
-    virtual ~CMySQLCallableBotStatusCreate( );
+    virtual ~CMySQLCallableBotStatusCreate( ) { }
     virtual void operator( )( );
     virtual void Init( ) {
         CMySQLCallable :: Init( );
@@ -919,7 +919,7 @@ class CMySQLCallableBotStatusUpdate : public CCallableBotStatusUpdate, public CM
 {
 public:
     CMySQLCallableBotStatusUpdate( string nServer, uint32_t nStatus, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableBotStatusUpdate(nServer, nStatus), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
-    virtual ~CMySQLCallableBotStatusUpdate( );
+    virtual ~CMySQLCallableBotStatusUpdate( ) { }
     virtual void operator( )( );
     virtual void Init( ) {
         CMySQLCallable :: Init( );
