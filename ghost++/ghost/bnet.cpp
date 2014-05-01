@@ -216,6 +216,9 @@ CBNET :: ~CBNET( )
     for( vector<BotStatusUpdate> :: iterator i = m_BotStatusUpdate.begin( ); i != m_BotStatusUpdate.end( ); ++i )
         m_GHost->m_Callables.push_back( i->second );
 
+    for( vector<BotStatusCreate> :: iterator i = m_BotStatusCreate.begin( ); i != m_BotStatusCreate.end( ); ++i )
+        m_GHost->m_Callables.push_back( i->second );
+
     if( m_CallablePList )
         m_GHost->m_Callables.push_back( m_CallablePList );
 
@@ -819,7 +822,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
             ++i;
     }
 
-
     for( vector<BotStatusUpdate> :: iterator i = m_BotStatusUpdate.begin( ); i != m_BotStatusUpdate.end( ); )
     {
         if( i->second->GetReady( ) )
@@ -827,6 +829,18 @@ bool CBNET :: Update( void *fd, void *send_fd )
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_BotStatusUpdate.erase( i );
+        }
+        else
+            ++i;
+    }
+
+    for( vector<BotStatusCreate> :: iterator i = m_BotStatusCreate.begin( ); i != m_BotStatusCreate.end( ); )
+    {
+        if( i->second->GetReady( ) )
+        {
+            m_GHost->m_DB->RecoverCallable( i->second );
+            delete i->second;
+            i = m_BotStatusCreate.erase( i );
         }
         else
             ++i;
@@ -1021,6 +1035,11 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
     if( m_Socket->GetConnecting( ) &&! m_FakeRealm)
     {
+
+        if(!m_GHost->isCreated) {
+            m_BotStatusCreated.push_back( BotStatusCreated( string( ),m_GHost->m_DB->ThreadedBotStatusCreate( m_UserName, m_GHost->m_AutoHostGameName, m_GHost->m_BindAddress, m_GHost->m_HostPort, m_CDKeyROC, m_CDKeyTFT ) ) );
+            m_GHost->isCreated = true;
+        }
         // we are currently attempting to connect to battle.net
 
         if( m_Socket->CheckConnect( ) )

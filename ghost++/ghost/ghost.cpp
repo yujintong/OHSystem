@@ -1134,7 +1134,6 @@ bool CGHost :: Update( long usecBlock )
     {
         m_Aliases = m_CallableAliasList->GetResult( );
         CONSOLE_Print("Loaded aliases: "+UTIL_ToString(m_Aliases.size()));
-        m_DB->ThreadedBotStatusCreate( m_BNETs[0]->m_UserName, m_AutoHostGameName, m_BindAddress, m_HostPort, m_BNETs[0]->m_CDKeyROC, m_BNETs[0]->m_CDKeyTFT );
         m_DB->RecoverCallable( m_CallableAliasList );
         delete m_CallableAliasList;
         m_CallableAliasList = NULL;
@@ -1200,11 +1199,6 @@ bool CGHost :: Update( long usecBlock )
         m_DB->RecoverCallable( m_CallableDCountryList );
         delete m_CallableDCountryList;
         m_CallableDCountryList = NULL;
-    }
-
-    if(!isCreated && !m_BNETs.empty() ) {
-        CONSOLE_Log("Added the bot to the status list");
-        isCreated = true;
     }
 
     // load a new m_ReservedHostCounter
