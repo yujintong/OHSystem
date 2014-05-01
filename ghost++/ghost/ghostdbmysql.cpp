@@ -2830,16 +2830,14 @@ bool MySQLBotStatusCreate( void *conn, string *error, uint32_t botid, string use
         *error = mysql_error( (MYSQL *)conn );
 
     string InsertNow = "INSERT INTO oh_bot_status (botid, name, gamename, ip, hostport, roc, tft, last_update) VALUES ('"+UTIL_ToString(botid)+"', '"+username+"','"+gamename+"', '"+ip+"','"+UTIL_ToString(hostport)+"','"+roc+"','"+tft+"', NOW());";
-
-    if( mysql_real_query( (MYSQL *)conn, InsertNow.c_str( ), InsertNow.size( ) ) != 0 )
-        *error = mysql_error( (MYSQL *)conn );
+    mysql_real_query( (MYSQL *)conn, InsertNow.c_str( ), InsertNow.size( ) );
 
     return 0;
 }
 
 bool MySQLBotStatusUpdate( void *conn, string *error, uint32_t botid, string server, uint32_t status )
 {
-    string Query = "UPDATE oh_bot_status SET "+server+" = '"+UTIL_ToString(status)+"' WHERE botid ="+UTIL_ToString(botid);
+    string Query = "UPDATE oh_bot_status SET "+server+" = '"+UTIL_ToString(status)+"', last_update=NOW() WHERE botid ="+UTIL_ToString(botid);
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     return 0;
