@@ -593,7 +593,7 @@ void CGamePlayer :: ProcessPackets( )
                             uint32_t RecentCount = 0;
                             for( unsigned int i = 0; i < m_MuteMessages.size( ); ++i )
                             {
-                                if( GetTicks( ) - m_MuteMessages[i] < 7000 )
+                                if( GetTicks( ) - m_MuteMessages[i] < 5000 )
                                 {
                                     RecentCount++;
                                 }
