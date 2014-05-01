@@ -751,7 +751,7 @@ CCallableBotStatusCreate *CGHostDBMySQL :: ThreadedBotStatusCreate( string usern
     if( !Connection )
         ++m_NumConnections;
 
-    CCallableBotStatusCreate *Callable = new CMySQLCallableBotStatusCreate( username, gamename, ip, hostport, roc, tft, Connection, m_Username, m_Gamename, m_IP, m_Hostport, m_Roc, m_Tft );
+    CCallableBotStatusCreate *Callable = new CMySQLCallableBotStatusCreate( username, gamename, ip, hostport, roc, tft, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
     return Callable;
