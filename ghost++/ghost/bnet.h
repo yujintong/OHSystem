@@ -117,12 +117,9 @@ private:
     string m_BNLSServer;							// BNLS server to connect to (for warden handling)
     uint16_t m_BNLSPort;							// BNLS port
     uint32_t m_BNLSWardenCookie;					// BNLS warden cookie
-    string m_CDKeyROC;								// ROC CD key
-    string m_CDKeyTFT;								// TFT CD key
     string m_CountryAbbrev;							// country abbreviation
     string m_Country;								// country
     uint32_t m_LocaleID;							// see: http://msdn.microsoft.com/en-us/library/0h88fahh%28VS.85%29.aspx
-    string m_UserName;								// battle.net username
     string m_UserPassword;							// battle.net password
     string m_FirstChannel;							// the first chat channel to join upon entering chat (note: we hijack this to store the last channel when entering a game)
     string m_CurrentChannel;						// the current chat channel
@@ -166,6 +163,10 @@ public:
 
     vector<string> m_Permissions;
     vector<string> m_AdminLog;
+
+    string m_CDKeyROC;								// ROC CD key
+    string m_CDKeyTFT;								// TFT CD key
+    string m_UserName;								// battle.net username
 
     bool GetExiting( )					{
         return m_Exiting;
