@@ -1189,7 +1189,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SET LEVEL
             //
-            else if(Command == "setlevel" && Level == 10 &&!Payload.empty()) {
+            else if(Command == "setlevel" && Level >= 9 &&!Payload.empty()) {
                 string user;
                 string level;
                 stringstream SS;
@@ -1306,7 +1306,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SETPERMISSION
             //
-            if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() == 10 )
+            if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() >= 9 )
             {
                 string Name;
                 string NewLevel;
@@ -1650,7 +1650,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !AUTOBALANCE
             // !ABC
             //
-            else if ( ( Command == "autobalance" || Command == "ab" || Command == "abc" ) && Level == 10 && Payload.empty() )
+            else if ( ( Command == "autobalance" || Command == "ab" || Command == "abc" ) && Level >= 9 && Payload.empty() )
             {
                 OHFixedBalance( );
             }
@@ -2537,7 +2537,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !GAMELOCK
             //
-            else if( Command == "gamelock" && Level == 10 )
+            else if( Command == "gamelock" && Level >= 9 )
             {
                 SendAllChat( m_GHost->m_Language->GameLocked( ) );
                 m_Locked = true;
@@ -2563,7 +2563,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !OHBALANCE
             //
-            else if( Command == "ohbalance" && Level == 10 && !Payload.empty() )
+            else if( Command == "ohbalance" && Level >= 9 && !Payload.empty() )
             {
                 if( Payload == "on" )
                 {
@@ -3012,7 +3012,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !GAMEUNLOCK
             //
-            else if( Command == "gameunlock" && Level == 10 )
+            else if( Command == "gameunlock" && Level >= 9 )
             {
                 SendAllChat( m_GHost->m_Language->GameUnlocked( ) );
                 m_Locked = false;
@@ -3114,7 +3114,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !WINNER
             //
-            else if( Command == "winner" && m_GameLoaded && Level == 10 )
+            else if( Command == "winner" && m_GameLoaded && Level >= 9 )
             {
                 m_Stats->SetWinner(UTIL_ToUInt32(Payload));
                 SendAllChat(m_GHost->m_Language->SetWinnerByUser( player->GetName(), (Payload=="1"?"Sentinel":"Scourge") ) );

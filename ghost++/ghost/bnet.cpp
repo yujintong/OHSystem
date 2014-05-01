@@ -2046,7 +2046,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !SETPERMISSION
         //
-        if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && IsLevel( User ) == 10  )
+        if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && IsLevel( User ) >= 9  )
         {
             string Name;
             string NewLevel;
@@ -2098,7 +2098,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !PERMISSION
         //
-        else if ( ( Command == "perm" || Command == "permission" ) && IsLevel( User ) == 10 )
+        else if ( ( Command == "perm" || Command == "permission" ) && IsLevel( User ) >= 9 )
         {
             string StatsUser = User;
             if( !Payload.empty() )
@@ -2269,7 +2269,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !IPRANGEBAN
         // PLEASE USE THIS BAN WITH CAUTION, IF YOU ARE NOT SURE WITH SUBNET's OR SIMILAIR THINGS, DON'T USE IT!
         //
-        else if( ( Command == "irb" || Command == "iprangeadd"  || Command == "iprangeban" ) && !Payload.empty( ) && IsLevel( User ) == 10 && m_GHost->m_ChannelBotOnly )
+        else if( ( Command == "irb" || Command == "iprangeadd"  || Command == "iprangeban" ) && !Payload.empty( ) && IsLevel( User ) >= 9 && m_GHost->m_ChannelBotOnly )
         {
             string VictimIP;
             string Reason;
@@ -2890,7 +2890,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
         else if( Command == "exit" || Command == "quit" )
         {
-            if( IsLevel( User ) == 10 || ForceRoot )
+            if( IsLevel( User ) >= 9 || ForceRoot )
             {
                 if( Payload == "nice" )
                     m_GHost->m_ExitingNice = true;
@@ -3354,7 +3354,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
         else if( Command == "reload" )
         {
-            if( IsLevel( User ) == 10 || ForceRoot )
+            if( IsLevel( User ) >= 9 || ForceRoot )
             {
                 QueueChatCommand( m_GHost->m_Language->ReloadingConfigurationFiles( ), User, Whisper );
                 m_GHost->ReloadConfigs( );
