@@ -744,27 +744,27 @@ CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map
     return Callable;
 }
 
-CCallableBotStatusCreate *CGHostDBMySQL :: ThreadedBotStatusCreate( string m_Username, string m_Gamename, string m_IP, uint16_t m_Hostport, string m_Roc, string m_Tft )
+CCallableBotStatusCreate *CGHostDBMySQL :: ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft )
 {
     void *Connection = GetIdleConnection( );
 
     if( !Connection )
         ++m_NumConnections;
 
-    CCallableBotStatusCreate *Callable = new CMySQLCallableBotStatusCreate( m_Username, m_Gamename, m_IP, m_Hostport, m_Roc, m_Tft, Connection, m_Username, m_Gamename, m_IP, m_Hostport, m_Roc, m_Tft );
+    CCallableBotStatusCreate *Callable = new CMySQLCallableBotStatusCreate( username, gamename, ip, hostport, roc, tft, Connection, m_Username, m_Gamename, m_IP, m_Hostport, m_Roc, m_Tft );
     CreateThread( Callable );
     ++m_OutstandingCallables;
     return Callable;
 }
 
-CCallableBotStatusUpdate *CGHostDBMySQL :: ThreadedBotStatusUpdate( string m_Server, uint32_t status )
+CCallableBotStatusUpdate *CGHostDBMySQL :: ThreadedBotStatusUpdate( string server, uint32_t status )
 {
     void *Connection = GetIdleConnection( );
 
     if( !Connection )
         ++m_NumConnections;
 
-    CCallableBotStatusUpdate *Callable = new CMySQLCallableBotStatusUpdate(  m_Server, m_Status, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+    CCallableBotStatusUpdate *Callable = new CMySQLCallableBotStatusUpdate(  server, status, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
     return Callable;
@@ -2829,7 +2829,7 @@ bool MySQLBotStatusCreate( void *conn, string *error, uint32_t botid, string use
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
 
-    string InsertNow = "INSERT INTO oh_bot_status (botid, name, gamename, ip, hostport, roc, tft, last_update) VALUES ("+UTIL_ToString(botid)+", "+username+","+gamename+", "+ip+","+UTIL_ToString(hostport0)+","+roc+","+tft+", NOW());";
+    string InsertNow = "INSERT INTO oh_bot_status (botid, name, gamename, ip, hostport, roc, tft, last_update) VALUES ("+UTIL_ToString(botid)+", "+username+","+gamename+", "+ip+","+UTIL_ToString(hostport)+","+roc+","+tft+", NOW());";
 
     if( mysql_real_query( (MYSQL *)conn, InsertNow.c_str( ), InsertNow.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -3292,7 +3292,7 @@ void CMySQLCallableBotStatusCreate :: operator( )( )
     Init( );
 
     if( m_Error.empty( ) )
-        m_Result = MySQLBotStatusCreate ( m_Connection, &m_Error, m_SQLBotID, m_Botid, m_Gamename, m_IP, m_Hostport, m_Roc, m_Tft);
+        m_Result = MySQLBotStatusCreate ( m_Connection, &m_Error, m_SQLBotID, m_Gamename, m_Ip, m_Hostport, m_Roc, m_Tft);
 
     Close( );
 }
