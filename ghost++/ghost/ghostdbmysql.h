@@ -904,7 +904,7 @@ public:
 class CMySQLCallableBotStatusCreate : public CCallableBotStatusCreate, public CMySQLCallable
 {
 public:
-    CMySQLCallableBotStatusCreate( string nUsername, string nGamename, string nIP, uint16_t nHostport, string nRoc, string nTft, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableBotStatusUpdate(nUsername, nGamename, nIP, nHostport, nRoc, nTft), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
+    CMySQLCallableBotStatusCreate( string nUsername, string nGamename, string nIP, uint16_t nHostport, string nRoc, string nTft, void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort ) : CBaseCallable( ), CCallableBotStatusCreate(nUsername, nGamename, nIP, nHostport, nRoc, nTft), CMySQLCallable( nConnection, nSQLBotID, nSQLServer, nSQLDatabase, nSQLUser, nSQLPassword, nSQLPort ) { }
     virtual ~CMySQLCallableBotStatusCreate( );
     virtual void operator( )( );
     virtual void Init( ) {
