@@ -583,9 +583,6 @@ CGHost :: CGHost( CConfig *CFG )
 #endif
         }
 
-        if(counter==1) {
-            m_DB->ThreadedBotStatusCreate( UserName, m_AutoHostGameName, m_BindAddress, m_HostPort, CDKeyROC, CDKeyTFT );
-        }
         m_BNETs.push_back( new CBNET( this, Server, ServerAlias, BNLSServer, (uint16_t)BNLSPort, (uint32_t)BNLSWardenCookie, CDKeyROC, CDKeyTFT, CountryAbbrev, Country, LocaleID, UserName, UserPassword, FirstChannel, BNETCommandTrigger[0], HoldFriends, HoldClan, PublicCommands, War3Version, EXEVersion, EXEVersionHash, PasswordHashType, PVPGNRealmName, MaxMessageLength, i ) );
         counter++;
     }
@@ -1197,6 +1194,7 @@ bool CGHost :: Update( long usecBlock )
 
     if( m_CallableDCountryList && m_CallableDCountryList->GetReady( ) )
     {
+        m_DB->ThreadedBotStatusCreate( m_BNETs[0]->m_UserName, m_AutoHostGameName, m_BindAddress, m_HostPort, m_BNETs[0]->m_CDKeyROC, m_BNETs[0]->m_CDKeyTFT );
         m_DCountries = m_CallableDCountryList->GetResult( );
         m_DB->RecoverCallable( m_CallableDCountryList );
         delete m_CallableDCountryList;
