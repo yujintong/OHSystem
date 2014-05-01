@@ -512,7 +512,7 @@ void CBaseCallable :: Close( )
     m_Ready = true;
 }
 
-CCallableBotStatusCreate :: ~CCallableBotStatusUpdate( )
+CCallableBotStatusCreate :: ~CCallableBotStatusCreate( )
 {
 
 }
