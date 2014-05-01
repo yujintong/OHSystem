@@ -282,8 +282,8 @@ uint32_t MySQLW3MMDPlayerAdd( void *conn, string *error, uint32_t botid, string 
 bool MySQLW3MMDVarAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, map<VarP,int32_t> var_ints );
 bool MySQLW3MMDVarAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, map<VarP,double> var_reals );
 bool MySQLW3MMDVarAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, map<VarP,string> var_strings );
-bool ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft);
-bool ThreadedBotStatusUpdate( string server, uint32_t status);
+bool MySQLBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft);
+bool MySQLBotStatusUpdate( string server, uint32_t status);
 
 //
 // MySQL Callables
