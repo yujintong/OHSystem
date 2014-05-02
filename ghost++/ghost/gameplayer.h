@@ -292,6 +292,10 @@ public:
     uint32_t GetLastGProxyWaitNoticeSentTime( )	{
         return m_LastGProxyWaitNoticeSentTime;
     }
+    uint32_t GetLeftTime( )                     {
+        return m_Left;
+    }
+
     queue<BYTEARRAY> *GetLoadInGameData( )		{
         return &m_LoadInGameData;
     }
