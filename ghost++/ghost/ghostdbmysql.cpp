@@ -2829,7 +2829,7 @@ bool MySQLBotStatusCreate( void *conn, string *error, uint32_t botid, string use
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
 
-    string InsertNow = "INSERT INTO oh_bot_status (botid, name, gamename, ip, hostport, roc, tft, last_update) VALUES ('"+UTIL_ToString(botid)+"', '"+username+"','"+gamename+"', '"+ip+"','"+UTIL_ToString(hostport)+"','"+roc+"','"+tft+"', NOW());";
+    string InsertNow = "INSERT INTO oh_bot_status (botid, name, gamename, ip, hostport, roc, tft, last_update) VALUES ('"+UTIL_ToString(botid)+"', '"+username+"','"+gamename+"', '"+ip+"','"+UTIL_ToString(hostport)+"','"+roc+"','"+tft+"', NOW()) ON DUPLICATE KEY UPDATE name='"+username+"',gamename='"+gamename+"',ip='"+ip+"',hostport='"+UTIL_ToString(hostport)+"', roc='"+roc+"', tft='"+tft+"', last_update=NOW()";
     mysql_real_query( (MYSQL *)conn, InsertNow.c_str( ), InsertNow.size( ) );
 
     return 0;

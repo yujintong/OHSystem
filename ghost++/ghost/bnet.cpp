@@ -66,6 +66,7 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
     m_AdminLog = vector<string>();
     transform( LowerServer.begin( ), LowerServer.end( ), LowerServer.begin( ), ::tolower );
     m_GHost->m_CheckForFinishedGames = GetTime();
+    LastUpdateTime = GetTime();
     if( !nServerAlias.empty( ) )
         m_ServerAlias = nServerAlias;
     else if( LowerServer == "useast.battle.net" )
@@ -1029,6 +1030,10 @@ bool CBNET :: Update( void *fd, void *send_fd )
             m_LastNullTime = GetTime( );
         }
 
+        if( GetTime( ) - LastUpdateTime >= 10 ) {
+            m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
+            LastUpdateTime = GetTime( );
+        }
         m_Socket->DoSend( (fd_set *)send_fd );
         return m_Exiting;
     }
