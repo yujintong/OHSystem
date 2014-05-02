@@ -966,6 +966,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
             Colour = m_Slots[SID].GetColour( );
         }
 
+		player->SetLeftTime( m_GameTicks / 1000 );
         m_DBGamePlayers.push_back( new CDBGamePlayer( player->GetID (), 0, player->GetName( ), player->GetExternalIPString( ), player->GetSpoofed( ) ? 1 : 0, player->GetSpoofedRealm( ), player->GetReserved( ) ? 1 : 0, player->GetFinishedLoading( ) ? player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks : 0, m_GameTicks / 1000, player->GetLeftReason( ), Team, Colour ) );
 
         // also keep track of the last player to leave for the !banlast command
@@ -4854,26 +4855,125 @@ string CGame :: GetRule( string tag )
     return m_GHost->m_Language->RuleTagNotify();
 }
 
-void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
-    switch(thetype) {
-    case 1:
-        SendAllChat(m_GHost->m_Language->UserUsed1( playername, thething ) );
-        break;
-    case 2:
-        SendAllChat(m_GHost->m_Language->UserUsed2( playername, thething ) );
-        break;
-    case 3:
-        SendAllChat(m_GHost->m_Language->UserUsed3( playername, thething ) );
-        break;
-    case 4:
-        SendAllChat(m_GHost->m_Language->UserUsed4( playername, thething ) );
-        break;
-    case 5:
-        SendAllChat(m_GHost->m_Language->UserUsed5( playername, thething ) );
-        break;
-    default:
-        SendAllChat(m_GHost->m_Language->UserUsed6( playername, thething ) );
-        break;
-    }
+string CBaseGame::GetUsernames()
+{
+	string usernames = "";
+	int n = 0;
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			usernames += UTIL_ToString(n) + ":" + Player->GetName() + ",";
+		n++;
+	}
+
+	return usernames.substr(0, usernames.length() - 1);
 }
 
+string CBaseGame::GetServers()
+{
+	string servers = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			servers += Player->GetJoinedRealm() + ",";
+	}
+
+	return servers.substr(0, servers.length() - 1);
+}
+
+string CBaseGame::GetPings()
+{
+	string pings = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			pings += UTIL_ToString(Player->GetPing(m_GHost->m_LCPings)) + ",";
+	}
+
+	return pings.substr(0, pings.length() - 1);
+}
+
+string CBaseGame::GetIPs()
+{
+	string ips = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+		{
+			ips += Player->GetExternalIPString() + ",";
+		}
+	}
+
+	return ips.substr(0, ips.length() - 1);
+}
+
+string CBaseGame::GetTeams()
+{
+	string teams = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			teams += UTIL_ToString(m_Slots[i].GetTeam()) + ",";
+	}
+
+	return teams.substr(0, teams.length() - 1);
+}
+
+string CBaseGame::GetColors()
+{
+	string colors = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			colors += UTIL_ToString(m_Slots[i].GetColour()) + ",";
+	}
+
+	return colors.substr(0, colors.length() - 1);
+}
+
+string CBaseGame::GetLeftTimes()
+{
+	string lefttimes = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			lefttimes += UTIL_ToString(Player->GetLeftTime()) + ",";
+	}
+
+	return lefttimes.substr(0, lefttimes.length() - 1);
+}
+
+string CBaseGame::GetLeftReasons()
+{
+	string leftreasons = "";
+
+	for (unsigned char i = 0; i < m_Slots.size(); ++i)
+	{
+		CGamePlayer *Player = GetPlayerFromSID2(i);
+
+		if (Player)
+			leftreasons += Player->GetLeftReason() + ",";
+	}
+
+	return leftreasons.substr(0, leftreasons.length() - 1);
+}
