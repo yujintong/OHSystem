@@ -1304,9 +1304,11 @@ void CBNET :: ProcessPackets( )
                     {
                     case CBNETProtocol :: KR_ROC_KEY_IN_USE:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - ROC CD key in use by user [" + m_Protocol->GetKeyStateDescription( ) + "], disconnecting" );
+                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 4 ) ) );
                         break;
                     case CBNETProtocol :: KR_TFT_KEY_IN_USE:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - TFT CD key in use by user [" + m_Protocol->GetKeyStateDescription( ) + "], disconnecting" );
+                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 5 ) ) );
                         break;
                     case CBNETProtocol :: KR_OLD_GAME_VERSION:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - game version is too old, disconnecting" );
@@ -1351,6 +1353,7 @@ void CBNET :: ProcessPackets( )
                 else
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - invalid username, disconnecting" );
+                    m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 6 ) ) );
                     m_Socket->Disconnect( );
                     delete Packet;
                     return;
@@ -1374,6 +1377,7 @@ void CBNET :: ProcessPackets( )
                 else
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - invalid password, disconnecting" );
+                    m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 6 ) ) );
 
                     // try to figure out if the user might be using the wrong logon type since too many people are confused by this
 
