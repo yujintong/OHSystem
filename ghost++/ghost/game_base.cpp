@@ -6572,3 +6572,7 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
         m_ModesToVote.push_back( "random" );
     }
 }
+
+void CBaseGame :: DoGameUpdate(bool reset) {
+    return;
+}

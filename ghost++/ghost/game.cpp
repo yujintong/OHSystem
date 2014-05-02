@@ -4855,6 +4855,29 @@ string CGame :: GetRule( string tag )
     return m_GHost->m_Language->RuleTagNotify();
 }
 
+void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
+    switch(thetype) {
+        case 1:
+            SendAllChat(m_GHost->m_Language->UserUsed1( playername, thething ) );
+            break;
+        case 2:
+            SendAllChat(m_GHost->m_Language->UserUsed2( playername, thething ) );
+            break;
+        case 3:
+            SendAllChat(m_GHost->m_Language->UserUsed3( playername, thething ) );
+            break;
+        case 4:
+            SendAllChat(m_GHost->m_Language->UserUsed4( playername, thething ) );
+            break;
+        case 5:
+            SendAllChat(m_GHost->m_Language->UserUsed5( playername, thething ) );
+            break;
+        default:
+            SendAllChat(m_GHost->m_Language->UserUsed6( playername, thething ) );
+        break;
+    }
+}
+
 string CGame::GetUsernames()
 {
 	string usernames = "";
