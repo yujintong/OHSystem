@@ -1842,7 +1842,7 @@ void CGHost :: LoadRanks( )
         // don't print more than 8 lines
         uint32_t Count = 0;
         string Line;
-        while( !in.eof( ) && Count < 10 )
+        while( !in.eof( ) && Count < 11 )
         {
             getline( in, Line );
             if( Line.empty( ) )
