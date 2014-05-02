@@ -4855,7 +4855,7 @@ string CGame :: GetRule( string tag )
     return m_GHost->m_Language->RuleTagNotify();
 }
 
-string CBaseGame::GetUsernames()
+string CGame::GetUsernames()
 {
 	string usernames = "";
 	int n = 0;
@@ -4871,7 +4871,7 @@ string CBaseGame::GetUsernames()
 	return usernames.substr(0, usernames.length() - 1);
 }
 
-string CBaseGame::GetServers()
+string CGame::GetServers()
 {
 	string servers = "";
 
@@ -4886,7 +4886,7 @@ string CBaseGame::GetServers()
 	return servers.substr(0, servers.length() - 1);
 }
 
-string CBaseGame::GetPings()
+string CGame::GetPings()
 {
 	string pings = "";
 
@@ -4901,7 +4901,7 @@ string CBaseGame::GetPings()
 	return pings.substr(0, pings.length() - 1);
 }
 
-string CBaseGame::GetIPs()
+string CGame::GetIPs()
 {
 	string ips = "";
 
@@ -4918,7 +4918,7 @@ string CBaseGame::GetIPs()
 	return ips.substr(0, ips.length() - 1);
 }
 
-string CBaseGame::GetTeams()
+string CGame::GetTeams()
 {
 	string teams = "";
 
@@ -4933,7 +4933,7 @@ string CBaseGame::GetTeams()
 	return teams.substr(0, teams.length() - 1);
 }
 
-string CBaseGame::GetColors()
+string CGame::GetColors()
 {
 	string colors = "";
 
@@ -4948,7 +4948,7 @@ string CBaseGame::GetColors()
 	return colors.substr(0, colors.length() - 1);
 }
 
-string CBaseGame::GetLeftTimes()
+string CGame::GetLeftTimes()
 {
 	string lefttimes = "";
 
@@ -4963,7 +4963,7 @@ string CBaseGame::GetLeftTimes()
 	return lefttimes.substr(0, lefttimes.length() - 1);
 }
 
-string CBaseGame::GetLeftReasons()
+string CGame::GetLeftReasons()
 {
 	string leftreasons = "";
 
