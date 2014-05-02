@@ -94,6 +94,7 @@ public:
     virtual string GetRule( string tag );
     virtual string GetRuleTags( );
     virtual void PlayerUsed( string thething, uint32_t thetype, string playername );
+    virtual string GetUsernames( );
     virtual string GetServers( );
     virtual string GetPings( );
     virtual string GetIPs( );
