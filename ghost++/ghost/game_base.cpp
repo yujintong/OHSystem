@@ -175,12 +175,9 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
 
     // start listening for connections
 
-    if( !m_GHost->m_BindAddress.empty( ) )
-        CONSOLE_Print( "[GAME: " + m_GameName + "] attempting to bind to address [" + m_GHost->m_BindAddress + "]" );
-    else
-        CONSOLE_Print( "[GAME: " + m_GameName + "] attempting to bind to all available addresses" );
+    CONSOLE_Print( "[GAME: " + m_GameName + "] attempting to bind to all available addresses" );
 
-    if( m_Socket->Listen( m_GHost->m_BindAddress, m_HostPort ) )
+    if( m_Socket->Listen( string( ), m_HostPort ) )
         CONSOLE_Print( "[GAME: " + m_GameName + "] listening on port " + UTIL_ToString( m_HostPort ) );
     else
     {
