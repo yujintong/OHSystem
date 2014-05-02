@@ -4324,8 +4324,8 @@ uint32_t CBNET :: IsLevel( string name )
 
 string CBNET :: GetLevelName( uint32_t level )
 {
-    if( level != 0 )
-        return m_GHost->m_Ranks[level-1];
+    if( level < 0 || level > 10 )
+        return m_GHost->m_Ranks[level];
     else
         return "unknown";
 }
