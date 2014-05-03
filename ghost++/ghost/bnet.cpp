@@ -3670,7 +3670,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
         if( Command == "games" || Command == "g" )
         {
-            m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedGameUpdate("", "", "", "", 0, "", 0, 0, 0, false ) ) );
+            m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedGameUpdate("", Payload, "", "", 0, "", 0, 0, 0, false ) ) );
         }
 
         //

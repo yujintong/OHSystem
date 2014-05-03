@@ -2155,9 +2155,10 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
 }
 string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
 {
+
+    string EscGameName = MySQLEscapeString( conn, gamename );
     if(add) {
         string EscMap = MySQLEscapeString(conn, map);
-        string EscGameName = MySQLEscapeString( conn, gamename );
         string EscOwnerName = MySQLEscapeString( conn, ownername );
         string EscCreatorName = MySQLEscapeString( conn, creatorname );
         string EscUsernames = MySQLEscapeString( conn, usernames );
@@ -2168,7 +2169,7 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, s
 
         return "";
     } else {
-        string Query = "SELECT gamename,slotstaken,slotstotal,totalgames,totalplayers FROM oh_gamelist";
+        string Query = "SELECT gamename,slotstaken,slotstotal,totalgames,totalplayers FROM oh_gamelist WHERE gamename LIKE '%"+EscGameName+"%'";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
@@ -2201,7 +2202,7 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, s
                 *error = mysql_error( (MYSQL *)conn );
 
             if(num == 0) {
-                response = "No games avaible";
+                response = "No games available";
             } else {
                 response = response.substr(0, response.length() - 2);
             }
