@@ -85,7 +85,7 @@ protected:
     CGameProtocol *m_Protocol;						// game protocol
     map<uint32_t, CPotentialPlayer*> m_BannedPlayers;
     vector<CPotentialPlayer *> m_Potentials;		// vector of potential players (connections that haven't sent a W3GS_REQJOIN packet yet)
-	vector<CGamePlayer *> m_DeletedPlayers;			// vector of deleted players
+    vector<CGamePlayer *> m_DeletedPlayers;			// vector of deleted players
     vector<CCallableScoreCheck *> m_ScoreChecks;
     vector<PairedPWCheck> m_PairedPWChecks;				// vector for checking if a player joined with a password
     vector<Pairedpm> m_Pairedpms;
@@ -205,7 +205,7 @@ protected:
     bool m_AllowMapTrading;
     uint32_t m_PartTime;
     string m_LobbyLanguage;
-	uint32_t m_LastGameUpdateTime;					// last time game update database callable
+    uint32_t m_LastGameUpdateTime;					// last time game update database callable
 
 public:
     CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
