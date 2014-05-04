@@ -6577,3 +6577,27 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
 void CBaseGame :: DoGameUpdate(bool reset) {
     return;
 }
+
+vector<PlayerOfPlayerList> CBaseGame :: GetPlayerListOfGame( ) {
+    vector<PlayerOfPlayerList> m_Players;
+    int n = 0;
+    for (unsigned char i = 0; i < m_Slots.size(); ++i)
+    {
+        CGamePlayer *Player = GetPlayerFromSID2(i);
+
+        if (Player) {
+
+            PlayerOfPlayerList newPlayer;
+            newPlayer.Username = Player->GetName();
+            newPlayer.Realm = Player->GetSpoofedRealm();
+            newPlayer.Ping = Player->GetPing(m_GHost->m_LCPings);
+            newPlayer.IP = Player->GetExternalIPString();
+            newPlayer.LeftTime = Player->GetLeftTime();
+            newPlayer.LeftReason = Player->GetLeftReason();
+
+            m_Players.push_back(newPlayer);
+        }
+        n++;
+    }
+    return m_Players;
+}

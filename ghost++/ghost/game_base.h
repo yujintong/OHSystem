@@ -60,6 +60,7 @@ class CDBInbox;
 class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
+struct PlayerOfPlayerList;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -467,6 +468,7 @@ public:
     virtual void StartVoteMode( );
     void GetVotingModes( string allmodes );
 	virtual void DoGameUpdate(bool reset);
+    virtual vector<PlayerOfPlayerList> GetPlayerListOfGame( );
 };
 
 struct ReservedPlayer {
@@ -474,6 +476,16 @@ struct ReservedPlayer {
     string Name;
     uint32_t Time;
     uint32_t Level;
+};
+
+struct PlayerOfPlayerList  {
+    string Username;
+    string Realm;
+    uint32_t Ping;
+    string IP;
+    uint32_t Color;
+    uint32_t LeftTime;
+    string LeftReason;
 };
 
 #endif
