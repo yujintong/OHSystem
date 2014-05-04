@@ -1030,10 +1030,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
             m_LastNullTime = GetTime( );
         }
 
-        if( GetTime( ) - LastUpdateTime >= 10 ) {
-            m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
-            LastUpdateTime = GetTime( );
-        }
         m_Socket->DoSend( (fd_set *)send_fd );
         return m_Exiting;
     }
@@ -1112,6 +1108,11 @@ bool CBNET :: Update( void *fd, void *send_fd )
         m_WaitingToConnect = false;
         m_LastConnectionAttemptTime = GetTime( );
         return m_Exiting;
+    }
+
+    if( GetTime( ) - LastUpdateTime >= 10 ) {
+        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
+        LastUpdateTime = GetTime( );
     }
 
     return m_Exiting;
