@@ -164,6 +164,32 @@ CGame :: ~CGame( )
         }
     }
 
+    /* last update before the game is over */
+    if( m_LogData != "" )
+    {
+        m_LogData = m_LogData + "1" + "\t" + "pl";
+        //UPDATE SLOTS
+        for( unsigned char i = 0; i < m_Slots.size( ); ++i )
+        {
+            if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OCCUPIED && m_Slots[i].GetComputer( ) == 0 )
+            {
+                CGamePlayer *player = GetPlayerFromSID( i );
+                if( player )
+                    m_LogData = m_LogData + "\t" + player->GetName( );
+                else if( !player && m_GameLoaded )
+                    m_LogData = m_LogData + "\t" + "-";
+            }
+            else if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OPEN )
+                m_LogData = m_LogData + "\t" + "-";
+        }
+        m_LogData = m_LogData + "\n";
+        m_PairedLogUpdates.push_back( PairedLogUpdate( string( ), m_GHost->m_DB->ThreadedStoreLog( m_HostCounter, m_LogData,  m_AdminLog ) ) );
+        m_LogData = string();
+        m_AdminLog = vector<string>();
+        m_PlayerUpdate = false;
+        m_LastLogDataUpdate = GetTime();
+    }
+    
     if( m_CallableGameAdd && m_CallableGameAdd->GetReady( ) )
     {
 
