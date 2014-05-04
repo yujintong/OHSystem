@@ -1335,9 +1335,10 @@ private:
     string m_LeftReason;
     uint32_t m_Team;
     uint32_t m_Colour;
+    uint32_t m_LeaverLevel;
 
 public:
-    CDBGamePlayer( uint32_t nID, uint32_t nGameID, string nName, string nIP, uint32_t nSpoofed, string nSpoofedRealm, uint32_t nReserved, uint32_t nLoadingTime, uint32_t nLeft, string nLeftReason, uint32_t nTeam, uint32_t nColour );
+    CDBGamePlayer( uint32_t nID, uint32_t nGameID, string nName, string nIP, uint32_t nSpoofed, string nSpoofedRealm, uint32_t nReserved, uint32_t nLoadingTime, uint32_t nLeft, string nLeftReason, uint32_t nTeam, uint32_t nColour, uint32_t nLeaverLevel );
     ~CDBGamePlayer( );
 
     uint32_t GetID( )			{
@@ -1375,6 +1376,9 @@ public:
     }
     uint32_t GetColour( )		{
         return m_Colour;
+    }
+    uint32_t GetLeaverLevel( )  {
+        return m_LeaverLevel;
     }
 
     void SetLoadingTime( uint32_t nLoadingTime )	{
