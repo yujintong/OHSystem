@@ -1624,7 +1624,7 @@ public:
         return m_LanguageSuffix;
     }
     uint32_t GetLeaverLevel( ) {
-        return m_leaverLevel;
+        return m_LeaverLevel;
     }
 };
 

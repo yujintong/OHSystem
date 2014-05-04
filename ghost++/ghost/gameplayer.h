@@ -675,7 +675,7 @@ public:
         m_GlobalChatMuted = nGlobalChatMuted;
     }
 
-    void SetLeaverLevel( nLeaverLevel ) {
+    void SetLeaverLevel( uint32_t nLeaverLevel ) {
         m_LeaverLevel = nLeaverLevel;
     }
 
