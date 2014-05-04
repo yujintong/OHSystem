@@ -1771,7 +1771,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
 
     if( EscReason.substr(0, 4)=="left" || EscReason.substr(0, 4)=="disc" )
     {
-        string UpdateQuery = "UPDATE oh_stats_players SET last_leaver_level = NOW(), leaver_level=leaver_level+1 WHERE player_lower='"+EscLowerName+"'";
+        string UpdateQuery = "UPDATE oh_stats_players SET last_leaver_level = NOW(), leaver_level=leaver_level+1 WHERE player_lower='"+EscUser+"'";
         mysql_real_query( (MYSQL *)conn, UpdateQuery.c_str( ), UpdateQuery.size( ) );
     }
 
@@ -2332,8 +2332,8 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 exp = UTIL_ToUInt32(Row[5]);
                 points = UTIL_ToUInt32(Row[6]);
                 languageSuffix = Row[7];
-                leaver_level = Row[8];
-                update_leaver_level = Row[9];
+                leaver_level = UTIL_ToUInt32(Row[8]);
+                update_leaver_level = UTIL_ToUInt32(Row[9]);
                 if( update_leaver_level && leaver_level != 0 ) {
                     string UpdatePlayerQuery = "UPDATE oh_stats_players SET last_leaver_level = NOW(), leaver_level=leaver_level-1 WHERE player_lower='"+EscLowerName+"'";
                     mysql_real_query( (MYSQL *)conn, UpdatePlayerQuery.c_str( ), UpdatePlayerQuery.size( ) );
