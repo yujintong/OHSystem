@@ -1496,9 +1496,10 @@ private:
     uint32_t m_EXP;
     double m_Reputation;
     string m_LanguageSuffix;
+    uint32_t m_LeaverLevel;
 
 public:
-    CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, bool nHidden, string nCountry, string nCountryCode, uint32_t nEXP, double nReputation, string nLanguageSuffix );
+    CDBStatsPlayerSummary( uint32_t nID, string nPlayer, string nPlayerlower, double nScore, uint32_t nGames, uint32_t nWins, uint32_t nLosses, uint32_t nDraw, uint32_t nKills, uint32_t nDeaths, uint32_t nAssists, uint32_t nCreeps, uint32_t nDenies, uint32_t nNeutrals, uint32_t nTowers, uint32_t nRax, uint32_t nStreak, uint32_t nMaxstreak, uint32_t nLosingstreak, uint32_t nMaxlosingstreak, uint32_t nZerodeaths, string nRealm, uint32_t nLeaves, uint32_t nALLCount, uint32_t nRankCount, bool nHidden, string nCountry, string nCountryCode, uint32_t nEXP, double nReputation, string nLanguageSuffix, uint32_t nLeaverLevel );
     ~CDBStatsPlayerSummary( );
 
     uint32_t GetID( )                                     {
@@ -1621,6 +1622,9 @@ public:
     }
     string GetLanguageSuffix( ) {
         return m_LanguageSuffix;
+    }
+    uint32_t GetLeaverLevel( ) {
+        return m_leaverLevel;
     }
 };
 

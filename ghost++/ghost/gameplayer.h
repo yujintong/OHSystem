@@ -219,6 +219,7 @@ private:
     uint32_t m_TheThingAmount;
     string m_TheThing;
     uint32_t m_TheThingType;
+    uint32_t m_LeaverLevel;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -294,6 +295,9 @@ public:
     }
     uint32_t GetLeftTime( )                     {
         return m_Left;
+    }
+    uint32_t GetLeaverLevel( )                  {
+        return m_LeaverLevel;
     }
 
     queue<BYTEARRAY> *GetLoadInGameData( )		{
@@ -670,6 +674,11 @@ public:
     void SetGlobalChatMuted( bool nGlobalChatMuted )                                                             {
         m_GlobalChatMuted = nGlobalChatMuted;
     }
+
+    void SetLeaverLevel( nLeaverLevel ) {
+        m_LeaverLevel = nLeaverLevel;
+    }
+
     void SetInsultM( string nInsultM )                                                                              {
         m_InsultM = nInsultM;
     }

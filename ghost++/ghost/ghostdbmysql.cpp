@@ -1769,26 +1769,10 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
         }
     }
 
-    if( EscAdmin == "AutoBan" )
+    if( EscReason.substr(0, 4)=="left" || EscReason.substr(0, 4)=="disc" )
     {
-        uint32_t RecentLeaves = 0;
-        string CheckRecentLeaves = "SELECT leaver FROM oh_stats WHERE `player_lower` = '" + EscUser + "' AND month=MONTH(NOW()) AND year=YEAR(NOW());";
-        if( mysql_real_query( (MYSQL *)conn, CheckRecentLeaves.c_str( ), CheckRecentLeaves.size( ) ) != 0 )
-            *error = mysql_error( (MYSQL *)conn );
-        else
-        {
-            MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
-            if( Result )
-            {
-                vector<string> Row = MySQLFetchRow( Result );
-                if( Row.size( ) == 1 )
-                    RecentLeaves = UTIL_ToUInt32( Row[0] );
-
-                mysql_free_result( Result );
-            }
-        }
-        if( RecentLeaves != 0 )
-            bantime = bantime*RecentLeaves;
+        string UpdateQuery = "UPDATE oh_stats_players SET last_leaver_level = NOW(), leaver_level=leaver_level+1 WHERE player_lower='"+EscLowerName+"'";
+        mysql_real_query( (MYSQL *)conn, UpdateQuery.c_str( ), UpdateQuery.size( ) );
     }
 
     bool Success = false;
@@ -2324,9 +2308,10 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     uint32_t points;
     double reputation = 0;
     string languageSuffix = "en";
+    uint32_t leaver_level = 0;
+    bool update_leaver_level = false;
 
-
-    string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points, player_language FROM oh_stats_players WHERE player_lower='"+EscLowerName+"'";
+    string GlobalPlayerQuery = "SELECT id, realm, country, country_code, hide, exp, points, player_language, leaver_level, last_leaver_time<NOW() FROM oh_stats_players WHERE player_lower='"+EscLowerName+"'";
     if( mysql_real_query( (MYSQL *)conn, GlobalPlayerQuery.c_str( ), GlobalPlayerQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     else
@@ -2337,7 +2322,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            if( Row.size( ) == 8 )
+            if( Row.size( ) == 10 )
             {
                 id = UTIL_ToUInt32(Row[0]);
                 realm = Row[1];
@@ -2347,7 +2332,12 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 exp = UTIL_ToUInt32(Row[5]);
                 points = UTIL_ToUInt32(Row[6]);
                 languageSuffix = Row[7];
-
+                leaver_level = Row[8];
+                update_leaver_level = Row[9];
+                if( update_leaver_level && leaver_level != 0 ) {
+                    string UpdatePlayerQuery = "UPDATE oh_stats_players SET last_leaver_level = NOW(), leaver_level=leaver_level-1 WHERE player_lower='"+EscLowerName+"'";
+                    mysql_real_query( (MYSQL *)conn, UpdatePlayerQuery.c_str( ), UpdatePlayerQuery.size( ) );
+                }
                 mysql_free_result( Result );
             }
         }
@@ -2460,7 +2450,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         }
     }
 
-    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp, reputation, languageSuffix );
+    StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp, reputation, languageSuffix, leaver_level );
 
     return StatsPlayerSummary;
 }

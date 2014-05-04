@@ -122,13 +122,28 @@ CGame :: ~CGame( )
                     Counter++;
                 if( Counter <= 2 && VictimLevel <= 2 )
                 {
-                    uint32_t BanTime = m_GHost->m_DisconnectAutoBanTime;
+                    uint32_t BanTime = 0;
                     string Reason = "disconnected at ";
                     if((*i)->GetLeftReason( ).find("left")!=string::npos) {
                         Reason = "left at ";
-                        BanTime = m_GHost->m_LeaverAutoBanTime;
                     }
-
+                    switch((*i)->GetLeaverLevel( )) {
+                        case 0:
+                            BanTime = 7200;
+                            break;
+                        case 1:
+                            BanTime = 86400;
+                            break;
+                        case 2:
+                            BanTime = 259200;
+                            break;
+                        case 3:
+                            BanTime = 604800;
+                            break;
+                        default:
+                            BanTime = 604800;
+                        break;
+                    }
                     if( EndTime < 300 ) {
                         Reason += UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
                     } else {
@@ -1749,7 +1764,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 string Reason;
 
                 uint32_t Amount;
-                uint32_t BanTime;
                 string Suffix;
 
                 stringstream SS;
