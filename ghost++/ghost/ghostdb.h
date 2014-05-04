@@ -75,6 +75,8 @@ class CDBStatsPlayerSummary;
 class CDBInboxSummary;
 class CDBDotAPlayerSummary;
 class CCallableGameUpdate;
+class CCallableBotStatusUpdate;
+class CCallableBotStatusCreate;
 
 typedef pair<uint32_t,string> VarP;
 
@@ -146,6 +148,8 @@ public:
     virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints );
     virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals );
     virtual bool W3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings );
+    virtual bool BotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft);
+    virtual bool BotStatusUpdate( string server, uint32_t status );
 
     // threaded database functions
 
@@ -191,6 +195,8 @@ public:
     virtual CCallableW3MMDVarAdd *ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints );
     virtual CCallableW3MMDVarAdd *ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals );
     virtual CCallableW3MMDVarAdd *ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings );
+    virtual CCallableBotStatusCreate *ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft);
+    virtual CCallableBotStatusUpdate *ThreadedBotStatusUpdate( string server, uint32_t status);
 };
 
 //
@@ -1172,6 +1178,34 @@ public:
     virtual void SetResult( bool nResult )	{
         m_Result = nResult;
     }
+};
+
+class CCallableBotStatusCreate : virtual public CBaseCallable
+{
+protected:
+    string m_Username;
+    string m_Gamename;
+    string m_Ip;
+    uint16_t m_Hostport;
+    string m_Roc;
+    string m_Tft;
+    bool m_Result;
+
+public:
+    CCallableBotStatusCreate( string nUsername, string nGamename, string nIP, uint16_t nHostport, string nRoc, string nTft ) : CBaseCallable( ), m_Username(nUsername), m_Gamename(nGamename), m_Ip(nIP), m_Hostport(nHostport), m_Roc(nRoc), m_Tft(nTft), m_Result(false) { }
+    virtual ~CCallableBotStatusCreate( );
+};
+
+class CCallableBotStatusUpdate : virtual public CBaseCallable
+{
+protected:
+    string m_Server;
+    uint32_t m_Status;
+    bool m_Result;
+
+public:
+    CCallableBotStatusUpdate( string nServer, uint32_t nStatus ) : CBaseCallable( ), m_Server(nServer), m_Status(nStatus), m_Result(false) { }
+    virtual ~CCallableBotStatusUpdate( );
 };
 
 //

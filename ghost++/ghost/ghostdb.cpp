@@ -260,6 +260,17 @@ bool CGHostDB :: W3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings )
     return false;
 }
 
+bool CGHostDB :: BotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft)
+{
+    return false;
+}
+
+bool CGHostDB :: BotStatusUpdate( string serveralias, uint32_t status)
+{
+    return false;
+}
+
+
 void CGHostDB :: CreateThread( CBaseCallable *callable )
 {
     callable->SetReady( true );
@@ -475,6 +486,17 @@ CCallableW3MMDVarAdd *CGHostDB :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP
     return NULL;
 }
 
+CCallableBotStatusCreate *CGHostDB :: ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft)
+{
+    return NULL;
+}
+
+CCallableBotStatusUpdate *CGHostDB :: ThreadedBotStatusUpdate( string serveralias, uint32_t status)
+{
+    return NULL;
+}
+
+
 //
 // Callables
 //
@@ -488,6 +510,16 @@ void CBaseCallable :: Close( )
 {
     m_EndTicks = GetTicks( );
     m_Ready = true;
+}
+
+CCallableBotStatusCreate :: ~CCallableBotStatusCreate( )
+{
+
+}
+
+CCallableBotStatusUpdate :: ~CCallableBotStatusUpdate( )
+{
+
 }
 
 CCallableRegAdd :: ~CCallableRegAdd( )

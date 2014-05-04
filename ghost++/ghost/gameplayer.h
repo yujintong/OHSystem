@@ -54,7 +54,7 @@ protected:
     CIncomingGarenaUser *m_IncomingGarenaUser;
     string m_RoomName;
     bool m_Banned;
-    string m_CachedIP;
+	string m_CachedIP;
 
 public:
     CPotentialPlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket );
@@ -130,6 +130,7 @@ private:
     string m_JoinedRealm;						// the realm the player joined on (probable, can be spoofed)
     uint32_t m_TotalPacketsSent;
     uint32_t m_TotalPacketsReceived;
+	uint32_t m_Left;
     uint32_t m_LeftCode;						// the code to be sent in W3GS_PLAYERLEAVE_OTHERS for why this player left the game
     uint32_t m_LoginAttempts;					// the number of attempts to login (used with CAdminGame only)
     uint32_t m_SyncCounter;						// the number of keepalive packets received from this player
@@ -291,6 +292,10 @@ public:
     uint32_t GetLastGProxyWaitNoticeSentTime( )	{
         return m_LastGProxyWaitNoticeSentTime;
     }
+    uint32_t GetLeftTime( )                     {
+        return m_Left;
+    }
+
     queue<BYTEARRAY> *GetLoadInGameData( )		{
         return &m_LoadInGameData;
     }
@@ -483,6 +488,9 @@ public:
     double GetReputation( ) {
         return m_Reputation;
     }
+	void SetLeftTime( uint32_t nLeft)												{
+		m_Left = nLeft;
+	}
     string GetPlayerLanguage( ) {
         return m_PlayerLanguage;
     }

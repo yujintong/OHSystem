@@ -966,6 +966,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
             Colour = m_Slots[SID].GetColour( );
         }
 
+		player->SetLeftTime( m_GameTicks / 1000 );
         m_DBGamePlayers.push_back( new CDBGamePlayer( player->GetID (), 0, player->GetName( ), player->GetExternalIPString( ), player->GetSpoofed( ) ? 1 : 0, player->GetSpoofedRealm( ), player->GetReserved( ) ? 1 : 0, player->GetFinishedLoading( ) ? player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks : 0, m_GameTicks / 1000, player->GetLeftReason( ), Team, Colour ) );
 
         // also keep track of the last player to leave for the !banlast command
@@ -1189,7 +1190,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SET LEVEL
             //
-            else if(Command == "setlevel" && Level == 10 &&!Payload.empty()) {
+            else if(Command == "setlevel" && Level >= 9 &&!Payload.empty()) {
                 string user;
                 string level;
                 stringstream SS;
@@ -1306,7 +1307,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SETPERMISSION
             //
-            if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() == 10 )
+            if( ( Command == "setp" || Command == "sep" || Command == "setpermission" ) && player->GetLevel() >= 9 )
             {
                 string Name;
                 string NewLevel;
@@ -1650,7 +1651,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !AUTOBALANCE
             // !ABC
             //
-            else if ( ( Command == "autobalance" || Command == "ab" || Command == "abc" ) && Level == 10 && Payload.empty() )
+            else if ( ( Command == "autobalance" || Command == "ab" || Command == "abc" ) && Level >= 9 && Payload.empty() )
             {
                 OHFixedBalance( );
             }
@@ -2537,7 +2538,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !GAMELOCK
             //
-            else if( Command == "gamelock" && Level == 10 )
+            else if( Command == "gamelock" && Level >= 9 )
             {
                 SendAllChat( m_GHost->m_Language->GameLocked( ) );
                 m_Locked = true;
@@ -2563,7 +2564,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !OHBALANCE
             //
-            else if( Command == "ohbalance" && Level == 10 && !Payload.empty() )
+            else if( Command == "ohbalance" && Level >= 9 && !Payload.empty() )
             {
                 if( Payload == "on" )
                 {
@@ -3012,7 +3013,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !GAMEUNLOCK
             //
-            else if( Command == "gameunlock" && Level == 10 )
+            else if( Command == "gameunlock" && Level >= 9 )
             {
                 SendAllChat( m_GHost->m_Language->GameUnlocked( ) );
                 m_Locked = false;
@@ -3114,7 +3115,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !WINNER
             //
-            else if( Command == "winner" && m_GameLoaded && Level == 10 )
+            else if( Command == "winner" && m_GameLoaded && Level >= 9 )
             {
                 m_Stats->SetWinner(UTIL_ToUInt32(Payload));
                 SendAllChat(m_GHost->m_Language->SetWinnerByUser( player->GetName(), (Payload=="1"?"Sentinel":"Scourge") ) );
@@ -4856,24 +4857,23 @@ string CGame :: GetRule( string tag )
 
 void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
     switch(thetype) {
-    case 1:
-        SendAllChat(m_GHost->m_Language->UserUsed1( playername, thething ) );
-        break;
-    case 2:
-        SendAllChat(m_GHost->m_Language->UserUsed2( playername, thething ) );
-        break;
-    case 3:
-        SendAllChat(m_GHost->m_Language->UserUsed3( playername, thething ) );
-        break;
-    case 4:
-        SendAllChat(m_GHost->m_Language->UserUsed4( playername, thething ) );
-        break;
-    case 5:
-        SendAllChat(m_GHost->m_Language->UserUsed5( playername, thething ) );
-        break;
-    default:
-        SendAllChat(m_GHost->m_Language->UserUsed6( playername, thething ) );
+        case 1:
+            SendAllChat(m_GHost->m_Language->UserUsed1( playername, thething ) );
+            break;
+        case 2:
+            SendAllChat(m_GHost->m_Language->UserUsed2( playername, thething ) );
+            break;
+        case 3:
+            SendAllChat(m_GHost->m_Language->UserUsed3( playername, thething ) );
+            break;
+        case 4:
+            SendAllChat(m_GHost->m_Language->UserUsed4( playername, thething ) );
+            break;
+        case 5:
+            SendAllChat(m_GHost->m_Language->UserUsed5( playername, thething ) );
+            break;
+        default:
+            SendAllChat(m_GHost->m_Language->UserUsed6( playername, thething ) );
         break;
     }
 }
-

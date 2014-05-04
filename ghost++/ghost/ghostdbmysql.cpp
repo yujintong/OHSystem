@@ -744,6 +744,32 @@ CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map
     return Callable;
 }
 
+CCallableBotStatusCreate *CGHostDBMySQL :: ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft )
+{
+    void *Connection = GetIdleConnection( );
+
+    if( !Connection )
+        ++m_NumConnections;
+
+    CCallableBotStatusCreate *Callable = new CMySQLCallableBotStatusCreate( username, gamename, ip, hostport, roc, tft, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+    CreateThread( Callable );
+    ++m_OutstandingCallables;
+    return Callable;
+}
+
+CCallableBotStatusUpdate *CGHostDBMySQL :: ThreadedBotStatusUpdate( string server, uint32_t status )
+{
+    void *Connection = GetIdleConnection( );
+
+    if( !Connection )
+        ++m_NumConnections;
+
+    CCallableBotStatusUpdate *Callable = new CMySQLCallableBotStatusUpdate(  server, status, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+    CreateThread( Callable );
+    ++m_OutstandingCallables;
+    return Callable;
+}
+
 void *CGHostDBMySQL :: GetIdleConnection( )
 {
     void *Connection = NULL;
@@ -2129,9 +2155,10 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
 }
 string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
 {
+
+    string EscGameName = MySQLEscapeString( conn, gamename );
     if(add) {
         string EscMap = MySQLEscapeString(conn, map);
-        string EscGameName = MySQLEscapeString( conn, gamename );
         string EscOwnerName = MySQLEscapeString( conn, ownername );
         string EscCreatorName = MySQLEscapeString( conn, creatorname );
         string EscUsernames = MySQLEscapeString( conn, usernames );
@@ -2142,7 +2169,7 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, s
 
         return "";
     } else {
-        string Query = "SELECT gamename,slotstaken,slotstotal,totalgames,totalplayers FROM oh_gamelist";
+        string Query = "SELECT gamename,slotstaken,slotstotal,totalgames,totalplayers FROM oh_gamelist WHERE gamename LIKE '%"+EscGameName+"%'";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
@@ -2175,7 +2202,7 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, s
                 *error = mysql_error( (MYSQL *)conn );
 
             if(num == 0) {
-                response = "No games avaible";
+                response = "No games available";
             } else {
                 response = response.substr(0, response.length() - 2);
             }
@@ -2797,6 +2824,22 @@ bool MySQLW3MMDVarAdd( void *conn, string *error, uint32_t botid, uint32_t gamei
     return Success;
 }
 
+bool MySQLBotStatusCreate( void *conn, string *error, uint32_t botid, string username, string gamename, string ip, uint16_t hostport, string roc, string tft )
+{
+    string InsertNow = "INSERT INTO oh_bot_status (botid, name, gamename, ip, hostport, roc, tft, last_update) VALUES ('"+UTIL_ToString(botid)+"', '"+username+"','"+gamename+"', '"+ip+"','"+UTIL_ToString(hostport)+"','"+roc+"','"+tft+"', NOW()) ON DUPLICATE KEY UPDATE name='"+username+"',gamename='"+gamename+"',ip='"+ip+"',hostport='"+UTIL_ToString(hostport)+"', roc='"+roc+"', tft='"+tft+"', last_update=NOW()";
+    mysql_real_query( (MYSQL *)conn, InsertNow.c_str( ), InsertNow.size( ) );
+
+    return 0;
+}
+
+bool MySQLBotStatusUpdate( void *conn, string *error, uint32_t botid, string server, uint32_t status )
+{
+    string Query = "UPDATE oh_bot_status SET "+server+" = '"+UTIL_ToString(status)+"', last_update=NOW() WHERE botid ="+UTIL_ToString(botid);
+    if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+        *error = mysql_error( (MYSQL *)conn );
+    return 0;
+}
+
 //
 // MySQL Callables
 //
@@ -3235,6 +3278,26 @@ void CMySQLCallableW3MMDVarAdd :: operator( )( )
         else
             m_Result = MySQLW3MMDVarAdd( m_Connection, &m_Error, m_SQLBotID, m_GameID, m_VarStrings );
     }
+
+    Close( );
+}
+
+void CMySQLCallableBotStatusCreate :: operator( )( )
+{
+    Init( );
+
+    if( m_Error.empty( ) )
+        m_Result = MySQLBotStatusCreate ( m_Connection, &m_Error, m_SQLBotID, m_Username, m_Gamename, m_Ip, m_Hostport, m_Roc, m_Tft);
+
+    Close( );
+}
+
+void CMySQLCallableBotStatusUpdate :: operator( )( )
+{
+    Init( );
+
+    if( m_Error.empty( ) )
+        m_Result = MySQLBotStatusUpdate( m_Connection, &m_Error, m_SQLBotID, m_Server, m_Status);
 
     Close( );
 }
