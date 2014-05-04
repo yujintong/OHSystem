@@ -2652,25 +2652,20 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     CGamePlayer *TempPlayer = new CGamePlayer( potential, 255, JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
 
-    // check basic player values
-    m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
-
-    // last game information
-    m_PairedINChecks.push_back( PairedINCheck( joinPlayer->GetName (), m_GHost->m_DB->ThreadedInboxSummaryCheck (joinPlayer->GetName())));
-
-    // check if player has only digits
-    if( Level == 0 && is_digits( joinPlayer->GetName( ) ) )
-    {
-        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join, but he has invalid username (digits only)." );
-        potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
-        potential->SetDeleteMe( true );
-        return;
-    }
-
     // check if player is on the deny-vector
     if( Level == 0 && IsDenied( joinPlayer->GetName( ), potential->GetExternalIPString( ) ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but is denied for this game" );
+        potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
+        potential->SetDeleteMe( true );
+        return;
+    }
+    
+    
+    // check if player has only digits
+    if( Level == 0 && is_digits( joinPlayer->GetName( ) ) )
+    {
+        CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join, but he has invalid username (digits only)." );
         potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
         potential->SetDeleteMe( true );
         return;
@@ -2984,6 +2979,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     if( GetSlotsAllocated( ) >= m_Slots.size() - 1 || EnforcePID == m_VirtualHostPID )
         DeleteVirtualHost( );
+
+    // check basic player values
+    m_PairedWPChecks.push_back( PairedWPCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( joinPlayer->GetName( ), "", "", m_GameAlias ) ) );
 
     // turning the CPotentialPlayer into a CGamePlayer is a bit of a pain because we have to be careful not to close the socket
     // this problem is solved by setting the socket to NULL before deletion and handling the NULL case in the destructor
