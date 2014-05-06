@@ -6590,6 +6590,9 @@ vector<PlayerOfPlayerList> CBaseGame :: GetPlayerListOfGame( ) {
             newPlayer.IP = Player->GetExternalIPString();
             newPlayer.LeftTime = Player->GetLeftTime();
             newPlayer.LeftReason = Player->GetLeftReason();
+            newPlayer.Color = m_Slots[i].GetColour();
+            newPlayer.Team = m_Slots[i].GetTeam();
+            newPlayer.Slot = i;
 
             m_Players.push_back(newPlayer);
         }
