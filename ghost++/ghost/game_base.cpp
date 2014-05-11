@@ -506,24 +506,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                 kick = true;
                                 reason = "was kicked for joining without being reserved.";
                             }
+                            
                             transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
-                            bool unallowedcountry = false;
-                            for( vector<string> :: iterator k = m_LimitedCountries.begin( ); k != m_LimitedCountries.end( ); )
-                            {
-                                if( *k == CC && m_DenieCountries )
-                                    unallowedcountry = true;
-
-                                if( *k != CC && m_LimitCountries )
-                                    unallowedcountry = true;
-                                k++;
-                            }
-                            for( vector<string> :: iterator k = m_GHost->m_DCountries.begin( ); k != m_GHost->m_DCountries.end( ); )
-                            {
-                                if( *k== CC )
-                                    unallowedcountry = true;
-                                k++;
-                            }
-
                             if( m_GHost->m_DenieProxy && !(*i)->GetGProxy( ) )
                             {
                                 if( CC == "a1" || CC == "a2")
@@ -531,11 +515,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                     kick = true;
                                     reason = "was kicked for joining without gproxy and a proxy.";
                                 }
-                            }
-                            if( unallowedcountry && m_GHost->m_DenieCountriesOnThisBot && !(*i)->GetGProxy( ) )
-                            {
-                                kick = true;
-                                reason = "was kicked for joining without gproxy on a denied country.";
                             }
                             if( !(*i)->GetGProxy( ) && ( m_GHost->IsForcedGProxy((*i)->GetName( )) || m_GHost->IsForcedGProxy((*i)->GetExternalIPString( )) ) )
                             {
