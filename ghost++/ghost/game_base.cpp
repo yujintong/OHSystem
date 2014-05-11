@@ -445,13 +445,15 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             CDBStatsPlayerSummary *StatsPlayerSummary = i->second->GetResult( );
             for( vector<CGamePlayer *> :: iterator j = m_Players.begin( ); j != m_Players.end( ); ++j )
             {
-                if( (*j)->GetName( ) == i->second->GetName( ) && StatsPlayerSummary )
+                string name = i->second->GetName( );
+                if( (*j)->GetName( ) == name && StatsPlayerSummary )
                 {
+                    string ip = (*j)->GetExternalIPString( );
                     if(StatsPlayerSummary->GetID ()==0) {
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->WelcomeUserCreateUniqueId( (*j)->GetName( )));
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language->WelcomeUserCreateUniqueId( name));
                         SendChat((*j)->GetPID( ), m_GHost->m_Language->DomainOnJoinNotify( ));
                         SendChat((*j)->GetPID( ), " ");
-                        m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, (*j)->GetName( ), (*j)->GetExternalIPString (), 0, (*j)->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
+                        m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, name, ip, 0, (*j)->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
                     } else {
                         uint32_t wins = StatsPlayerSummary->GetWins( );
                         uint32_t losses = StatsPlayerSummary->GetLosses( );
@@ -473,10 +475,10 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
                         (*j)->SetPlayerLanguage(StatsPlayerSummary->GetLanguageSuffix ());
                         (*j)->SetLeaverLevel(StatsPlayerSummary->GetLeaverLevel());
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( (*j)->GetName( ), UTIL_ToString( (*j)->GetPing(m_GHost->m_LCPings) ) ) );
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( name, UTIL_ToString( (*j)->GetPing(m_GHost->m_LCPings) ) ) );
                         SendChat((*j)->GetPID( ), " ");
                         
-                        uint32_t Level = (*i)->GetLevel( );
+                        uint32_t Level = (*j)->GetLevel( );
                         bool kick = false;
                         string reason = "";
                         if(Level < 1 ) {
@@ -495,7 +497,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             }
                             if( m_GameType == 4 )
                             {
-                                if( (*i)->GetGames( ) < m_GHost->m_MinVIPGames  )
+                                if( games < m_GHost->m_MinVIPGames  )
                                 {
                                     kick = true;
                                     reason = "was kicked for having to less games.";
@@ -508,7 +510,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             }
                             
                             transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
-                            if( m_GHost->m_DenieProxy && !(*i)->GetGProxy( ) )
+                            if( m_GHost->m_DenieProxy && !(*j)->GetGProxy( ) )
                             {
                                 if( CC == "a1" || CC == "a2")
                                 {
@@ -516,7 +518,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                     reason = "was kicked for joining without gproxy and a proxy.";
                                 }
                             }
-                            if( !(*i)->GetGProxy( ) && ( m_GHost->IsForcedGProxy((*i)->GetName( )) || m_GHost->IsForcedGProxy((*i)->GetExternalIPString( )) ) )
+                            if( !(*j)->GetGProxy( ) && ( m_GHost->IsForcedGProxy(name) || m_GHost->IsForcedGProxy(ip) ) )
                             {
                                 kick = true;
                                 reason = "was kicked for being forced to use gproxy, but doesnt use it.";
@@ -524,11 +526,11 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                             }
                             if(kick) {
                                 if(m_GHost->m_AutoDenyUsers)
-                                    m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                                (*i)->SetDeleteMe( true );
-                                (*i)->SetLeftReason( reason );
-                                (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
+                                    m_Denied.push_back( name + " " + ip + " " + UTIL_ToString( GetTime( ) ) );
+                                (*j)->SetDeleteMe( true );
+                                (*j)->SetLeftReason( reason );
+                                (*j)->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                OpenSlot( GetSIDFromPID( (*j)->GetPID( ) ), false );
                             }
                         }
                     }
