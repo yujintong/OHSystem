@@ -4163,7 +4163,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SendChat( player,  m_GHost->m_Language->WinChance( SeWP, ScWP  ) );
             }
             else
-                SendChat( player, m_GHost->m_Language->ErrorOneTeamHasNoPlayers( ) );
+                SendChat( player,  m_GHost->m_Language->WinChance( "50", "50" ) );
         }
         else
             SendChat( player, m_GHost->m_Language->ErrorNotATwoTeamMap( ) );
