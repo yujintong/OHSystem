@@ -1243,6 +1243,12 @@ bool CGHost :: Update( long usecBlock )
         m_LastCommandListTime = GetTime();
     }
 
+    if( m_CurrentGame ) {
+        if( ( GetTime() - m_CurrentGame->m_CreationTime ) >= 259200 ) {
+            m_Exiting = true;
+        }
+    }
+
     return m_Exiting || AdminExit || BNETExit;
 }
 
