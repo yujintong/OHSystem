@@ -6131,7 +6131,7 @@ bool CBaseGame :: IsDenied( string username, string ip )
                 return true;
             i++;
         }
-        else if(  GetTime( ) - UTIL_ToUInt32( denietime ) <= 60 )
+        else if(  GetTime( ) - UTIL_ToUInt32( denietime ) <= 30 )
         {
             if( username == deniedusername )
                 return true;
