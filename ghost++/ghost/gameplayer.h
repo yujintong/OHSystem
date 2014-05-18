@@ -220,6 +220,8 @@ private:
     string m_TheThing;
     uint32_t m_TheThingType;
     uint32_t m_LeaverLevel;
+    bool m_RequestedSwap;
+    uint8_t m_SwapTarget;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -507,6 +509,12 @@ public:
     uint32_t GetTheThingType( ) {
         return m_TheThingType;
     }
+    bool GetSwapRequested( ) {
+        return m_RequestedSwap;
+    }
+    uint8_t GetSwapTarget( ) {
+        return m_SwapTarget;
+    }
 
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
@@ -752,6 +760,12 @@ public:
     }
     void SetTheThingType(uint32_t nType) {
         m_TheThingType = nType;
+    }
+    void SetSwapRequested( bool nRequestedSwap ) {
+        m_RequestedSwap = nRequestedSwap;
+    }
+    void SetSwapTarget( uint8_t nSwapTarget) {
+        m_SwapTarget = nSwapTarget;
     }
 
     // processing functions

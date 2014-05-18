@@ -4777,6 +4777,81 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else
             SendChat(player, "You have no things left.");
     }
+
+    //
+    // !swaprequest
+    //
+    else if((Command == "swaprequest"||Command == "swr") && !Payload.empty()) {
+        if(!player->GetSwapRequested()) {
+            CGamePlayer *LastMatch = NULL;
+            uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+            if( Matches == 0 )
+                SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+            else if( Matches == 1) {
+                if( LastMatch->GetSwapTarget() == 255 ) {
+                    SendChat(player, "You have requested a swap with player ["+LastMatch->GetName()+"]");
+                    SendChat(LastMatch, "Player ["+player->GetName()+"] requested a swap with you. Accept it by using '!swapaccept'.");
+                    player->SetSwapRequested(true);
+                    player->SetSwapTarget(LastMatch->GetPID());
+                    LastMatch->SetSwapTarget(player->GetPID());
+                } else if ( LastMatch->GetSwapTarget() == player->GetPID() ) {
+                    SendAllChat("Swapping player ["+Player->GetName()+"] and player ["+player->GetName()+"] after a swap request.");
+                    SwapSlots( (unsigned char)( GetSIDFromPID(player->GetPID()) ), (unsigned char)( GetSIDFromPID(Player->GetPID())) );
+                    player->SetSwapTarget(255);
+                    Player->SetSwapTarget(255);
+                    Player->SetSwapRequested(false);
+                } else {
+                    SendChat(player, "Player ["+LastMatch->GetName()+"] is already in a swap request, please wait or choose another target.");
+                }
+            }
+            else
+                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+
+        }
+        else
+            SendChat(player, "You already requested a swap. Please wait until the current one got processed or use '!swapabort'");
+    }
+
+    //
+    // !swapaccept
+    //
+    else if(Command == "swapaccept"||Command == "swa" ) {
+        if(player->GetSwapTarget() != 255) {
+            if(!player->GetSwapRequested()) {
+                CGamePlayer *Player = GetPlayerFromPID(player->GetSwapTarget());
+                if(Player) {
+                    SendAllChat("Swapping player ["+Player->GetName()+"] and player ["+player->GetName()+"] after a swap request.");
+                    SwapSlots( (unsigned char)( GetSIDFromPID(player->GetPID()) ), (unsigned char)( GetSIDFromPID(Player->GetPID())) );
+                    player->SetSwapTarget(255);
+                    Player->SetSwapTarget(255);
+                    Player->SetSwapRequested(false);
+                }
+                else {
+                    SendChat("The player has already left.");
+                    player->SetSwapTarget(255);
+                }
+            }
+            else
+                SendChat(player, "You shouldn't accept a swap which was requested by you");
+        }
+        else
+            SendChat(player, "No one requested a swap with you.");
+    }
+
+    //
+    // !swapabort
+    //
+    else if(Command == "swapabort" && player->GetSwapRequested()) {
+        SendChat(player, "Aborted your swap.");
+        player->SetSwapRequested(false);
+        CGamePlayer *Player = GetPlayerFromPID(player->GetSwapTarget());
+        player->SetSwapTarget(255);
+        if(Player) {
+            Player->SetSwapTarget(255);
+            SendChat(Player, "Player ["+player->GetName()+"] rejected the swap request.");
+        }
+
+    }
     return HideCommand;
 }
 
