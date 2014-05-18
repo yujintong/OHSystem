@@ -3290,3 +3290,63 @@ string CLanguage :: FlameWarn3( )
     string Out = m_CFG->GetString( "oh_243", "oh_243" );
     return Out;
 }
+
+string CLanguage :: RequestedSwapWithPlayer( string user )
+{
+    string Out = m_CFG->GetString( "oh_244", "oh_244" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+string CLanguage :: PlayerRequestedSwapWithYou( string user )
+{
+    string Out = m_CFG->GetString( "oh_245", "oh_245" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+string CLanguage :: PlayersSwapped( string user, string player )
+{
+    string Out = m_CFG->GetString( "oh_246", "oh_246" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$PLAYER$", player);
+    return Out;
+}
+string CLanguage :: PlayerIsAlreadySwapping( string user )
+{
+    string Out = m_CFG->GetString( "oh_247", "oh_247" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}
+string CLanguage :: YouAlreadyRequestedASwap( )
+{
+    string Out = m_CFG->GetString( "oh_248", "oh_248" );
+    return Out;
+}
+string CLanguage :: ThePlayerAlreadyLeft( )
+{
+    string Out = m_CFG->GetString( "oh_249", "oh_249" );
+    return Out;
+}
+string CLanguage :: TryingToSwapAcceptWhenRequested( )
+{
+    string Out = m_CFG->GetString( "oh_250", "oh_250" );
+    return Out;
+}
+
+string CLanguage :: NoOneIsSwappingWithYou( )
+{
+    string Out = m_CFG->GetString( "oh_251", "oh_251" );
+    return Out;
+}
+
+string CLanguage :: AbortedTheSwap( )
+{
+    string Out = m_CFG->GetString( "oh_252", "oh_252" );
+    return Out;
+}
+
+string CLanguage :: UserAbortedSwapWithYou( string user )
+{
+    string Out = m_CFG->GetString( "oh_253", "oh_253" );
+    UTIL_Replace( Out, "$USER$", user );
+    return Out;
+}

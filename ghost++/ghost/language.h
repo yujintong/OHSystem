@@ -507,6 +507,16 @@ public:
     string FlameWarn( );
     string FlameWarn2( );
     string FlameWarn3( );
+    string RequestedSwapWithPlayer( string user );
+    string PlayerRequestedSwapWithYou( string user );
+    string PlayersSwapped( string user, string player );
+    string PlayerIsAlreadySwapping( string user );
+    string YouAlreadyRequestedASwap( );
+    string ThePlayerAlreadyLeft( );
+    string TryingToSwapAcceptWhenRequested( );
+    string NoOneIsSwappingWithYou( );
+    string AbortedTheSwap( );
+    string UserAbortedSwapWithYou( string user );
 };
 
 #endif
