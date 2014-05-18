@@ -4796,10 +4796,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     LastMatch->SetSwapTarget(player->GetPID());
                 } else if ( LastMatch->GetSwapTarget() == player->GetPID() ) {
                     SendAllChat(m_GHost->m_Language->PlayersSwapped( player->GetName(), LastMatch->GetName()));
-                    SwapSlots( (unsigned char)( GetSIDFromPID(player->GetPID()) ), (unsigned char)( GetSIDFromPID(Player->GetPID())) );
+                    SwapSlots( (unsigned char)( GetSIDFromPID(player->GetPID()) ), (unsigned char)( GetSIDFromPID(LastMatch->GetPID())) );
                     player->SetSwapTarget(255);
-                    Player->SetSwapTarget(255);
-                    Player->SetSwapRequested(false);
+                    LastMatch->SetSwapTarget(255);
+                    LastMatch->SetSwapRequested(false);
                 } else {
                     SendChat(player, m_GHost->m_Language->PlayerIsAlreadySwapping( player->GetName() ));
                 }
@@ -4827,7 +4827,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     Player->SetSwapRequested(false);
                 }
                 else {
-                    SendChat(m_GHost->m_Language->ThePlayerAlreadyLeft());
+                    SendChat(player, m_GHost->m_Language->ThePlayerAlreadyLeft());
                     player->SetSwapTarget(255);
                 }
             }
