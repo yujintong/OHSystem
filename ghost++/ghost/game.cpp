@@ -1618,7 +1618,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // give
             //
-            else if( Command == "give" && Level >= 6 && m_GHost->m_FunCommands)
+            else if( Command == "give" && Level >= 7 && m_GHost->m_FunCommands)
             {
                 string User;
                 string TheThing;
@@ -1703,7 +1703,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) )
             {
-                if( Level >= 7 )
+                if( Level >= 6 )
                 {
                     // extract the victim and the reason
                     // e.g. "Varlock leaver after dying" -> victim: "Varlock", reason: "leaver after dying"
@@ -1881,7 +1881,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                     else if( Matches == 1 )
                                     {
-                                        if( Level >= 7 || ( Level == 5 ||  Level == 6 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
+                                        if( Level >= 6 || ( Level == 5 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
                                             m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "" ) ) );
                                         else
                                             SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
@@ -1898,7 +1898,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                         SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                     else if( Matches == 1 )
                                     {
-                                        if( Level >= 7 || ( Level == 5 ||  Level == 6 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
+                                        if( Level >= 6 || ( Level == 5 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
                                             m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ) ) ) );
                                         else
                                             SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
@@ -1921,7 +1921,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !ANNOUNCE
             //
 
-            else if( Command == "announce" || Command == "ann" && !m_CountDownStarted && Level >= 6 )
+            else if( Command == "announce" || Command == "ann" && !m_CountDownStarted && Level >= 9 )
             {
                 if( Payload.empty( ) || Payload == "off" )
                 {
@@ -2377,7 +2377,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !DROP
             //
-            else if( Command == "drop" && m_GameLoaded && Level >= 6 )
+            else if( Command == "drop" && m_GameLoaded && Level >= 5 )
                 StopLaggers( "lagged out (dropped by admin)" );
 
             //
@@ -2989,7 +2989,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SWAP (swap slots)
             //
-            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 6 )
+            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 5 )
             {
                 uint32_t SID1;
                 uint32_t SID2;
