@@ -1169,7 +1169,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             if( GetTime( ) - (*i)->GetJoinTime( ) == 15 ) {
                 if( (*i)->GetPasswordProt( ) )
                 {
-                    if(m_GHost->m_AutoDenyUsers)
+                    if(m_GHost->m_AutoDenyUsers && (*i)->GetLevel( ) > 1)
                         m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
 
                     (*i)->SetDeleteMe( true );
@@ -2433,7 +2433,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
             m_Voted = false;
         }
 
-        if(m_GHost->m_AutoDenyUsers)
+        if(m_GHost->m_AutoDenyUsers && player->GetLevel() > 1)
             m_Denied.push_back( player->GetName( ) + " " + player->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
 
     }
@@ -2601,7 +2601,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     CGamePlayer *TempPlayer = new CGamePlayer( potential, 255, JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
 
     // check if player is on the deny-vector
-    if( Level == 0 && IsDenied( joinPlayer->GetName( ), potential->GetExternalIPString( ) ) )
+    if( IsDenied( joinPlayer->GetName( ), potential->GetExternalIPString( ) ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but is denied for this game" );
         potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );

@@ -489,6 +489,5 @@ struct PlayerOfPlayerList  {
     uint8_t Team;
     uint8_t Slot;
 };
-
 #endif
 
