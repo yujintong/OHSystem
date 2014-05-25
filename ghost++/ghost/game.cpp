@@ -2989,7 +2989,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SWAP (swap slots)
             //
-            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 8 )
+            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 6 )
             {
                 uint32_t SID1;
                 uint32_t SID2;

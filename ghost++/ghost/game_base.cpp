@@ -2842,8 +2842,8 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         uint32_t reservedSID = 255;
         for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if( i->Name == LowerName ) {
-        SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
-        m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
+                m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
                 SendAllSlotInfo( );
                 EnforcePID = m_Slots[i->SID].GetPID();
                 i= m_ReservedPlayers.erase(i);
