@@ -185,7 +185,7 @@ uint32_t CGHostDB :: GameAdd( string server, string map, string gamename, string
     return 0;
 }
 
-string CGHostDB :: GameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
+string CGHostDB :: GameUpdate( string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add )
 {
     return "";
 }
@@ -411,7 +411,7 @@ CCallableGameDBInit *CGHostDB :: ThreadedGameDBInit( vector<CDBBan *> players, s
     return NULL;
 }
 
-CCallableGameUpdate *CGHostDB :: ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, uint32_t players, string usernames, uint32_t slotsTotal, uint32_t totalGames, uint32_t totalPlayers, bool add )
+CCallableGameUpdate *CGHostDB :: ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add )
 {
     return NULL;
 }
