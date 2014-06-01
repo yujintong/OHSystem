@@ -3668,16 +3668,16 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !GAMES
         //
-
+/*
         if( Command == "games" || Command == "g" )
         {
             m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedGameUpdate("", Payload, "", "", 0, "", 0, 0, 0, false ) ) );
         }
-
+*/
         //
         // !CHECKBAN
         //
-        else if( Command == "checkban" && Payload.empty( ) )
+        if( Command == "checkban" && Payload.empty( ) )
         {
             CDBBan *Ban = IsBannedName( User );
 

@@ -77,6 +77,7 @@ class CDBDotAPlayerSummary;
 class CCallableGameUpdate;
 class CCallableBotStatusUpdate;
 class CCallableBotStatusCreate;
+struct PlayerOfPlayerList;
 
 typedef pair<uint32_t,string> VarP;
 
@@ -862,7 +863,7 @@ protected:
     string m_Result;
 
 public:
-    CCallableGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist ) : CBaseCallable( ), m_Map(map), m_GameName(gamename), m_OwnerName(ownername), m_CreatorName(creatorname), m_Add(add), m_Playerlist(playerlist), m_Hostcounter(hostcounter), m_Lobby(lobby), m_MapType(map_type), m_Players(players), m_Total(total), m_Duration(duration) { }
+    CCallableGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist ) : CBaseCallable( ), m_Map(map), m_GameName(gamename), m_OwnerName(ownername), m_CreatorName(creatorname), m_Playerlist(playerlist), m_Hostcounter(hostcounter), m_Lobby(lobby), m_MapType(map_type), m_Players(players), m_Total(total), m_Duration(duration) { }
     virtual ~CCallableGameUpdate( );
 
     virtual string GetResult( )				{
@@ -1912,6 +1913,18 @@ public:
     float GetAvgCourierKills( )			{
         return m_TotalGames > 0 ? (float)m_TotalCourierKills / m_TotalGames : 0;
     }
+};
+
+struct PlayerOfPlayerList  {
+    string Username;
+    string Realm;
+    uint16_t Ping;
+    string IP;
+    uint8_t Color;
+    uint16_t LeftTime;
+    string LeftReason;
+    uint8_t Team;
+    uint8_t Slot;
 };
 
 #endif

@@ -75,7 +75,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_CallablePList = NULL;
     m_CallableTBRemove = NULL;
     m_CallableBanList = NULL;
-    m_CallableGameUpdate = NULL;
+    m_GameUpdate = NULL;
     m_StartedVoteStartTime = 0;
     m_VoteMuteEventTime = 0;
     m_VoteMutePlayer.clear();
@@ -1561,6 +1561,13 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 		DoGameUpdate(false);
 	}
 
+	if( m_GameUpdate && m_GameUpdate->GetReady( ) )
+	{
+		m_GHost->m_DB->RecoverCallable( m_GameUpdate );
+		delete m_GameUpdate;
+		m_GameUpdate = NULL;
+	}
+
     // finish the gameover timer
 
     if( m_GameOverTime != 0 && GetTime( ) - m_GameOverTime >= 10 )
@@ -1752,14 +1759,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         m_GHost->m_DB->RecoverCallable(m_CallableGameDBInit);
         delete m_CallableGameDBInit;
         m_CallableGameDBInit = NULL;
-    }
-
-    if( m_CallableGameUpdate && m_CallableGameUpdate->GetReady())
-    {
-        m_LastGameUpdateTime = GetTime();
-        m_DB->RecoverCallable( m_CallableGameUpdate );
-        delete m_CallableGameUpdate;
-        m_CallableGameUpdate = NULL;
     }
 
     return m_Exiting;
@@ -6536,7 +6535,7 @@ void CBaseGame :: DoGameUpdate(bool reset) {
             m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 1, "", GetTime( ) - m_CreationTime, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_Slots.size( ), GetPlayerListOfGame( ) );
      }
      else
-        m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", 0, "", "", "", "", 0, 0, "", GetPlayerListOfGame( ));
+        m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", 0, "", "", "", "", 0, 0, GetPlayerListOfGame( ));
 
     m_LastGameUpdateTime = GetTime( );
 

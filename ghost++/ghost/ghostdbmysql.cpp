@@ -2146,14 +2146,14 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, uint32_t host
         string EscCreatorName = MySQLEscapeString( conn, creatorname );
         string EscMap = MySQLEscapeString( conn, map );
         string Users ="";
-        string Splitter ="<<<";
-        string PlayerSlpitter=">>>";
+        string Splitter =",";
+        string PlayerSlpitter="#";
         for( vector<PlayerOfPlayerList> :: iterator i = playerlist.begin( ); i != playerlist.end( ); ++i ) {
-            Users += i->Slot+Splitter+i->Team+Splitter+i->Color+Splitter+i->Username+Splitter+i->Realm+Splitter+i->Ping+Splitter+i->IP+Splitter+i->LeftTime+Splitter+i->LeftReason+PlayerSlpitter;
+            Users += UTIL_ToString(i->Slot)+Splitter+UTIL_ToString(i->Team)+Splitter+UTIL_ToString(i->Color)+Splitter+i->Username+Splitter+i->Realm+Splitter+UTIL_ToString(i->Ping)+Splitter+i->IP+Splitter+UTIL_ToString(i->LeftTime)+Splitter+i->LeftReason+PlayerSlpitter;
         }
         string EscPlayerList = MySQLEscapeString( conn, Users );
 
-        tring Query = "INSERT INTO gamelist (botid, hostcounter, lobby, map_type, gamename, ownername, creatorname, map) VALUES ('" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( hostcounter ) + "', '" + UTIL_ToString( lobby ) + "', '" + EscMapType + "', '" + EscGameName + "', '" + EscOwnerName + "', '" + EscCreatorName + "', '" + EscMap + "') ON DUPLICATE KEY UPDATE lobby = '" + UTIL_ToString( lobby ) + "', duration = '" + UTIL_ToString( duration ) + "', ownername = '" + EscOwnerName + "', players = '" + UTIL_ToString( players ) + "', total = '" + UTIL_ToString( total ) + "', users = '" + EscPlayerList + "'";
+        string Query = "INSERT INTO gamelist (botid, hostcounter, lobby, map_type, gamename, ownername, creatorname, map) VALUES ('" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( hostcounter ) + "', '" + UTIL_ToString( lobby ) + "', '" + EscMapType + "', '" + EscGameName + "', '" + EscOwnerName + "', '" + EscCreatorName + "', '" + EscMap + "') ON DUPLICATE KEY UPDATE lobby = '" + UTIL_ToString( lobby ) + "', duration = '" + UTIL_ToString( duration ) + "', ownername = '" + EscOwnerName + "', players = '" + UTIL_ToString( players ) + "', total = '" + UTIL_ToString( total ) + "', users = '" + EscPlayerList + "'";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );

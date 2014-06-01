@@ -25,6 +25,7 @@
 #define GAME_BASE_H
 
 #include "gameslot.h"
+#include "ghostdb.h"
 
 //
 // CBaseGame
@@ -60,7 +61,6 @@ class CDBInbox;
 class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
-struct PlayerOfPlayerList;
 class CCallableGameUpdate;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
@@ -95,7 +95,7 @@ protected:
     vector<PairedBanCheck2> m_PairedBanCheck2s;
     vector<PairedLogUpdate> m_PairedLogUpdates;
     vector<PairedINCheck> m_PairedINChecks;       // vector of paired threaded database ingame checks in progress
-    CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
+    CCallableGameUpdate *m_GameUpdate;// threaded database game update in progress
     CCallableGameDBInit *m_CallableGameDBInit;
     queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
     vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)
@@ -469,7 +469,7 @@ public:
     string m_lGameAliasName;
     virtual void StartVoteMode( );
     void GetVotingModes( string allmodes );
-	virtual void DoGameUpdate(bool reset);
+    virtual void DoGameUpdate(bool reset);
     virtual vector<PlayerOfPlayerList> GetPlayerListOfGame( );
 };
 
@@ -480,16 +480,5 @@ struct ReservedPlayer {
     uint32_t Level;
 };
 
-struct PlayerOfPlayerList  {
-    string Username;
-    string Realm;
-    uint16_t Ping;
-    string IP;
-    uint8_t Color;
-    uint16_t LeftTime;
-    string LeftReason;
-    uint8_t Team;
-    uint8_t Slot;
-};
 #endif
 
