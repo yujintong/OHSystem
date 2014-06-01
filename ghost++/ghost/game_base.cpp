@@ -59,6 +59,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_AdminLog.clear();
     m_Denied.clear();
     m_LastLogDataUpdate = GetTime();
+    m_LastGameUpdateTime  = GetTime( );
     m_PlayerUpdate = false;
     m_Balanced = false;
     m_LastProcessedTicks = 0;
@@ -74,6 +75,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_CallablePList = NULL;
     m_CallableTBRemove = NULL;
     m_CallableBanList = NULL;
+    m_CallableGameUpdate = NULL;
     m_StartedVoteStartTime = 0;
     m_VoteMuteEventTime = 0;
     m_VoteMutePlayer.clear();
