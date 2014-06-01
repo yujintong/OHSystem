@@ -558,14 +558,14 @@ CCallableGamePlayerAdd *CGHostDBMySQL :: ThreadedGamePlayerAdd( uint32_t gameid,
     return Callable;
 }
 
-CCallableGameUpdate *CGHostDBMySQL :: ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add )
+CCallableGameUpdate *CGHostDBMySQL :: ThreadedGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist )
 {
     void *Connection = GetIdleConnection( );
 
     if( !Connection )
         ++m_NumConnections;
 
-    CCallableGameUpdate *Callable = new CMySQLCallableGameUpdate( map, gamename, ownername, creatorname, playerlist, gameid, add, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+    CCallableGameUpdate *Callable = new CMySQLCallableGameUpdate( hostcounter, lobby, map_type, duration, gamename, ownername, creatorname, map, players, total,  playerlist, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
     return Callable;
@@ -2137,26 +2137,33 @@ uint32_t MySQLGameDBInit( void *conn, string *error, uint32_t botid, vector<CDBB
 
     return gameid;
 }
-string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add )
+string MySQLGameUpdate( void *conn, string *error, uint32_t botid, uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist )
 {
-
-    string EscGameName = MySQLEscapeString( conn, gamename );
-    if(add) {
-        string EscMap = MySQLEscapeString(conn, map);
+    if( !gamename.empty( ) ) {
+        string EscMapType = MySQLEscapeString( conn, map_type );
+        string EscGameName = MySQLEscapeString( conn, gamename );
         string EscOwnerName = MySQLEscapeString( conn, ownername );
         string EscCreatorName = MySQLEscapeString( conn, creatorname );
+        string EscMap = MySQLEscapeString( conn, map );
         string Users ="";
         string Splitter ="<<<";
         string PlayerSlpitter=">>>";
         for( vector<PlayerOfPlayerList> :: iterator i = playerlist.begin( ); i != playerlist.end( ); ++i ) {
             Users += i->Slot+Splitter+i->Team+Splitter+i->Color+Splitter+i->Username+Splitter+i->Realm+Splitter+i->Ping+Splitter+i->IP+Splitter+i->LeftTime+Splitter+i->LeftReason+PlayerSlpitter;
-        }\
-        string Query = "UPDATE oh_gamelist SET map = '" + EscMap + "', gamename = '" + EscGameName + "', ownername = '" + EscOwnerName + "', creatorname = '" + EscCreatorName + "', users='"+Users+"' WHERE botid='" + UTIL_ToString(botid) + "' AND gameid='"+UTIL_ToString(gameid)+"'";
+        }
+        string EscPlayerList = MySQLEscapeString( conn, Users );
+
+        tring Query = "INSERT INTO gamelist (botid, hostcounter, lobby, map_type, gamename, ownername, creatorname, map) VALUES ('" + UTIL_ToString( botid ) + "', '" + UTIL_ToString( hostcounter ) + "', '" + UTIL_ToString( lobby ) + "', '" + EscMapType + "', '" + EscGameName + "', '" + EscOwnerName + "', '" + EscCreatorName + "', '" + EscMap + "') ON DUPLICATE KEY UPDATE lobby = '" + UTIL_ToString( lobby ) + "', duration = '" + UTIL_ToString( duration ) + "', ownername = '" + EscOwnerName + "', players = '" + UTIL_ToString( players ) + "', total = '" + UTIL_ToString( total ) + "', users = '" + EscPlayerList + "'";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
+    } else {
+        string Query = "DELETE FROM gamelist WHERE botid = " + UTIL_ToString( botid ) + " AND hostcounter = " + UTIL_ToString( hostcounter );
 
-        return "";
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+            *error = mysql_error( (MYSQL *)conn );
+    }
+        /*
     } else {
         string Query = "SELECT gamename,slotstaken,slotstotal,totalgames,totalplayers FROM oh_gamelist WHERE gamename LIKE '%"+EscGameName+"%'";
 
@@ -2200,7 +2207,7 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, string map, s
         }
 
         return "";
-    }
+    }*/
 }
 
 uint32_t MySQLGamePlayerAdd( void *conn, string *error, uint32_t botid, uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id )
@@ -3145,7 +3152,7 @@ void CMySQLCallableGameUpdate :: operator( )( )
     Init( );
 
     if( m_Error.empty( ) )
-        m_Result = MySQLGameUpdate( m_Connection, &m_Error, m_SQLBotID, m_Map, m_GameName, m_OwnerName, m_CreatorName, m_Playerlist, m_GameID, m_Add );
+        m_Result = MySQLGameUpdate( m_Connection, &m_Error, m_SQLBotID, m_Hostcounter, m_Lobby, m_MapType, m_Duration, m_Gamename, m_OwnerName, m_CreatorName, m_Map, m_Players, m_Total, m_Playerlist );
 
     Close( );
 }

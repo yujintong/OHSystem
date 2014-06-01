@@ -375,7 +375,6 @@ CGHost :: CGHost( CConfig *CFG )
     m_SHA = new CSHA1( );
     m_CurrentGame = NULL;
     m_FinishedGames = 0;
-    m_CallableGameUpdate = NULL;
     m_CallableFlameList = NULL;
     m_CallableForcedGProxyList = NULL;
     m_CallableAliasList = NULL;
@@ -465,7 +464,6 @@ CGHost :: CGHost( CConfig *CFG )
     m_AutoHostOwner = CFG->GetString( "autohost_owner", string( ) );
     m_LastAutoHostTime = GetTime( );
     m_LastCommandListTime = GetTime( );
-    m_LastGameUpdateTime  = GetTime( );
     m_LastFlameListUpdate = 0;
     m_LastGProxyListUpdate=0;
     m_LastAliasListUpdate = 0;
@@ -1076,29 +1074,6 @@ bool CGHost :: Update( long usecBlock )
         }
 
         m_LastAutoHostTime = GetTime( );
-    }
-
-    //update gamelist every 10 seconds
-    if( !m_CallableGameUpdate && GetTime() - m_LastGameUpdateTime >= 3 )
-    {
-        for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
-            m_CallableGameUpdate = m_DB->ThreadedGameUpdate((*i)->GetMapName(), (*i)->GetGameName(), (*i)->GetOwnerName(), (*i)->GetCreatorName(), (*i)->GetPlayerListOfGame,(*i)->m_HostCounter, true);
-
-        }
-
-        if(m_CurrentGame)
-        {
-            m_CallableGameUpdate = m_DB->ThreadedGameUpdate(m_CurrentGame->GetMapName(), m_CurrentGame->GetGameName(), m_CurrentGame->GetOwnerName(), m_CurrentGame->GetCreatorName(), m_CurrentGame->GetPlayerListOfGame(), m_CurrentGame->m_HostCounter, true);
-        }
-        m_LastGameUpdateTime = GetTime();
-    }
-
-    if( m_CallableGameUpdate && m_CallableGameUpdate->GetReady())
-    {
-        m_LastGameUpdateTime = GetTime();
-        m_DB->RecoverCallable( m_CallableGameUpdate );
-        delete m_CallableGameUpdate;
-        m_CallableGameUpdate = NULL;
     }
 
     // refresh flamelist all 60 minutes
@@ -1715,25 +1690,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 
         if( (*i)->GetHoldClan( ) )
             (*i)->HoldClan( m_CurrentGame );
-    }
-
-    //update mysql current games list
-    if( m_CallableGameUpdate && m_CallableGameUpdate->GetReady()) {
-        m_DB->RecoverCallable( m_CallableGameUpdate );
-        delete m_CallableGameUpdate;
-        m_CallableGameUpdate = NULL;
-        m_LastGameUpdateTime = GetTime();
-    }
-
-    if(!m_CallableGameUpdate) {
-        uint32_t TotalGames = m_Games.size( ) + 1;
-        uint32_t TotalPlayers = 0;
-
-        for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-            TotalPlayers += (*i)->GetNumHumanPlayers( );
-
-        m_CallableGameUpdate = m_DB->ThreadedGameUpdate(m_CurrentGame->GetMapName( ), m_CurrentGame->GetGameName(), m_CurrentGame->GetOwnerName(), m_CurrentGame->GetCreatorName(), m_CurrentGame->GetSlotsOccupied(), m_CurrentGame->GetPlayerList( ), m_CurrentGame->GetSlotsOccupied() + m_CurrentGame->GetSlotsOpen(), TotalGames, TotalPlayers, true);
-        m_LastGameUpdateTime = GetTime();
     }
 }
 

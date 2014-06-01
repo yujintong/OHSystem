@@ -1752,6 +1752,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         m_CallableGameDBInit = NULL;
     }
 
+    if( m_CallableGameUpdate && m_CallableGameUpdate->GetReady())
+    {
+        m_LastGameUpdateTime = GetTime();
+        m_DB->RecoverCallable( m_CallableGameUpdate );
+        delete m_CallableGameUpdate;
+        m_CallableGameUpdate = NULL;
+    }
+
     return m_Exiting;
 }
 
@@ -6519,6 +6527,17 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
 }
 
 void CBaseGame :: DoGameUpdate(bool reset) {
+    if( !reset ) {
+        if( m_GameLoading || m_GameLoaded )
+            m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", m_GameTicks / 1000, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_StartPlayers, GetPlayerListOfGame( ) );
+        else
+            m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 1, "", GetTime( ) - m_CreationTime, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_Slots.size( ), GetPlayerListOfGame( ) );
+     }
+     else
+        m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", 0, "", "", "", "", 0, 0, "", GetPlayerListOfGame( ));
+
+    m_LastGameUpdateTime = GetTime( );
+
     return;
 }
 

@@ -47,7 +47,6 @@ class CMap;
 class CSaveGame;
 class CConfig;
 class CCallableCommandList;
-class CCallableGameUpdate;
 class CCallableFlameList;
 class CCallableForcedGProxyList;
 class CCallableAnnounceList;
@@ -130,8 +129,6 @@ public:
     uint32_t m_LastDCountryUpdate;
     vector<string> m_DCountries;
     CCallableCommandList *m_CallableCommandList;			// threaded database command list in progress
-    uint32_t m_LastGameUpdateTime;			// GetTime when the gamelist was last updated
-    CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
     CCallableGameDBInit *m_CallableHC;
     CCallableDeniedNamesList *m_CallableDeniedNamesList;
     vector<string> m_DeniedNamePartials;

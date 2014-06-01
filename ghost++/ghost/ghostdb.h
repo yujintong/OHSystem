@@ -132,7 +132,7 @@ public:
     virtual vector<CDBBan *> BanList( string server );
     virtual vector<string> CommandList( );
     virtual uint32_t GameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype );
-    virtual string GameUpdate( string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add );
+    virtual string GameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist );
     virtual uint32_t GamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id );
     virtual uint32_t GamePlayerCount( string name );
     virtual CDBGamePlayerSummary *GamePlayerSummaryCheck( string name );
@@ -181,7 +181,7 @@ public:
     virtual CCallableCommandList *ThreadedCommandList( );
     virtual CCallableGameAdd *ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid );
     virtual CCallableGameDBInit *ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias );
-    virtual CCallableGameUpdate *ThreadedGameUpdate( string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add );
+    virtual CCallableGameUpdate *ThreadedGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist );
     virtual CCallableGamePlayerAdd *ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id );
     virtual CCallableGamePlayerSummaryCheck *ThreadedGamePlayerSummaryCheck( string name );
     virtual CCallableStatsPlayerSummaryCheck *ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias );
@@ -846,21 +846,23 @@ public:
 class CCallableGameUpdate : virtual public CBaseCallable
 {
 protected:
+    uint32_t m_Hostcounter;
+    uint32_t m_Lobby;
+    string m_MapType;
+    uint32_t m_Duration;
+    string m_Gamename;
     string m_Map;
     string m_GameName;
     string m_OwnerName;
     string m_CreatorName;
     bool m_Add;
     uint32_t m_Players;
-    string m_Usernames;
-    uint32_t m_SlotsTotal;
-    uint32_t m_TotalGames;
-    uint32_t m_TotalPlayers;
+    uint32_t m_Total;
     vector<PlayerOfPlayerList> m_Playerlist;
-    uint32_t m_GameID;
     string m_Result;
+
 public:
-    CCallableGameUpdate( string map, string gamename, string ownername, string creatorname, vector<PlayerOfPlayerList> playerlist, uint32_t gameid, bool add ) : CBaseCallable( ), m_Map(map), m_GameName(gamename), m_OwnerName(ownername), m_CreatorName(creatorname), m_Add(add), m_Playerlist(playerlist), m_GameID(gameid) { }
+    CCallableGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist ) : CBaseCallable( ), m_Map(map), m_GameName(gamename), m_OwnerName(ownername), m_CreatorName(creatorname), m_Add(add), m_Playerlist(playerlist), m_Hostcounter(hostcounter), m_Lobby(lobby), m_MapType(map_type), m_Players(players), m_Total(total), m_Duration(duration) { }
     virtual ~CCallableGameUpdate( );
 
     virtual string GetResult( )				{

@@ -61,6 +61,7 @@ class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
 struct PlayerOfPlayerList;
+class CCallableGameUpdate;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -94,6 +95,7 @@ protected:
     vector<PairedBanCheck2> m_PairedBanCheck2s;
     vector<PairedLogUpdate> m_PairedLogUpdates;
     vector<PairedINCheck> m_PairedINChecks;       // vector of paired threaded database ingame checks in progress
+    CCallableGameUpdate *m_CallableGameUpdate;// threaded database game update in progress
     CCallableGameDBInit *m_CallableGameDBInit;
     queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
     vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)
