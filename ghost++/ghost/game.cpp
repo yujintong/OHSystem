@@ -4158,8 +4158,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
             if( m_TotalWinPoints != 0 )
             {
-                string SeWP = UTIL_ToString( ( m_SentinelWinPoints / m_TotalWinPoints ) * 100, 1);
-                string ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 100, 1);
+                string SeWP = UTIL_ToString( ( m_SentinelWinPoints / m_TotalWinPoints ) * 50, 1);
+                string ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 50, 1);
                 SendChat( player,  m_GHost->m_Language->WinChance( SeWP, ScWP  ) );
             }
             else
