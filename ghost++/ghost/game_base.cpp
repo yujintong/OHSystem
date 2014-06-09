@@ -889,7 +889,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // however, if autohosting is enabled and this game is public and this game is set to autostart, it's probably autohosted
         // so rehost it using the current autohost game name
 
-        string GameName = m_GHost->m_AutoHostGameName + " #" + UTIL_ToString( m_HostCounter % 100 );
+        string GameName = m_GHost->m_AutoHostGameName + " #" + UTIL_ToString( m_HostCounter % 1000 );
         CONSOLE_Print( "[GAME: " + m_GameName + "] automatically trying to rehost as public game [" + GameName + "] due to refresh failure" );
         m_LastGameName = m_GameName;
         m_GameName = GameName;
