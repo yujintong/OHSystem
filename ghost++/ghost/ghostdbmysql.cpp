@@ -1771,7 +1771,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
 
     if( EscReason.substr(0, 4)=="left" || EscReason.substr(0, 4)=="disc" )
     {
-        string UpdateQuery = "UPDATE oh_stats_players SET last_leaver_level = FROM_UNIXTIME( UNIX_TIMESTAMP( ) + 604800 ), leaver_level=leaver_level+1 WHERE player_lower='"+EscUser+"'";
+        string UpdateQuery = "UPDATE oh_stats_players SET last_leaver_time = FROM_UNIXTIME( UNIX_TIMESTAMP( ) + 604800 ), leaver_level=leaver_level+1 WHERE player_lower='"+EscUser+"'";
         mysql_real_query( (MYSQL *)conn, UpdateQuery.c_str( ), UpdateQuery.size( ) );
     }
 
@@ -2348,7 +2348,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
                 leaver_level = UTIL_ToUInt32(Row[8]);
                 update_leaver_level = UTIL_ToUInt32(Row[9]);
                 if( update_leaver_level && leaver_level != 0 ) {
-                    string UpdatePlayerQuery = "UPDATE oh_stats_players SET last_leaver_level = FROM_UNIXTIME( UNIX_TIMESTAMP( ) + 604800 ) , leaver_level=leaver_level-1 WHERE player_lower='"+EscLowerName+"'";
+                    string UpdatePlayerQuery = "UPDATE oh_stats_players SET last_leaver_time = FROM_UNIXTIME( UNIX_TIMESTAMP( ) + 604800 ) , leaver_level=leaver_level-1 WHERE player_lower='"+EscLowerName+"'";
                     mysql_real_query( (MYSQL *)conn, UpdatePlayerQuery.c_str( ), UpdatePlayerQuery.size( ) );
                 }
                 mysql_free_result( Result );
