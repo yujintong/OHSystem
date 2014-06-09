@@ -86,6 +86,26 @@ CREATE TABLE IF NOT EXISTS `oh_ban_reports` (
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `oh_bot_status` (
+  `botid` tinyint(4) NOT NULL,
+  `name` varchar(15) NOT NULL,
+  `gamename` varchar(31) NOT NULL,
+  `ip` varchar(21) NOT NULL,
+  `hostport` smallint(6) unsigned NOT NULL,
+  `roc` varchar(50) NOT NULL,
+  `tft` varchar(50) NOT NULL,
+  `last_update` datetime NOT NULL,
+  `Europe` tinyint(1) unsigned NOT NULL,
+  `USEast` tinyint(1) unsigned NOT NULL,
+  `USWest` tinyint(1) unsigned NOT NULL,
+  `Asia` tinyint(1) unsigned NOT NULL,
+  `XAMP` tinyint(1) unsigned NOT NULL,
+  `Garena` tinyint(4) NOT NULL,
+  `WC3Connect` tinyint(4) NOT NULL,
+  PRIMARY KEY (`botid`),
+  KEY `hostport` (`hostport`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `oh_bot_configuration`;
 CREATE TABLE IF NOT EXISTS `oh_bot_configuration` (
   `cfg_botid` tinyint(4) NOT NULL,
@@ -536,6 +556,8 @@ CREATE TABLE IF NOT EXISTS `oh_stats_players` (
   `hide` tinyint(1) unsigned NOT NULL,
   `realm` varchar(20) NOT NULL,
   `ip` varchar(15) NOT NULL,
+  `leaver_level` tinyint(4) NOT NULL DEFAULT '0',
+  `last_leaver_time` datetime NOT NULL,
   `country` varchar(50) NOT NULL,
   `country_code` varchar(2) NOT NULL,
   `points` int(11) unsigned NOT NULL,
