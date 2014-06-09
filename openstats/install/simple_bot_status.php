@@ -132,9 +132,11 @@ Bot Status:<br>
 1 - Connected<br>
 2 - IP banned<br>
 3 - disconnected (timed out)<br>
-4 - wrong ROC key<br>
-5 - wrong TFT key<br>
-6 - invalid username or password
+4 - wrong ROC key or in use<br>
+5 - wrong TFT key or in use<br>
+6 - invalid username or password<br>
+7 - invalid game version<br>
+8 - cd keys not accepted
 </body>
 </html>
 

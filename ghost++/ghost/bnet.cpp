@@ -1318,12 +1318,15 @@ void CBNET :: ProcessPackets( )
                         break;
                     case CBNETProtocol :: KR_OLD_GAME_VERSION:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - game version is too old, disconnecting" );
+                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 7 ) ) );
                         break;
                     case CBNETProtocol :: KR_INVALID_VERSION:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - game version is invalid, disconnecting" );
+                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 7 ) ) );
                         break;
                     default:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - cd keys not accepted, disconnecting" );
+                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 8) ) );
                         break;
                     }
 
