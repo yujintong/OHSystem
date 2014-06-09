@@ -3153,7 +3153,7 @@ void CMySQLCallableGameUpdate :: operator( )( )
     Init( );
 
     if( m_Error.empty( ) )
-        m_Result = MySQLGameUpdate( m_Connection, &m_Error, m_SQLBotID, m_Hostcounter, m_Lobby, m_MapType, m_Duration, m_Gamename, m_OwnerName, m_CreatorName, m_Map, m_Players, m_Total, m_Playerlist );
+        m_Result = MySQLGameUpdate( m_Connection, &m_Error, m_SQLBotID, m_Hostcounter, m_Lobby, m_MapType, m_Duration, m_GameName, m_OwnerName, m_CreatorName, m_Map, m_Players, m_Total, m_Playerlist );
 
     Close( );
 }

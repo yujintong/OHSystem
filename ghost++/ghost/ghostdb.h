@@ -851,7 +851,6 @@ protected:
     uint32_t m_Lobby;
     string m_MapType;
     uint32_t m_Duration;
-    string m_Gamename;
     string m_Map;
     string m_GameName;
     string m_OwnerName;
