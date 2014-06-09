@@ -2914,8 +2914,8 @@ string CLanguage :: DomainOnJoinNotify( )
 string CLanguage :: WelcomeBackUser( string user, string ping )
 {
     string Out = m_CFG->GetString( "oh_191", "oh_191" );
-    UTIL_Replace( Out, "$USER$", user);
-    UTIL_Replace( Out, "$PING$", ping);
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$PING$", ping );
     return Out;
 }
 
