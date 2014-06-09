@@ -486,7 +486,7 @@ string CLanguage :: HasPlayedGamesWithThisBot( string user, string score, string
     UTIL_Replace( Out, "$GAMES$", games );
     UTIL_Replace( Out, "$WINPERC$", winperc );
     UTIL_Replace( Out, "$STREAK$", streak );
-    if( month == "0" && year == "0")
+    if( month == "unknown" && year == "0")
         UTIL_Replace( Out, "$TIME$", "overall");
     else
         UTIL_Replace( Out, "$TIME$", month+", "+year);
@@ -497,7 +497,7 @@ string CLanguage :: HasntPlayedGamesWithThisBot( string user, string month, stri
 {
     string Out = m_CFG->GetString( "lang_0062", "lang_0062" );
     UTIL_Replace( Out, "$USER$", user );
-    if( month == "0" && year == "0")
+    if( month == "unknown" && year == "0")
         UTIL_Replace( Out, "$TIME$", "overall");
     else
         UTIL_Replace( Out, "$TIME$", month+", "+year);
@@ -636,7 +636,7 @@ string CLanguage :: HasPlayedAliasGamesWithThisBot2( string user, string totalga
     UTIL_Replace( Out, "$AVGNEUTRALKILLS$", avgneutralkills );
     UTIL_Replace( Out, "$AVGTOWERKILLS$", avgtowerkills );
     UTIL_Replace( Out, "$AVGRAXKILLS$", avgraxkills );
-    if( month == "0" && year == "0")
+    if( month == "unknown" && year == "0")
         UTIL_Replace( Out, "$TIME$", "overall");
     else
         UTIL_Replace( Out, "$TIME$", month+", "+year);
@@ -648,7 +648,7 @@ string CLanguage :: HasntPlayedAliasGamesWithThisBot( string user, string month,
     string Out = m_CFG->GetString( "lang_0075", "lang_0075" );
     UTIL_Replace( Out, "$GAMEALIAS$", gamealias );
     UTIL_Replace( Out, "$USER$", user );
-    if( month == "0" && year == "0")
+    if( month == "unknown" && year == "0")
         UTIL_Replace( Out, "$TIME$", "overall");
     else
         UTIL_Replace( Out, "$TIME$", month+", "+year);
