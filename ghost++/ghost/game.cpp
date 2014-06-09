@@ -4781,7 +4781,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !swaprequest
     //
-    else if((Command == "swaprequest"||Command == "swr") && !Payload.empty()) {
+    else if((Command == "swaprequest"||Command == "swr") && !Payload.empty() && !m_GameLoaded) {
         if(!player->GetSwapRequested()) {
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -4815,7 +4815,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !swapaccept
     //
-    else if(Command == "swapaccept"||Command == "swa" ) {
+    else if( ( Command == "swapaccept"||Command == "swa" ) && !m_GameLoaded ) {
         if(player->GetSwapTarget() != 255) {
             if(!player->GetSwapRequested()) {
                 CGamePlayer *Player = GetPlayerFromPID(player->GetSwapTarget());
@@ -4841,7 +4841,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !swapabort
     //
-    else if(Command == "swapabort" && player->GetSwapRequested()) {
+    else if(Command == "swapabort" && player->GetSwapRequested() && !m_GameLoaded ) {
         SendChat(player, m_GHost->m_Language->AbortedTheSwap( ));
         player->SetSwapRequested(false);
         CGamePlayer *Player = GetPlayerFromPID(player->GetSwapTarget());
