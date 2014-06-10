@@ -225,23 +225,25 @@ CREATE TABLE IF NOT EXISTS `oh_goals` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `oh_gamelist`;
+
 CREATE TABLE IF NOT EXISTS `oh_gamelist` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `botid` smallint(4) unsigned DEFAULT NULL,
-  `alias_id` tinyint(4) unsigned NOT NULL,
+  `botid` smallint(4) unsigned NOT NULL,
   `gameid` int(11) unsigned NOT NULL,
-  `last_update` datetime NOT NULL,
-  `gamename` varchar(128) DEFAULT NULL,
-  `ownername` varchar(32) DEFAULT NULL,
-  `creatorname` varchar(32) DEFAULT NULL,
-  `map` varchar(100) DEFAULT NULL,
-  `slotstaken` tinyint(1) unsigned DEFAULT NULL,
-  `slotstotal` tinyint(1) unsigned DEFAULT NULL,
-  `usernames` varchar(512) DEFAULT NULL,
-  `totalgames` tinyint(1) DEFAULT NULL,
-  `totalplayers` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MEMORY  DEFAULT CHARSET=utf8;
+  `lobby` tinyint(1) NOT NULL,
+  `duration` int(11) NOT NULL,
+  `map_type` varchar(50) NOT NULL,
+  `gamename` varchar(30) NOT NULL,
+  `ownername` varchar(15) NOT NULL,
+  `creatorname` varchar(15) NOT NULL,
+  `map` varchar(100) NOT NULL,
+  `users` varchar(1000) NOT NULL,
+  `players` smallint(6) NOT NULL,
+  `total` smallint(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `botid` (`botid`),
+  KEY `gameid` (`gameid`),
+  KEY `lobby` (`lobby`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `oh_gameplayers`;
 CREATE TABLE IF NOT EXISTS `oh_gameplayers` (
