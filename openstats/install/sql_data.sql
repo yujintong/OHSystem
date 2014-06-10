@@ -239,8 +239,7 @@ CREATE TABLE IF NOT EXISTS `oh_gamelist` (
   `users` varchar(1000) NOT NULL,
   `players` smallint(6) NOT NULL,
   `total` smallint(6) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `botid` (`botid`),
+  PRIMARY KEY (`botid`),
   KEY `gameid` (`gameid`),
   KEY `lobby` (`lobby`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
