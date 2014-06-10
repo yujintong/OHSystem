@@ -960,6 +960,11 @@ bool CBNET :: Update( void *fd, void *send_fd )
     {
         // the socket is connected and everything appears to be working properly
 
+        if( GetTime() - LastUpdateTime >= 10) {
+            m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
+            LastUpdateTime = GetTime();
+        }
+
         m_Socket->DoRecv( (fd_set *)fd );
         ExtractPackets( );
         ProcessPackets( );
