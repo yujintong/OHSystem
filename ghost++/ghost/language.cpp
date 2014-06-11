@@ -3350,3 +3350,78 @@ string CLanguage :: UserAbortedSwapWithYou( string user )
     UTIL_Replace( Out, "$USER$", user );
     return Out;
 }
+
+string CLanguage :: DisconnectedAt( )
+{
+    string Out = m_CFG->GetString( "oh_254", "oh_254" );
+    return Out;
+}
+
+string CLanguage :: LeftAt( )
+{
+    string Out = m_CFG->GetString( "oh_255", "oh_255" );
+    return Out;
+}
+
+string CLanguage :: SuccessfullyUsedCachedPass( )
+{
+    string Out = m_CFG->GetString( "oh_256", "oh_256" );
+    return Out;
+}
+
+string CLanguage :: UseDrawToDrawGame( )
+{
+    string Out = m_CFG->GetString( "oh_257", "oh_257" );
+    return Out;
+}
+
+string CLanguage :: Unknown( )
+{
+    string Out = m_CFG->GetString( "oh_258", "oh_258" );
+    return Out;
+}
+
+string CLanguage :: LevelWasChanged( string level, string user )
+{
+    string Out = m_CFG->GetString( "oh_259", "oh_259" );
+    UTIL_Replace( Out, "$USER$", user );
+    UTIL_Replace( Out, "$LEVEL$", level );
+    return Out;
+}
+
+string CLanguage :: CustomVoteKickReasons( )
+{
+    string Out = m_CFG->GetString( "oh_260", "oh_260" );
+    return Out;
+}
+
+string CLanguage :: YourUniqueId( string id)
+{
+    string Out = m_CFG->GetString( "oh_261", "oh_261" );
+    UTIL_Replace( Out, "$ID$", id );
+    return Out;
+}
+
+string CLanguage :: RuleTags( )
+{
+    string Out = m_CFG->GetString( "oh_262", "oh_262" );
+    return Out;
+}
+
+string CLanguage :: YourPingIsToday( )
+{
+    string Out = m_CFG->GetString( "oh_263", "oh_263" );
+    return Out;
+}
+
+string CLanguage :: PossibleModesToVote( )
+{
+    string Out = m_CFG->GetString( "oh_263", "oh_263" );
+    return Out;
+}
+
+string CLanguage :: VoteResult( )
+{
+    string Out = m_CFG->GetString( "oh_264", "oh_264" );
+    return Out;
+}

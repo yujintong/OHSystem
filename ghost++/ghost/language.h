@@ -517,6 +517,18 @@ public:
     string NoOneIsSwappingWithYou( );
     string AbortedTheSwap( );
     string UserAbortedSwapWithYou( string user );
+    string DisconnectedAt( );
+    string LeftAt( );
+    string SuccessfullyUsedCachedPass( );
+    string UseDrawToDrawGame( );
+    string Unknown( );
+    string LevelWasChanged( string level, string user );
+    string CustomVoteKickReasons( );
+    string YourUniqueId( string id);
+    string RuleTags();
+    string YourPingIsToday( );
+    string PossibleModesToVote( );
+    string VoteResult( );
 };
 
 #endif

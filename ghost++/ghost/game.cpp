@@ -123,9 +123,9 @@ CGame :: ~CGame( )
                 if( Counter <= 2 && VictimLevel <= 2 )
                 {
                     uint32_t BanTime = 0;
-                    string Reason = "disconnected at ";
+                    string Reason = m_GHost->m_Language->DisconnectedAt()+" ";
                     if((*i)->GetLeftReason( ).find("left")!=string::npos) {
-                        Reason = "left at ";
+                        Reason = m_GHost->m_Language->LeftAt()+" ";
                     }
                     switch((*i)->GetLeaverLevel( )) {
                         case 0:
@@ -303,7 +303,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                     Player->SetPasswordProt( true );
                     Player->SetRegistered( true );
                 } else if( Result == 2 && m_GHost->PlayerCached( Player->GetName ( ) ) ) {
-                    SendChat( Player, "Successfully used cached Password.");
+                    SendChat( Player, m_GHost->m_Language->SuccessfullyUsedCachedPass( ));
                     Player->SetRegistered( true );
                 } else if( Result == 1 ) {
                     Player->SetRegistered( true );
@@ -1020,7 +1020,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
 
         // if this was early leave, suggest to draw the game
         if( m_GameTicks < 1000 * 60 )
-            SendAllChat( "Use !draw to vote to draw the game." );
+            SendAllChat( m_GHost->m_Language->UseDrawToDrawGame( ) );
 
         if( Team != 12 && m_GameOverTime == 0 && m_ForfeitTime == 0 )
         {
@@ -1180,7 +1180,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     if(m_GHost->m_RanksLoaded)
         LevelName = player->GetLevelName();
     else {
-        LevelName = "unknown";
+        LevelName = m_GHost->m_Language->Unknown();
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
 
@@ -1244,7 +1244,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
                 else if(Matches==1)
                 {
-                    SendChat( LastMatch, "Your level has been set to ["+level+"] by ["+player->GetName ()+"]");
+                    SendChat( LastMatch, m_GHost->m_Language->LevelWasChanged( level, player->GetName( ) ) );
                     LastMatch->SetLevel (UTIL_ToUInt32(level));
                 }
                 else if(Matches>1)
@@ -3598,7 +3598,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( Command == "vkreasons" && m_KickVotePlayer.empty( ) )
     {
-        SendChat( player, "Custom VoteKick Reasons:" );
+        SendChat( player, m_GHost->m_Language->CustomVoteKickReasons( ) );
         SendChat( player, "Maphack, Fountainfarm, Feeding, Flaming & Gameruin" );
         return HideCommand;
     }
@@ -3837,7 +3837,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     // !ID
     else if(Command == "id") {
-        SendChat(player, "Your unique id is ["+UTIL_ToString(player->GetID())+"]");
+        SendChat(player, m_GHost->m_Language->YourUniqueId( UTIL_ToString(player->GetID())));
     }
 
     //
@@ -3891,7 +3891,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SendChat( player, m_GHost->m_Language->ErrorForfeitingNoTwoTeamMap( ) );
         else
         {
-            SendChat( player, "Forfeits:" );
             SendChat( player, "[Sentinel ("+UTIL_ToString(SeVotes)+"/"+UTIL_ToString(SePlayers)+"): "+SeNames );
             SendChat( player, "[Scourge ("+UTIL_ToString(ScVotes)+"/"+UTIL_ToString(ScPlayers)+"): "+ScNames );
         }
@@ -4309,7 +4308,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     {
         if( Payload.empty( ) )
         {
-            SendChat( player, "Rule Tags: "+GetRuleTags( ) );
+            SendChat( player, m_GHost->m_Language->RuleTags()+GetRuleTags( ) );
             SendChat( player, m_GHost->m_Language->RuleTagNotify( ) );
         }
         else
@@ -4477,7 +4476,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( Command == "ping" && Level < 5 )
     {
-        SendChat( player, "Your ping today is [" + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) +"]" );
+        SendChat( player, m_GHost->m_Language->YourPingIsToday( )+" [" + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) +"]" );
     }
 
     //
@@ -4520,7 +4519,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     // !VOTEOPTIONS
     //
     else if( ( Command == "voteoptions" || Command == "votelist" || Command == "vo" ) && m_GHost->m_VoteMode ) {
-        SendChat( player, "Possible options to vote as mode:");
+        SendChat( player, m_GHost->m_Language->PossibleModesToVote( ) );
         string Modes;
         uint32_t c = 1;
         for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
@@ -4567,8 +4566,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             } else
                 notvoted++;
         }
-        SendChat( player, "Vote Result:");
-        SendChat( player, "============");
+        SendChat( player, m_GHost->m_Language->VoteResult( ));
         string Return = "";
         if( mode1 != 0 ) {
             Return += "["+m_ModesToVote[0]+": "+UTIL_ToString(mode1)+"] ";
