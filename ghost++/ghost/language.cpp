@@ -3416,12 +3416,12 @@ string CLanguage :: YourPingIsToday( )
 
 string CLanguage :: PossibleModesToVote( )
 {
-    string Out = m_CFG->GetString( "oh_263", "oh_263" );
+    string Out = m_CFG->GetString( "oh_264", "oh_264" );
     return Out;
 }
 
 string CLanguage :: VoteResult( )
 {
-    string Out = m_CFG->GetString( "oh_264", "oh_264" );
+    string Out = m_CFG->GetString( "oh_265", "oh_265" );
     return Out;
 }
