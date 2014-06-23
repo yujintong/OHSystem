@@ -3408,6 +3408,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                     m_GHost->m_MinScoreLimit = minscore;
                     m_GHost->m_MaxScoreLimit = maxscore;
                     m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, gamename, User, User, m_Server, 3, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+		}
             }
         }
 
@@ -3415,7 +3416,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !PUBBY (host public game by other player)
         //
 
-        else if( Command == "pubby" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly)
+        else if( Command == "pubby" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
         {
             // extract the owner and the game name
             // e.g. "Varlock dota 6.54b arem ~~~" -> owner: "Varlock", game name: "dota 6.54b arem ~~~"

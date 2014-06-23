@@ -3899,7 +3899,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !OB
     //
-    else if( ( Command == "ob" || Command == "obs" || Command == "observe" ) &&! m_CountDownStarted &&! m_Gameloaded &&! m_GameLoading )
+    else if( ( Command == "ob" || Command == "obs" || Command == "observe" ) &&! m_CountDownStarted &&! m_GameLoaded &&! m_GameLoading )
     {
         if( Level > 2 )
         {
@@ -3923,7 +3923,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !UNOB
     //
-    else if( ( Command == "unob" || Command == "unobs" || Command == "unobserve" ) &&! m_Gameloaded &&! m_GameLoading &&! m_CountDownStarted )
+    else if( ( Command == "unob" || Command == "unobs" || Command == "unobserve" ) &&! m_GameLoaded &&! m_GameLoading &&! m_CountDownStarted )
     {
         unsigned char SID = GetSIDFromPID( player->GetPID( ) );
         if( Level > 2 && SID == 11 )
