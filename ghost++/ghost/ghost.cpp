@@ -1427,6 +1427,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_AllowHighPingSafeDrop = CFG->GetInt("oh_allowsafedrop", 1);
     m_MinPauseLevel = CFG->GetInt("oh_minpauselevel", 3);
     m_MinScoreLimit = CFG->GetInt("oh_minscorelimit", 0);
+    m_MaxScoreLimit = CFG->GetInt("oh_maxscorelimit", 0);
     m_AutobanAll = CFG->GetInt("oh_autobanall", 1) == 0 ? false : true;
     m_WC3ConnectAlias = CFG->GetString("wc3connect_alias", "WC3Connect");
     m_ChannelBotOnly = CFG->GetInt("oh_channelbot", 0) == 0 ? false : true;

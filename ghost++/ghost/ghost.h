@@ -230,6 +230,7 @@ public:
     bool m_AllowHighPingSafeDrop;
     uint32_t m_MinPauseLevel;
     uint32_t m_MinScoreLimit;
+    uint32_t m_MaxScoreLimit;
     bool m_AutobanAll;
     string m_WC3ConnectAlias;
     uint32_t m_LastHCUpdate;

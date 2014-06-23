@@ -496,6 +496,11 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                                     kick = true;
                                     reason = "was kicked for having a to low score.";
                                 }
+                                else if( m_GHost->m_MaxScoreLimit != 0 && score > m_GHost->m_MaxScoreLimit )
+                                {
+                                    kick = true;
+                                    reason = "was kicked for having a to high score.";
+                                }
                             }
                             if( m_GameType == 4 )
                             {

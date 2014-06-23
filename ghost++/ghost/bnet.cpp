@@ -3379,6 +3379,39 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, m_Server, 2, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 
         //
+        // !PUBMM
+        //
+        else if( Command == "pubmm" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly ) {
+            string gamename;
+            uint32_t minscore;
+            uint32_t maxscore;
+            stringstream SS;
+            SS << Payload;
+
+            SS >> minscore;
+
+            if( SS.fail( ) || minscore <= 0 || minscore > 100000 )
+                CONSOLE_Print( "[PUBMM] bad input #1 to !PUBMM command." );
+            else {
+                SS >> maxscore;
+                if( SS.fail( ) || maxscore <= 0 || maxscore > 100000)
+                    CONSOLE_Print( "[PUBMM] bad input #2 to !PUBMM command." );
+                else {
+                    if( !SS.eof( ) )
+                    {
+                        getline( SS, gamename );
+                        string :: size_type Start = gamename.find_first_not_of( " " );
+
+                        if( Start != string :: npos )
+                            gamename = gamename.substr( Start );
+                    }
+                    m_GHost->m_MinScoreLimit = minscore;
+                    m_GHost->m_MaxScoreLimit = maxscore;
+                    m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, gamename, User, User, m_Server, 3, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
+            }
+        }
+
+        //
         // !PUBBY (host public game by other player)
         //
 
