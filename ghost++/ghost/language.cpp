@@ -3425,3 +3425,121 @@ string CLanguage :: VoteResult( )
     string Out = m_CFG->GetString( "oh_265", "oh_265" );
     return Out;
 }
+
+string CLanguage :: BanReasonIs( )
+{
+    string Out = m_CFG->GetString( "oh_266", "oh_266" );
+    return Out;
+}
+
+string CLanguage :: UnableToJoin( )
+{
+    string Out = m_CFG->GetString( "oh_267", "oh_267" );
+    return Out;
+}
+
+string CLanguage :: YouAreBanned( )
+{
+    string Out = m_CFG->GetString( "oh_268", "oh_268" );
+    return Out;
+}
+
+string CLanguage :: BannedAt( string name, string server )
+{
+    string Out = m_CFG->GetString( "oh_269", "oh_269" );
+    UTIL_Replace( Out, "$NAME$", name );
+    UTIL_Replace( Out, "$SERVER$", server );
+    return Out;
+}
+string CLanguage :: BanDateAndRemain( string date, string remain )
+{
+    string Out = m_CFG->GetString( "oh_270", "oh_270" );
+    UTIL_Replace( Out, "$DATE$", date );
+    UTIL_Replace( Out, "$REMAIN$", remain );
+    return Out;
+}
+string CLanguage :: BanDateWithoutRemain( string date )
+{
+    string Out = m_CFG->GetString( "oh_271", "oh_271" );
+    UTIL_Replace( Out, "$DATE$", date );
+    return Out;
+}
+string CLanguage :: BanGameName( string game )
+{
+    string Out = m_CFG->GetString( "oh_272", "oh_272" );
+    UTIL_Replace( Out, "$GAMENAME$", game );
+    return Out;
+}
+string CLanguage :: BanReason( string reason )
+{
+    string Out = m_CFG->GetString( "oh_273", "oh_273" );
+    UTIL_Replace( Out, "$REASON$", reason );
+    return Out;
+}
+string CLanguage :: YouCanAlsoUseGproxy( )
+{
+    string Out = m_CFG->GetString( "oh_274", "oh_274" );
+    return Out;
+}
+string CLanguage :: JoinedInAGameWithAMinAmountOfGames( )
+{
+    string Out = m_CFG->GetString( "oh_275", "oh_275" );
+    return Out;
+}
+string CLanguage :: YouRequireAtLeastGames( string min )
+{
+    string Out = m_CFG->GetString( "oh_276", "oh_276" );
+        UTIL_Replace( Out, "$MIN$", min );
+    return Out;
+}
+string CLanguage :: JoinedInAGameWithAMinAmountOfScore( )
+{
+    string Out = m_CFG->GetString( "oh_277", "oh_277" );
+    return Out;
+}
+string CLanguage :: YouRequireToBeRegisteredOnStatsPage( )
+{
+    string Out = m_CFG->GetString( "oh_278", "oh_278" );
+    return Out;
+}
+string CLanguage :: YouRequireToBeSafelisted( )
+{
+    string Out = m_CFG->GetString( "oh_279", "oh_279" );
+    return Out;
+}
+string CLanguage :: GetMoreInformationOn( string site )
+{
+    string Out = m_CFG->GetString( "oh_280", "oh_280" );
+        UTIL_Replace( Out, "$SITE$", site );
+    return Out;
+}
+string CLanguage :: YouAreBannedFromLobby( )
+{
+    string Out = m_CFG->GetString( "oh_281", "oh_281" );
+    return Out;
+}
+string CLanguage :: YouJoinedFromProxy( )
+{
+    string Out = m_CFG->GetString( "oh_282", "oh_282" );
+    return Out;
+}
+string CLanguage :: YouJoinedFromABannedCountry( )
+{
+    string Out = m_CFG->GetString( "oh_283", "oh_283" );
+    return Out;
+}
+string CLanguage :: YouAreForcedToUseGproxy( )
+{
+    string Out = m_CFG->GetString( "oh_284", "oh_284" );
+    return Out;
+}
+string CLanguage :: YouWillBeKickedInAFewSeconds( )
+{
+    string Out = m_CFG->GetString( "oh_285", "oh_285" );
+    return Out;
+}
+string CLanguage :: ReplayPrefix()
+{
+    string Out = m_CFG->GetString( "oh_286", "oh_286" );
+    return Out;
+}

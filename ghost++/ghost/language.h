@@ -529,6 +529,27 @@ public:
     string YourPingIsToday( );
     string PossibleModesToVote( );
     string VoteResult( );
+    string BanReasonIs( );
+    string UnableToJoin( );
+    string YouAreBanned( );
+    string BannedAt( string name, string server );
+    string BanDateAndRemain( string date, string remain );
+    string BanDateWithoutRemain( string date );
+    string BanGameName( string game );
+    string BanReason( string reason );
+    string YouCanAlsoUseGproxy( );
+    string JoinedInAGameWithAMinAmountOfGames( );
+    string YouRequireAtLeastGames( string min );
+    string JoinedInAGameWithAMinAmountOfScore( );
+    string YouRequireToBeRegisteredOnStatsPage( );
+    string YouRequireToBeSafelisted( );
+    string GetMoreInformationOn( string site );
+    string YouAreBannedFromLobby( );
+    string YouJoinedFromProxy( );
+    string YouJoinedFromABannedCountry( );
+    string YouAreForcedToUseGproxy( );
+    string YouWillBeKickedInAFewSeconds( );
+    string ReplayPrefix( );
 };
 
 #endif

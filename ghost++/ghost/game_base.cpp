@@ -679,7 +679,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 else if( Result == 5 )
                     SendAllChat( m_GHost->m_Language->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ) );
 
-                SendAllChat( "Ban Reason: "+i->second->GetReason( ) );
+                SendAllChat( m_GHost->m_Language->BanReasonIs( )+" "+i->second->GetReason( ) );
             }
             else
                 SendAllChat( m_GHost->m_Language->WrongContactBotOwner( ) );
@@ -2254,10 +2254,10 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
     // send a map check packet to the new player
 
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_MAPCHECK( m_Map->GetMapPath( ), m_Map->GetMapSize( ), m_Map->GetMapInfo( ), m_Map->GetMapCRC( ), m_Map->GetMapSHA1( ) ) );
-    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are currently unable to join the game." ) );
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->UnableToJoin( ) ) );
     if(1==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "   >>>>>> You are banned! <<<<<<" ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Name:      " + Ban->GetName() + "@" + Ban->GetServer()) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouAreBanned( ) ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BannedAt( Ban->GetName(), Ban->GetServer()) ) );
         string Remain = "";
         if( Ban->GetMonths() != "0" && Ban->GetMonths() != "" )
             Remain += Ban->GetMonths() +"m, ";
@@ -2268,47 +2268,47 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
         if( Ban->GetMinutes() != "0" && Ban->GetMinutes() != "")
             Remain += Ban->GetMinutes() +"m ";
         if(! Remain.empty() )
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Date:       " + Ban->GetDate() + " (Remain: " + Remain + ")" ) );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BanDateAndRemain( Ban->GetDate(), Remain ) ) );
         else
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Date:       " + Ban->GetDate() + " (Permanently Banned!)") );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BanDateWithoutRemain( Ban->GetDate() ) );
         if(! Ban->GetGameName().empty())
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Game:      " + Ban->GetGameName() ) );
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "       Reason:     " + Ban->GetReason( ) ) );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BanGameName( Ban->GetGameName() ) ) );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BanReason(Ban->GetReason( ) ) ) );
             player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_CustomVirtualLobbyInfoBanText ) );
         if(gproxy && Remain.empty())
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can also use our GProxy and be able to join the games!" ) );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouCanAlsoUseGproxy() ) );
     } else if(2==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinLimit )+"]") );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->JoinedInAGameWithAMinAmountOfGames() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouRequireAtLeastGames( UTIL_ToString( m_GHost->m_MinLimit ) ) ) );
     } else if(3==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of score." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinScoreLimit )+"]") );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->JoinedInAGameWithAMinAmountOfScore() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouRequireAtLeastGames( UTIL_ToString( m_GHost->m_MinScoreLimit ) ) ) );
     } else if(4==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least to be registered on the statspage." ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouRequireToBeRegisteredOnStatsPage() ) );
     } else if(5==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined a game with a minimum requierement of games." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "    You require at least ["+UTIL_ToString( m_GHost->m_MinVIPGames )+"]") );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->JoinedInAGameWithAMinAmountOfGames() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouRequireAtLeastGames( UTIL_ToString( m_GHost->m_MinVIPGames ) ) ) );
     } else if(6==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You require at least a safelisted spot." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about your status on: "+m_GHost->m_Website ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouRequireToBeSafelisted() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->GetMoreInformationOn( m_GHost->m_Website ) ) );
     } else if(7==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a Proxy and this is forbidden on this server." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about a vouching: "+m_GHost->m_Website ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouAreBannedFromLobby() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouJoinedFromProxy() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->GetMoreInformationOn( m_GHost->m_Website ) ) );
         if(gproxy)
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can also use our GProxy and be able to join the games!" ) );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouCanAlsoUseGproxy() ) );
     } else if(8==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are banned from this lobby." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You joined from a banned country." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about a vouching: "+m_GHost->m_Website ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouAreBannedFromLobby() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouJoinedFromABannedCountry() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->GetMoreInformationOn( m_GHost->m_Website ) ) );
         if(gproxy)
-            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can also use our GProxy and be able to join the games!" ) );
+            player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouCanAlsoUseGproxy() ) );
     } else if(9==type) {
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You are forced to use gproxy." ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You can get more information about your status on: "+m_GHost->m_Website ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouAreForcedToUseGproxy() ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->GetMoreInformationOn( m_GHost->m_Website ) ) );
     }
 
-    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), "You will be automatically kicked in a few seconds." ) );
+    player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouWillBeKickedInAFewSeconds() ) );
 
 }
 
@@ -2594,7 +2594,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     // check if the player is an admin or root admin on any connected realm for determining reserved status
     // we can't just use the spoof checked realm like in EventPlayerBotCommand because the player hasn't spoof checked yet
     uint32_t Level = 0;
-    string LevelName = "unknown";
+    string LevelName =  m_GHost->m_Language->Unknown();
 
     // test if player is reserved
     for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
@@ -4375,7 +4375,7 @@ void CBaseGame :: EventGameStarted( )
     UTIL_AppendByteArray( StatString, m_Map->GetMapHeight( ) );
     UTIL_AppendByteArray( StatString, m_Map->GetMapCRC( ) );
     UTIL_AppendByteArray( StatString, m_Map->GetMapPath( ) );
-    UTIL_AppendByteArray( StatString, "GHost++" );
+    UTIL_AppendByteArray( StatString,  m_GHost->m_Language->ReplayPrefix() );
     StatString.push_back( 0 );
     UTIL_AppendByteArray( StatString, m_Map->GetMapSHA1( ) );               // note: in replays generated by Warcraft III it stores 20 zeros for the SHA1 instead of the real thing
     StatString = UTIL_EncodeStatString( StatString );
