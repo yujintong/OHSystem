@@ -3282,6 +3282,7 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
 
 bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
 {
+
     if( ( !m_GameLoaded && !m_GameLoading ) || action->GetLength( ) > 1027 )
     {
         delete action;
@@ -3291,6 +3292,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
     if( !action->GetAction( )->empty( ) )
     {
         BYTEARRAY *ActionData = action->GetAction( );
+	BYTEARRAY packet = *action->GetAction( );
         unsigned int i = 0;
 
         uint32_t PacketLength = ActionData->size( );
@@ -3308,6 +3310,27 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
             bool Failed = false;
 
+/*
+	if( packet.size() >= 21 ) {
+	  BYTEARRAY coordX;					//                                                     ^
+	  coordX.push_back( packet[15] );			//                                                     |
+	  coordX.push_back( packet[16] );			//    Target's X Coordinate                       -----+----> Y
+	  coordX.push_back( packet[17] );			//                                                     |
+	  coordX.push_back( packet[18] );			//                                                     |
+
+	  unsigned char buf[4]={packet[15],packet[16],packet[17],packet[18]}; 
+	  float x=*(float*)(buf);
+
+ 	  BYTEARRAY coordY;					//
+	  coordY.push_back( packet[19] );			//
+	  coordY.push_back( packet[20] );			//    Target's Y Coordinate
+	  coordY.push_back( packet[21] );			//
+	  coordY.push_back( packet[22] );			//
+
+	  unsigned char buf2[4]={packet[19],packet[20],packet[21],packet[22]}; 
+	  float y=*(float*)(buf2);
+	}
+*/
             while( n < PacketLength && !Failed )
             {
                 PreviousID = CurrentID;
@@ -3591,6 +3614,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
                 if( ActionSize > 1024 )
                     Failed = true;
+
             }
 
 
