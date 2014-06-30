@@ -550,6 +550,7 @@ public:
     string YouAreForcedToUseGproxy( );
     string YouWillBeKickedInAFewSeconds( );
     string ReplayPrefix( );
+    string YouHaveBeenDetectedAsFountainFarmer( );
 };
 
 #endif

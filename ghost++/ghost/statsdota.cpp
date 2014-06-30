@@ -49,6 +49,7 @@ CStatsDOTA :: CStatsDOTA( CBaseGame *nGame ) : CStats( nGame ), m_Winner( 0 ), m
         m_DeathsByLeaver[i] = 0;
         m_LatestKill[i] = 0;
         m_KillCounter[i] = 0;   //The killcounter for checking as double kill etc (not the general kills of a player.)
+        m_FFKills[i] = 0;
         m_KillStreakCounter[i] = 0;
         m_BufferedItemOne[i] = "";
         m_BufferedItemTwo[i] = "";
@@ -254,6 +255,16 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] killed player [" + Victim->GetName( ) + "]" );
                                         m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + Victim->GetName( ) + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
                                     }
+
+                                    if( GetTime() - Killer->GetLastAttackTimeToFountain() <=5 ) {
+                                        m_Game->SendChat(Killer->GetPID(), m_Game->m_GHost->m_Language->YouHaveBeenDetectedAsFountainFarmer());
+                                        m_FFKills[ValueInt]++;
+                                        Killer->SetFFLevel();
+
+                                        if(Killer->GetFFLevel() == 3 ) {
+                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( Killer->GetJoinedRealm(), Killer->GetName(), Killer->GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Fountainfarm", 432000 , "" ) ) );
+                                        }
+                                    }
                                 }
                                 else if( Victim )
                                 {
@@ -305,6 +316,16 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     m_LeaverDeaths[VictimColour]++;
                                     if( m_LeaverDeaths[ValueInt] >= m_Game->m_GHost->m_MinimumLeaverDeaths )
                                         m_Game->SendAllChat( "[ANTIFARM] A leaver ["+UTIL_ToString(VictimColour)+"] was already ["+UTIL_ToString(m_LeaverDeaths[ValueInt])+"] times killed while he left. All remaining deaths wont be recorded." );
+
+                                    if( GetTime() - Killer->GetLastAttackTimeToFountain() <=5 ) {
+                                        m_Game->SendChat(Killer->GetPID(), m_Game->m_GHost->m_Language->YouHaveBeenDetectedAsFountainFarmer());
+                                        m_FFKills[ValueInt]++;
+                                        Killer->SetFFLevel();
+
+                                        if(Killer->GetFFLevel() == 3 ) {
+                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( Killer->GetJoinedRealm(), Killer->GetName(), Killer->GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Fountainfarm", 432000 , "" ) ) );
+                                        }
+                                    }
                                 }
 
                                 if( Victim != NULL )
@@ -326,7 +347,6 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         Victim->SetFeedLevel( 1 );
                                     }
                                 }
-
                             }
                             else if( KeyString.size( ) >= 4 && KeyString.substr( 0, 6 ) == "Assist" )
                             {
@@ -845,7 +865,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         m_Players[ID]->SetKills( ValueInt - m_LeaverKills[ID] );
                                     }
                                     else
-                                        m_Players[ID]->SetKills( ValueInt );
+                                        m_Players[ID]->SetKills( ValueInt - m_FFKills[ID] );
                                     if( ValueInt > 500 )
                                     {
                                         m_Players[ID]->SetKills( 0 );

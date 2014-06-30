@@ -64,6 +64,7 @@ private:
     string m_BufferedItemFive[12];
     string m_BufferedItemSix[12];
     uint32_t m_BufferedItemCount[12];
+    uint32_t m_FFKills[12];
 
 public:
     CStatsDOTA( CBaseGame *nGame );

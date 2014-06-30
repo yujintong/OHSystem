@@ -222,6 +222,8 @@ private:
     uint32_t m_LeaverLevel;
     bool m_RequestedSwap;
     uint8_t m_SwapTarget;
+    uint32_t m_LastAttackCommandToFountain;
+    uint32_t m_FFLevel;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -515,6 +517,12 @@ public:
     uint8_t GetSwapTarget( ) {
         return m_SwapTarget;
     }
+    uint32_t GetLastAttackTimeToFountain( ) {
+        return m_LastAttackCommandToFountain;
+    }
+    uint32_t GetFFLevel( ) {
+        return m_FFLevel;
+    }
 
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
@@ -766,6 +774,12 @@ public:
     }
     void SetSwapTarget( uint8_t nSwapTarget) {
         m_SwapTarget = nSwapTarget;
+    }
+    void SetLastAttackCommandToFountain( uint32_t time ) {
+        m_LastAttackCommandToFountain = time;
+    }
+    void SetFFLevel( ) {
+        m_FFLevel++;
     }
 
     // processing functions

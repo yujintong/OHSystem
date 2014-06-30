@@ -3543,3 +3543,8 @@ string CLanguage :: ReplayPrefix()
     string Out = m_CFG->GetString( "oh_286", "oh_286" );
     return Out;
 }
+string CLanguage :: YouHaveBeenDetectedAsFountainFarmer()
+{
+    string Out = m_CFG->GetString( "oh_287", "oh_287" );
+    return Out;
+}
