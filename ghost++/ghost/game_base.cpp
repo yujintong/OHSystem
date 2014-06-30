@@ -3310,15 +3310,25 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
             bool Failed = false;
 
-/*
+
 	if( packet.size() >= 21 ) {
 	  unsigned char buf[4]={packet[15],packet[16],packet[17],packet[18]};
 	  float x=*(float*)(buf);
 
 	  unsigned char buf2[4]={packet[19],packet[20],packet[21],packet[22]};
 	  float y=*(float*)(buf2);
-	}
-*/
+
+	  CurrentID = (*ActionData)[n];
+	  if(CurrentID == 18 && packet.size() == 31 ) {
+	  	unsigned char team = m_Slots[GetSIDFromPID( player->GetFromPID() )].GetTeam();
+		if(x < -6382 && y < -6290 && team == 1) {
+			SendChat(player, "We have detected an attack command into sentinel fountainarea. Please do not fountainfarm.");
+		}
+		if(x > 5893 && y > 5466 && team == 0) {
+			SendChat(player, "We have detected an attack command into scourge fountainarea. Please do not fountainfarm.");
+		}
+	  }
+
             while( n < PacketLength && !Failed )
             {
                 PreviousID = CurrentID;
@@ -3611,7 +3621,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                 player->SetActions();
             }
         }
-    }
+    } }
     m_Actions.push( action );
 
     return true;
