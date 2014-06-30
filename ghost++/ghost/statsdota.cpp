@@ -29,6 +29,7 @@
 #include "game_base.h"
 #include "stats.h"
 #include "statsdota.h"
+#include"language.h"
 
 //
 // CStatsDOTA
@@ -318,7 +319,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         m_Game->SendAllChat( "[ANTIFARM] A leaver ["+UTIL_ToString(VictimColour)+"] was already ["+UTIL_ToString(m_LeaverDeaths[ValueInt])+"] times killed while he left. All remaining deaths wont be recorded." );
 
                                     if( GetTime() - Killer->GetLastAttackTimeToFountain() <=5 ) {
-                                        m_Game->SendChat(Killer->GetPID(), m_Game->m_GHost->m_Language->YouHaveBeenDetectedAsFountainFarmer());
+                                        m_Game->SendChat(Killer->GetPID(), m_Game->m_GHost->m_Language->YouHaveBeenDetectedAsFountainFarmer() );
                                         m_FFKills[ValueInt]++;
                                         Killer->SetFFLevel();
 
