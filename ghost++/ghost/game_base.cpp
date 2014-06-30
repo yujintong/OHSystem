@@ -3319,7 +3319,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
               float y=*(float*)(buf2);
 
               CurrentID = (*ActionData)[n];
-              if(CurrentID == 18 && packet.size() == 31 ) {
+              if(CurrentID == 18 && packet.size() == 31  && ( m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) ) {
                 unsigned char team = m_Slots[GetSIDFromPID( player->GetPID() )].GetTeam();
                 if(x < -6382 && y < -6290 && team == 1) {
                     player->SetLastAttackCommandToFountain( GetTime() );
