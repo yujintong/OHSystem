@@ -2615,7 +2615,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     CGamePlayer *TempPlayer = new CGamePlayer( potential, 255, JoinedRealm, joinPlayer->GetName( ), joinPlayer->GetInternalIP( ), Reserved );
 
     // check if player is on the deny-vector
-    if( IsDenied( joinPlayer->GetName( ), potential->GetExternalIPString( ) ) )
+    if( IsDenied( joinPlayer->GetName( ), potential->GetExternalIPString( ) ) && Level < 5 )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join but is denied for this game" );
         potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
