@@ -3277,37 +3277,44 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( m_StatsAlias == 0 ) {
             SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            if(m_Aliases.size() != 0) {
+                SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            } else {
+                SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
+            }
             m_StatsAlias = m_GameAlias;
         }
-        string StatsUser = User;
-        string Month = "";
-        string Year = "";
-        if( !Payload.empty( ) ) {
-            stringstream SS;
-            SS << Payload;
-            SS >> StatsUser;
-            SS >> Month;
-            SS >> Year;
+
+        if(m_StatsAlias != 0) {
+            string StatsUser = User;
+            string Month = "";
+            string Year = "";
+            if( !Payload.empty( ) ) {
+                stringstream SS;
+                SS << Payload;
+                SS >> StatsUser;
+                SS >> Month;
+                SS >> Year;
+            }
+            CGamePlayer *LastMatch = NULL;
+            uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
+            if( Matches == 0 )
+            {
+                if( player->GetSpoofed( ) && Level >= 8 )
+                    m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                else
+                    m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+            }
+            else if( Matches == 1 )
+            {
+                if( player->GetSpoofed( ) && Level >= 8 )
+                    m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                else
+                    m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+            }
+            else if( Matches > 1 )
+                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
         }
-        CGamePlayer *LastMatch = NULL;
-        uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
-        if( Matches == 0 )
-        {
-            if( player->GetSpoofed( ) && Level >= 8 )
-                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
-            else
-                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
-        }
-        else if( Matches == 1 )
-        {
-            if( player->GetSpoofed( ) && Level >= 8 )
-                m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
-            else
-                m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
-        }
-        else if( Matches > 1 )
-            SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
 
         player->SetStatsSentTime( GetTime( ) );
     }
@@ -3334,37 +3341,44 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( m_StatsAlias == 0 ) {
             SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ));
+            if(m_Aliases.size() != 0) {
+                SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            } else {
+                SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
+            }
             m_StatsAlias = m_GameAlias;
         }
-        string StatsUser = User;
-        string Month = "";
-        string Year = "";
-        if( !Payload.empty( ) ) {
-            stringstream SS;
-            SS << Payload;
-            SS >> StatsUser;
-            SS >> Month;
-            SS >> Year;
+
+        if(m_StatsAlias != 0) {
+            string StatsUser = User;
+            string Month = "";
+            string Year = "";
+            if( !Payload.empty( ) ) {
+                stringstream SS;
+                SS << Payload;
+                SS >> StatsUser;
+                SS >> Month;
+                SS >> Year;
+            }
+            CGamePlayer *LastMatch = NULL;
+            uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
+            if( Matches == 0 )
+            {
+                if( player->GetSpoofed( ) && Level >= 8 )
+                    m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                else
+                    m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+            }
+            else if( Matches == 1 )
+            {
+                if( player->GetSpoofed( ) && Level >= 8 )
+                    m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                else
+                    m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+            }
+            else if( Matches > 1 )
+                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
         }
-        CGamePlayer *LastMatch = NULL;
-        uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
-        if( Matches == 0 )
-        {
-            if( player->GetSpoofed( ) && Level >= 8 )
-                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
-            else
-                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
-        }
-        else if( Matches == 1 )
-        {
-            if( player->GetSpoofed( ) && Level >= 8 )
-                m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
-            else
-                m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
-        }
-        else if( Matches > 1 )
-            SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
 
         player->SetStatsDotASentTime( GetTime( ) );
     }
@@ -3390,25 +3404,33 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( m_StatsAlias == 0 ) {
             SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ));
+            if(m_Aliases.size() != 0) {
+                SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            } else {
+                SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
+            }
             m_StatsAlias = m_GameAlias;
         }
 
-        string StatsUser = User;
-        string Month = "";
-        string Year = "";
-        if( !Payload.empty( ) ) {
-            stringstream SS;
-            SS << Payload;
-            SS >> StatsUser;
-            SS >> Month;
-            SS >> Year;
+        if(m_StatsAlias != 0) {
+            string StatsUser = User;
+            string Month = "";
+            string Year = "";
+            if( !Payload.empty( ) ) {
+                stringstream SS;
+                SS << Payload;
+                SS >> StatsUser;
+                SS >> Month;
+                SS >> Year;
+            }
+
+            // check for potential abuse
+
+            if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
+                m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
         }
 
-        // check for potential abuse
-
-        if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-            m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+        player->SetStatsDotASentTime( GetTime( ) );
     }
 
     //

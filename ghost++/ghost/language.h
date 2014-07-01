@@ -551,6 +551,7 @@ public:
     string YouWillBeKickedInAFewSeconds( );
     string ReplayPrefix( );
     string YouHaveBeenDetectedAsFountainFarmer( );
+    string LostConnectionPleaseTryLater();
 };
 
 #endif

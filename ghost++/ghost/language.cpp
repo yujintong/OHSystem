@@ -2375,7 +2375,7 @@ string CLanguage :: DidNotFoundAlias( string alias )
 
 string CLanguage :: UsingDefaultAlias( string alias )
 {
-    string Out = m_CFG->GetString( "oh_109", "oh_109" );
+    string Out = m_CFG->GetString( "oh_110", "oh_110" );
     UTIL_Replace( Out, "$ALIAS$", alias);
     return Out;
 }
@@ -3547,4 +3547,10 @@ string CLanguage :: YouHaveBeenDetectedAsFountainFarmer()
 {
     string Out = m_CFG->GetString( "oh_287", "oh_287" );
     return Out;
+}
+string CLanguage :: LostConnectionPleaseTryLater()
+{
+    string Out = m_CFG->GetString( "oh_288", "oh_288" );
+    return Out;
+
 }
