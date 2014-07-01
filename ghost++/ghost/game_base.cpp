@@ -3292,7 +3292,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
     if( !action->GetAction( )->empty( ) )
     {
         BYTEARRAY *ActionData = action->GetAction( );
-	BYTEARRAY packet = *action->GetAction( );
+        BYTEARRAY packet = *action->GetAction( );
         unsigned int i = 0;
 
         uint32_t PacketLength = ActionData->size( );
@@ -3310,24 +3310,30 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
             bool Failed = false;
 
+            unsigned char bufx[4]={0,0,0,0};
 
-            if( packet.size() >= 21 ) {
-              unsigned char buf[4]={packet[15],packet[16],packet[17],packet[18]};
-              float x=*(float*)(buf);
+            unsigned char bufy[4]={0,0,0,0};
 
-              unsigned char buf2[4]={packet[19],packet[20],packet[21],packet[22]};
-              float y=*(float*)(buf2);
+            if(m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) {
 
-              CurrentID = (*ActionData)[n];
-              if(CurrentID == 18 && packet.size() == 31  && ( m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) ) {
+                if(packet[0] == 18 && packet.size() == 31) {
+                    bufx[4]={packet[15],packet[16],packet[17],packet[18]};
+                    bufy[4]={packet[19],packet[20],packet[21],packet[22]};
+                }
+                else if(packet[0] == 17 && packet.size() > 21) {
+                    bufx[4]={packet[15],packet[16],packet[17],packet[18]};
+                    bufy[4]={packet[19],packet[20],packet[21],packet[22]};
+                }
                 unsigned char team = m_Slots[GetSIDFromPID( player->GetPID() )].GetTeam();
+                float x=*(float*)(bufx);
+                float y=*(float*)(bufy);
+
                 if(x < -6382 && y < -6290 && team == 1) {
                     player->SetLastAttackCommandToFountain( GetTime() );
                 }
                 if(x > 5893 && y > 5466 && team == 0) {
                     player->SetLastAttackCommandToFountain( GetTime() );
                 }
-              }
             }
 
             while( n < PacketLength && !Failed )
