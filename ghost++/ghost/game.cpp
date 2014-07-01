@@ -3277,7 +3277,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( m_StatsAlias == 0 ) {
             SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            if(m_Aliases.size() != 0) {
+            if(m_GHost->m_Aliases.size() != 0) {
                 SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
             } else {
                 SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
@@ -3341,7 +3341,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( m_StatsAlias == 0 ) {
             SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            if(m_Aliases.size() != 0) {
+            if(m_GHost->m_Aliases.size() != 0) {
                 SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
             } else {
                 SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
@@ -3404,7 +3404,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         if( m_StatsAlias == 0 ) {
             SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            if(m_Aliases.size() != 0) {
+            if(m_GHost->m_Aliases.size() != 0) {
                 SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
             } else {
                 SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
