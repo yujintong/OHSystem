@@ -14,7 +14,7 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 ---
-###### Build status: ![ScreenShot](https://travis-ci.org/OHSystem/ohsystem.svg?branch=master)
+[![Build Status](https://travis-ci.org/davidgfnet/whatsapp-purple.svg?branch=master)](https://travis-ci.org/davidgfnet/whatsapp-purple)
 ---
 ### Install guide for the bot
 
