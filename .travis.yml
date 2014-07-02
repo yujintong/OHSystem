@@ -15,9 +15,6 @@ before_script:
  - sudo ./bjam
  - sudo ./bjam install
  - cd ../
-
-# Change this to your needs
-script: 
  - cd ghost++/bncsutil/src/bncsutil 
  - make 
  - sudo make install 
@@ -25,4 +22,7 @@ script:
  - make 
  - sudo make install 
  - cd ../../ghost 
+ 
+# Change this to your needs
+script: 
  - make
