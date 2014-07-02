@@ -1,6 +1,5 @@
 language: cpp
 compiler:
   - gcc
-  - clang
 # Change this to your needs
-script: cd ghost++/bncsutil/src/bncsutil && make && make install && ../../../StormLib/stormlib && make && make install && cd ../../ghost && make
+script: ls && make
