@@ -15,7 +15,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 ---
 
+###### Build Status:
 [![Build Status](https://travis-ci.org/OHSystem/ohsystem.svg?branch=master)](https://travis-ci.org/OHSystem/ohsystem)
+
+###### Consider a donation to support us and keep up our work, we sometimes need a coffee :-)
+[![ScreenShot](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A456YK46HVGYU)
 
 ---
 ### Install guide for the bot
