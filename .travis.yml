@@ -10,6 +10,6 @@ script:
  - sudo make install 
  - cd ../../../StormLib/stormlib 
  - make 
- - make isntall 
+ - make install 
  - cd ../../ghost 
  - make
