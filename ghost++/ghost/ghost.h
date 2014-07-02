@@ -1,4 +1,4 @@
-/**
+g/**
 * Copyright [2013-2014] [OHsystem]
 *
 * We spent a lot of time writing this code, so show some respect:
@@ -260,6 +260,13 @@ public:
     string m_LanCFGPath;
     uint32_t m_FallBackLanguage;
     bool isCreated;
+    uint32_t m_StartTicks;
+    uint32_t m_EndTicks;
+    uint32_t m_MaxTicks;
+    uint32_t m_MinTicks;
+    uint32_t m_AVGTicks;
+    uint32_t m_TicksCollection;
+    uint32_t m_TicksCollectionTimer;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

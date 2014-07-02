@@ -386,6 +386,8 @@ CGHost :: CGHost( CConfig *CFG )
     m_CheckForFinishedGames = 0;
     m_RanksLoaded = true;
     m_ReservedHostCounter = 0;
+    m_TicksCollectionTimer = GetTicks();
+    m_TicksCollection = 0;
     string DBType = CFG->GetString( "db_type", "mysql" );
     CONSOLE_Print( "[GHOST] opening primary database" );
 
@@ -837,7 +839,27 @@ bool CGHost :: Update( long usecBlock )
         // we don't have any sockets (i.e. we aren't connected to battle.net maybe due to a lost connection and there aren't any games running)
         // select will return immediately and we'll chew up the CPU if we let it loop so just sleep for 50ms to kill some time
 
+
+        m_EndTicks = GetTicks();
+        uint32_t SpreadTicks = m_EndTicks - m_StartTicks;
+        if(SpreadTicks > m_MaxTicks) {
+            m_MaxTicks = SpreadTicks;
+        }
+        if(SpreadTicks < m_MinTicks) {
+            m_MinTicks = SpreadTicks;
+        }
+        m_TicksCollection += SpreadTicks;
+        if(GetTicks() - m_TicksCollectionTimer >= 60000) {
+            m_AVGTicks = m_TicksCollection/60000;
+            m_TicksCollectionTimer = GetTicks();
+            CONSOLE_Print("[Performance] AVGTicks: "+UTIL_ToString(m_AVGTicks)+", MaxTicks: "+UTIL_ToString(m_MaxTicks)+", MinTicks: "+UTIL_ToString(m_MinTicks));
+            m_MinTicks = 0;
+            m_MaxTicks = 0;
+            m_AVGTicks = 0;
+        }
+
         MILLISLEEP( 50 );
+        m_StartTicks = GetTicks();
     }
 
     bool AdminExit = false;
