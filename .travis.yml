@@ -2,7 +2,7 @@ language: cpp
 compiler: gcc
   
   
-before_script: sudo apt-get install -qq libboost-dev
+before_script: sudo apt-get install -qq libboost-dev build-essential g++ libmysql++-dev wget unzip libbz2-dev libgmp3-dev
 # Change this to your needs
 script: 
  - cd ghost++/bncsutil/src/bncsutil 
@@ -11,5 +11,5 @@ script:
  - cd ../../../StormLib/stormlib 
  - make 
  - make isntall 
- - cd../../ghost 
+ - cd ../../ghost 
  - make
