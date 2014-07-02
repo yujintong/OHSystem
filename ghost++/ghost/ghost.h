@@ -1,4 +1,4 @@
-g/**
+/**
 * Copyright [2013-2014] [OHsystem]
 *
 * We spent a lot of time writing this code, so show some respect:
