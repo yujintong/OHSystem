@@ -2,7 +2,16 @@ language: cpp
 compiler: gcc
   
   
-before_script: sudo apt-get install -qq libboost-dev build-essential g++ libmysql++-dev wget unzip libbz2-dev libgmp3-dev
+before_script: 
+ - sudo apt-get install -qq libboost-dev build-essential g++ libmysql++-dev wget unzip libbz2-dev libgmp3-dev
+ - sudo wget http://downloads.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.tar.bz2
+ - sudo tar xjf boost_1_54_0.tar.bz2
+ - sudo cd boost_1_54_0
+ - sudo ./bootstrap.sh --with-libraries=filesystem,program_options,system,regex,thread,date_time --libdir=/usr/lib/
+ - sudo ./bjam
+ - sudo ./bjam install
+ - cd ../
+
 # Change this to your needs
 script: 
  - cd ghost++/bncsutil/src/bncsutil 
