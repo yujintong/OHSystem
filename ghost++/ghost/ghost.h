@@ -264,7 +264,7 @@ public:
     uint32_t m_EndTicks;
     uint32_t m_MaxTicks;
     uint32_t m_MinTicks;
-    uint32_t m_AVGTicks;
+    float m_AVGTicks;
     uint32_t m_TicksCollection;
     uint32_t m_TicksCollectionTimer;
 

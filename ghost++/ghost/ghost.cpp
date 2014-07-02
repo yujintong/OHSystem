@@ -388,6 +388,7 @@ CGHost :: CGHost( CConfig *CFG )
     m_ReservedHostCounter = 0;
     m_TicksCollectionTimer = GetTicks();
     m_TicksCollection = 0;
+    m_MaxTicks = 0;
     string DBType = CFG->GetString( "db_type", "mysql" );
     CONSOLE_Print( "[GHOST] opening primary database" );
 
@@ -1232,10 +1233,10 @@ bool CGHost :: Update( long usecBlock )
     if(GetTicks() - m_TicksCollectionTimer >= 60000) {
         m_AVGTicks = m_TicksCollection/60000;
         m_TicksCollectionTimer = GetTicks();
-        CONSOLE_Print("[Performance] AVGTicks: "+UTIL_ToString(m_AVGTicks)+", MaxTicks: "+UTIL_ToString(m_MaxTicks)+", MinTicks: "+UTIL_ToString(m_MinTicks));
-        m_MinTicks = 0;
+        CONSOLE_Print("[Performance] AVGTicks: "+UTIL_ToString(m_AVGTicks, 3)+", MaxTicks: "+UTIL_ToString(m_MaxTicks)+", MinTicks: "+UTIL_ToString(m_MinTicks));
+        m_MinTicks = GetTicks();
         m_MaxTicks = 0;
-        m_AVGTicks = 0;
+        m_TicksCollection = 0;
     }
 
     return m_Exiting || AdminExit || BNETExit;
