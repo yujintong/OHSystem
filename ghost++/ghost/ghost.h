@@ -267,6 +267,7 @@ public:
     float m_AVGTicks;
     uint32_t m_TicksCollection;
     uint32_t m_TicksCollectionTimer;
+    uint32_t m_Sampler;
 
     CGHost( CConfig *CFG );
     ~CGHost( );
