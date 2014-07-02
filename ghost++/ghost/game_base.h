@@ -475,6 +475,7 @@ public:
 
 struct ReservedPlayer {
     unsigned char SID;
+    unsigned char PID;
     string Name;
     uint32_t Time;
     uint32_t Level;

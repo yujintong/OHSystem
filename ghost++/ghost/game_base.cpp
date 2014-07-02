@@ -945,8 +945,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
         for( vector<ReservedPlayer> :: iterator i=m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if((i->Level==1&&((GetTime()-i->Time)>=45))||(i->Level==2&&((GetTime()-i->Time)>=90))) {
-                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
                 m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( i->PID, PLAYERLEAVE_LOBBY ) );
                 SendAllSlotInfo( );
                 i = m_ReservedPlayers.erase( i );
             }
@@ -2856,15 +2856,24 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         uint32_t reservedSID = 255;
         for( vector<ReservedPlayer> :: iterator i = m_ReservedPlayers.begin(); i != m_ReservedPlayers.end( ); ) {
             if( i->Name == LowerName ) {
-                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_Slots[i->SID].GetPID(), PLAYERLEAVE_LOBBY ) );
-                m_Slots[i->SID] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[i->SID].GetTeam( ), m_Slots[i->SID].GetColour( ), m_Slots[i->SID].GetRace( ) );
+                for( unsigned char j = 0;j < m_Slots.size( ); ++j )
+                {
+                    if( m_Slots[j].GetPID( ) == i->PID ) {
+                            m_Slots[j] = CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, m_Slots[j].GetTeam( ), m_Slots[j].GetColour( ), m_Slots[j].GetRace( ) );
+                    }
+                }
+                SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( i->PID, PLAYERLEAVE_LOBBY ) );
                 SendAllSlotInfo( );
-                EnforcePID = m_Slots[i->SID].GetPID();
+                EnforcePID = i->PID;
+                reservedSID = i->SID;
+                SID = i->SID;
+
                 i= m_ReservedPlayers.erase(i);
             }
             else
                 i++;
         }
+
         if(reservedSID == 255 ) {
 
             // try to find an empty slot
@@ -5693,7 +5702,8 @@ void CBaseGame :: AddToReserved( string name, unsigned char SID, uint32_t level 
             SendAll( m_Protocol->SEND_W3GS_PLAYERINFO( PID, "|cFFFFBF00!Res!", IP, IP, string( ) ) );
             m_Slots[SID] = CGameSlot( PID, 100, SLOTSTATUS_OCCUPIED, 0, m_Slots[SID].GetTeam( ), m_Slots[SID].GetColour( ), m_Slots[SID].GetRace( ) );
             SendAllSlotInfo( );
-        m_ReservedPlayers.push_back( resPlayer );
+            resPlayer.PID = PID;
+            m_ReservedPlayers.push_back( resPlayer );
         }
 
         // check that the user is not already reserved
