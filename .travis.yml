@@ -1,5 +1,15 @@
 language: cpp
-compiler:
-  - gcc
+compiler: gcc
+  
+  
+before_script: sudo apt-get install -qq libboost-dev
 # Change this to your needs
-script: cd ghost++/ghost && make
+script: 
+ - cd ghost++/bncsutil/src/bncsutil 
+ - make 
+ - sudo make install 
+ - cd ../../../StormLib/stormlib 
+ - make 
+ - make isntall 
+ - cd../../ghost 
+ - make
