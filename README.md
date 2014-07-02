@@ -14,7 +14,9 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 ---
-
+### Build status
+![ScreenShot](https://travis-ci.org/OHSystem/ohsystem.svg?branch=master)
+---
 ### Install guide for the bot
 
  - [UNIX](https://github.com/OHSystem/ohsystem/wiki/Installation---UNIX)
