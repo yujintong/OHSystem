@@ -389,7 +389,7 @@ CGHost :: CGHost( CConfig *CFG )
     m_TicksCollectionTimer = GetTicks();
     m_TicksCollection = 0;
     m_MaxTicks = 0;
-    m_MinTicks = GetTicks();
+    m_MinTicks = -1;
     m_Sampler = 0;
     string DBType = CFG->GetString( "db_type", "mysql" );
     CONSOLE_Print( "[GHOST] opening primary database" );
@@ -1236,8 +1236,8 @@ bool CGHost :: Update( long usecBlock )
     if(GetTicks() - m_TicksCollectionTimer >= 60000) {
         m_AVGTicks = m_TicksCollection/m_Sampler;
         m_TicksCollectionTimer = GetTicks();
-        CONSOLE_Print("[Performance] AVGTicks: "+UTIL_ToString(m_AVGTicks, 3)+", MaxTicks: "+UTIL_ToString(m_MaxTicks)+", MinTicks: "+UTIL_ToString(m_MinTicks)+", with "+UTIL_ToString(m_Sampler)+" updates.");
-        m_MinTicks = GetTicks();
+        CONSOLE_Print("[OHSystem-Performance-Check] AVGTicks: "+UTIL_ToString(m_AVGTicks, 3)+"ms | MaxTicks: "+UTIL_ToString(m_MaxTicks)+"ms | MinTicks: "+UTIL_ToString(m_MinTicks)+"ms | Updates: "+UTIL_ToString(m_Sampler));
+        m_MinTicks = -1;
         m_MaxTicks = 0;
         m_TicksCollection = 0;
         m_Sampler = 0;
