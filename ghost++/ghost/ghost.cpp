@@ -665,7 +665,7 @@ CGHost :: ~CGHost( )
 
 bool CGHost :: Update( long usecBlock )
 {
-    m_StartTicks = GetTicks();
+    // m_StartTicks = GetTicks();
 
     // todotodo: do we really want to shutdown if there's a database error? is there any way to recover from this?
 
@@ -1222,7 +1222,7 @@ bool CGHost :: Update( long usecBlock )
         }
     }
 
-
+/*
     m_EndTicks = GetTicks();
     m_Sampler++;
     uint32_t SpreadTicks = m_EndTicks - m_StartTicks;
@@ -1242,7 +1242,7 @@ bool CGHost :: Update( long usecBlock )
         m_TicksCollection = 0;
         m_Sampler = 0;
     }
-
+*/
     return m_Exiting || AdminExit || BNETExit;
 }
 

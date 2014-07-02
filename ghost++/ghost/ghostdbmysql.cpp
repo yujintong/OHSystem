@@ -2158,7 +2158,7 @@ string MySQLGameUpdate( void *conn, string *error, uint32_t botid, uint32_t host
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
     } else {
-        string Query = "DELETE FROM oh_gamelist WHERE botid = " + UTIL_ToString( botid ) + " AND gameid = " + UTIL_ToString( hostcounter );
+        string Query = "DELETE FROM oh_gamelist WHERE botid = " + UTIL_ToString( botid ) + " AND ( gameid = " + UTIL_ToString( hostcounter ) + " OR lobby = 1 )";
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
             *error = mysql_error( (MYSQL *)conn );
