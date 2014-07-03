@@ -1842,6 +1842,10 @@ void CGHost :: LoadRanks( )
         CONSOLE_Print("Error. Unable to read file [ranks.txt]. User levels will not work for this session.");
         m_RanksLoaded = false;
     }
+    if(m_Ranks.size() < 10) {
+        CONSOLE_Print("Error. ranks.txt doesn't contain enough levelnames. You require at least 11(Level 0 - Level 10, with 0).");
+        m_RanksLoaded = false;
+    }
 }
 
 void CGHost :: LoadInsult()
