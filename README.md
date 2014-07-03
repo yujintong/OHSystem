@@ -18,7 +18,7 @@ the Free Software Foundation, either version 3 of the License, or
 ###### Status:
 [![Build Status](https://travis-ci.org/OHSystem/ohsystem.svg?branch=master)](https://travis-ci.org/OHSystem/ohsystem)
 [![Project Status](http://stillmaintained.com/OHSystem/ohsystem.png)](http://stillmaintained.com/OHSystem/ohsystem)
-###### Consider a donation to support us and keep up our work, we sometimes need a coffee :-)
+###### Consider a donation to support us and keep up our work, we sometimes need a cup of :coffee:
 [![ScreenShot](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A456YK46HVGYU)
 
 ---
