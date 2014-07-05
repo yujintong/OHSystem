@@ -1979,7 +1979,7 @@ void CBaseGame :: SendFakePlayerInfo( CGamePlayer *player )
     if(m_GHost->m_ObserverFake)
         Send( player, m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, m_GHost->m_BotManagerName, IP, IP, string( ) ) );
     else
-        Send( player, m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, "CheV",IP, IP, string( ) ) );
+        Send( player, m_Protocol->SEND_W3GS_PLAYERINFO( m_FakePlayerPID, "OHSystem",IP, IP, string( ) ) );
 }
 
 void CBaseGame :: ReservedSlotInfo( CGamePlayer *player ) {
