@@ -3552,5 +3552,32 @@ string CLanguage :: LostConnectionPleaseTryLater()
 {
     string Out = m_CFG->GetString( "oh_288", "oh_288" );
     return Out;
-
 }
+string CLanguage :: Month()
+{
+    string Out = m_CFG->GetString( "oh_289", "oh_289" );
+    return Out;
+}
+string CLanguage :: Day()
+{
+    string Out = m_CFG->GetString( "oh_290", "oh_290" );
+    return Out;
+}
+
+string CLanguage :: Hour()
+{
+    string Out = m_CFG->GetString( "oh_291", "oh_291" );
+    return Out;
+}
+
+string CLanguage :: Minute()
+{
+    string Out = m_CFG->GetString( "oh_292", "oh_292" );
+    return Out;
+}
+string CLanguage :: Announcement()
+{
+    string Out = m_CFG->GetString( "oh_293", "oh_293" );
+    return Out;
+}
+

@@ -1200,7 +1200,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 for ( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i ) {
                     if ((*i)->GetSpoofed( )) {
                         if( Level > 5 ) {
-                            SendChat( player->GetPID( ), (*i)->GetPID( ), "[ACHAT]-["+LevelName+": "+ User + "]: " + Payload );
+                            SendChat( player->GetPID( ), (*i)->GetPID( ), "["+LevelName+": "+ User + "]: " + Payload );
 
                         }
                     }
@@ -1773,7 +1773,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     }
                 }
                 else
-                    SendChat( player, "You dont have access to run this command, please use '!tban'" );
+                    SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
             }
 
             //

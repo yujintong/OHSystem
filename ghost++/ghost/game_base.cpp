@@ -864,8 +864,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 BYTEARRAY MapHeight;
                 MapHeight.push_back( 0 );
                 MapHeight.push_back( 0 );
-                m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
-                m_GHost->m_UDPSocket->Broadcast( 1337, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                m_GHost->m_UDPSocket->Broadcast( 1337, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
 
             }
             else
@@ -874,8 +874,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
 
                 uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
-                m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
-                m_GHost->m_UDPSocket->Broadcast( 1337, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, "OHSystem", GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                m_GHost->m_UDPSocket->Broadcast( 1337, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
 
               }
         }
@@ -2260,13 +2260,13 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BannedAt( Ban->GetName(), Ban->GetServer()) ) );
         string Remain = "";
         if( Ban->GetMonths() != "0" && Ban->GetMonths() != "" )
-            Remain += Ban->GetMonths() +"m, ";
+            Remain += Ban->GetMonths() +m_GHost->m_Language->Month()+" ";
         if( Ban->GetDays() != "0" && Ban->GetDays() != "")
-            Remain += Ban->GetDays() +"d, ";
+            Remain += Ban->GetDays() +m_GHost->m_Language->Day()+" ";
         if( Ban->GetHours() != "0" && Ban->GetHours() != "")
-            Remain += Ban->GetHours() +"h, ";
+            Remain += Ban->GetHours() +m_GHost->m_Language->Hour()+" ";
         if( Ban->GetMinutes() != "0" && Ban->GetMinutes() != "")
-            Remain += Ban->GetMinutes() +"m ";
+            Remain += Ban->GetMinutes() +m_GHost->m_Language->Minute()+" ";
         if(! Remain.empty() )
             player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BanDateAndRemain( Ban->GetDate(), Remain ) ) );
         else
@@ -6459,10 +6459,10 @@ void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
                 }
 
                 if( Level <= 1 )
-                    SendChat( (*i)->GetPID( ), "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+                    SendChat( (*i)->GetPID( ), m_GHost->m_Language->Announcement()+" "+m_GHost->m_Announces[RandomNumber] );
             }
         } else
-            SendAllChat( "[Announcement] "+m_GHost->m_Announces[RandomNumber] );
+            SendAllChat( m_GHost->m_Language->Announcement()+" "+m_GHost->m_Announces[RandomNumber] );
     } else {
         CONSOLE_Print("[Error] Announce event failed, make sure you have set an announce.");
     }

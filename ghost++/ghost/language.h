@@ -552,6 +552,11 @@ public:
     string ReplayPrefix( );
     string YouHaveBeenDetectedAsFountainFarmer( );
     string LostConnectionPleaseTryLater();
+    string Month();
+    string Day();
+    string Hour();
+    string Minute();
+    string Announcement();
 };
 
 #endif
