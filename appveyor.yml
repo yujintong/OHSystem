@@ -16,7 +16,7 @@ install:
   - cmd: appveyor DownloadFile http://downloads.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.zip
   - cmd: 7z.exe x boost_1_54_0.zip >nul
   - cmd: cd boost_1_54_0
-  - cmd: .\bjam
+  - cmd: .\bootstrap
   - cmd: .\b2
   
   
