@@ -4558,7 +4558,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !VOTERESULT
     //
-    else if( ( Command == "voteresult" || Command == "vr" )  ) {
+    else if( ( Command == "voteresult" || Command == "vr" )  && m_GHost->m_VoteMode) {
         uint32_t c = 0;
         uint32_t mode1 = 0;
         uint32_t mode2 = 0;
