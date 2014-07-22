@@ -1,4 +1,7 @@
 *.user
+*.o
+*.so
+*.log
 ghost++/ghost.sdf
 ghost++/ghost.suo
 ghost++/Release MySQL/

@@ -1535,7 +1535,7 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
             else if( Message.find( "is using Warcraft III The Frozen Throne in a private channel" ) != string :: npos )
                 m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInPrivateChannel( UserName ) );
 
-	    string LMessage = Mesage;
+	    string LMessage = Message;
        	    transform( LMessage.begin( ), LMessage.end( ), LMessage.begin( ), ::tolower );
        	    
             if( Message.find( "is using Warcraft III The Frozen Throne in game" ) != string :: npos || Message.find( "is using Warcraft III Frozen Throne and is currently in  game" ) != string :: npos )
