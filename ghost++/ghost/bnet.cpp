@@ -4349,14 +4349,14 @@ uint32_t CBNET :: IsLevel( string name )
     for( vector<string> :: iterator i = m_Permissions.begin( ); i != m_Permissions.end( ); ++i )
     {
         string username;
-        string level;
+        uint32_t level;
         stringstream SS;
         SS << *i;
         SS >> username;
         SS >> level;
 
         if( username == name )
-            return UTIL_ToUInt32( level );
+            return level;
     }
 
     return 0;
