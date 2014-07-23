@@ -108,11 +108,11 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
     transform( m_CDKeyROC.begin( ), m_CDKeyROC.end( ), m_CDKeyROC.begin( ), (int(*)(int))toupper );
     transform( m_CDKeyTFT.begin( ), m_CDKeyTFT.end( ), m_CDKeyTFT.begin( ), (int(*)(int))toupper );
 
-    //if( m_CDKeyROC.size( ) != 26 )
-    //      CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your ROC CD key is not 26 characters long and is probably invalid" );
+    if( m_CDKeyROC.size( ) != 26 )
+      CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your ROC CD key is not 26 characters long and is probably invalid" );
 
-    //if( m_GHost->m_TFT && m_CDKeyTFT.size( ) != 26 )
-    //      CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your TFT CD key is not 26 characters long and is probably invalid" );
+    if( m_GHost->m_TFT && m_CDKeyTFT.size( ) != 26 )
+      CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your TFT CD key is not 26 characters long and is probably invalid" );
 
     m_CountryAbbrev = nCountryAbbrev;
     m_Country = nCountry;
@@ -868,7 +868,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
 #ifdef WIN32
         system("stats.exe");
 #else
-        system("./stats");
+        uint32_t result = system("./stats");
+	if(!result) { CONSOLE_Log("Error. Didn't found stats binary file. Couldn't update stats."); }
 #endif
         m_GHost->m_CheckForFinishedGames = GetTime();
 //              m_GHost->m_FinishedGames--;
@@ -895,7 +896,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
     if( m_CallableBanList && m_CallableBanList->GetReady( ) && m_CallableTBRemove && m_CallableTBRemove->GetReady( ) )
     {
-        // CONSOLE_Print( "[BNET: " + m_ServerAlias + "] refreshed ban list (" + UTIL_ToString( m_Bans.size( ) ) + " -> " + UTIL_ToString( m_CallableBanList->GetResult( ).size( ) ) + " bans)" );
+        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] refreshed ban list (" + UTIL_ToString( m_Bans.size( ) ) + " -> " + UTIL_ToString( m_CallableBanList->GetResult( ).size( ) ) + " bans)" );
 
         for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
             delete *i;
@@ -1194,8 +1195,8 @@ void CBNET :: ProcessPackets( )
             case CBNETProtocol :: SID_GETADVLISTEX:
                 GameHost = m_Protocol->RECEIVE_SID_GETADVLISTEX( Packet->GetData( ) );
 
-                //if( GameHost )
-                //      CONSOLE_Print( "[BNET: " + m_ServerAlias + "] joining game [" + GameHost->GetGameName( ) + "]" );
+                if( GameHost )
+                      CONSOLE_Print( "[BNET: " + m_ServerAlias + "] joining game [" + GameHost->GetGameName( ) + "]" );
 
                 delete GameHost;
                 GameHost = NULL;
