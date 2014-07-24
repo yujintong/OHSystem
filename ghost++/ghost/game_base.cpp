@@ -1185,19 +1185,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                     OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                 }
             }
-            if( GetTime( ) - (*i)->GetJoinTime( ) == 5 ) {
-                if( m_GHost->m_AllowDownloads == 0 && (*i)->GetDownloadTicks( ) != 0 ) {
-                    SendChat( (*i)->GetPID( ), m_GHost->m_NonAllowedDonwloadMessage );
-                    if( GetTime( ) - (*i)->GetJoinTime( ) >= 10 ) {
-                        if(m_GHost->m_AutoDenyUsers)
-                            m_Denied.push_back( (*i)->GetName( ) + " " + (*i)->GetExternalIPString( ) + " " + UTIL_ToString( GetTime( ) ) );
-                        (*i)->SetDeleteMe( true );
-                        (*i)->SetLeftReason( "doesn't have the map and map downloads are disabled" );
-                        (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                        OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
-                    }
-                }
-            }
         }
     }
 
@@ -4159,7 +4146,10 @@ void CBaseGame :: EventPlayerMapSize( CGamePlayer *player, CIncomingMapSize *map
         }
         else
         {
-            player->SetDownloadTicks( GetTicks() );
+            player->SetDeleteMe( true );
+            player->SetLeftReason( "doesn't have the map and download is disabled." );
+            player->SetLeftCode( PLAYERLEAVE_LOBBY );
+            OpenSlot( GetSIDFromPID( player->GetPID( ) ), false );
         }
     }
     else
