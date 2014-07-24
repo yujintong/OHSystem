@@ -869,7 +869,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
         system("stats.exe");
 #else
         uint32_t result = system("./stats");
-	if(!result) { CONSOLE_Log("Error. Didn't found stats binary file. Couldn't update stats."); }
+	if(!result) { CONSOLE_Print("Error. Didn't found stats binary file. Couldn't update stats."); }
 #endif
         m_GHost->m_CheckForFinishedGames = GetTime();
 //              m_GHost->m_FinishedGames--;
@@ -2146,7 +2146,8 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 #ifdef WIN32
             system("stats.exe");
 #else
-            system("./stats");
+        uint32_t result = system("./stats");
+	if(!result) { CONSOLE_Print("Error. Didn't found stats binary file. Couldn't update stats."); }
 #endif
         }
 
