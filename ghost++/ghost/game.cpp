@@ -1184,7 +1184,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
 
-    if( player->GetSpoofed( ) && Level >= 5 && m_GHost->m_RanksLoaded)
+    if( player->GetSpoofed( ) && m_GHost->m_RanksLoaded && ( Level > 5 || m_GHost->CanAccessCommand(player->GetName(), Command ) ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] "+ LevelName +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
 
@@ -1269,7 +1269,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         CGamePlayer *LastMatch = NULL;
                         uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
                         if(Matches==0)
-                            SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
+                           SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
                         else if(Matches==1)
                         {
                             SendChat( player,m_GHost->m_Language->SuccessfullyLetPlayerInsult( ));

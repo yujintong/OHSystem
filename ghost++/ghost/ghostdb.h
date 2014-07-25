@@ -112,7 +112,7 @@ public:
     virtual uint32_t StoreLog( uint32_t chatid, string game, vector<string> admin );
     virtual uint32_t gs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype );
     virtual uint32_t penp( string name, string reason, string admin, uint32_t amount, string type );
-    virtual vector<string> PList( string server );
+    virtual vector<permission> PList( string server );
     virtual vector<string> FlameList( );
     virtual vector<string> ForcedGProxyList( );
     virtual vector<string> AliasList( );
@@ -380,16 +380,16 @@ class CCallablePList : virtual public CBaseCallable
 {
 protected:
     string m_Server;
-    vector<string> m_Result;
+    vector<permission> m_Result;
 
 public:
     CCallablePList( string nServer ) : CBaseCallable( ), m_Server( nServer ) { }
     virtual ~CCallablePList( );
 
-    virtual vector<string> GetResult( )                                     {
+    virtual vector<permission> GetResult( )                                     {
         return m_Result;
     }
-    virtual void SetResult( vector<string> nResult )        {
+    virtual void SetResult( vector<permission> nResult )        {
         m_Result = nResult;
     }
 };

@@ -4348,17 +4348,10 @@ uint32_t CBNET :: IsLevel( string name )
 {
     transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
 
-    for( vector<string> :: iterator i = m_Permissions.begin( ); i != m_Permissions.end( ); ++i )
+    for( vector<permission> :: iterator i = m_Permissions.begin( ); i != m_Permissions.end( ); ++i )
     {
-        string username;
-        uint32_t level;
-        stringstream SS;
-        SS << *i;
-        SS >> username;
-        SS >> level;
-
-        if( username == name )
-            return level;
+        if( i->player == name )
+            return i->level;
     }
 
     return 0;
@@ -4453,3 +4446,4 @@ void CBNET :: HoldClan( CBaseGame *game )
             game->AddToReserved( (*i)->GetName( ), 255, 1 );
     }
 }
+

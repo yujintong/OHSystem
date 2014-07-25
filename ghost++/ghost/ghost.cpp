@@ -2113,6 +2113,29 @@ bool CGHost ::  PlayerCached( string playername ) {
     return false;
 }
 
+bool CGHost :: CanAccessCommand( string name, string command ) {
+    transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
+
+    for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i ) {
+	for( vector<permission> :: iterator j = (*i)->m_Permissions.begin( ); j != (*i)->m_Permissions.end( ); ++j ) {
+            if( j->player == name ) {
+		string bin = j->binaryPermissions;
+		if(    (command=="ping" && bin.substr(0,1) == "1" )
+		    || (command=="from" && bin.substr(1,1) == "1" )
+                    || (command=="drop" && bin.substr(2,1) == "1" )
+                    || ((command=="mute"||command=="unmute") && bin.substr(3,1) == "1" )
+                    || (command=="swap" && bin.substr(4,1) == "1" )
+                    || (command=="deny" && bin.substr(5,1) == "1" )
+                    || (command=="insult" && bin.substr(6,1) == "1" )
+                    || (command=="forcemode" && bin.substr(7,1) == "1" )
+                    || (command=="ppadd" && bin.substr(8,1) == "1" )
+                  )
+                return true;
+	    }
+    	}
+    }
+    return false;
+}
 void CGHost :: LoadLanguages( ) {
     /*
     try
