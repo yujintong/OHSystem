@@ -145,7 +145,7 @@ CREATE TABLE w3mmdplayers (
 CREATE TABLE w3mmdvars (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     botid INT NOT NULL,
-    gameid INT NOT nNULL,
+    gameid INT NOT NULL,
     pid INT NOT NULL,
     varname VARCHAR(25) NOT NULL,
     value_int INT DEFAULT NULL,
