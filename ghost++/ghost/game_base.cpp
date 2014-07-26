@@ -477,7 +477,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
                         (*j)->SetPlayerLanguage(StatsPlayerSummary->GetLanguageSuffix ());
                         (*j)->SetLeaverLevel(StatsPlayerSummary->GetLeaverLevel());
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( name, UTIL_ToString( (*j)->GetPing(m_GHost->m_LCPings) ) ) );
+                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( name ) );
                         SendChat((*j)->GetPID( ), " ");
                         
                         uint32_t Level = (*j)->GetLevel( );
