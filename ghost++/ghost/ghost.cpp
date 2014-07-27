@@ -368,6 +368,7 @@ CGHost :: CGHost( CConfig *CFG )
     m_UDPSocket->SetBroadcastTarget( CFG->GetString( "udp_broadcasttarget", string( ) ) );
     m_UDPSocket->SetDontRoute( CFG->GetInt( "udp_dontroute", 0 ) == 0 ? false : true );
     m_ReconnectSocket = NULL;
+    m_OHConnectSocket = NULL;
     m_GPSProtocol = new CGPSProtocol( );
     m_GCBIProtocol = new CGCBIProtocol( );
     m_CRC = new CCRC32( );
@@ -631,6 +632,8 @@ CGHost :: ~CGHost( )
     delete m_UDPSocket;
     delete m_ReconnectSocket;
 
+    delete m_OHConnectSocket;
+
     for( vector<CTCPSocket *> :: iterator i = m_ReconnectSockets.begin( ); i != m_ReconnectSockets.end( ); ++i )
         delete *i;
 
@@ -764,6 +767,22 @@ bool CGHost :: Update( long usecBlock )
         }
     }
 
+    // create the OHConnect listener
+    if(!m_OHConnectSocket) {
+
+    	m_OHConnectSocket = new CTCPClient();
+        m_OHConnectSocket->Connect("", "5.45.181.151", 6973);
+
+        if(m_OHConnectSocket->HasError( )) {
+	  //the socket has an error
+	  CONSOLE_Print("[OHConnect-Socket] disconnected from OHConnect due socket error");
+ 	  CONSOLE_Print("[OHConnect-Socket] "+m_OHConnectSocket->GetErrorString( ));
+	}
+	else {
+	  CONSOLE_Print("[OHConnect-Socket] Successfully connected to OHConnect");
+	  m_OHConnectSocket->PutBytes("");
+	}
+    }
     unsigned int NumFDs = 0;
 
     // take every socket we own and throw it in one giant select statement so we can block on all sockets
@@ -778,6 +797,13 @@ bool CGHost :: Update( long usecBlock )
 
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
+
+    // 1_1. OHConnect socket
+    if(m_OHConnectSocket) {
+	m_OHConnectSocket->SetFD( &fd, &send_fd, &nfds );
+        m_OHConnectSocket->DoSend( &send_fd );
+	NumFDs++;
+    }
 
     // 2. the current game's server and player sockets
 
