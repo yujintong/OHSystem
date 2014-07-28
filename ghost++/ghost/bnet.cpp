@@ -4272,6 +4272,8 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
             if( RandomNumber == 21 )
                 MapGameType = 4294901779;
 
+	    CONSOLE_Print("[INFO] Using now MapGameType: "+UTIL_ToSTring(MapGameType));
+
             if( m_GHost->m_Reconnect )
                 m_OutPackets.push( m_Protocol->SEND_SID_STARTADVEX3( state, UTIL_CreateByteArray( MapGameType, false ), map->GetMapGameFlags( ), MapWidth, MapHeight, gameName, hostName, upTime, map->GetMapPath( ), map->GetMapCRC( ), map->GetMapSHA1( ), FixedHostCounter ) );
             else
