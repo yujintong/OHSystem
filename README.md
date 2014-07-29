@@ -1,5 +1,3 @@
-### [![ScreenShot](http://ohsystem.net/site_logo.png)](http://ohsystem.net/)
-
 OpenHosting is a major modification of the official GHost++ source.
 
 ---
