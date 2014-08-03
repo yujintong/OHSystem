@@ -585,6 +585,7 @@ CREATE TABLE IF NOT EXISTS `oh_users` (
   `user_email` varchar(60) NOT NULL,
   `user_joined` int(11) unsigned NOT NULL DEFAULT '0',
   `user_level` tinyint(1) unsigned NOT NULL,
+  `user_custom_permission` varchar(10) NOT NULL DEFAULT '0000000000',
   `user_level_expire` datetime NOT NULL,
   `admin_realm` varchar(64) NOT NULL,
   `expire_date` datetime NOT NULL,
