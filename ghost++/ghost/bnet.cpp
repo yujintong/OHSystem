@@ -4390,7 +4390,7 @@ CDBBan *CBNET :: IsBannedIP( string ip )
         if( (*i)->GetIP( )[0] == ':' )
         {
             string BanIP = (*i)->GetIP( ).substr( 1 );
-            int len = BanIP.length( );
+            size_t len = BanIP.length( );
 
             if( ip.length( ) >= len && ip.substr( 0, len ) == BanIP )
             {

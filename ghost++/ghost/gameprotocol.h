@@ -184,7 +184,7 @@ public:
     BYTEARRAY GetInternalIP( )	{
         return m_InternalIP;
     }
-    bool GetGames( )            {
+    uint32_t GetGames( )            {
         return m_Games;
     }
     bool GetRegistered( )       {

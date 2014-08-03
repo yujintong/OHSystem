@@ -1453,7 +1453,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_VoteMuting = CFG->GetInt("oh_votemute", 1) == 0 ? false : true;
     m_VoteMuteTime = CFG->GetInt("oh_votemutetime", 180);
     m_AutoEndTime = CFG->GetInt("autoend_votetime", 120);
-    m_AllowHighPingSafeDrop = CFG->GetInt("oh_allowsafedrop", 1);
+    m_AllowHighPingSafeDrop = CFG->GetInt("oh_allowsafedrop", 1) == 0 ? false : true;
     m_MinPauseLevel = CFG->GetInt("oh_minpauselevel", 3);
     m_MinScoreLimit = CFG->GetInt("oh_minscorelimit", 0);
     m_MaxScoreLimit = CFG->GetInt("oh_maxscorelimit", 0);
@@ -1755,7 +1755,7 @@ bool CGHost :: FlameCheck( string message )
         c++;
     }
 
-    for( int i = 0; i < m_Flames.size( ); )
+    for( size_t i = 0; i < m_Flames.size( ); )
     {
         if( message.find( m_Flames[i] ) != string :: npos )
         {
@@ -2046,7 +2046,7 @@ bool CGHost :: IsForcedGProxy( string input ) {
         if( BanIP[0] == ':' )
         {
             BanIP = BanIP.substr( 1 );
-            int len = BanIP.length( );
+            size_t len = BanIP.length( );
 
             if( input.length( ) >= len && input.substr( 0, len ) == BanIP )
             {

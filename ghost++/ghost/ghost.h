@@ -203,7 +203,7 @@ public:
     uint32_t m_MinimumLeaverKills;
     uint32_t m_MinimumLeaverDeaths;
     uint32_t m_MinimumLeaverAssists;
-    bool m_DeathsByLeaverReduction;
+    uint32_t m_DeathsByLeaverReduction;
     uint32_t m_BotID;
     bool m_StatsUpdate;
     bool m_MessageSystem;
