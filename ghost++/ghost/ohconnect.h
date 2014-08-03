@@ -29,6 +29,7 @@
 //
 
 class CTCPClient;
+class CGame;
 
 class OHConnect
 {
@@ -42,7 +43,8 @@ private:
     CTCPClient *m_Socket; // the connection to ohconnect
 
 public:
-    OHConnect( CGHost *nGHost );
+    OHConnect( CGHost *nGHost, CGame *nGame, string ip, uint32_t port );
+
     virtual ~OHConnect( );
 
     /* processing functions */

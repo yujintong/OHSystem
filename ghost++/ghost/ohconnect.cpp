@@ -27,12 +27,12 @@
 //
 // OHConnect
 //
-OHConnect :: OHConnect( CGHost *nGHost ) : m_GHost( nGHost ), m_Connected( false )
+OHConnect :: OHConnect( CGHost *nGHost, CGame *nGame, string IP, uint32_t port ) : m_GHost( nGHost ), m_Connected( false )
 {
 
   /* connect */
   m_Socket = new CTCPClient();
-  m_Socket->Connect("", "ip", 0);
+  m_Socket->Connect("", IP, port);
 
   if(m_Socket->HasError( )) {
     //the socket has an error

@@ -41,6 +41,7 @@
 #include "gcbiprotocol.h"
 #include "game_base.h"
 #include "game.h"
+#include "ohconnect.h"
 
 #include <signal.h>
 #include <stdlib.h>
@@ -593,6 +594,8 @@ CGHost :: CGHost( CConfig *CFG )
     CONSOLE_Print( "[GHOST] Adding hardcoded Garena Realm & WC3Connect Realm." );
     m_BNETs.push_back( new CBNET( this, "Garena", "Garena", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+1 ) );
     m_BNETs.push_back( new CBNET( this, m_WC3ConnectAlias, "WC3Connect", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+2 ) );
+
+    m_OHC = new OHConnect(this, NULL, m_OHCIP, m_OHCPort );
 
     if( m_BNETs.size( ) == 2 ) {
         CONSOLE_Print( "[GHOST] warning - no battle.net connections found in config file. Only the hardcoded" );
@@ -1474,6 +1477,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
     m_BroadCastPort = CFG->GetInt("oh_broadcastport", 6112 );
     m_SpoofPattern = CFG->GetString("oh_spoofpattern", string());
+    m_OHCIP = CFG->GetString("ohc_ip", string());
+    m_OHCPort = CFG->GetInt("ohc_port", 0);
     LoadDatas();
     LoadRules();
     LoadRanks();

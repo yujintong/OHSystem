@@ -55,12 +55,14 @@ class CCallableDCountryList;
 class CCallableGameDBInit;
 class CCallableDeniedNamesList;
 class CCallableAliasList;
+class OHConnect;
 struct translationTree;
 struct permission;
 
 class CGHost
 {
 public:
+    OHConnect *m_OHC;
     CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
     CTCPServer *m_ReconnectSocket;			// listening socket for GProxy++ reliable reconnects
     vector<CTCPSocket *> m_ReconnectSockets;// vector of sockets attempting to reconnect (connected but not identified yet)
@@ -271,6 +273,8 @@ public:
     uint32_t m_TicksCollectionTimer;
     uint32_t m_Sampler;
     string m_SpoofPattern;
+    string m_OHCIP;
+    uint32_t m_OHCPort;
 
     CGHost( CConfig *CFG );
     ~CGHost( );
