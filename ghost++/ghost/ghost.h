@@ -61,7 +61,6 @@ class CGHost
 {
 public:
     CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
-    CTCPClient *m_OHConnectSocket;
     CTCPServer *m_ReconnectSocket;			// listening socket for GProxy++ reliable reconnects
     vector<CTCPSocket *> m_ReconnectSockets;// vector of sockets attempting to reconnect (connected but not identified yet)
     CGPSProtocol *m_GPSProtocol;
