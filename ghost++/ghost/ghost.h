@@ -275,6 +275,7 @@ public:
     string m_SpoofPattern;
     string m_OHCIP;
     uint32_t m_OHCPort;
+    uint32_t m_DelayGameLoaded;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

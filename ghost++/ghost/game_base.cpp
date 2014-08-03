@@ -1109,7 +1109,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
     }
 
     // send gameloaded info
-    if( !m_SendGameLoaded && m_GameLoaded && GetTime() - m_GameLoadedTime >= 300 )
+    if( !m_SendGameLoaded && m_GameLoaded && GetTime() - m_GameLoadedTime >= m_GHost->m_DelayGameLoaded )
     {
         ifstream in;
         in.open( m_GHost->m_GameLoadedFile.c_str( ) );
