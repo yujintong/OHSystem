@@ -454,7 +454,7 @@ public:
     string UsersOwnReputation( string reputation );
     string WelcomeUserCreateUniqueId( string user );
     string DomainOnJoinNotify( );
-    string WelcomeBackUser( string user, string ping );
+    string WelcomeBackUser( string user );
     string CreatedUniqueIdForNewUser( string id );
     string PotentialBanAvoider( string user, string count );
     string KickedUserForBeingAFK( string user );

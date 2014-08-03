@@ -245,7 +245,7 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 uint32_t MySQLPWCheck( void *conn, string *error, uint32_t botid, string user );
 uint32_t MySQLPassCheck( void *conn, string *error, uint32_t botid, string user, string pass, uint32_t st );
 uint32_t MySQLpm( void *conn, string *error, uint32_t botid, string user, string listener, uint32_t status, string message, string type );
-vector<string> MySQLPList( void *conn, string *error, uint32_t botid, string server );
+vector<permission> MySQLPList( void *conn, string *error, uint32_t botid, string server );
 vector<string> MySQLFlameList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLForcedGProxyList( void *conn, string *error, uint32_t botid );
 vector<string> MySQLAliasList( void *conn, string *error, uint32_t botid );

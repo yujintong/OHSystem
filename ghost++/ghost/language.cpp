@@ -2911,11 +2911,10 @@ string CLanguage :: DomainOnJoinNotify( )
     return Out;
 }
 
-string CLanguage :: WelcomeBackUser( string user, string ping )
+string CLanguage :: WelcomeBackUser( string user )
 {
     string Out = m_CFG->GetString( "oh_191", "oh_191" );
     UTIL_Replace( Out, "$USER$", user );
-    UTIL_Replace( Out, "$PING$", ping );
     return Out;
 }
 

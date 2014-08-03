@@ -1184,7 +1184,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
 
-    if( player->GetSpoofed( ) && Level >= 5 && m_GHost->m_RanksLoaded)
+    if( player->GetSpoofed( ) && m_GHost->m_RanksLoaded && ( Level > 5 || m_GHost->CanAccessCommand(player->GetName(), Command ) ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] "+ LevelName +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
 
@@ -1269,7 +1269,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         CGamePlayer *LastMatch = NULL;
                         uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
                         if(Matches==0)
-                            SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
+                           SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
                         else if(Matches==1)
                         {
                             SendChat( player,m_GHost->m_Language->SuccessfullyLetPlayerInsult( ));
@@ -2044,18 +2044,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         SendAllChat( m_GHost->m_Language->UnableToCheckPlayerNoMatchesFound( Payload ) );
                     else if( Matches == 1 )
                     {
-                        uint32_t CLevel = 0;
-                        string CLevelName;
-                        for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
-                        {
-                            if( (*i)->GetServer( ) == player->GetSpoofedRealm( )  || player->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias )
-                            {
-                                CLevel = (*i)->IsLevel( LastMatch->GetName( ) );
-                                CLevelName = (*i)->GetLevelName( CLevel );
-                                break;
-                            }
-                        }
-                        SendAllChat( "[" + LastMatch->GetName( ) + "] (P: " + ( LastMatch->GetNumPings( ) > 0 ? UTIL_ToString( LastMatch->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) + ") (F: " + LastMatch->GetCLetter( )+ ") (Role: " + ( CLevelName.empty( ) ? "unknown" : CLevelName ) + ") (SpoofChecked: " + ( LastMatch->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( LastMatch->GetSpoofedRealm( ).empty( ) ? "N/A" : LastMatch->GetSpoofedRealm( ) ) + ")" );
+                        SendAllChat( "[" + LastMatch->GetName( ) + "] (P: " + ( LastMatch->GetNumPings( ) > 0 ? UTIL_ToString( LastMatch->GetPing( m_GHost->m_LCPings ) ) + "ms" : "N/A" ) + ") (F: " + LastMatch->GetCLetter( )+ ") (Role: " + ( LastMatch->GetLevelName( ).empty() ? "unknown" : LastMatch->GetLevelName( ) ) + ") (SpoofChecked: " + ( LastMatch->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( LastMatch->GetSpoofedRealm( ).empty( ) ? "N/A" : LastMatch->GetSpoofedRealm( ) ) + ")" );
                     }
                     else
                         SendAllChat( m_GHost->m_Language->UnableToCheckPlayerFoundMoreThanOneMatch( Payload ) );

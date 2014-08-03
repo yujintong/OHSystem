@@ -95,9 +95,9 @@ uint32_t CGHostDB :: penp( string name, string reason, string admin, uint32_t am
     return 0;
 }
 
-vector<string> CGHostDB :: PList( string server )
+vector<permission> CGHostDB :: PList( string server )
 {
-    return vector<string>( );
+    return vector<permission>( );
 }
 
 vector<string> CGHostDB :: FlameList( )

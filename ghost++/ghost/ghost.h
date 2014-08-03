@@ -56,6 +56,7 @@ class CCallableGameDBInit;
 class CCallableDeniedNamesList;
 class CCallableAliasList;
 struct translationTree;
+struct permission;
 
 class CGHost
 {
@@ -316,11 +317,18 @@ public:
     bool FindHackFiles( string input );
     bool PlayerCached( string playername );
     void LoadLanguages( );
+    bool CanAccessCommand( string name, string command );
 };
 
 struct translationTree {
     string suffix;
     CLanguage *m_Translation;
+};
+
+struct permission {
+    string player;
+    uint32_t level;
+    string binaryPermissions;
 };
 
 #endif
