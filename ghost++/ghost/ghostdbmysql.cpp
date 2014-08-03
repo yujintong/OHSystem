@@ -1824,7 +1824,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
         else
             Success = true;
 
-        if( EscReason != "Too many penalty points" );
+        if( EscReason != "Too many penalty points" )
         {
             if( mysql_real_query( (MYSQL *)conn, OffenseQuery.c_str( ), OffenseQuery.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
@@ -1852,7 +1852,7 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
         else
             Success = true;
 
-        if( EscReason != "Too many penalty points" );
+        if( EscReason != "Too many penalty points" )
         {
             if( mysql_real_query( (MYSQL *)conn, OffenseQuery.c_str( ), OffenseQuery.size( ) ) != 0 )
                 *error = mysql_error( (MYSQL *)conn );
