@@ -23,27 +23,15 @@
 #include "ghost.h"
 #include "socket.h"
 #include "ohconnect.h"
+#include "util.h"
+#include "commandpacket.h"
 
 //
 // OHConnect
 //
-OHConnect :: OHConnect( CGHost *nGHost, CGame *nGame, string IP, uint32_t port ) : m_GHost( nGHost ), m_Connected( false )
+OHConnect :: OHConnect( CGHost *nGHost, CGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Connected( false ), IP( nIP ), Port( nPort )
 {
-
-  /* connect */
-  m_Socket = new CTCPClient();
-  m_Socket->Connect("", IP, port);
-
-  if(m_Socket->HasError( )) {
-    //the socket has an error
-    CONSOLE_Print("[OHConnect-Socket] disconnected from OHConnect due socket error");
-    CONSOLE_Print("[OHConnect-Socket] "+m_Socket->GetErrorString( ));
-  }
-  else {
-    m_Connected = true;
-    CONSOLE_Print("[OHConnect-Socket] Successfully connected to OHConnect");
-    m_Socket->PutBytes("");
-  }
+  Connect( );
 }
 
 OHConnect :: ~OHConnect( )
@@ -53,8 +41,40 @@ OHConnect :: ~OHConnect( )
 
 bool OHConnect :: Update( void *fd, void *send_fd )
 {
+  if( m_Socket->HasError( ) )
+  {
+    CONSOLE_Print("[OHConnect] Socket error, reseting socket");
+    m_Socket->Reset( );
+  }
 
+  if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) )
+  {
+     m_Socket->Reset( );
+  }
 
+  if( m_Socket->GetConnected( ) )
+  {
+    m_Socket->DoRecvPlain( (fd_set *)fd );
+    ExtractPackets( );
+    ProcessPackets( );
+
+    //m_Socket->PutBytes("{ name => 'Bot', message => 'Neuby sucks :)' }");
+    //m_Socket->DoSendPlain( (fd_set *)send_fd );
+  }
+
+  if( m_Socket->GetConnecting( ) ) {
+    if( m_Socket->CheckConnect( ) ) {
+      CONSOLE_Print("[OHConnect] Successfully connected to socket");
+    }
+    else {
+      CONSOLE_Print("[OHConnect] Connection check failed, reseting socket");
+      m_Socket->Reset( );
+    }
+  }
+
+  if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) ) {
+    Connect( );
+  }
 }
 
 unsigned int OHConnect :: SetFD( void *fd, void *send_fd, int *nfds )
@@ -70,9 +90,66 @@ unsigned int OHConnect :: SetFD( void *fd, void *send_fd, int *nfds )
 void OHConnect :: ProcessPackets( )
 {
 
+  while(!m_Packets.empty( ) ) {
+    CCommandPacket *Packet = m_Packets.front( );
+    m_Packets.pop( );
+
+    if(Packet->GetPacketType( ) == 16 ) {
+      CONSOLE_Print("ID: "+UTIL_ToString(Packet->GetID( ))+", Data: "+string(Packet->GetData( ).begin( ), Packet->GetData( ).end( ) ) );
+    }
+  }
 }
 
 void OHConnect :: ExtractPackets( )
 {
+  string *RecvBuffer = m_Socket->GetBytes( );
+  string Buffer = *RecvBuffer;
+  // a packet is at least 4 bytes so loop as long as the buffer contains 4 bytes
+  if( Buffer.size( ) > 0 )
+  {
+      uint32_t length = Buffer.size();
+      string message = Buffer.substr(3, length-3);
+      ProcessEvent(message);
+      *RecvBuffer = RecvBuffer->substr(length);
+  }
+}
 
+void OHConnect :: ProcessEvent( string message ) {
+CONSOLE_Print(message);
+
+  size_t hasType = message.find("type");
+  size_t length = message.size();
+  /* has a type definition */
+/*if(hasType!=std::string::npos) {
+    size_t pos = message.find("type")!=std::string::npos;
+    string message = message.substr(pos+9, length-(pos+7));
+    size_t pos2 = message.find_first_of("\"");
+    string type = message.substr(0, pos2);
+
+CONSOLE_Print("Type: "+type);
+  }
+*/
+}
+void OHConnect :: Connect( )
+{
+  /* connect */
+  m_Socket = new CTCPClient();
+  m_Socket->Connect("", IP, Port);
+
+  if(m_Socket->HasError( )) {
+    //the socket has an error
+    CONSOLE_Print("[OHConnect] disconnected from OHConnect due socket error");
+    CONSOLE_Print("[OHConnect] "+m_Socket->GetErrorString( ));
+  }
+  else {
+    m_Connected = true;
+    CONSOLE_Print("[OHConnect] Starting connection to socket");
+    /* handshake*/
+    string key = "x3JJHMbDL1EzLkh9GBhXDw==";
+    string toSend = " 'HTTP/1.1 101 Switching Protocols', 'Upgrade: websocket', 'Connection: Upgrade', 'Sec-WebSocket-Key: '"+key;
+    // populate key with content of Sec-WebSocket-Key header
+    key.append("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+    toSend += key;
+    m_Socket->PutBytes(toSend);
+  }
 }

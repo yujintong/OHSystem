@@ -293,6 +293,21 @@ void CTCPSocket :: PutBytes( BYTEARRAY bytes )
     m_SendBuffer += string( bytes.begin( ), bytes.end( ) );
 }
 
+void CTCPSocket :: DoRecvPlain( fd_set *fd ) {
+    if( m_Socket == INVALID_SOCKET || m_HasError || !m_Connected )
+        return;
+
+    if( FD_ISSET( m_Socket, fd ) )
+    {
+        // data is waiting, receive it
+
+        char buffer[1024];
+        int c = recv( m_Socket, buffer, 1024, 0 );
+        m_RecvBuffer += string( buffer, c );
+        m_LastRecv = GetTime( );
+    }
+}
+
 void CTCPSocket :: DoRecv( fd_set *fd )
 {
     if( m_Socket == INVALID_SOCKET || m_HasError || !m_Connected )
@@ -320,7 +335,6 @@ void CTCPSocket :: DoRecv( fd_set *fd )
                     Log.close( );
                 }
             }
-
             m_RecvBuffer += string( buffer, c );
             m_LastRecv = GetTime( );
         }
@@ -369,7 +383,6 @@ void CTCPSocket :: DoSend( fd_set *send_fd )
                     Log.close( );
                 }
             }
-
             m_SendBuffer = m_SendBuffer.substr( s );
             m_LastSend = GetTime( );
         }
@@ -379,7 +392,48 @@ void CTCPSocket :: DoSend( fd_set *send_fd )
 
             m_HasError = true;
             m_Error = GetLastError( );
-            //CONSOLE_Print( "[TCPSOCKET] error (send) - " + GetErrorString( ) );
+            CONSOLE_Print( "[TCPSOCKET] error (send) - " + GetErrorString( ) );
+            return;
+        }
+    }
+}
+
+void CTCPSocket :: DoSendPlain( fd_set *send_fd )
+{
+    if( m_Socket == INVALID_SOCKET || m_HasError || !m_Connected || m_SendBuffer.empty( ) )
+        return;
+
+    if( FD_ISSET( m_Socket, send_fd ) )
+    {
+        // socket is ready, send it
+
+        int s = send( m_Socket, m_SendBuffer.c_str( ), (int)m_SendBuffer.size( ), MSG_NOSIGNAL );
+
+        if( s > 0 )
+        {
+            // success! only some of the data may have been sent, remove it from the buffer
+
+            if( !m_LogFile.empty( ) )
+            {
+                ofstream Log;
+                Log.open( m_LogFile.c_str( ), ios :: app );
+
+                if( !Log.fail( ) )
+                {
+                    Log << "SEND >>> " << m_SendBuffer.substr(0, s)  << endl;
+                    Log.close( );
+                }
+            }
+            m_SendBuffer = m_SendBuffer.substr( s );
+            m_LastSend = GetTime( );
+        }
+        else if( s == SOCKET_ERROR && GetLastError( ) != EWOULDBLOCK )
+        {
+            // send error
+
+            m_HasError = true;
+            m_Error = GetLastError( );
+            CONSOLE_Print( "[TCPSOCKET] error (send) - " + GetErrorString( ) );
             return;
         }
     }

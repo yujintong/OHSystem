@@ -30,6 +30,7 @@
 
 class CTCPClient;
 class CGame;
+class CCommandPacket;
 
 class OHConnect
 {
@@ -38,7 +39,9 @@ public:
 
 protected:
     bool m_Connected;
-
+    string IP;
+    uint32_t Port;
+    queue<CCommandPacket *> m_Packets;
 private:
     CTCPClient *m_Socket; // the connection to ohconnect
 
@@ -52,8 +55,8 @@ public:
     bool Update( void *fd, void *send_fd );
     void ExtractPackets( );
     void ProcessPackets( );
-
-
+    void Connect( );
+    void ProcessEvent( string message );
 };
 
 #endif
