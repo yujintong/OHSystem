@@ -351,7 +351,7 @@ void CTCPSocket :: DoRecv( fd_set *fd )
         {
             // the other end closed the connection
 
-            //CONSOLE_Print( "[TCPSOCKET] closed by remote host" );
+            CONSOLE_Print( "[TCPSOCKET] closed by remote host" );
             m_Connected = false;
         }
     }
@@ -402,7 +402,6 @@ void CTCPSocket :: DoSendPlain( fd_set *send_fd )
 {
     if( m_Socket == INVALID_SOCKET || m_HasError || !m_Connected || m_SendBuffer.empty( ) )
         return;
-
     if( FD_ISSET( m_Socket, send_fd ) )
     {
         // socket is ready, send it

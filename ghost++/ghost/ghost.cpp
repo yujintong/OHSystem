@@ -783,6 +783,9 @@ bool CGHost :: Update( long usecBlock )
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
 
+    if(m_OHC)
+        NumFDs += m_OHC->SetFD( &fd, &send_fd, &nfds );
+
     // 2. the current game's server and player sockets
 
     if( m_CurrentGame )
@@ -900,6 +903,10 @@ bool CGHost :: Update( long usecBlock )
         if( (*i)->Update( &fd, &send_fd ) )
             BNETExit = true;
     }
+
+    if(m_OHC)
+        m_OHC->Update( &fd, &send_fd );
+
 
     // update GProxy++ reliable reconnect sockets
 

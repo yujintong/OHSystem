@@ -42,6 +42,10 @@ protected:
     string IP;
     uint32_t Port;
     queue<CCommandPacket *> m_Packets;
+    bool m_FirstConnect;
+    uint32_t m_LastSendTime;
+    bool m_Handshake;
+    uint32_t m_ClientID;
 private:
     CTCPClient *m_Socket; // the connection to ohconnect
 
