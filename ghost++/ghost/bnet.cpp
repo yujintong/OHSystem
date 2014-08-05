@@ -313,13 +313,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
             if( i->second->GetType( ) == "betcheck" )
                 QueueChatCommand( m_GHost->m_Language->BetPoints(i->second->GetUser( ), Result ), i->first, !i->first.empty( ) );
 
-            else if( i->second->GetType( ) == "statsreset" )
-            {
-                if( Result == "success" )
-                    QueueChatCommand( m_GHost->m_Language->SuccessfullyResetedStats( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
-                else
-                    QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
-            }
             else if( i->second->GetType( ) == "aliascheck" )
             {
                 if( Result != "failed" )
