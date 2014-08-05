@@ -977,16 +977,6 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
         }
         return "failed";
     }
-    else if( type == "statsreset" )
-    {
-        string ResetQuery = "UPDATE `oh_stats` SET score = 0, games = 0, wins = 0, losses = 0, draw = 0, kills = 0, deaths = 0, assists = 0, creeps = 0, denies = 0, neutrals = 0, towers = 0, rax = 0, streak = 0, maxstreak = 0, losingstreak = 0, maxlosingstreak = 0, points = 0, points_bet = 0, leaver = 0 WHERE month=MONTH(NOW()) AND year=YEAR(NOW()) AND player_lower = '"+EscUser+"';";
-        if( mysql_real_query( (MYSQL *)conn, ResetQuery.c_str( ), ResetQuery.size( ) ) != 0 )
-            *error = mysql_error( (MYSQL *)conn );
-        else
-            return "success";
-
-        return "failed";
-    }
     else if( type == "aliascheck" )
     {
         string Aliases = "";
