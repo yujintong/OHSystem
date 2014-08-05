@@ -4028,27 +4028,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
                 m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "betsystem", 0, "betcheck" ) ) );
         }
-
-        //
-        // !STATSRESET      !SR
-        //
-        else if( Command == "statsreset" || Command == "sr" )
-        {
-            if( IsLevel( User ) >= 3 )
-            {
-                string StatsUser = User;
-                if( !Payload.empty( ) && IsLevel( User ) >= 9 )
-                    StatsUser = Payload;
-
-                // check for potential abuse
-
-                if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                    m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "", 0, "statsreset" ) ) );
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand() );
-        }
-
+        
         //
         // !ALIAS      !AL
         //
