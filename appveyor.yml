@@ -10,9 +10,9 @@ install:
   - cmd: cd c:\
   - cmd: appveyor DownloadFile http://downloads.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.zip
   - cmd: 7z.exe x boost_1_54_0.zip >nul
-  - cmd cd c:\boost_1_54_0\
-  - cmd bootstrap
-  - cmd .\b2
+  - cmd: cd c:\boost_1_54_0\
+  - cmd: bootstrap
+  - cmd: .\b2
   - cmd: mkdir c:\ohsystem\ghost++\boost
   - cmd: xcopy /E /R /K /Y /Q "c:\boost_1_54_0.zip\stage\lib\" "c:\ohsystem\ghost++\boost\"
   
