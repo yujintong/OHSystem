@@ -16,7 +16,8 @@ the Free Software Foundation, either version 3 of the License, or
 ---
 
 ###### Status:
-[![Build Status](https://travis-ci.org/OHSystem/ohsystem.svg?branch=master)](https://travis-ci.org/OHSystem/ohsystem)[![Build Status](https://drone.io/github.com/OHSystem/ohsystem/status.png)](https://drone.io/github.com/OHSystem/ohsystem/latest)
+[![Build Status](https://travis-ci.org/OHSystem/ohsystem.svg?branch=master)](https://travis-ci.org/OHSystem/ohsystem)
+[![Build Status](https://drone.io/github.com/OHSystem/ohsystem/status.png)](https://drone.io/github.com/OHSystem/ohsystem/latest)
 [![Project Status](http://stillmaintained.com/OHSystem/ohsystem.png)](http://stillmaintained.com/OHSystem/ohsystem)
 
 ###### Consider a donation to support us and keep up our work, we sometimes need a cup of :coffee:
