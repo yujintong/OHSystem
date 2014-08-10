@@ -5,17 +5,3 @@ branches:
 os: Windows Server 2012
 
 clone_folder: c:\ohsystem
-
-install:
-  - cmd: cd c:\
-  - cmd: appveyor DownloadFile http://downloads.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.zip
-  - cmd: mkdir c:\ohsystem\ghost++\boost
-  - cmd: 7z.exe x boost_1_54_0.zip >nul
-  - cmd: cd c:\boost_1_54_0\
-  - cmd: bootstrap --with-libraries="filesystem,program_options,system,regex,thread,date_time" --libdir="c:\ohsystem\ghost++\boost"
-  - cmd: .\b2
-  
-build:
-  project: c:\ohsystem\ghost++\ghost.sln
-  
-
