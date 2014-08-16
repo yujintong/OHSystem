@@ -1184,7 +1184,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
 
-    if( player->GetSpoofed( ) && m_GHost->m_RanksLoaded && ( Level > 5 || m_GHost->CanAccessCommand(player->GetName(), Command ) ) )
+    bool hasAccess = m_GHost->CanAccessCommand(player->GetName(), Command );
+
+    if( player->GetSpoofed( ) && m_GHost->m_RanksLoaded && ( Level > 5 || hasAccess ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] "+ LevelName +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
 
@@ -1211,7 +1213,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !FORCE MODE
             //
-            else if( Command == "forcemode" && Level >= 9 && !m_Voted) {
+            else if( Command == "forcemode" && (Level >= 9||hasAccess) && !m_Voted) {
                 if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
                     SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
@@ -1260,7 +1262,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 //
                 // !INSULT
                 //
-                if( Command=="insult" || Command=="i" && Level >= 9)
+                if( Command=="insult" || Command=="i" && (Level >= 9||hasAccess))
                 {
                     if( Payload.empty())
                         SendAllChat(m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
@@ -1568,7 +1570,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             else if(  Command == "ppadd" || Command == "punish" )
             {
                 string Victim;
-                string Amount;
+                uint32_t Amount;
                 string Reason;
                 stringstream SS;
                 SS << Payload;
@@ -1582,9 +1584,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                     SS >> Amount;
 
-                    if( SS.fail( ) || Amount == "0" )
+                    if( SS.fail( ) || Amount == 0 )
                         CONSOLE_Print( "[PP] bad input #2 to !TEMPBAN command" );
-                    else if( ( UTIL_ToUInt32( Amount ) > 3 && Level < 8 ) || UTIL_ToUInt32( Amount ) > 10 && Level <= 10 )
+                    else if( ( Amount > 3 && (hasAccess||Level < 8) ) || Amount > 10 && Level <= 10 )
                         SendChat( player, m_GHost->m_Language->TooMuchPPoints() );
                     else
                     {
@@ -1605,7 +1607,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             if( Matches == 0 )
                                 SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
                             else if( Matches == 1 )
-                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( LastMatch->GetName( ), Reason, User, UTIL_ToUInt32( Amount ), "add" ) ) );
+                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( LastMatch->GetName( ), Reason, User, Amount , "add" ) ) );
                             else if( Matches > 1 )
                                 SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
                         }
@@ -2366,7 +2368,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !DROP
             //
-            else if( Command == "drop" && m_GameLoaded && Level >= 5 )
+            else if( Command == "drop" && m_GameLoaded && (Level >= 5||hasAccess) )
                 StopLaggers( "lagged out (dropped by admin)" );
 
             //
@@ -2392,7 +2394,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !FROM
             //
-            else if( Command == "from" && Level >= 5 )
+            else if( Command == "from" && (Level >= 5||hasAccess) )
             {
                 string Froms;
 
@@ -2610,7 +2612,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !MUTE
             //
-            else if( Command == "mute" && Level >= 5 )
+            else if( Command == "mute" && (Level >= 5||hasAccess) )
             {
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -2978,7 +2980,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !SWAP (swap slots)
             //
-            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && Level >= 5 )
+            else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && (Level >= 5||hasAccess) )
             {
                 uint32_t SID1;
                 uint32_t SID2;
@@ -3051,7 +3053,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !UNMUTE
             //
-            else if( Command == "unmute" && Level >= 5 )
+            else if( Command == "unmute" && (Level >= 5||hasAccess) )
             {
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
