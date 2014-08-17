@@ -1487,6 +1487,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_OHCIP = CFG->GetString("ohc_ip", string());
     m_OHCPort = CFG->GetInt("ohc_port", 0);
     m_DelayGameLoaded = CFG->GetInt("oh_delaygameloaded", 300);
+    m_FountainFarmDetection = CFG->GetInt("oh_fountainfarmdetection", 1) == 0 ? false : true;
     LoadDatas();
     LoadRules();
     LoadRanks();

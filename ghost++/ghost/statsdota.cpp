@@ -257,7 +257,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + Victim->GetName( ) + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
                                     }
 
-                                    if( GetTime() - Killer->GetLastAttackTimeToFountain() <=5 ) {
+                                    if( GetTime() - Killer->GetLastAttackTimeToFountain() <=5 && m_Game->m_GHost->m_FountainFarmDetection) {
                                         m_Game->SendChat(Killer->GetPID(), m_Game->m_GHost->m_Language->YouHaveBeenDetectedAsFountainFarmer());
                                         m_FFKills[ValueInt]++;
                                         Killer->SetFFLevel();

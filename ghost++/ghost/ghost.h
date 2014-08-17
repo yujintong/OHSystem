@@ -276,6 +276,7 @@ public:
     string m_OHCIP;
     uint32_t m_OHCPort;
     uint32_t m_DelayGameLoaded;
+    bool m_FountainFarmDetection;
 
     CGHost( CConfig *CFG );
     ~CGHost( );
