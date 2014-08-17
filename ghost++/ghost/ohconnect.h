@@ -31,6 +31,22 @@
 class CTCPClient;
 class CGame;
 class CCommandPacket;
+struct OHCHeader {
+  unsigned header_size;
+  bool fin;
+  bool mask;
+  enum opcode_type {
+    CONTINUTATION = 0x0,
+    TEXT_FRAME = 0x1,
+    BINARY_FRAME = 0x2,
+    CLOSE = 8,
+    PING = 9,
+    PONG = 0xa,
+  } opcode;
+  int N0;
+  uint64_t N;
+  uint8_t masking_key[4];
+};
 
 class OHConnect
 {
@@ -46,6 +62,9 @@ protected:
     uint32_t m_LastSendTime;
     bool m_Handshake;
     uint32_t m_ClientID;
+    std::vector<uint8_t> rxbuf;
+    uint32_t LastPingTime;
+
 private:
     CTCPClient *m_Socket; // the connection to ohconnect
 
@@ -61,6 +80,9 @@ public:
     void ProcessPackets( );
     void Connect( );
     void ProcessEvent( string message );
+    void sendData(OHCHeader::opcode_type type, string message);
+    void recvData();
+    string wrapMessage( string message );
 };
 
 #endif

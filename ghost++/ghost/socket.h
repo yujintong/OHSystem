@@ -106,13 +106,13 @@ extern int GetLastError( );
 class CSocket
 {
 protected:
-    SOCKET m_Socket;
     struct sockaddr_in m_SIN;
     bool m_HasError;
     int m_Error;
     string m_CachedHostName;
 
 public:
+    SOCKET m_Socket;
     CSocket( );
     CSocket( SOCKET nSocket, struct sockaddr_in nSIN );
     ~CSocket( );

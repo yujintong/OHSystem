@@ -303,8 +303,15 @@ void CTCPSocket :: DoRecvPlain( fd_set *fd ) {
 
         char buffer[1024];
         int c = recv( m_Socket, buffer, 1024, 0 );
-        m_RecvBuffer += string( buffer, c );
-        m_LastRecv = GetTime( );
+        if(c!=0) {
+          m_RecvBuffer += string( buffer, c );
+          m_LastRecv = GetTime( );
+        } else {
+            // the other end closed the connection
+
+            CONSOLE_Print( "[TCPSOCKET] closed by remote host" );
+            m_Connected = false;
+        }
     }
 }
 

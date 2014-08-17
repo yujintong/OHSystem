@@ -29,9 +29,9 @@
 //
 // OHConnect
 //
-OHConnect :: OHConnect( CGHost *nGHost, CGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0)
+OHConnect :: OHConnect( CGHost *nGHost, CGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( 0 )
 {
-
+  rxbuf.resize(0);
 }
 
 OHConnect :: ~OHConnect( )
@@ -57,9 +57,12 @@ bool OHConnect :: Update( void *fd, void *send_fd )
 
   if( m_Socket->GetConnected( ))
   {
-    m_Socket->DoRecvPlain( (fd_set *)fd );
-    ExtractPackets( );
-    ProcessPackets( );
+    if(GetTime( ) - LastPingTime > 20 || LastPingTime == 0 ) {
+      sendData(OHCHeader::PONG, string());
+      LastPingTime = GetTime( );
+    }
+    m_Socket->DoRecvPlain((fd_set *)fd);
+    ExtractPackets( );  
     m_Socket->DoSendPlain( (fd_set *)send_fd);
   }
 
@@ -120,11 +123,15 @@ bool invalidChar (char c)
 } 
 
 void OHConnect :: ProcessEvent( string msg ){
-
   msg.erase(remove_if(msg.begin(),msg.end(), invalidChar), msg.end());
 
   if(msg.find("Switching Protocols")!=std::string::npos) {
-    CONSOLE_Print("[OHConnect] handshake complete, sending join message");
+    CONSOLE_Print("[OHConnect] handshake complete, sending join message");  
+
+    string message = "{'user':'Bot','newuser':'Bot','message':'','ip':'','room':'1', 'roomname': 'OHC ROOM 1', 'pid': '', 'color':'#FF0808', 'l': '10'}";
+    sendData(OHCHeader::TEXT_FRAME, message);
+    sendData(OHCHeader::PONG, std::string());
+
     m_Handshake = true;
     return;
   }
@@ -132,10 +139,8 @@ void OHConnect :: ProcessEvent( string msg ){
   size_t hasType = msg.find("type");
   size_t length = msg.size();
   /* has a type definition */
- 
   size_t pop = msg.find("{");
   if(pop>length) {
-    CONSOLE_Print("[OHConnect] Recieved invalid packet, ignoring: "+msg);
     return;
   }
   msg = msg.substr(pop);
@@ -148,66 +153,81 @@ void OHConnect :: ProcessEvent( string msg ){
 
   if(hasType!=std::string::npos) {
     /* type */
+    string date, name, message, color, room, roomname;
     size_t pos = msg.find("type");
-    msg = msg.substr(pos+7);
-    size_t pos2 = msg.find_first_of("\"");
-    string type = msg.substr(0, pos2);
-    msg = msg.substr(pos2);
-    if(type != "id" ) {
-      /* datetime */
-      pos = msg.find("datetime");
-      msg = msg.substr(pos+11);
-      pos2 = msg.find_first_of("\"");
-      string date = msg.substr(0, pos2);
-      msg = msg.substr(pos2);
-
-      /* name */
-      pos = msg.find("name");
+    if(pos!=std::string::npos) {
       msg = msg.substr(pos+7);
-      pos2 = msg.find_first_of("\"");
-      string name = msg.substr(0, pos2);
+      size_t pos2 = msg.find_first_of("\"");
+      string type = msg.substr(0, pos2);
       msg = msg.substr(pos2);
+      if(type != "id" ) {
+        /* datetime */
+        pos = msg.find("datetime");
+        if(pos!=std::string::npos) {
+          msg = msg.substr(pos+11);
+          pos2 = msg.find_first_of("\"");
+          date = msg.substr(0, pos2);
+          msg = msg.substr(pos2);
+        } else { date = "unknown"; }
+        /* name */
+        pos = msg.find("name");
+        if(pos!=std::string::npos) {
+          msg = msg.substr(pos+7);
+          pos2 = msg.find_first_of("\"");
+          name = msg.substr(0, pos2);
+          msg = msg.substr(pos2);
+        } else { name="unknown"; }
+        /* message */
+        pos = msg.find("message");
+        if(pos!=std::string::npos) {
+          msg = msg.substr(pos+10);
+          pos2 = msg.find_first_of("\"");
+          message = msg.substr(0, pos2);
+          msg = msg.substr(pos2);
+        } else { message = "empty"; }
+        /* color */
+        pos = msg.find("color");
+        if(pos!=std::string::npos) {
+          msg = msg.substr(pos+8);
+          pos2 = msg.find_first_of("\"");
+          color = msg.substr(0, pos2);
+          msg = msg.substr(pos2);
+        } else { color = "#000"; }
+        /* room */
+        pos = msg.find("room");
+        if(pos!=std::string::npos) {
+          msg = msg.substr(pos+7);
+          pos2 = msg.find_first_of("\"");
+          room = msg.substr(0, pos2);
+          msg = msg.substr(pos2);
+        } else { room ="1"; }
+        /* roomname */
+        pos = msg.find("roomname");
+        if(pos!=std::string::npos) {
+          msg = msg.substr(pos+11);
+          pos2 = msg.find_first_of("\"");
+          roomname = msg.substr(0, pos2);
+          msg = msg.substr(pos2);
+        } else { roomname = "OHC ROOM 1"; }
 
-      /* message */
-      pos = msg.find("message");
-      msg = msg.substr(pos+10);
-      pos2 = msg.find_first_of("\"");
-      string message = msg.substr(0, pos2);
-      msg = msg.substr(pos2);
-      
-      /* color */
-      msg = msg.substr(pos+8);
-      pos2 = msg.find_first_of("\"");
-      string color = msg.substr(0, pos2);
-      msg = msg.substr(pos2);
+        if(type=="usermsg") {
+          CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+": "+message);
+        }
 
-      /* room */
-      pos = msg.find("room");
-      msg = msg.substr(pos+7);
-      pos2 = msg.find_first_of("\"");
-      string room = msg.substr(0, pos2);
-      msg = msg.substr(pos2);
-
-      /* roomname */
-      pos = msg.find("roomname");
-      msg = msg.substr(pos+11);
-      pos2 = msg.find_first_of("\"");
-      string roomname = msg.substr(0, pos2);
-      msg = msg.substr(pos2);
-
-      if(type=="usermsg") {
-        CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+": "+message);
-      }
-
-      if(type=="system") {
-        if(fullmsg.find("has joined") ) {
-          CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+" has joined the room");
-        }  
-
+        if(type=="system") {
+          if(fullmsg.find("has joined") ) {
+            CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+" has joined the room");
+          }    
+        }
       }
     }
   }
 }
+
+string OHConnect :: wrapMessage( string message ) {
+    return "{'type':'usermsg', 'datetime':'13:37:42', 'user': 'Bot', 'text':'"+message+"', 'color':'#FF0808', 'l': '10', 'room': '1', 'roomname':'OHC ROOM 1', 'pw':'SmileToday'}";
+}
+
 void OHConnect :: Connect( )
 {
   /* connect */
@@ -223,4 +243,138 @@ void OHConnect :: Connect( )
     m_Connected = true;
     CONSOLE_Print("[OHConnect] Starting connection to socket");
   }
+}
+
+void OHConnect :: sendData(OHCHeader::opcode_type type, string message) {
+  const uint8_t masking_key[4] = { 0x12, 0x34, 0x56, 0x78 };
+  std::vector<uint8_t> header;
+  std::vector<uint8_t> txbuf;
+
+  bool useMask = true;
+  uint64_t message_size = message.size();
+
+  header.assign(2 + (message_size >= 126 ? 2 : 0) + (message_size >= 65536 ? 6 : 0) + (useMask ? 4 : 0), 0);
+  header[0] = 0x80 | type;
+
+  if (false) { }
+  else if (message_size < 126) {
+    header[1] = (message_size & 0xff) | (useMask ? 0x80 : 0);
+    if (useMask) {
+      header[2] = masking_key[0];
+      header[3] = masking_key[1];
+      header[4] = masking_key[2];
+      header[5] = masking_key[3];
+    }
+  }
+  else if (message_size < 65536) {
+    header[1] = 126 | (useMask ? 0x80 : 0);
+    header[2] = (message_size >> 8) & 0xff;
+    header[3] = (message_size >> 0) & 0xff;
+    if (useMask) {
+      header[4] = masking_key[0];
+      header[5] = masking_key[1];
+      header[6] = masking_key[2];
+      header[7] = masking_key[3];
+    }
+  }
+  else {
+    header[1] = 127 | (useMask ? 0x80 : 0);
+    header[2] = (message_size >> 56) & 0xff;
+    header[3] = (message_size >> 48) & 0xff;
+    header[4] = (message_size >> 40) & 0xff;
+    header[5] = (message_size >> 32) & 0xff;
+    header[6] = (message_size >> 24) & 0xff;
+    header[7] = (message_size >> 16) & 0xff;
+    header[8] = (message_size >> 8) & 0xff;
+    header[9] = (message_size >> 0) & 0xff;
+    if (useMask) {
+      header[10] = masking_key[0];
+      header[11] = masking_key[1];
+      header[12] = masking_key[2];
+      header[13] = masking_key[3];
+    }
+  }
+
+  txbuf.insert(txbuf.end(), header.begin(), header.end());
+  txbuf.insert(txbuf.end(), message.begin(), message.end());
+  if (useMask) {
+    for (size_t i = 0; i != message.size(); ++i) { 
+      *(txbuf.end() - message.size() + i) ^= masking_key[i&0x3]; 
+    }
+  }
+
+  m_Socket->PutBytes(txbuf);
+}
+
+void OHConnect :: recvData( ) {
+  OHCHeader ws;
+  if(rxbuf.size()<2) { return; }
+
+  const uint8_t * data = (uint8_t *) &rxbuf[0]; 
+  ws.fin = (data[0] & 0x80) == 0x80;
+  ws.opcode = (OHCHeader::opcode_type) (data[0] & 0x0f);
+  ws.mask = (data[1] & 0x80) == 0x80;
+  ws.N0 = (data[1] & 0x7f);
+  ws.header_size = 2 + (ws.N0 == 126? 2 : 0) + (ws.N0 == 127? 6 : 0) + (ws.mask? 4 : 0);
+
+  if (rxbuf.size() < ws.header_size) { return; }
+  int i;
+  if (ws.N0 < 126) {
+    ws.N = ws.N0;
+    i = 2;
+  }
+  else if (ws.N0 == 126) {
+    ws.N = 0;
+    ws.N |= ((uint64_t) data[2]) << 8;
+    ws.N |= ((uint64_t) data[3]) << 0;
+    i = 4;
+  }
+  else if (ws.N0 == 127) {
+    ws.N = 0;
+    ws.N |= ((uint64_t) data[2]) << 56;
+    ws.N |= ((uint64_t) data[3]) << 48;
+    ws.N |= ((uint64_t) data[4]) << 40;
+    ws.N |= ((uint64_t) data[5]) << 32;
+    ws.N |= ((uint64_t) data[6]) << 24;
+    ws.N |= ((uint64_t) data[7]) << 16;
+    ws.N |= ((uint64_t) data[8]) << 8;
+    ws.N |= ((uint64_t) data[9]) << 0;
+    i = 10;
+  } 
+  if (ws.mask) {
+    ws.masking_key[0] = ((uint8_t) data[i+0]) << 0;
+    ws.masking_key[1] = ((uint8_t) data[i+1]) << 0;
+    ws.masking_key[2] = ((uint8_t) data[i+2]) << 0;
+    ws.masking_key[3] = ((uint8_t) data[i+3]) << 0;
+  }
+  else {
+    ws.masking_key[0] = 0;
+    ws.masking_key[1] = 0;
+    ws.masking_key[2] = 0;
+    ws.masking_key[3] = 0;
+  }
+  if (rxbuf.size() < ws.header_size+ws.N) { return; }
+  if (false) { }
+  else if (ws.opcode == OHCHeader::TEXT_FRAME && ws.fin) {
+    if (ws.mask) { 
+      for (size_t i = 0; i != ws.N; ++i) { 
+        rxbuf[i+ws.header_size] ^= ws.masking_key[i&0x3]; 
+      } 
+    }
+    std::string d(rxbuf.begin()+ws.header_size, rxbuf.begin()+ws.header_size+(size_t)ws.N);
+    ProcessEvent(d);
+  }
+  else if (ws.opcode == OHCHeader::PING) {
+    if (ws.mask) { 
+      for (size_t i = 0; i != ws.N; ++i) { 
+        rxbuf[i+ws.header_size] ^= ws.masking_key[i&0x3];
+      } 
+    }
+    std::string d(rxbuf.begin()+ws.header_size, rxbuf.begin()+ws.header_size+(size_t)ws.N);
+    sendData(OHCHeader::PONG, d);
+  }
+  else if (ws.opcode == OHCHeader::PONG) { }
+  else if (ws.opcode == OHCHeader::CLOSE) { }
+
+  rxbuf.erase(rxbuf.begin(), rxbuf.begin() + ws.header_size+(size_t)ws.N);
 }
