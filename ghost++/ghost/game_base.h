@@ -62,6 +62,7 @@ class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
 class CCallableGameUpdate;
+class OHConnect;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -76,6 +77,7 @@ typedef pair<string,CCallableGamePlayerAdd *> PairedGPAdd;
 class CBaseGame
 {
 public:
+    OHConnect *m_OHC;
     CGHost *m_GHost;
     vector<ReservedPlayer> m_ReservedPlayers;
 
@@ -167,7 +169,6 @@ protected:
     bool m_AutoSave;								// if we should auto save the game before someone disconnects
     bool m_MatchMaking;								// if matchmaking mode is enabled
     bool m_LocalAdminMessages;						// if local admin messages should be relayed or not
-    uint32_t m_DatabaseID;                          // the ID number from the database, which we'll use to save replay
     string m_GetMapType;							// map_type
     uint32_t m_LastLogDataUpdate;
     bool m_Balanced;
@@ -213,6 +214,7 @@ public:
     CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
     virtual ~CBaseGame( );
 
+    uint32_t m_DatabaseID;                          // the ID number from the database, which we'll use to save replay
     vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
     CMap *m_Map;
     uint16_t m_HostPort;                                                    // the port to host games on

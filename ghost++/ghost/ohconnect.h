@@ -29,7 +29,7 @@
 //
 
 class CTCPClient;
-class CGame;
+class CBaseGame;
 class CCommandPacket;
 struct OHCHeader {
   unsigned header_size;
@@ -52,6 +52,9 @@ class OHConnect
 {
 public:
     CGHost *m_GHost;
+    CBaseGame *m_Game;
+    string m_Room;
+    string m_RoomName;
 
 protected:
     bool m_Connected;
@@ -69,7 +72,7 @@ private:
     CTCPClient *m_Socket; // the connection to ohconnect
 
 public:
-    OHConnect( CGHost *nGHost, CGame *nGame, string ip, uint32_t port );
+    OHConnect( CGHost *nGHost, CBaseGame *nGame, string ip, uint32_t port );
 
     virtual ~OHConnect( );
 
@@ -83,6 +86,7 @@ public:
     void sendData(OHCHeader::opcode_type type, string message);
     void recvData();
     string wrapMessage( string message );
+    void joinRoom(string room, string roomname);
 };
 
 #endif

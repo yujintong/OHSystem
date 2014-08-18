@@ -633,7 +633,7 @@ CGHost :: ~CGHost( )
 {
     delete m_UDPSocket;
     delete m_ReconnectSocket;
-
+    //delete m_OHC;
 
     for( vector<CTCPSocket *> :: iterator i = m_ReconnectSockets.begin( ); i != m_ReconnectSockets.end( ); ++i )
         delete *i;
@@ -648,8 +648,9 @@ CGHost :: ~CGHost( )
 
     delete m_CurrentGame;
 
-    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
+    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
         delete *i;
+    }
 
     delete m_DB;
 
@@ -788,13 +789,14 @@ bool CGHost :: Update( long usecBlock )
 
     // 2. the current game's server and player sockets
 
-    if( m_CurrentGame )
+    if( m_CurrentGame ) {
         NumFDs += m_CurrentGame->SetFD( &fd, &send_fd, &nfds );
-
+    }
     // 3. all running games' player sockets
 
-    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
+    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
         NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
+    }
 
     // 4. the GProxy++ reconnect socket(s)
 
@@ -1486,6 +1488,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_SpoofPattern = CFG->GetString("oh_spoofpattern", string());
     m_OHCIP = CFG->GetString("ohc_ip", string());
     m_OHCPort = CFG->GetInt("ohc_port", 0);
+    m_OHCPass = CFG->GetString("ohc_pass", string());
     m_DelayGameLoaded = CFG->GetInt("oh_delaygameloaded", 300);
     m_FountainFarmDetection = CFG->GetInt("oh_fountainfarmdetection", 1) == 0 ? false : true;
     LoadDatas();
@@ -1682,6 +1685,11 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         m_CurrentGame->SetEnforcePlayers( m_EnforcePlayers );
         m_EnforcePlayers.clear( );
     }
+
+    if( gameState == GAME_PRIVATE )
+      m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPrivateGame( gameName, ownerName ) ));
+    else if( gameState == GAME_PUBLIC )
+      m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPublicGame( gameName, ownerName ) ) );
 
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
     {

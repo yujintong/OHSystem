@@ -275,6 +275,7 @@ public:
     string m_SpoofPattern;
     string m_OHCIP;
     uint32_t m_OHCPort;
+    string m_OHCPass;
     uint32_t m_DelayGameLoaded;
     bool m_FountainFarmDetection;
 

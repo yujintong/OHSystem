@@ -25,15 +25,14 @@
 #include "ohconnect.h"
 #include "util.h"
 #include "commandpacket.h"
-
+#include "game_base.h"
 //
 // OHConnect
 //
-OHConnect :: OHConnect( CGHost *nGHost, CGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( 0 )
+OHConnect :: OHConnect( CGHost *nGHost, CBaseGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Game(nGame), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( 0 ), m_Room("1"), m_RoomName("OHC ROOM 1")
 {
-  rxbuf.resize(0);
-}
 
+}
 OHConnect :: ~OHConnect( )
 {
   delete m_Socket;
@@ -126,12 +125,9 @@ void OHConnect :: ProcessEvent( string msg ){
   msg.erase(remove_if(msg.begin(),msg.end(), invalidChar), msg.end());
 
   if(msg.find("Switching Protocols")!=std::string::npos) {
-    CONSOLE_Print("[OHConnect] handshake complete, sending join message");  
-
-    string message = "{'user':'Bot','newuser':'Bot','message':'','ip':'','room':'1', 'roomname': 'OHC ROOM 1', 'pid': '', 'color':'#FF0808', 'l': '10'}";
-    sendData(OHCHeader::TEXT_FRAME, message);
+    CONSOLE_Print("[OHConnect] handshake complete");  
+    joinRoom(string(), string());
     sendData(OHCHeader::PONG, std::string());
-
     m_Handshake = true;
     return;
   }
@@ -147,7 +143,7 @@ void OHConnect :: ProcessEvent( string msg ){
   string fullmsg = msg;
   size_t systemMessage = msg.find("\"type\":\"system\"");
   if(msg.find("<img")!=std::string::npos && systemMessage != 1) {
-    CONSOLE_Print("[OHConnect] Recieved a packet with image tag, ignoring: "+msg);
+    CONSOLE_Print("[OHConnect] Recieved a packet with image tag, ignoring.");
     return;
   }
 
@@ -209,13 +205,16 @@ void OHConnect :: ProcessEvent( string msg ){
           roomname = msg.substr(0, pos2);
           msg = msg.substr(pos2);
         } else { roomname = "OHC ROOM 1"; }
-
-        if(type=="usermsg") {
+	if( type=="usermsg" && room == m_Room ) {
           CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+": "+message);
+
+	  if(m_Game) {
+            m_Game->SendAllChat("[OHConnect] "+name+": "+message);
+          }
         }
 
         if(type=="system") {
-          if(fullmsg.find("has joined") ) {
+          if(fullmsg.find("has joined") && room == m_Room ) {
             CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+" has joined the room");
           }    
         }
@@ -225,7 +224,12 @@ void OHConnect :: ProcessEvent( string msg ){
 }
 
 string OHConnect :: wrapMessage( string message ) {
-    return "{'type':'usermsg', 'datetime':'13:37:42', 'user': 'Bot', 'text':'"+message+"', 'color':'#FF0808', 'l': '10', 'room': '1', 'roomname':'OHC ROOM 1', 'pw':'SmileToday'}";
+    std::string msg = "{'type':'usermsg', 'datetime':'', 'user': 'OHC Bot', 'text':'"+message+"', 'color':'#FF0808', 'l': '10', 'room': '"+m_Room+"', 'roomname':'"+m_RoomName+"', 'pw':'";
+    if(m_GHost) { 
+      msg += m_GHost->m_OHCPass;
+    }
+    msg += "'}";
+    return msg;
 }
 
 void OHConnect :: Connect( )
@@ -246,6 +250,10 @@ void OHConnect :: Connect( )
 }
 
 void OHConnect :: sendData(OHCHeader::opcode_type type, string message) {
+  if( message.find("[OHConnect]") != -1 ) {
+    return;
+  }
+
   const uint8_t masking_key[4] = { 0x12, 0x34, 0x56, 0x78 };
   std::vector<uint8_t> header;
   std::vector<uint8_t> txbuf;
@@ -377,4 +385,12 @@ void OHConnect :: recvData( ) {
   else if (ws.opcode == OHCHeader::CLOSE) { }
 
   rxbuf.erase(rxbuf.begin(), rxbuf.begin() + ws.header_size+(size_t)ws.N);
+}
+
+void OHConnect :: joinRoom(string room, string roomname) {
+  if(!room.empty()&&!roomname.empty()) {
+    m_Room = room; m_RoomName = roomname;
+  }
+  string joinMessage = "{'user':'OHC Bot','newuser':'OHC Bot','message':'','ip':'','room':'"+m_Room+"', 'roomname': '"+m_RoomName+"', 'pid': '', 'color':'#FF0808', 'l': '10', 'pw': '"+m_GHost->m_OHCPass+"'}";
+  sendData(OHCHeader::TEXT_FRAME, joinMessage);
 }
