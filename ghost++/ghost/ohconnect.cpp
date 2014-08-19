@@ -29,7 +29,7 @@
 //
 // OHConnect
 //
-OHConnect :: OHConnect( CGHost *nGHost, CBaseGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Game(nGame), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( 0 ), m_Room("1"), m_RoomName("OHC ROOM 1")
+OHConnect :: OHConnect( CGHost *nGHost, CBaseGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Game(nGame), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( GetTime() ), m_Room("1"), m_RoomName("OHC ROOM 1")
 {
 
 }
@@ -56,7 +56,7 @@ bool OHConnect :: Update( void *fd, void *send_fd )
 
   if( m_Socket->GetConnected( ))
   {
-    if(GetTime( ) - LastPingTime > 20 || LastPingTime == 0 ) {
+    if(GetTime( ) - LastPingTime > 15 || LastPingTime == 0 ) {
       sendData(OHCHeader::PONG, string());
       LastPingTime = GetTime( );
     }
@@ -150,10 +150,10 @@ void OHConnect :: ProcessEvent( string msg ){
   if(hasType!=std::string::npos) {
     /* type */
     string date, name, message, color, room, roomname;
-    size_t pos = msg.find("type");
+    int pos = msg.find("type");
     if(pos!=std::string::npos) {
       msg = msg.substr(pos+7);
-      size_t pos2 = msg.find_first_of("\"");
+      int pos2 = msg.find_first_of("\"");
       string type = msg.substr(0, pos2);
       msg = msg.substr(pos2);
       if(type != "id" ) {
@@ -208,7 +208,7 @@ void OHConnect :: ProcessEvent( string msg ){
 	if( type=="usermsg" && room == m_Room ) {
           CONSOLE_Print("[OHCONNECT: "+roomname+"] "+name+": "+message);
 
-	  if(m_Game) {
+	  if(m_Game && name != "OHC Bot") {
             m_Game->SendAllChat("[OHConnect] "+name+": "+message);
           }
         }
@@ -224,11 +224,13 @@ void OHConnect :: ProcessEvent( string msg ){
 }
 
 string OHConnect :: wrapMessage( string message ) {
+CONSOLE_Print(message);
     std::string msg = "{'type':'usermsg', 'datetime':'', 'user': 'OHC Bot', 'text':'"+message+"', 'color':'#FF0808', 'l': '10', 'room': '"+m_Room+"', 'roomname':'"+m_RoomName+"', 'pw':'";
     if(m_GHost) { 
       msg += m_GHost->m_OHCPass;
     }
     msg += "'}";
+    CONSOLE_Print(msg);
     return msg;
 }
 
@@ -250,7 +252,7 @@ void OHConnect :: Connect( )
 }
 
 void OHConnect :: sendData(OHCHeader::opcode_type type, string message) {
-  if( message.find("[OHConnect]") != -1 ) {
+  if( message.find("[OHConnect]") != -1) {
     return;
   }
 
