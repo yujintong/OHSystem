@@ -278,6 +278,8 @@ public:
     string m_OHCPass;
     uint32_t m_DelayGameLoaded;
     bool m_FountainFarmDetection;
+    bool m_AutokickSpoofer;
+    bool m_OHConnect;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

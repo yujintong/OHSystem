@@ -595,7 +595,8 @@ CGHost :: CGHost( CConfig *CFG )
     m_BNETs.push_back( new CBNET( this, "Garena", "Garena", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+1 ) );
     m_BNETs.push_back( new CBNET( this, m_WC3ConnectAlias, "WC3Connect", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+2 ) );
 
-    m_OHC = new OHConnect(this, NULL, m_OHCIP, m_OHCPort );
+    if(m_OHConnect)
+      m_OHC = new OHConnect(this, NULL, m_OHCIP, m_OHCPort );
 
     if( m_BNETs.size( ) == 2 ) {
         CONSOLE_Print( "[GHOST] warning - no battle.net connections found in config file. Only the hardcoded" );
@@ -633,7 +634,6 @@ CGHost :: ~CGHost( )
 {
     delete m_UDPSocket;
     delete m_ReconnectSocket;
-    //delete m_OHC;
 
     for( vector<CTCPSocket *> :: iterator i = m_ReconnectSockets.begin( ); i != m_ReconnectSockets.end( ); ++i )
         delete *i;
@@ -784,7 +784,7 @@ bool CGHost :: Update( long usecBlock )
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
 
-    if(m_OHC)
+    if(m_OHC && m_OHConnect)
         NumFDs += m_OHC->SetFD( &fd, &send_fd, &nfds );
 
     // 2. the current game's server and player sockets
@@ -906,7 +906,7 @@ bool CGHost :: Update( long usecBlock )
             BNETExit = true;
     }
 
-    if(m_OHC)
+    if(m_OHC && m_OHConnect)
         m_OHC->Update( &fd, &send_fd );
 
 
@@ -1489,8 +1489,10 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_OHCIP = CFG->GetString("ohc_ip", string());
     m_OHCPort = CFG->GetInt("ohc_port", 0);
     m_OHCPass = CFG->GetString("ohc_pass", string());
+    m_OHConnect = CFG->GetInt("ohc_connect", 0 ) == 0 ? false : true;
     m_DelayGameLoaded = CFG->GetInt("oh_delaygameloaded", 300);
     m_FountainFarmDetection = CFG->GetInt("oh_fountainfarmdetection", 1) == 0 ? false : true;
+    m_AutokickSpoofer = CFG->GetInt("oh_autokickspoofer", 1) == 0 ? false : true;
     LoadDatas();
     LoadRules();
     LoadRanks();
@@ -1686,10 +1688,12 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         m_EnforcePlayers.clear( );
     }
 
-    if( gameState == GAME_PRIVATE )
-      m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPrivateGame( gameName, ownerName ) ));
-    else if( gameState == GAME_PUBLIC )
-      m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPublicGame( gameName, ownerName ) ) );
+    if(m_OHConnect && m_OHC ) {
+      if( gameState == GAME_PRIVATE )
+        m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPrivateGame( gameName, ownerName ) ));
+      else if( gameState == GAME_PUBLIC )
+        m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPublicGame( gameName, ownerName ) ) );
+    }
 
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
     {

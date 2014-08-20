@@ -96,8 +96,10 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_PartTime = 7;
     m_GameBalance = m_GHost->m_OHBalance;
     m_LobbyLanguage  = "en";
-    m_OHC = new OHConnect(m_GHost, this, m_GHost->m_OHCIP, m_GHost->m_OHCPort );
-    m_OHC->joinRoom(UTIL_ToString(m_HostCounter), m_GameName);
+    if(m_GHost->m_OHConnect){
+      m_OHC = new OHConnect(m_GHost, this, m_GHost->m_OHCIP, m_GHost->m_OHCPort );
+      m_OHC->joinRoom(UTIL_ToString(m_HostCounter), m_GameName);
+    }
 
     if( m_GHost->m_SaveReplays && !m_SaveGame )
         m_Replay = new CReplay( );
@@ -390,7 +392,7 @@ unsigned int CBaseGame :: SetFD( void *fd, void *send_fd, int *nfds )
         ++NumFDs;
     }
 
-    if(m_OHC)
+    if(m_OHC && m_GHost->m_OHConnect)
         NumFDs += m_OHC->SetFD( (fd_set *)fd, (fd_set *)send_fd, nfds );
 
     for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
@@ -781,7 +783,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             ++i;
     }
 
-    if(m_OHC)
+    if(m_OHC && m_GHost->m_OHConnect)
         m_OHC->Update( fd, (fd_set *)send_fd );
 
     for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); )
@@ -2642,7 +2644,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     string LowerName = joinPlayer->GetName( );
     transform( LowerName.begin( ), LowerName.end( ), LowerName.begin( ), ::tolower );
 
-    if( joinPlayer->GetName( ).empty( ) || joinPlayer->GetName( ).size( ) > 15 || LowerName.find( " " ) != string::npos || LowerName.find( "|" ) != string::npos )
+    if( joinPlayer->GetName( ).empty( ) || joinPlayer->GetName( ).size( ) > 15 || LowerName.find( " " ) != string::npos || ( LowerName.find( "|" ) != string::npos && m_GHost->m_AutokickSpoofer ) )
     {
         // autoban the player for spoofing name
         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
@@ -6462,7 +6464,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
     else
         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
 
-    if(m_OHC) {
+    if(m_OHC && m_GHost->m_OHConnect) {
       m_OHC->sendData(OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(sendPack));
     }
 }
