@@ -1186,7 +1186,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     bool hasAccess = m_GHost->CanAccessCommand(player->GetName(), Command );
 
-    if( player->GetSpoofed( ) && m_GHost->m_RanksLoaded && ( Level > 5 || hasAccess ) )
+    if( player->GetSpoofed( ) && m_GHost->m_RanksLoaded && ( Level >= 5 || hasAccess ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] "+ LevelName +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
 
