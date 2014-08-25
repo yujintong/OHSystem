@@ -18,6 +18,3 @@ before_script:
 # Change this to your needs
 script: 
  - make
- 
-after_success:
- - coveralls
