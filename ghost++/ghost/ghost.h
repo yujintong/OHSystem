@@ -280,6 +280,8 @@ public:
     bool m_FountainFarmDetection;
     bool m_AutokickSpoofer;
     bool m_OHConnect;
+    bool m_ReadGlobalMySQL;
+    string m_GlobalMySQLPath;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

@@ -42,11 +42,25 @@
 
 CGHostDBMySQL :: CGHostDBMySQL( CConfig *CFG ) : CGHostDB( CFG )
 {
-    m_Server = CFG->GetString( "db_mysql_server", string( ) );
-    m_Database = CFG->GetString( "db_mysql_database", "ghost" );
-    m_User = CFG->GetString( "db_mysql_user", string( ) );
-    m_Password = CFG->GetString( "db_mysql_password", string( ) );
-    m_Port = CFG->GetInt( "db_mysql_port", 0 );
+
+    bool m_ReadGlobalMySQL = CFG->GetInt("oh_readglobalmysql", 0) == 0 ? false : true;
+    if(m_ReadGlobalMySQL) {
+      string m_GlobalMySQLPath = UTIL_AddPathSeperator( CFG->GetString( "oh_globalmysqlpath", "../" ) );
+      CConfig CFG2;
+      CFG2.Read( m_GlobalMySQLPath+"mysql.cfg" );
+      m_Server = CFG2.GetString( "db_mysql_server", string( ) );
+      m_Database = CFG2.GetString( "db_mysql_database", "ghost" );
+      m_User = CFG2.GetString( "db_mysql_user", string( ) );
+      m_Password = CFG2.GetString( "db_mysql_password", string( ) );
+      m_Port = CFG2.GetInt( "db_mysql_port", 0 );
+    } else {
+      m_Server = CFG->GetString( "db_mysql_server", string( ) );
+      m_Database = CFG->GetString( "db_mysql_database", "ghost" );
+      m_User = CFG->GetString( "db_mysql_user", string( ) );
+      m_Password = CFG->GetString( "db_mysql_password", string( ) );
+      m_Port = CFG->GetInt( "db_mysql_port", 0 );
+    }
+
     m_BotID = CFG->GetInt( "db_mysql_botid", 0 );
     m_NumConnections = 1;
     m_Name.clear();

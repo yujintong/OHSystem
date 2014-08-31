@@ -1493,6 +1493,9 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_DelayGameLoaded = CFG->GetInt("oh_delaygameloaded", 300);
     m_FountainFarmDetection = CFG->GetInt("oh_fountainfarmdetection", 1) == 0 ? false : true;
     m_AutokickSpoofer = CFG->GetInt("oh_autokickspoofer", 1) == 0 ? false : true;
+    m_ReadGlobalMySQL = CFG->GetInt("oh_readglobalmysql", 0) == 0 ? false : true;
+    m_GlobalMySQLPath = UTIL_AddPathSeperator( CFG->GetString( "oh_globalmysqlpath", "../" ) );
+    
     LoadDatas();
     LoadRules();
     LoadRanks();
