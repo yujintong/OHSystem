@@ -205,6 +205,7 @@
     <ClCompile Include="gpsprotocol.cpp" />
     <ClCompile Include="language.cpp" />
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="ohconnect.cpp" />
     <ClCompile Include="packed.cpp" />
     <ClCompile Include="replay.cpp" />
     <ClCompile Include="savegame.cpp" />
@@ -237,9 +238,10 @@
     <ClInclude Include="gpsprotocol.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="language.h" />
-    <ClInclude Include="map.h" />
+    <ClCompile Include="packed.cpp" />
     <ClInclude Include="ms_stdint.h" />
     <ClInclude Include="next_combination.h" />
+    <ClCompile Include="ohconnect.h" />
     <ClInclude Include="packed.h" />
     <ClInclude Include="replay.h" />
     <ClInclude Include="savegame.h" />
