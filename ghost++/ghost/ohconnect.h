@@ -43,7 +43,7 @@ struct OHCHeader {
     PING = 9,
     PONG = 0xa,
   } opcode;
-  int N0;
+  uint64_t N0;
   uint64_t N;
   uint8_t masking_key[4];
 };
