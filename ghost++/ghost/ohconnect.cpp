@@ -20,6 +20,8 @@
 * Official GhostPP-Forum: http://ghostpp.com/
 */
 
+using namespace std;
+
 #include "ghost.h"
 #include "socket.h"
 #include "ohconnect.h"
@@ -84,6 +86,8 @@ string toSend="GET / HTTP/1.1\r\nHost: 5.45.181.151:6973\r\nUpgrade: websocket\r
     CONSOLE_Print("[OHConnect] Server isn't connected, init a new connection");
     Connect( );
   }
+
+  return true;
 }
 
 unsigned int OHConnect :: SetFD( void *fd, void *send_fd, int *nfds )
