@@ -2505,9 +2505,10 @@ string CLanguage :: ObserverTriesToDraw( )
     return Out;
 }
 
-string CLanguage :: RemainFFTime( string remain )
+string CLanguage :: RemainFFTime( string minff, string remain )
 {
     string Out = m_CFG->GetString( "oh_130", "oh_130" );
+    UTIL_Replace( Out, "$MINFF$", minff );
     UTIL_Replace( Out, "$REMAIN$", remain );
     return Out;
 }

@@ -393,7 +393,7 @@ public:
     string UndrawNotify( );
     string UserRecalledDrawVote( string user );
     string ObserverTriesToDraw( );
-    string RemainFFTime( string remain );
+    string RemainFFTime( string minff, string remain );
     string TeamForfeited( string team );
     string StayToSafeStats( );
     string UserForfeitedGame( string user );

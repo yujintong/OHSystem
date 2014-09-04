@@ -3779,7 +3779,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     if( m_GameLoaded && m_ForfeitTime == 0 && ( Command == "ff" || Command == "forfeit" ) && !m_SoftGameOver )
     {
         if( GetTime( ) - m_GameLoadedTime <= ( m_GHost->m_MinFF*60 - 400*m_Leavers ) )
-            SendChat( player, m_GHost->m_Language->RemainFFTime( UTIL_ToString( ( ( m_GameLoadedTime + ( ( m_GHost->m_MinFF - m_Leavers * 2 ) * 60 ) ) - GetTime( ) ) / 60 ) ) );
+            SendChat( player, m_GHost->m_Language->RemainFFTime( UTIL_ToString(m_GHost->m_MinFF), UTIL_ToString( ( ( m_GameLoadedTime + ( ( m_GHost->m_MinFF - m_Leavers * 2 ) * 60 ) ) - GetTime( ) ) / 60 ) ) );
         else
         {
             bool ChangedVote = true;
