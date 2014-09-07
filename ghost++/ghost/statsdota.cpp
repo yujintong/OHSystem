@@ -126,7 +126,6 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                         string KeyString = string( Key.begin( ), Key.end( ) );
                         uint32_t ValueInt = UTIL_ByteArrayToUInt32( Value, false );
 
-                        //CONSOLE_Print( "[STATS] " + DataString + ", " + KeyString + ", " + UTIL_ToString( ValueInt ) );
                         //m_Game->SendAllChat( "[STATS] " + DataString + ", " + KeyString + ", " + UTIL_ToString( ValueInt ) );
                         if( DataString == "Data" )
                         {
@@ -795,6 +794,21 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 m_Game->GAME_Print( 1, MinString, SecString, "System", "", ModeString );
                                 m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "mode" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + ModeString + "\n";
                             }
+			    else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "SP" )
+			    {
+				string Spell = string( Value.rbegin( ), Value.rend( ) );
+				string PlayerID = KeyString.substr( 4 );
+				string SpellID = KeyString.substr( 2, 1 );
+				uint32_t ID = UTIL_ToUInt32( PlayerID );
+				CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
+				CONSOLE_Print( "[DEBUG:  Found Spell: "+Spell+ " | PlayerID: "+PlayerID+" | SpellID: "+SpellID  );
+                                if( ( ID >= 1 && ID <= 5 ) || ( ID >= 7 && ID <= 11 ) ) {
+                                	if( !m_Players[ID] )
+        	                        	m_Players[ID] = new CDBDotAPlayer( );
+
+                                        m_Players[ID]->SetSpell( UTIL_ToUInt32( SpellID ) - 1, Spell );
+				}
+			   }
                         }
                         else if( DataString == "Global" )
                         {
@@ -1143,9 +1157,9 @@ void CStatsDOTA :: Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID )
             if( m_Players[i] )
             {
                 if(m_Players[i]->GetItem( 0 ) != "" || m_Players[i]->GetItem( 1 ) != "" || m_Players[i]->GetItem( 2 ) != "" || m_Players[i]->GetItem( 3 ) != "" || m_Players[i]->GetItem( 4 ) != "" || m_Players[i]->GetItem( 5 ) != "" || m_Players[i]->GetGold () < 50 )
-                    GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, m_Players[i]->GetColour( ), m_Players[i]->GetKills( ), m_Players[i]->GetDeaths( ), m_Players[i]->GetCreepKills( ), m_Players[i]->GetCreepDenies( ), m_Players[i]->GetAssists( ), m_Players[i]->GetGold( ), m_Players[i]->GetNeutralKills( ), m_Players[i]->GetItem( 0 ), m_Players[i]->GetItem( 1 ), m_Players[i]->GetItem( 2 ), m_Players[i]->GetItem( 3 ), m_Players[i]->GetItem( 4 ), m_Players[i]->GetItem( 5 ), m_Players[i]->GetHero( ), m_Players[i]->GetNewColour( ), m_Players[i]->GetTowerKills( ), m_Players[i]->GetRaxKills( ), m_Players[i]->GetCourierKills( ), m_Players[i]->GetLevel( ) ) );
+                    GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, m_Players[i]->GetColour( ), m_Players[i]->GetKills( ), m_Players[i]->GetDeaths( ), m_Players[i]->GetCreepKills( ), m_Players[i]->GetCreepDenies( ), m_Players[i]->GetAssists( ), m_Players[i]->GetGold( ), m_Players[i]->GetNeutralKills( ), m_Players[i]->GetItem( 0 ), m_Players[i]->GetItem( 1 ), m_Players[i]->GetItem( 2 ), m_Players[i]->GetItem( 3 ), m_Players[i]->GetItem( 4 ), m_Players[i]->GetItem( 5 ), m_Players[i]->GetSpell( 0 ), m_Players[i]->GetSpell( 1 ), m_Players[i]->GetSpell( 2 ), m_Players[i]->GetSpell( 3 ), m_Players[i]->GetSpell( 4 ), m_Players[i]->GetSpell( 5 ), m_Players[i]->GetHero( ), m_Players[i]->GetNewColour( ), m_Players[i]->GetTowerKills( ), m_Players[i]->GetRaxKills( ), m_Players[i]->GetCourierKills( ), m_Players[i]->GetLevel( ) ) );
                 else
-                    GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, m_Players[i]->GetColour( ), m_Players[i]->GetKills( ), m_Players[i]->GetDeaths( ), m_Players[i]->GetCreepKills( ), m_Players[i]->GetCreepDenies( ), m_Players[i]->GetAssists( ), m_Players[i]->GetGold( ), m_Players[i]->GetNeutralKills( ), m_BufferedItemOne[i], m_BufferedItemTwo[i], m_BufferedItemThree[i], m_BufferedItemFour[i], m_BufferedItemFive[i], m_BufferedItemSix[i], m_Players[i]->GetHero( ), m_Players[i]->GetNewColour( ), m_Players[i]->GetTowerKills( ), m_Players[i]->GetRaxKills( ), m_Players[i]->GetCourierKills( ), m_Players[i]->GetLevel( ) ) );
+                    GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, m_Players[i]->GetColour( ), m_Players[i]->GetKills( ), m_Players[i]->GetDeaths( ), m_Players[i]->GetCreepKills( ), m_Players[i]->GetCreepDenies( ), m_Players[i]->GetAssists( ), m_Players[i]->GetGold( ), m_Players[i]->GetNeutralKills( ), m_BufferedItemOne[i], m_BufferedItemTwo[i], m_BufferedItemThree[i], m_BufferedItemFour[i], m_BufferedItemFive[i], m_BufferedItemSix[i], m_Players[i]->GetSpell( 0 ), m_Players[i]->GetSpell( 1 ), m_Players[i]->GetSpell( 2 ), m_Players[i]->GetSpell( 3 ), m_Players[i]->GetSpell( 4 ), m_Players[i]->GetSpell( 5 ), m_Players[i]->GetHero( ), m_Players[i]->GetNewColour( ), m_Players[i]->GetTowerKills( ), m_Players[i]->GetRaxKills( ), m_Players[i]->GetCourierKills( ), m_Players[i]->GetLevel( ) ) );
                 ++Players;
             }
         }

@@ -888,7 +888,7 @@ bool CGame :: Update( void *fd, void *send_fd )
             SendAllChat( m_GHost->m_Language->GameWillEndInTen( ));
             string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Scourge" : "Sentinel";
             SendAllChat(m_GHost->m_Language->WinnerSetTo( WinnerTeam ) );
-            m_Stats->SetWinner( ( m_LoosingTeam + 1 ) % 2 );
+            m_Stats->SetWinner( ( ( m_LoosingTeam + 1 ) % 2 ) + 1 );
             m_GameOverTime = GetTime();
         } else
             SendAllChat( m_GHost->m_Language->AutoEndSpreadInterruptNotify( UTIL_ToString( ( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 ) +1 ), UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes) ) );
@@ -1094,7 +1094,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
                 if( m_GameTicks < 1000 * 180 )
                 {
-                    m_Stats->SetWinner( ( Team + 1 ) % 2 );
+                    m_Stats->SetWinner( ( ( Team + 1 ) % 2 ) + 1 );
                     if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
                         SendAllChat( m_GHost->m_Language->AutoEndToDraw( ) );
                     m_GameOverTime = GetTime();
@@ -1105,7 +1105,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
                 {
                     if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
                         SendAllChat( m_GHost->m_Language->AutoEndOneTeamRemain( ) );
-                    m_Stats->SetWinner( ( Team + 1 ) % 2 );
+                    m_Stats->SetWinner( ( ( Team + 1 ) % 2 ) + 1 );
                     m_SoftGameOver = true;
                     m_LoosingTeam = Team;
                     m_GameOverTime = GetTime();
@@ -3828,7 +3828,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                     if( AllVoted )
                     {
-                        m_Stats->SetWinner( ( playerTeam + 1 ) % 2 );
+                        m_Stats->SetWinner( ( ( playerTeam + 1 ) % 2 ) + 1 );
                         m_ForfeitTime = GetTime( );
                         SendAllChat( m_GHost->m_Language->TeamForfeited( ForfeitTeamString ) );
                         SendAllChat( m_GHost->m_Language->StayToSafeStats( ) );

