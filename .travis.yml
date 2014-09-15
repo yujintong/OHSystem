@@ -6,7 +6,7 @@ branches:
  - master
  
 before_script: 
- - sudo apt-get install -qq libboost-all-dev build-essential g++ libmysql++-dev wget unzip libbz2-dev libgmp3-dev
+ - sudo apt-get install -qq libboost-all-dev build-essential g++ libmysql++-dev libbz2-dev libgmp3-dev
  - cd ghost++/bncsutil/src/bncsutil 
  - make 
  - sudo make install 
