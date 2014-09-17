@@ -54,7 +54,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_Socket = new CTCPServer( );
     m_Protocol = new CGameProtocol( m_GHost );
     m_Map = new CMap( *nMap );
-    uint32_t m_DatabaseID;                          // the ID number from the database, which we'll use to save replay
+    uint32_t m_DatabaseID;
     m_LockedPlayers = 0;
     m_LogData = string();
     m_AdminLog.clear();
@@ -3176,7 +3176,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
 
     Player->SetSpoofedRealm( JoinedRealm );
-
+	Player->SetJoinTime(GetTime());
     m_LatestSlot = Player->GetPID();
 
     // check leaveperc
@@ -4833,14 +4833,20 @@ unsigned char CBaseGame :: GetEmptySlot( bool reserved )
                 return LeastSID;
 
             // nobody who isn't reserved is downloading the map, just choose the first player who isn't reserved
-
+			uint32_t LastMinJoinTime = INT_MAX;
+			unsigned char x = 255;
             for( unsigned char i = 0; i < m_Slots.size( ); ++i )
             {
                 CGamePlayer *Player = GetPlayerFromSID( i );
 
-                if( Player && !Player->GetReserved( ) )
-                    return i;
+				if (Player && !Player->GetReserved() && (GetTime() - Player->GetJoinTime()) < LastMinJoinTime) {
+					x = i;
+					LastMinJoinTime = GetTime() - Player->GetJoinTime();
+				}
             }
+			if (x != 255) {
+				return x;
+			}
         }
     }
 
