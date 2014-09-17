@@ -3176,7 +3176,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
 
     Player->SetSpoofedRealm( JoinedRealm );
-	Player->SetJoinTime(GetTime());
+
     m_LatestSlot = Player->GetPID();
 
     // check leaveperc

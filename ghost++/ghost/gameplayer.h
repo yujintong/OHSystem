@@ -223,8 +223,8 @@ private:
     bool m_RequestedSwap;
     uint8_t m_SwapTarget;
     uint32_t m_LastAttackCommandToFountain;
-    uint32_t m_FFLevel;
-	uint32_t m_JoinTime;
+	uint32_t m_FFLevel;
+
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -524,9 +524,6 @@ public:
     uint32_t GetFFLevel( ) {
         return m_FFLevel;
     }
-	uint32_t GetJoinTime() {
-		return m_JoinTime;
-	}
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;
     }
@@ -784,9 +781,6 @@ public:
     void SetFFLevel( ) {
         m_FFLevel++;
     }
-	void SetJoinTime(uint32_t time) {
-		m_JoinTime = time;
-	}
 
     // processing functions
 
