@@ -4500,7 +4500,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) && !m_Voted) {
 		if (m_ForcedMode) {
 			SendChat(player, m_GHost->m_Language->ErrorModeWasAlreadyForced());
-			return;
+			return false;
 		}
 		if( player->GetVotedMode() != 0 ) {
             SendChat( player, m_GHost->m_Language->ErrorVotedAlreadyForMode( ) );
@@ -4558,7 +4558,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     else if( ( Command == "voteresult" || Command == "vr" )  && m_GHost->m_VoteMode) {
 		if (m_ForcedMode) {
 			m_GHost->m_Language->ModeWasForcedTo(m_ModesToVote[m_ForcedGameMode - 1]);
-			return;
+			return false;
 		}
         uint32_t c = 0;
         uint32_t mode1 = 0;
