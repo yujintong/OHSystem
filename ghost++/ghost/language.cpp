@@ -3580,4 +3580,14 @@ string CLanguage :: Announcement()
     string Out = m_CFG->GetString( "oh_293", "oh_293" );
     return Out;
 }
-
+string CLanguage::ErrorModeWasAlreadyForced()
+{
+	string Out = m_CFG->GetString("oh_294", "oh_294");
+	return Out;
+}
+string CLanguage::ModeWasForcedTo(string mode)
+{
+	string Out = m_CFG->GetString("oh_295", "oh_295");
+	UTIL_Replace(Out, "$MODE$", mode);
+	return Out;
+}

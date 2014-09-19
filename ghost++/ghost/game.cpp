@@ -1218,6 +1218,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
                     SendAllChat( m_GHost->m_Language->UserForcedMode ( player->GetName( ), m_ModesToVote[UTIL_ToUInt32(Payload)-1]) );
+					m_ForcedGameMode = UTIL_ToUInt32(Payload);
                     player->SetVotedMode(UTIL_ToUInt32(Payload));
                     if( UTIL_ToUInt32(Payload) != 7 ) {
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
@@ -1227,6 +1228,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
                         m_Voted = true;
                     }
+					m_ForcedMode = true;
                 }
             }
 
@@ -4496,7 +4498,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     // !VOTE
     //
     else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) && !m_Voted) {
-        if( player->GetVotedMode() != 0 ) {
+		if (m_ForcedMode) {
+			SendChat(player, m_GHost->m_Language->ErrorModeWasAlreadyForced());
+			return;
+		}
+		if( player->GetVotedMode() != 0 ) {
             SendChat( player, m_GHost->m_Language->ErrorVotedAlreadyForMode( ) );
         } else if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
             SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
@@ -4550,6 +4556,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     // !VOTERESULT
     //
     else if( ( Command == "voteresult" || Command == "vr" )  && m_GHost->m_VoteMode) {
+		if (m_ForcedMode) {
+			m_GHost->m_Language->ModeWasForcedTo(m_ModesToVote[m_ForcedGameMode - 1]);
+			return;
+		}
         uint32_t c = 0;
         uint32_t mode1 = 0;
         uint32_t mode2 = 0;

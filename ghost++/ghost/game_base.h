@@ -209,6 +209,8 @@ protected:
     uint32_t m_PartTime;
     string m_LobbyLanguage;
     uint32_t m_LastGameUpdateTime;					// last time game update database callable
+	bool m_ForcedMode;
+	uint32_t m_ForcedGameMode;
 
 public:
     CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );

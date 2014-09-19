@@ -96,6 +96,8 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_PartTime = 7;
     m_GameBalance = m_GHost->m_OHBalance;
     m_LobbyLanguage  = "en";
+	m_ForcedMode = false;
+	m_ForcedGameMode = 0;
     if(m_GHost->m_OHConnect){
       m_OHC = new OHConnect(m_GHost, this, m_GHost->m_OHCIP, m_GHost->m_OHCPort );
       m_OHC->joinRoom(UTIL_ToString(m_HostCounter), m_GameName);

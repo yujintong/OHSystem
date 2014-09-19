@@ -557,6 +557,8 @@ public:
     string Hour();
     string Minute();
     string Announcement();
+	string ErrorModeWasAlreadyForced();
+	string ModeWasForcedTo(string mode);
 };
 
 #endif
