@@ -1705,7 +1705,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !ADDBAN
             // !BAN
             //
-            else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) )
+            else if( ( Command == "addpermban" || Command == "permban" || Command == "pban" ) && !Payload.empty( ) )
             {
                 if( Level >= 6 )
                 {
@@ -2009,7 +2009,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !BANLAST
             //
 
-            else if( Command == "banlast" && m_GameLoaded && m_DBBanLast )
+            else if( ( Command == "permbanlast" || Command == "pbl" ) && m_GameLoaded && m_DBBanLast )
             {
                 if( Level >= 7 )
                 {
