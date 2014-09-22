@@ -219,7 +219,7 @@ private:
     uint32_t m_TheThingAmount;
     string m_TheThing;
     uint32_t m_TheThingType;
-    uint32_t m_LeaverLevel;
+    uint32_t m_PenalityLevel;
     bool m_RequestedSwap;
     uint8_t m_SwapTarget;
     uint32_t m_LastAttackCommandToFountain;
@@ -301,8 +301,8 @@ public:
     uint32_t GetLeftTime( )                     {
         return m_Left;
     }
-    uint32_t GetLeaverLevel( )                  {
-        return m_LeaverLevel;
+    uint32_t GetPenalityLevel( )                  {
+        return m_PenalityLevel;
     }
 
     queue<BYTEARRAY> *GetLoadInGameData( )		{
@@ -691,8 +691,8 @@ public:
         m_GlobalChatMuted = nGlobalChatMuted;
     }
 
-    void SetLeaverLevel( uint32_t nLeaverLevel ) {
-        m_LeaverLevel = nLeaverLevel;
+    void SetPenalityLevel( uint32_t nLevel ) {
+        m_PenalityLevel = nLevel;
     }
 
     void SetInsultM( string nInsultM )                                                                              {

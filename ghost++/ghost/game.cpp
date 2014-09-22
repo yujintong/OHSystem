@@ -1008,7 +1008,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
         }
 
 		player->SetLeftTime( m_GameTicks / 1000 );
-        m_DBGamePlayers.push_back( new CDBGamePlayer( player->GetID (), 0, player->GetName( ), player->GetExternalIPString( ), player->GetSpoofed( ) ? 1 : 0, player->GetSpoofedRealm( ), player->GetReserved( ) ? 1 : 0, player->GetFinishedLoading( ) ? player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks : 0, m_GameTicks / 1000, player->GetLeftReason( ), Team, Colour, player->GetLeaverLevel() ) );
+        m_DBGamePlayers.push_back( new CDBGamePlayer( player->GetID (), 0, player->GetName( ), player->GetExternalIPString( ), player->GetSpoofed( ) ? 1 : 0, player->GetSpoofedRealm( ), player->GetReserved( ) ? 1 : 0, player->GetFinishedLoading( ) ? player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks : 0, m_GameTicks / 1000, player->GetLeftReason( ), Team, Colour, player->GetPenalityLevel() ) );
 
         // also keep track of the last player to leave for the !banlast command
 
