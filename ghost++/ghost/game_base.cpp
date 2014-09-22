@@ -487,7 +487,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetID (StatsPlayerSummary->GetID ());
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
                         (*j)->SetPlayerLanguage(StatsPlayerSummary->GetLanguageSuffix ());
-                        (*j)->SetLeaverLevel(StatsPlayerSummary->GetLeaverLevel());
+                        (*j)->SetPenalityLevel(StatsPlayerSummary->GetLeaverLevel());
                         SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( name ) );
                         SendChat((*j)->GetPID( ), " ");
                         
