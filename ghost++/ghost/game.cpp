@@ -4557,7 +4557,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( ( Command == "voteresult" || Command == "vr" )  && m_GHost->m_VoteMode) {
 		if (m_ForcedMode) {
-			m_GHost->m_Language->ModeWasForcedTo(m_ModesToVote[m_ForcedGameMode - 1]);
+			SendChat(player, m_GHost->m_Language->ModeWasForcedTo(m_ModesToVote[m_ForcedGameMode - 1]));
 			return false;
 		}
         uint32_t c = 0;
