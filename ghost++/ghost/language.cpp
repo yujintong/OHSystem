@@ -3591,3 +3591,8 @@ string CLanguage::ModeWasForcedTo(string mode)
 	UTIL_Replace(Out, "$MODE$", mode);
 	return Out;
 }
+string CLanguage :: Ms()
+{
+       string Out = m_CFG->GetString( "oh_296", "oh_296" );
+       return Out;
+}
