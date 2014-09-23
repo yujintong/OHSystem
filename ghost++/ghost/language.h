@@ -559,6 +559,7 @@ public:
     string Announcement();
 	string ErrorModeWasAlreadyForced();
 	string ModeWasForcedTo(string mode);
+	string Ms();
 };
 
 #endif
