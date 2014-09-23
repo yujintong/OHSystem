@@ -4337,7 +4337,7 @@ string CBNET :: GetLevelName( uint32_t level )
     if( level < 0 || level > 10 )
         return m_GHost->m_Ranks[level];
     else
-        return "unknown";
+        return m_GHost->m_Language->Unknown();
 }
 
 CDBBan *CBNET :: IsBannedName( string name )
