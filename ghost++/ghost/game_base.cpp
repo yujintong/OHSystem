@@ -98,7 +98,7 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_LobbyLanguage  = "en";
 	m_ForcedMode = false;
 	m_ForcedGameMode = 0;
-    if(m_GHost->m_OHConnect){
+    if(m_GHost->m_GameOHConnect){
       m_OHC = new OHConnect(m_GHost, this, m_GHost->m_OHCIP, m_GHost->m_OHCPort );
       m_OHC->joinRoom(UTIL_ToString(m_HostCounter), m_GameName);
     }
@@ -394,7 +394,7 @@ unsigned int CBaseGame :: SetFD( void *fd, void *send_fd, int *nfds )
         ++NumFDs;
     }
 
-    if(m_OHC && m_GHost->m_OHConnect)
+    if(m_OHC && m_GHost->m_GameOHConnect)
         NumFDs += m_OHC->SetFD( (fd_set *)fd, (fd_set *)send_fd, nfds );
 
     for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
@@ -785,7 +785,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             ++i;
     }
 
-    if(m_OHC && m_GHost->m_OHConnect)
+    if(m_OHC && m_GHost->m_GameOHConnect)
         m_OHC->Update( fd, (fd_set *)send_fd );
 
     for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); )
@@ -2175,7 +2175,7 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         uint32_t Count = 0;
         string Line;
 
-        while( !in.eof( ) && Count < 88888888 )
+        while( !in.eof( ) && Count < 8 )
         {
             getline( in, Line );
 
@@ -6472,7 +6472,7 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
     else
         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
 
-    if(m_OHC && m_GHost->m_OHConnect) {
+    if(m_OHC && m_GHost->m_GameOHConnect) {
       m_OHC->sendData(OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(sendPack));
     }
 }
