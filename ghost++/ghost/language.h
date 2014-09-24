@@ -560,6 +560,12 @@ public:
 	string ErrorModeWasAlreadyForced();
 	string ModeWasForcedTo(string mode);
 	string Ms();
+	string Country();
+        string Status();
+        string SpoofChecked();
+        string Yes();
+        string No();
+        string Realm();
 };
 
 #endif
