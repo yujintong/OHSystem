@@ -3596,3 +3596,33 @@ string CLanguage :: Ms()
        string Out = m_CFG->GetString( "oh_296", "oh_296" );
        return Out;
 }
+string CLanguage :: Country()
+{
+    string Out = m_CFG->GetString( "oh_297", "oh_297" );
+    return Out;
+}
+string CLanguage :: Status()
+{
+    string Out = m_CFG->GetString( "oh_298", "oh_298" );
+    return Out;
+}
+string CLanguage :: SpoofChecked()
+{
+    string Out = m_CFG->GetString( "oh_299", "oh_299" );
+    return Out;
+}
+string CLanguage :: Yes()
+{
+    string Out = m_CFG->GetString( "oh_300", "oh_300" );
+    return Out;
+}
+string CLanguage :: No()
+{
+    string Out = m_CFG->GetString( "oh_301", "oh_301" );
+    return Out;
+}
+string CLanguage :: Realm()
+{
+    string Out = m_CFG->GetString( "oh_302", "oh_302" );
+    return Out;
+}
