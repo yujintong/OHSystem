@@ -475,6 +475,7 @@ public:
     void GetVotingModes( string allmodes );
     virtual void DoGameUpdate(bool reset);
     virtual vector<PlayerOfPlayerList> GetPlayerListOfGame( );
+    virtual void BanPlayerByPenality( string player, string playerid, string admin, uint32_t points, string reason );
 };
 
 struct ReservedPlayer {

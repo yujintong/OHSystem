@@ -122,27 +122,9 @@ CGame :: ~CGame( )
                     Counter++;
                 if( Counter <= 2 && VictimLevel <= 2 )
                 {
-                    uint32_t BanTime = 0;
                     string Reason = m_GHost->m_Language->DisconnectedAt()+" ";
                     if((*i)->GetLeftReason( ).find("left")!=string::npos) {
                         Reason = m_GHost->m_Language->LeftAt()+" ";
-                    }
-                    switch((*i)->GetLeaverLevel( )) {
-                        case 0:
-                            BanTime = 7200;
-                            break;
-                        case 1:
-                            BanTime = 86400;
-                            break;
-                        case 2:
-                            BanTime = 259200;
-                            break;
-                        case 3:
-                            BanTime = 604800;
-                            break;
-                        default:
-                            BanTime = 604800;
-                        break;
                     }
                     if( EndTime < 300 ) {
                         Reason += UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
@@ -158,7 +140,7 @@ CGame :: ~CGame( )
 
                         Reason += LeftMin+":"+LeftSec + "/" + EndMin+":"+EndSec;
                     }
-                    m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( (*i)->GetSpoofedRealm(), (*i)->GetName( ), (*i)->GetIP(), m_GameName, m_GHost->m_BotManagerName, Reason, BanTime, ""  ) );
+		    BanPlayerByPenality( (*i)->GetName( ), (*i)->GetIP( ), m_GHost->m_BotManagerName, (*i)->GetLeaverLevel( ), Reason ); 
                 }
             }
         }
@@ -192,6 +174,7 @@ CGame :: ~CGame( )
     
     if( m_CallableGameAdd && m_CallableGameAdd->GetReady( ) )
     {
+	m_GHost->CallGameEnd( m_GameName, m_CreationTime, m_Stats->GetWinner( ) );
 
         if( m_CallableGameAdd->GetResult( ) > 0 )
         {

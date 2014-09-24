@@ -6641,3 +6641,26 @@ vector<PlayerOfPlayerList> CBaseGame :: GetPlayerListOfGame( ) {
     }
     return m_Players;
 }
+
+void CBaseGame :: BanPlayerByPenality( string player, string playerid, string admin, uint32_t points, string reason ) {
+
+	uint32_t bantime = 0;
+
+        switch(points) {
+         case 0:
+          bantime = 7200;
+         break;
+         case 1:
+          bantime = 86400;
+         break;
+         case 2:
+          bantime = 259200;
+         break;
+         case 3:
+	 default:
+          bantime = 604800;
+         break;
+        }
+
+        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "", player, playerid, m_GameName, admin, reason, bantime, "" ) );	
+}

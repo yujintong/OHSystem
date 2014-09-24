@@ -280,6 +280,7 @@ public:
     bool m_FountainFarmDetection;
     bool m_AutokickSpoofer;
     bool m_OHConnect;
+    bool m_GameOHConnect;
     bool m_ReadGlobalMySQL;
     string m_GlobalMySQLPath;
 
@@ -329,6 +330,7 @@ public:
     bool PlayerCached( string playername );
     void LoadLanguages( );
     bool CanAccessCommand( string name, string command );
+    virtual void CallGameEnd( string gamename, uint32_t creationtime, uint32_t winner );
 };
 
 struct translationTree {
