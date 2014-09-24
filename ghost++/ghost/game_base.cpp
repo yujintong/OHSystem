@@ -1132,7 +1132,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             // don't print more than 8 lines
             uint32_t Count = 0;
             string Line;
-            while( !in.eof( ) && Count < 8 )
+            while( !in.eof( ) && Count < 20 )
             {
                 getline( in, Line );
                 if( Line.empty( ) )
@@ -2175,7 +2175,7 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         uint32_t Count = 0;
         string Line;
 
-        while( !in.eof( ) && Count < 8 )
+        while( !in.eof( ) && Count < 20 )
         {
             getline( in, Line );
 
@@ -2217,7 +2217,7 @@ void CBaseGame :: SendEndMessage( )
         uint32_t Count = 0;
         string Line;
 
-        while( !in.eof( ) && Count < 8 )
+        while( !in.eof( ) && Count < 20 )
         {
             getline( in, Line );
 
