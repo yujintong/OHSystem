@@ -6605,7 +6605,7 @@ void CBaseGame :: DoGameUpdate(bool reset) {
         if( m_GameLoading || m_GameLoaded )
             m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", m_GameTicks / 1000, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_StartPlayers, GetPlayerListOfGame( ) );
         else
-            m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 1, "", GetTime( ) - m_CreationTime, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_Slots.size( ), GetPlayerListOfGame( ) );
+            m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 1, "", GetTime( ) - m_CreationTime, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), ( GetSlotsOpen( ) + GetNumHumanPlayers( ) ), GetPlayerListOfGame( ) );
      }
      else
         m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", 0, "", "", "", "", 0, 0, GetPlayerListOfGame( ));
