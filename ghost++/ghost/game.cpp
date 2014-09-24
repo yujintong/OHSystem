@@ -2048,13 +2048,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         SendAllChat( m_GHost->m_Language->UnableToCheckPlayerNoMatchesFound( Payload ) );
                     else if( Matches == 1 )
                     {
-                        SendAllChat( "[" + LastMatch->GetName( ) + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( LastMatch->GetNumPings( ) > 0 ? UTIL_ToString( LastMatch->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") (F: " + LastMatch->GetCLetter( )+ ") (Role: " + ( LastMatch->GetLevelName( ).empty() ? "unknown" : LastMatch->GetLevelName( ) ) + ") (SpoofChecked: " + ( LastMatch->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( LastMatch->GetSpoofedRealm( ).empty( ) ? "N/A" : LastMatch->GetSpoofedRealm( ) ) + ")" );
+                        SendAllChat( "[" + LastMatch->GetName( ) + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( LastMatch->GetNumPings( ) > 0 ? UTIL_ToString( LastMatch->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") "+LastMatch->GetCLetter()==""?"":("(F: " + LastMatch->GetCLetter( )+ ") ")+"(Role: " + ( LastMatch->GetLevelName( ).empty() ? "unknown" : LastMatch->GetLevelName( ) ) + ") (SpoofChecked: " + ( LastMatch->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( LastMatch->GetSpoofedRealm( ).empty( ) ? "N/A" : LastMatch->GetSpoofedRealm( ) ) + ")" );
                     }
                     else
                         SendAllChat( m_GHost->m_Language->UnableToCheckPlayerFoundMoreThanOneMatch( Payload ) );
                 }
                 else
-                    SendAllChat( "[" + User + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") (F: " + player->GetCLetter( ) + ") (Role: " + (LevelName.empty() ? "unknown" : LevelName) + ") (SpoofChecked: " + ( player->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) +")" );
+                    SendAllChat( "[" + User + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") "+player->GetCLetter()==""?"":("(F: " + player->GetCLetter( ) + ") ")+"(Role: " + (LevelName.empty() ? "unknown" : LevelName) + ") (SpoofChecked: " + ( player->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) +")" );
             }
 
             //
@@ -2402,20 +2402,22 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                 for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                 {
-                    // we reverse the byte order on the IP because it's stored in network byte order
-                    Froms += (*i)->GetNameTerminated( );
-                    Froms += ": (";
-                    Froms += (*i)->GetCLetter( ) + "|" + (*i)->GetCountry( );
-                    Froms += ")";
-                    if( i != m_Players.end( ) - 1 )
-                        Froms += ", ";
-                    if( ( m_GameLoading || m_GameLoaded ) && Froms.size( ) > 100 )
-                    {
-                        // cut the text into multiple lines ingame
-                        SendAllChat( Froms );
-                        Froms.clear( );
+		    if((*i)->GetCLetter( )!="" && (*i)->GetCountry( ) != "" ){
+	                // we reverse the byte order on the IP because it's stored in network byte order
+        	        Froms += (*i)->GetNameTerminated( );
+                	Froms += ": (";
+                    	Froms += (*i)->GetCLetter( ) + "|" + (*i)->GetCountry( );
+                    	Froms += ")";
+                    	if( i != m_Players.end( ) - 1 )
+                       		Froms += ", ";
+                    	if( ( m_GameLoading || m_GameLoaded ) && Froms.size( ) > 100 )
+                    	{
+                        	// cut the text into multiple lines ingame
+                        	SendAllChat( Froms );
+                        	Froms.clear( );
+                    	}
                     }
-                }
+		}
                 if( !Froms.empty( ) )
                     SendAllChat( Froms );
             }
@@ -3182,7 +3184,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     if( Command == "checkme" || Command == "cm" )
     {
-        SendChat( player, "[" + User + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") (F: " + player->GetCLetter( ) + ") (Role: " + ( LevelName.empty() ? "unknown" : LevelName ) + ") (SpoofChecked: " + ( player->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) + ")" );
+        SendChat( player, "[" + User + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") " + player->GetCLetter( ) == "" ? "" : ( "(F: " + player->GetCLetter( ) + ") ") + "(Role: " + ( LevelName.empty() ? "unknown" : LevelName ) + ") (SpoofChecked: " + ( player->GetSpoofed( ) ? "Yes" : "No" ) + ") (Realm: " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) + ")" );
         if( player->GetForfeitVote() )
             SendChat( player, m_GHost->m_Language->UserAlreadyVotedForFF( ) );
         if( player->GetDrawVote( ) )
