@@ -262,7 +262,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         Killer->SetFFLevel();
 
                                         if(Killer->GetFFLevel() == 3 ) {
-                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( Killer->GetJoinedRealm(), Killer->GetName(), Killer->GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Fountainfarm", 432000 , "" ) ) );
+					    m_Game->BanPlayerByPenality( Killer->GetName(), Killer->GetExternalIPString(), m_Game->m_GHost->m_BotManagerName, Killer->GetPenalityLevel(), "FountainFarm" );
                                         }
                                     }
                                 }
@@ -323,7 +323,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         Killer->SetFFLevel();
 
                                         if(Killer->GetFFLevel() == 3 ) {
-                                            m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_GHost->m_DB->ThreadedBanAdd( Killer->GetJoinedRealm(), Killer->GetName(), Killer->GetExternalIPString( ), m_Game->m_GameName, m_Game->m_GHost->m_BotManagerName, "Fountainfarm", 432000 , "" ) ) );
+					    m_Game->BanPlayerByPenality( Killer->GetName(), Killer->GetExternalIPString(), m_Game->m_GHost->m_BotManagerName, Killer->GetPenalityLevel(), "FountainFarm" );
                                         }
                                     }
                                 }

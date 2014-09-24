@@ -3476,8 +3476,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     {
         player->SetVKTimes( );
         if( player->GetVKTimes( ) == 8 )
-            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( player->GetJoinedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "votekick abuse", m_GHost->m_VKAbuseBanTime, "" ) ) );
-        else if( player->GetVKTimes( ) == 5 )
+           BanPlayerByPenality( player->GetName(), player->GetExternalIPString(), m_GHost->m_BotManagerName, player->GetPenalityLevel(), "votekick abuse" ); 
+	else if( player->GetVKTimes( ) == 5 )
             m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( player->GetName( ), "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
         else if( player->GetVKTimes( ) >= 2 )
             SendChat( player, m_GHost->m_Language->NotifyForAbusiveVotekick( ) );
