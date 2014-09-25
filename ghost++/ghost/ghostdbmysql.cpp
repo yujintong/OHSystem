@@ -533,14 +533,14 @@ CCallableCommandList *CGHostDBMySQL :: ThreadedCommandList( )
     return Callable;
 }
 
-CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid )
+CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid, uint32_t lobbytime )
 {
     void *Connection = GetIdleConnection( );
 
     if( !Connection )
         ++m_NumConnections;
 
-    CCallableGameAdd *Callable = new CMySQLCallableGameAdd( server, map, gamename, ownername, duration, gamestate, creatorname, creatorserver, gametype, lobbylog, gamelog, databaseid, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
+    CCallableGameAdd *Callable = new CMySQLCallableGameAdd( server, map, gamename, ownername, duration, gamestate, creatorname, creatorserver, gametype, lobbylog, gamelog, databaseid, lobbytime, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
     return Callable;
@@ -2065,7 +2065,7 @@ vector<string> MySQLCommandList( void *conn, string *error, uint32_t botid )
     return CommandList;
 }
 
-uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid )
+uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid, uint32_t lobbytime )
 {
     uint32_t RowID = 0;
     string EscServer = MySQLEscapeString( conn, server );
@@ -2080,7 +2080,7 @@ uint32_t MySQLGameAdd( void *conn, string *error, uint32_t botid, string server,
     else
         RowID = mysql_insert_id( (MYSQL *)conn );
 
-    string GIQuery = "INSERT INTO oh_game_info ( botid, gameid, server, map, datetime, gamename, ownername, duration, gamestate, gametype, creatorname, creatorserver ) VALUES ( " + UTIL_ToString( botid ) + ", '" + UTIL_ToString( databaseid ) + "', '" + EscServer + "', '" + EscMap + "', NOW( ), '" + EscGameName + "', '" + EscOwnerName + "', " + UTIL_ToString( duration ) + ", " + UTIL_ToString( gamestate ) + ", " + UTIL_ToString( gametype ) + ", '" + EscCreatorName + "', '" + EscCreatorServer + "' )";
+    string GIQuery = "INSERT INTO oh_game_info ( botid, gameid, server, map, datetime, gamename, ownername, duration, gamestate, gametype, creatorname, creatorserver, lobbytime ) VALUES ( " + UTIL_ToString( botid ) + ", '" + UTIL_ToString( databaseid ) + "', '" + EscServer + "', '" + EscMap + "', NOW( ), '" + EscGameName + "', '" + EscOwnerName + "', " + UTIL_ToString( duration ) + ", " + UTIL_ToString( gamestate ) + ", " + UTIL_ToString( gametype ) + ", '" + EscCreatorName + "', '" + EscCreatorServer + "', '" + UTIL_ToString( lobbytime ) + "' )";
     if( mysql_real_query( (MYSQL *)conn, GIQuery.c_str( ), GIQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
 
@@ -3151,7 +3151,7 @@ void CMySQLCallableGameAdd :: operator( )( )
     Init( );
 
     if( m_Error.empty( ) )
-        m_Result = MySQLGameAdd( m_Connection, &m_Error, m_SQLBotID, m_Server, m_Map, m_GameName, m_OwnerName, m_Duration, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog, m_DatabaseID );
+        m_Result = MySQLGameAdd( m_Connection, &m_Error, m_SQLBotID, m_Server, m_Map, m_GameName, m_OwnerName, m_Duration, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog, m_DatabaseID, m_LobbyTime );
 
     Close( );
 }
