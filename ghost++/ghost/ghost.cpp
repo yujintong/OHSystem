@@ -2216,7 +2216,7 @@ void CGHost :: CallGameEnd( string gamename, uint32_t creationtime, uint32_t win
 	uint32_t GameMin = GameTime / 60;
 	uint32_t GameSec = GameSec % 60;
 
-	string Winner = winner == 1 ? "Sentinel" : ( winner == 2 ? "Scourge" : "Drawn" );
+	string Winner = winner == 1 ? "Sentinel" : ( winner == 2 ? "Scourge" : "unknown" );
 	string message = "["+gamename+"] Game finished. Game Length: "+UTIL_ToString(GameMin)+"m "+UTIL_ToString(GameSec)+"s. Winner: "+Winner+".";
 	m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(message));
 }
