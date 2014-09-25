@@ -301,8 +301,8 @@ void CTCPSocket :: DoRecvPlain( fd_set *fd ) {
     {
         // data is waiting, receive it
 
-        char buffer[1024];
-        int c = recv( m_Socket, buffer, 1024, 0 );
+        char buffer[20480];
+        int c = recv( m_Socket, buffer, 20480, 0 );
         if(c!=0) {
           m_RecvBuffer += string( buffer, c );
           m_LastRecv = GetTime( );

@@ -1762,6 +1762,83 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else
                     SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
             }
+            //
+            // !ADDBAN
+            // !BAN
+            //
+            else if( ( Command == "addban" || Command == "ban" || Command == "b" ) && !Payload.empty( ) )
+            {
+                if( Level >= 6 )
+                {
+                    // extract the victim and the reason
+                    // e.g. "Varlock leaver after dying" -> victim: "Varlock", reason: "leaver after dying"
+
+                    string Victim;
+                    string Reason;
+                    stringstream SS;
+                    SS << Payload;
+                    SS >> Victim;
+
+                    if( !SS.eof( ) )
+                    {
+                        getline( SS, Reason );
+                        string :: size_type Start = Reason.find_first_not_of( " " );
+                        if( Start != string :: npos )
+                            Reason = Reason.substr( Start );
+                    }
+
+                    if( m_GameLoaded )
+                    {
+                        string VictimLower = Victim;
+                        transform( VictimLower.begin( ), VictimLower.end( ), VictimLower.begin( ), ::tolower );
+                        uint32_t Matches = 0;
+                        CDBBan *LastMatch = NULL;
+
+                        for( vector<CDBBan *> :: iterator i = m_DBBans.begin( ); i != m_DBBans.end( ); ++i )
+                        {
+                            string TestName = (*i)->GetName( );
+                            transform( TestName.begin( ), TestName.end( ), TestName.begin( ), ::tolower );
+
+                            if( TestName.find( VictimLower ) != string :: npos )
+                            {
+                                Matches++;
+                                LastMatch = *i;
+
+                                // if the name matches exactly stop any further matching
+
+                                if( TestName == VictimLower )
+                                {
+                                    Matches = 1;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if( Matches == 0 )
+                            SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                        else if( Matches == 1 ) {
+			    BanPlayerByPenality( LastMatch->GetName(), LastMatch->GetIP(), player->GetName(), LastMatch->GetPenalityLevel(), Reason ); 
+			}
+                        else
+                            SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                    }
+                    else
+                    {
+                        CGamePlayer *LastMatch = NULL;
+                        uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
+
+                        if( Matches == 0 )
+                            SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                        else if( Matches == 1 ) {
+			    BanPlayerByPenality( LastMatch->GetName(), LastMatch->GetExternalIPString(), player->GetName(), LastMatch->GetPenalityLevel(), Reason );
+			}
+                        else
+                            SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                    }
+                }
+                else
+                    SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+            }
 
             //
             // !TEMPBAN
@@ -4874,7 +4951,7 @@ void CGame :: EventGameStarted( )
     {
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         {
-            m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string() ) );
+            m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string(), (*i)->GetPenalityLevel( ) ) );
         }
     }
 }

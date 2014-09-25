@@ -1645,7 +1645,7 @@ CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server,
             vector<string> Row = MySQLFetchRow( Result );
 
             if( Row.size( ) == 11 )
-                Ban = new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10] );
+                Ban = new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10], 0 );
             /* else
                 *error = "error checking ban [" + server + " : " + user + "] - row doesn't have 6 columns"; */
 
@@ -2007,7 +2007,7 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
 
             while( Row.size( ) == 11 )
             {
-                BanList.push_back( new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10] ) );
+                BanList.push_back( new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10], 0 ) );
                 Row = MySQLFetchRow( Result );
             }
 

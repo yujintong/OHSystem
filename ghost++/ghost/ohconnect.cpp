@@ -127,7 +127,6 @@ bool invalidChar (char c)
 
 void OHConnect :: ProcessEvent( string msg ){
   msg.erase(remove_if(msg.begin(),msg.end(), invalidChar), msg.end());
-
   if(msg.find("Switching Protocols")!=std::string::npos) {
     CONSOLE_Print("[OHConnect] handshake complete");  
     joinRoom(string(), string());
@@ -135,7 +134,8 @@ void OHConnect :: ProcessEvent( string msg ){
     m_Handshake = true;
     return;
   }
-
+CONSOLE_Print(msg);
+return;
   size_t hasType = msg.find("type");
   size_t length = msg.size();
   /* has a type definition */
@@ -144,6 +144,8 @@ void OHConnect :: ProcessEvent( string msg ){
     return;
   }
   msg = msg.substr(pop);
+  if(msg.length() > 250) { msg = (msg.substr(0, 250)+",'color':'FF0808','room':'1','roomname':'OHC ROOM 1'}"); }
+  CONSOLE_Print(msg);
   string fullmsg = msg;
   size_t systemMessage = msg.find("\"type\":\"system\"");
   if(msg.find("<img")!=std::string::npos && systemMessage != 1) {

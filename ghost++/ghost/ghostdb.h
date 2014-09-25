@@ -1237,9 +1237,9 @@ private:
     string m_Days;
     string m_Hours;
     string m_Minutes;
-
+    uint32_t m_PenalityLevel;
 public:
-    CDBBan( string nServer, string nName, string nIP, string nDate, string nGameName, string nAdmin, string nReason, string nExpireDate, string nMonths, string nDays, string nHours, string nMinutes );
+    CDBBan( string nServer, string nName, string nIP, string nDate, string nGameName, string nAdmin, string nReason, string nExpireDate, string nMonths, string nDays, string nHours, string nMinutes, uint32_t nPenalityLevel );
     ~CDBBan( );
 
     string GetServer( )		{
@@ -1278,6 +1278,7 @@ public:
     string GetMinutes( )             {
         return m_Minutes;
     }
+    uint32_t GetPenalityLevel( ) { return m_PenalityLevel; }
 };
 
 //
