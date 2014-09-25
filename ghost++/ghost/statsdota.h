@@ -75,7 +75,7 @@ public:
     virtual void SetWinner( uint32_t nWinner ) {
         m_Winner = nWinner;
     }
-    inline uint32_t GetWinner( ) { return m_Winner; }
+    virtual uint32_t GetWinner( ) { return m_Winner; }
 };
 
 #endif

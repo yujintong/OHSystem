@@ -174,8 +174,6 @@ CGame :: ~CGame( )
     
     if( m_CallableGameAdd && m_CallableGameAdd->GetReady( ) )
     {
-	m_GHost->CallGameEnd( m_GameName, m_CreationTime, m_Stats->GetWinner( ) );
-
         if( m_CallableGameAdd->GetResult( ) > 0 )
         {
             CONSOLE_Print( "[GAME: " + m_GameName + "] saving player/stats data to database" );
@@ -1047,7 +1045,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
 
             uint32_t spread = CountAlly > CountEnemy ? CountAlly - CountEnemy : CountEnemy - CountAlly;
 
-            if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll && player->GetLeavePerc () > 30)
+            if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll && player->GetLeavePerc () > 10)
             {
                 m_AutoBans.push_back( player->GetName( ) );
                 SendAllChat( m_GHost->m_Language->UserMayBanned( player->GetName( ) ) );
