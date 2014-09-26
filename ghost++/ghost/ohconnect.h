@@ -53,10 +53,9 @@ class OHConnect
 public:
     CGHost *m_GHost;
     CBaseGame *m_Game;
+protected:
     string m_Room;
     string m_RoomName;
-
-protected:
     bool m_Connected;
     string IP;
     uint32_t Port;
@@ -67,7 +66,7 @@ protected:
     uint32_t m_ClientID;
     std::vector<uint8_t> rxbuf;
     uint32_t LastPingTime;
-
+    uint32_t LastConnectionAttemp;
 private:
     CTCPClient *m_Socket; // the connection to ohconnect
 
