@@ -2053,7 +2053,7 @@ string CGHost :: GetMonthInWords( string month ) {
     else if(month=="9")
         return "September";
     else if(month=="10")
-        return "Ocotober";
+        return "October";
     else if(month=="11")
         return "November";
     else if(month=="12")
