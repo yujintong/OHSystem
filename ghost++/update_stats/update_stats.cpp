@@ -467,7 +467,7 @@ int main( int argc, char **argv )
                 i_playerColour[i_playerCounter] = UTIL_ToUInt32(Row[8]);
                 s_gamename = Row[9];
 
-                MYSQL_RES *IDResult = QueryBuilder(Connection, "SELECT id FROM oh_stats WHERE pid='"+Row[0]+"' AND month='"+Month+"' AND year = '"+Year+"';" );
+                MYSQL_RES *IDResult = QueryBuilder(Connection, "SELECT id FROM oh_stats WHERE pid='"+Row[0]+"' AND month='"+Month+"' AND year = '"+Year+"' AND alias_id = '"+Alias+"';" );
                 if( IDResult ) {
                     vector<string> Row = MySQLFetchRow( IDResult );
                     if(Row.size( ) == 1 ) {
