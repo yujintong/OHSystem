@@ -2160,7 +2160,6 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         SendChat( player, " " );
         SendChat( player, " " );
         SendChat( player, "OH-System                                      http://ohsystem.net/" );
-        SendChat( player, "GHost++                                         http://www.ghost.com/" );
         SendChat( player, "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" );
         SendChat( player, "     Game Name:                 " + m_GameName );
 
