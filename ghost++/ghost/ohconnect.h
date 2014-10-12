@@ -85,6 +85,7 @@ public:
     void recvData();
     string wrapMessage( string message );
     void joinRoom(string room, string roomname);
+    inline bool getConnected( ) { return m_Socket->GetConnected( ); }
 };
 
 #endif

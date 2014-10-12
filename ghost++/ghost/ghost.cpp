@@ -2211,7 +2211,8 @@ void CGHost :: LoadLanguages( ) {
 }
 
 void CGHost :: CallGameEnd( string gamename, uint32_t creationtime, uint32_t winner ) {
-        if(!m_OHC->GetConnected( ) ||!m_OHConnect ) { return; }
+        if(!m_OHConnect ) { return; }
+	if(!m_OHC->getConnected( )) { return; }
 	uint32_t GameTime = GetTime( ) - creationtime;
 	uint32_t GameMin = GameTime / 60;
 	uint32_t GameSec = GameTime % 60;
