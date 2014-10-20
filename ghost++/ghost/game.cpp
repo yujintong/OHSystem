@@ -4200,46 +4200,33 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( ( Command == "wp" || Command == "cb" || Command == "winperc" || Command == "checkbalance" ) && Payload.empty( ) )
     {
-        m_ScourgeWinPoints = 0.0;
-        m_SentinelWinPoints = 0.0;
-        m_TotalWinPoints = 0.0;
-        bool twoteam = true;
+        vector<float> teamWP;;
+        float totalWP = 0.0;
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         {
-            char sid = GetSIDFromPID( (*i)->GetPID( ) );
-            if (sid <= 4 && sid >= 0)
-            {
-                int Win = 0;
-                if((*i)->GetGames( ) > 0 )
-                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
-                m_SentinelWinPoints += Win;
-                m_TotalWinPoints += Win;
-            }
-            else if(sid >= 5 && sid <= 9)
-            {
-                int Win = 0;
-                if((*i)->GetGames( ) > 0 )
-                    Win = ((*i)->GetScore( ) / (*i)->GetGames( ));
-                m_ScourgeWinPoints += Win;
-                m_TotalWinPoints += Win;
-            }
-            else if( m_Slots[sid].GetTeam( ) != 12 )
-                twoteam = false;
 
+            char sid = GetSIDFromPID( (*i)->GetPID( ) );
+            int8_t team = m_Slots[sid].GetTeam( );
+            if(team==12) { continue; }
+            float rate = 0;
+            if((*i)->GetGames( ) > 0 )
+                rate = ((*i)->GetScore( ) / (*i)->GetGames( ));
+
+            teamWP[team] += rate;
+            totalWP += rate;
         }
-        if( twoteam )
+        if( totalWP != 0 )
         {
-            if( m_TotalWinPoints != 0 )
-            {
-                string SeWP = UTIL_ToString( ( m_SentinelWinPoints / m_TotalWinPoints ) * 50, 1);
-                string ScWP = UTIL_ToString( ( m_ScourgeWinPoints / m_TotalWinPoints ) * 50, 1);
-                SendChat( player,  m_GHost->m_Language->WinChance( SeWP, ScWP  ) );
-            }
-            else
-                SendChat( player,  m_GHost->m_Language->WinChance( "50", "50" ) );
+          string gen = "";
+          int teams = teamWP.size();
+          for(int i=0; i<teams; i++ ) {
+            gen += " [TEAM "+UTIL_ToString(i+1)+": "+ UTIL_ToString( ( ( 100*teamWP[i] ) / totalWP ), 1) +"%]";
+
+          }
+          SendChat( player, "Win rate:"+gen);
         }
         else
-            SendChat( player, m_GHost->m_Language->ErrorNotATwoTeamMap( ) );
+          SendChat( player,  m_GHost->m_Language->WinChance( "50", "50" ) );
     }
 
     //
