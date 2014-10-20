@@ -2120,18 +2120,14 @@ bool CGHost :: FindHackFiles( string input ) {
 }
 
 bool CGHost ::  PlayerCached( string playername ) {
+
     transform( playername.begin( ), playername.end( ), playername.begin( ), ::tolower );
-    for( vector<string> :: iterator i = m_PlayerCache.begin( ); i != m_PlayerCache.end( );)
+
+    for( vector<cachedPlayer> :: iterator i = m_PlayerCache.begin( ); i != m_PlayerCache.end( );)
     {
-        string username;
-        string cachedtime;
-        stringstream SS;
-        SS << *i;
-        SS >> username;
-        SS >> cachedtime;
-        if(  GetTime( ) - UTIL_ToUInt32( cachedtime ) <= 7200 )
+        if(  GetTime( ) - i->time <= 7200 )
         {
-            if( username == playername )
+            if( i->name == playername )
                 return true;
 
             i++;

@@ -57,6 +57,7 @@ class CCallableAliasList;
 class OHConnect;
 struct translationTree;
 struct permission;
+struct cachedPlayer;
 
 class CGHost
 {
@@ -258,7 +259,7 @@ public:
     string m_Website;
     uint32_t m_DisconnectAutoBanTime;
     string m_SharedFilesPath;
-    vector<string> m_PlayerCache;
+    vector<cachedPlayer> m_PlayerCache;
     uint32_t m_BroadCastPort;
     string m_LanCFGPath;
     uint32_t m_FallBackLanguage;
@@ -343,4 +344,8 @@ struct permission {
     string binaryPermissions;
 };
 
+struct cachedPlayer {
+    string name;
+    uint32_t time;
+};
 #endif
