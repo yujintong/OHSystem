@@ -159,9 +159,10 @@ private:
     bool b_StatsUpdate;
     bool m_FakeRealm;
     uint32_t LastUpdateTime;
+    uint8_t UpTime;
 
 public:
-    CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNLSServer, uint16_t nBNLSPort, uint32_t nBNLSWardenCookie, string nCDKeyROC, string nCDKeyTFT, string nCountryAbbrev, string nCountry, uint32_t nLocaleID, string nUserName, string nUserPassword, string nFirstChannel, char nCommandTrigger, bool nHoldFriends, bool nHoldClan, bool nPublicCommands, unsigned char nWar3Version, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, string nPVPGNRealmName, uint32_t nMaxMessageLength, uint32_t nHostCounterID );
+    CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNLSServer, uint16_t nBNLSPort, uint32_t nBNLSWardenCookie, string nCDKeyROC, string nCDKeyTFT, string nCountryAbbrev, string nCountry, uint32_t nLocaleID, string nUserName, string nUserPassword, string nFirstChannel, char nCommandTrigger, bool nHoldFriends, bool nHoldClan, bool nPublicCommands, unsigned char nWar3Version, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, string nPVPGNRealmName, uint32_t nMaxMessageLength, uint32_t nHostCounterID, uint8_t nu );
     ~CBNET( );
 
     vector<permission> m_Permissions;
@@ -170,6 +171,8 @@ public:
     string m_CDKeyROC;								// ROC CD key
     string m_CDKeyTFT;								// TFT CD key
     string m_UserName;								// battle.net username
+
+    uint8_t GetUpTime( ) { return UpTime; }
 
     bool GetExiting( )					{
         return m_Exiting;

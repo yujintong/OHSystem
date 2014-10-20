@@ -945,7 +945,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
                 if( (*i)->GetOutPacketsQueued( ) <= 1 )
                 {
-                    (*i)->QueueGameRefresh( m_GameState, m_GameName, string( ), m_Map, m_SaveGame, 0, m_HostCounter );
+                    (*i)->QueueGameRefresh( m_GameState, m_GameName, string( ), m_Map, m_SaveGame, (*i)->GetUpTime( ), m_HostCounter );
                     Refreshed = true;
                 }
             }

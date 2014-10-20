@@ -548,6 +548,8 @@ CGHost :: CGHost( CConfig *CFG )
         string PasswordHashType = CFG->GetString( Prefix + "custom_passwordhashtype", string( ) );
         string PVPGNRealmName = CFG->GetString( Prefix + "custom_pvpgnrealmname", "PvPGN Realm" );
         uint32_t MaxMessageLength = CFG->GetInt( Prefix + "custom_maxmessagelength", 200 );
+        bool UpTime = CFG->GetInt( Prefix + "uptime", 0 );
+	if(UpTime>180) {UpTime = 180;}
 
         if( Server.empty( ) )
             break;
@@ -587,12 +589,12 @@ CGHost :: CGHost( CConfig *CFG )
 #endif
         }
 
-        m_BNETs.push_back( new CBNET( this, Server, ServerAlias, BNLSServer, (uint16_t)BNLSPort, (uint32_t)BNLSWardenCookie, CDKeyROC, CDKeyTFT, CountryAbbrev, Country, LocaleID, UserName, UserPassword, FirstChannel, BNETCommandTrigger[0], HoldFriends, HoldClan, PublicCommands, War3Version, EXEVersion, EXEVersionHash, PasswordHashType, PVPGNRealmName, MaxMessageLength, i ) );
+        m_BNETs.push_back( new CBNET( this, Server, ServerAlias, BNLSServer, (uint16_t)BNLSPort, (uint32_t)BNLSWardenCookie, CDKeyROC, CDKeyTFT, CountryAbbrev, Country, LocaleID, UserName, UserPassword, FirstChannel, BNETCommandTrigger[0], HoldFriends, HoldClan, PublicCommands, War3Version, EXEVersion, EXEVersionHash, PasswordHashType, PVPGNRealmName, MaxMessageLength, i, UpTime ) );
         counter++;
     }
     CONSOLE_Print( "[GHOST] Adding hardcoded Garena Realm & WC3Connect Realm." );
-    m_BNETs.push_back( new CBNET( this, "Garena", "Garena", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+1 ) );
-    m_BNETs.push_back( new CBNET( this, m_WC3ConnectAlias, "WC3Connect", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+2 ) );
+    m_BNETs.push_back( new CBNET( this, "Garena", "Garena", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+1, 0 ) );
+    m_BNETs.push_back( new CBNET( this, m_WC3ConnectAlias, "WC3Connect", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+2, 0 ) );
 
     if(m_OHConnect)
       m_OHC = new OHConnect(this, NULL, m_OHCIP, m_OHCPort );
