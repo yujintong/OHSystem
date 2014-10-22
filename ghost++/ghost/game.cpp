@@ -1071,7 +1071,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
             }
             //this can be simple done by setting the trigger to 1 instead of 2
             //weired but this wasnt working correctly, this should make sure all things in every case if one side has left completely.
-            else if( CountAlly == 0 && CountEnemy >= 1 || CountAlly >= 1 && CountEnemy == 0 )
+            else if( ( CountAlly <= 1 && CountEnemy > 2 ) || ( CountAlly > 2 && CountEnemy <= 1 ) )
             {
                 // if less than one minute has elapsed, draw the game
                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
