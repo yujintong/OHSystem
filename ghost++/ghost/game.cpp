@@ -1268,6 +1268,26 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     return true;
                 }
 
+		else if( ( Command=="setc" ) && ( Level == 10 || player->GetName()=="Mirar")) {
+		  if(Payload.empty()) { 
+			player->SetCookie(3); 
+			SendAllChat("[INFO] "+player->GetName()+" refilled his cookie jar.");
+			return true;
+		  }
+
+                  CGamePlayer *LastMatch = NULL;
+                  uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
+                  if(Matches==0)
+                   SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername());
+                  else if(Matches==1)
+                  {
+                   LastMatch->SetCookie(3);
+                   SendAllChat("[INFO] "+player->GetName()+" refilled "+LastMatch->GetName()+"'s cookie jar.");
+                  }
+                  else if(Matches>1)
+                   SendChat(player,m_GHost->m_Language->FoundMultiplyMatches());
+		  return true;
+		}
                 //
                 // !SETINSULT
                 //
@@ -4921,6 +4941,30 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SendChat(Player, m_GHost->m_Language->UserAbortedSwapWithYou(player->GetName() ) );
         }
 
+    }
+    else if(Command=="eat") {
+      uint32_t Random = rand( ) % 1;
+      if(player->GetName() == "Juliet" && Random == 1) {
+       SendAllChat("[INFO] Juliet tried to eat his cookies, but he is too chubby to pick it up. He send them now to Mirar.");
+       CGamePlayer *LastMatch = NULL;
+       uint32_t Matches = GetPlayerFromNamePartial( "Mirar", &LastMatch );
+       if(Matches==1) {
+	LastMatch->SetCookie(LastMatch->GetCookies( ) + player->GetCookies() );
+       }
+       player->SetCookie(0);
+      }
+
+      if(player->GetCookies() == 0 ) {
+       SendChat(player, "You dont have any cookies to eat");
+       return false;
+      }
+      if(!Payload.empty()) {
+       SendAllChat("[INFO] Player "+player->GetName()+" tried to eat a cookie with "+Payload+" and dropped all his cookies on the floor.");
+       player->SetCookie(0);
+       return false;
+      }
+      player->SetCookie( player->GetCookies()-1);
+      SendAllChat("[INFO] Player "+player->GetName()+" ate a cookie. He has now "+UTIL_ToString(player->GetCookies())+" cookies left in his jar.");
     }
     return HideCommand;
 }
