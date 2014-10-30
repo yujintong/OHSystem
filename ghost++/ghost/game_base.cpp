@@ -6648,17 +6648,40 @@ void CBaseGame :: BanPlayerByPenality( string player, string playerid, string ad
 
         switch(points) {
          case 0:
-          bantime = 7200;
+          bantime = 1800;
          break;
          case 1:
-          bantime = 86400;
+          bantime = 3600;
          break;
          case 2:
-          bantime = 259200;
+          bantime = 21600;
          break;
          case 3:
-	 default:
+	  bantime = 86400;
+         break;
+         case 4:
+          bantime = 172800;
+         break;
+         case 5:
           bantime = 604800;
+         break;
+         case 6:
+          bantime = 1209600;
+         break;
+         case 7:
+          bantime = 2419200;
+         break;
+         case 8:
+          bantime = 4838400;
+         break;
+         case 9:
+          bantime = 9676800;
+         break;
+         case 10:
+          bantime = 31536000;
+         break;
+	 default:
+          bantime = 1800;
          break;
         }
 
