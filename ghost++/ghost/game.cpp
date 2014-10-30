@@ -4533,7 +4533,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if( player->GetVotedForInterruption() == false ) {
                 player->SetVotedForInterruption(true);
                 m_BreakAutoEndVotes++;
-                if( m_BreakAutoEndVotes >= m_BreakAutoEndVotesNeeded)
+                if( m_BreakAutoEndVotes >= m_BreakAutoEndVotesNeeded - 1)
                 {
                     m_EndGame = false;
                     m_EndTicks = 0;
