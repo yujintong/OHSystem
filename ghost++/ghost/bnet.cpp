@@ -1487,7 +1487,7 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         {
             BotCommand( Message, User, Whisper, false );
         }
-	else if( !Message.empty( ) && Message[0] == "/" && Message.find("pvpgn")!=str::npos && m_GHost->m_PVPGNMode) {
+	else if( !Message.empty( ) && Message.substr(0, 1) == "/" && Message.find("pvpgn")!=string::npos && m_GHost->m_PVPGNMode) {
 	    PVPGNCommand( Message );
 	}
     }
@@ -4459,9 +4459,9 @@ void CBNET :: PVPGNCommand( string Command )
     SS >> usr;
     SS >> args;
 
-    else if(cmd=="host" || cmd=="chost") {}
+    if(cmd=="host" || cmd=="chost") {}
     else if(cmd=="unhost") {
-	if(m_GHost->CurrentGame){}
+	if(m_GHost->m_CurrentGame){}
     }
     else if(cmd=="ping") {}
     else if(cmd=="swap") {}
