@@ -4223,7 +4223,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( ( Command == "wp" || Command == "cb" || Command == "winperc" || Command == "checkbalance" ) && Payload.empty( ) )
     {
-        vector<float> teamWP;;
+        vector<float> teamWP;
         float totalWP = 0.0;
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         {
@@ -4234,7 +4234,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             float rate = 0;
             if((*i)->GetGames( ) > 0 )
                 rate = ((*i)->GetScore( ) / (*i)->GetGames( ));
-
+	    if(team >= teamWP.size()) {
+		teamWP.resize(team+1);
+		teamWP[team] = 0.0;
+	    }
             teamWP[team] += rate;
             totalWP += rate;
         }
@@ -4243,8 +4246,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
           string gen = "";
           int teams = teamWP.size();
           for(int i=0; i<teams; i++ ) {
-            gen += " [TEAM "+UTIL_ToString(i+1)+": "+ UTIL_ToString( ( ( 100*teamWP[i] ) / totalWP ), 1) +"%]";
-
+	    if(teamWP[i] != 0.0) {
+               gen += " [TEAM "+UTIL_ToString(i+1)+": "+ UTIL_ToString( ( ( 100*teamWP[i] ) / totalWP ), 1) +"%]";
+	    }
           }
           SendChat( player, "Win rate:"+gen);
         }
