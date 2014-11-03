@@ -1580,6 +1580,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
     transform( Command.begin( ), Command.end( ), Command.begin( ), ::tolower );
 
+    if(!ForceRoot && m_GHost->m_PVPGNMode && Command != "version" ) {
+      CONSOLE_Print("[PVPGN-Mode] User used command but bot is running in pvpgn-mode.");
+      return;
+    }
+
     if( ( IsLevel( User ) >= 5 || ForceRoot ) && m_GHost->m_RanksLoaded )
     {
         string level = GetLevelName( IsLevel( User ) );

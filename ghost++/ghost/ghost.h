@@ -283,6 +283,7 @@ public:
     bool m_GameOHConnect;
     bool m_ReadGlobalMySQL;
     string m_GlobalMySQLPath;
+    bool m_PVPGNMode;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

@@ -1497,7 +1497,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_AutokickSpoofer = CFG->GetInt("oh_autokickspoofer", 1) == 0 ? false : true;
     m_ReadGlobalMySQL = CFG->GetInt("oh_readglobalmysql", 0) == 0 ? false : true;
     m_GlobalMySQLPath = UTIL_AddPathSeperator( CFG->GetString( "oh_globalmysqlpath", "../" ) );
-    
+    m_PVPGNMode = CFG->GetInt("oh_pvpgn_mode", 0) == 0 ? false : true;
+ 
     LoadDatas();
     LoadRules();
     LoadRanks();
