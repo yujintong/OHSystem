@@ -1487,6 +1487,9 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         {
             BotCommand( Message, User, Whisper, false );
         }
+	else if( !Message.empty( ) && Message[0] == "/" && Message.find("pvpgn")!=str::npos && m_GHost->m_PVPGNMode) {
+	    PVPGNCommand( Message );
+	}
     }
     else if( Event == CBNETProtocol :: EID_CHANNEL )
     {
@@ -4426,3 +4429,46 @@ void CBNET :: HoldClan( CBaseGame *game )
     }
 }
 
+void CBNET :: PVPGNCommand( string Command )
+{
+    string cmd;
+    string args;
+    string :: size_type argss = Command.find( " " );
+
+    if( argss != string :: npos )
+    {
+        cmd = Command.substr( 1, argss - 1 );
+        args = Command.substr( argss + 1 );
+    }
+    else
+        cmd = Command.substr( 1 );
+
+    transform( cmd.begin( ), cmd.end( ), cmd.begin( ), ::tolower );
+
+    if(cmd=="init") {
+     if(m_GHost->m_PVPGNMode) {
+	m_GHost->m_PVPGNMode = false;
+     } else {
+	m_GHost->m_PVPGNMode = true;
+     }
+     return;
+    }
+    string usr;
+    stringstream SS;
+    SS << args;
+    SS >> usr;
+    SS >> args;
+
+    else if(cmd=="host" || cmd=="chost") {}
+    else if(cmd=="unhost") {
+	if(m_GHost->CurrentGame){}
+    }
+    else if(cmd=="ping") {}
+    else if(cmd=="swap") {}
+    else if(cmd=="open") {}
+    else if(cmd=="close") {}
+    else if(cmd=="start") {}
+    else if(cmd=="abort"||cmd=="a") {}
+    else if(cmd=="pub") {} // host? or chost?
+    else if(cmd=="priv") {}
+}
