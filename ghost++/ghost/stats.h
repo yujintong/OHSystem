@@ -50,7 +50,7 @@ public:
     virtual bool ProcessAction( CIncomingAction *Action );
     virtual void Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID );
     virtual void SetWinner( uint32_t nWinner ) {}
-    virtual uint32_t GetWinner( ) {}
+    inline uint32_t GetWinner( ) {}
     virtual void LockStats( ) {
         m_Locked = true;
     }
