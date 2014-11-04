@@ -284,6 +284,7 @@ public:
     bool m_ReadGlobalMySQL;
     string m_GlobalMySQLPath;
     bool m_PVPGNMode;
+    uint32_t m_AutoRehostTime;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

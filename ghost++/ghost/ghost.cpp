@@ -1281,7 +1281,6 @@ void CGHost :: EventBNETLoggedIn( CBNET *bnet )
 
 void CGHost :: EventBNETGameRefreshed( CBNET *bnet )
 {
-
 }
 
 void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
@@ -1498,6 +1497,10 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_ReadGlobalMySQL = CFG->GetInt("oh_readglobalmysql", 0) == 0 ? false : true;
     m_GlobalMySQLPath = UTIL_AddPathSeperator( CFG->GetString( "oh_globalmysqlpath", "../" ) );
     m_PVPGNMode = CFG->GetInt("oh_pvpgn_mode", 0) == 0 ? false : true;
+    m_AutoRehostTime = CFG->GetInt("oh_auto_rehost_time", 0);
+    if(m_AutoRehostTime<10) { 
+	m_AutoRehostTime=10; 
+    }
  
     LoadDatas();
     LoadRules();

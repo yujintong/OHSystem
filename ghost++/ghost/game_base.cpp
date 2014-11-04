@@ -1230,6 +1230,37 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         m_LastCountDownTicks = GetTicks( );
     }
 
+    if(m_GameState==GAME_PUBLIC && m_GHost->m_AutoRehostTime!=0 && GetTime()>m_CreationTime+m_GHost->m_AutoRehostTime && !m_GameLoading && !m_GameLoaded && !AllSlotsOccupied())
+    {
+        // delete the old game
+        DoGameUpdate(true);
+
+        // there's a slim chance that this isn't actually an autohosted game since there is no explicit autohost flag
+        // however, if autohosting is enabled and this game is public and this game is set to autostart, it's probably autohosted
+        // so rehost it using the current autohost game name
+
+        string GameName = m_GHost->m_AutoHostGameName + " #" + UTIL_ToString( m_GHost->GetNewHostCounter( ) );
+        CONSOLE_Print( "[GAME: " + m_GameName + "] automatically trying to rehost as public game [" + GameName + "] due to auto rehost" );
+        m_LastGameName = m_GameName;
+        m_GameName = GameName;
+        m_RefreshError = false;
+	SendAllChat("Automatically rehosted game as public gamei [" + GameName + "]");
+        for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+        {
+            (*i)->QueueGameUncreate( );
+            (*i)->QueueEnterChat( );
+
+            // the game creation message will be sent on the next refresh
+        }
+
+        SetCreationTime( GetTime( ) );
+        m_LastRefreshTime = GetTime( );
+
+       // update the new game
+        DoGameUpdate(false);
+
+    }
+
     // check if the lobby is "abandoned" and needs to be closed since it will never start
 
     if( !m_GameLoading && !m_GameLoaded && m_AutoStartPlayers == 0 && m_GHost->m_LobbyTimeLimit > 0 )
@@ -6686,4 +6717,13 @@ void CBaseGame :: BanPlayerByPenality( string player, string playerid, string ad
         }
 
         m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "", player, playerid, m_GameName, admin, reason, bantime, "" ) );	
+}
+
+bool CBaseGame :: AllSlotsOccupied() {
+        for( unsigned char i = 0; i < m_Slots.size( ); ++i )
+        {
+            if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OPEN )
+                return false;
+        }
+	return true;
 }
