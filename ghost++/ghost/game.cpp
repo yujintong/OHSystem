@@ -1538,7 +1538,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
 		if(hasAccess) {
                         if(player->GetDenyLimit( )==0) {
-                           SendChat(player, "You reached already your maximum denyp limit");
+                           SendChat(player, "You reached already your maximum deny limit");
                         } else {
                                 player->SetDenyLimit( );
                         }
