@@ -62,6 +62,7 @@ class CCallableGamePlayerAdd;
 struct ReservedPlayer;
 class CCallableGameUpdate;
 class OHConnect;
+struct DeniedPlayer;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -177,7 +178,7 @@ protected:
     bool m_SoftGameOver;
     uint32_t m_LastProcessedTicks;
     bool m_SendAnnounce;
-    vector<string> m_Denied;					//vector for denied Users
+    vector<DeniedPlayer> m_Denied;					//vector for denied Users
     bool m_LimitCountries;
     bool m_DenieCountries;
     vector<string> m_LimitedCountries;
@@ -477,6 +478,7 @@ public:
     virtual vector<PlayerOfPlayerList> GetPlayerListOfGame( );
     virtual void BanPlayerByPenality( string player, string playerid, string admin, uint32_t points, string reason );
     virtual bool AllSlotsOccupied();
+    void DenyPlayer( string name, string ip, bool perm );
 };
 
 struct ReservedPlayer {
@@ -486,6 +488,10 @@ struct ReservedPlayer {
     uint32_t Time;
     uint32_t Level;
 };
-
+struct DeniedPlayer {
+    string Name;
+    string IP;
+    uint32_t Time;
+};
 #endif
 

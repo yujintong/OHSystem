@@ -1548,12 +1548,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                 if( Matches == 0 )
                 {
-                    m_Denied.push_back( Payload + "   " + UTIL_ToString( GetTime() ) );
+	            DenyPlayer(Payload, Payload, false);
                     SendAllChat( m_GHost->m_Language->DeniedUser( Payload ) );
                 }
                 else if( Matches == 1 )
                 {
-                    m_Denied.push_back( LastMatch->GetName() + " " + LastMatch->GetExternalIPString( ) + " 0" );
+		    DenyPlayer(LastMatch->GetName(), LastMatch->GetExternalIPString( ), true);
                     SendAllChat( m_GHost->m_Language->DeniedUser( LastMatch->GetName( ) ) );
                     LastMatch->SetDeleteMe( true );
                     LastMatch->SetLeftReason( "got denied for this lobby" );
@@ -1564,7 +1564,27 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else
                     SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
             }
-
+	    //
+	    // !undeny
+	    //
+	    else if((Command == "undeny" || Command =="ud") && Level >= 7) {
+	       bool succ = false;
+	       for( vector<DeniedPlayer> :: iterator i = m_Denied.begin( ); i != m_Denied.end( );)
+	       {
+            	   if( Payload == i->Name || Payload == i->IP || i->Name.find(Payload)!=string::npos) {
+			i=m_Denied.erase( i );
+			succ = true;
+			break;	
+		   }
+		   i++;
+                }
+		if(succ) {
+		  SendAllChat("Successfully undenied ["+Payload+"]");
+		} else {
+		  SendAllChat("Didn't found any match to ["+Payload+"]");
+		}
+    	    }
+ 
             //
             // !CheckPP
             //
