@@ -222,8 +222,9 @@ private:
     bool m_RequestedSwap;
     uint8_t m_SwapTarget;
     uint32_t m_LastAttackCommandToFountain;
-	uint32_t m_FFLevel;
-
+    uint32_t m_FFLevel;
+    uint32_t m_DenyLimit;
+    uint32_t m_SwapLimit;
 
 public:
     CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSocket *nSocket, unsigned char nPID, string nJoinedRealm, string nName, BYTEARRAY nInternalIP, bool nReserved );
@@ -522,6 +523,18 @@ public:
     }
     uint32_t GetFFLevel( ) {
         return m_FFLevel;
+    }
+    uint32_t GetDenyLimit( ) {
+        return m_DenyLimit;
+    }
+    uint32_t GetSwapLimit( ) {
+        return m_SwapLimit;
+    }
+    void SetDenyLimit( ) {
+	m_DenyLimit--;
+    }
+    void SetSwapLimit( ) {
+	m_SwapLimit--;
     }
     void SetLeftReason( string nLeftReason )										{
         m_LeftReason = nLeftReason;

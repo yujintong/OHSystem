@@ -236,7 +236,7 @@ CGamePlayer :: CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSock
     m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "??" ), m_Country( "unknown" ), m_TheThingAmount( 0 ), m_TheThing( "" ), m_TheThingType( 0 ), m_Count( 0 ), m_Silence( false ), m_HasLeft( false ),
     m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
     m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 ), m_PlayerLanguage( "en" ), m_PenalityLevel( 0 ),
-	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 )
+	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 ), m_DenyLimit( m_Game->m_GHost->m_DenyLimit ), m_SwapLimit( m_Game->m_GHost->m_SwapLimit )
 {
 
 }
@@ -248,7 +248,7 @@ CGamePlayer :: CGamePlayer( CPotentialPlayer *potential, unsigned char nPID, str
     m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "??" ), m_Country( "unknown" ), m_TheThingAmount( 0 ), m_TheThing( "" ), m_TheThingType( 0 ), m_Count( 0 ), m_Silence( false ), m_HasLeft( false ),
     m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
     m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 ), m_PlayerLanguage( "en" ), m_PenalityLevel( 0 ),
-	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 )
+	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 ), m_DenyLimit( m_Game->m_GHost->m_DenyLimit ), m_SwapLimit( m_Game->m_GHost->m_SwapLimit )
 {
     // todotodo: properly copy queued packets to the new player, this just discards them
     // this isn't a big problem because official Warcraft III clients don't send any packets after the join request until they receive a response

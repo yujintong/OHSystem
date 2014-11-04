@@ -1536,6 +1536,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "deny" && !Payload.empty() && !m_GameLoading && !m_GameLoaded )
             {
+		if(hasAccess) {
+                        if(player->GetDenyLimit( )==0) {
+                           SendChat(player, "You reached already your maximum denyp limit");
+                        } else {
+                                player->SetDenyLimit( );
+                        }
+                }
+
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                 if( Matches == 0 )
@@ -3066,6 +3074,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "swap" && !Payload.empty( ) && !m_GameLoading && !m_GameLoaded && !m_CountDownStarted && (Level >= 5||hasAccess) )
             {
+		if(hasAccess) {
+			if(player->GetSwapLimit( )==0) {
+			   SendChat(player, "You reached already your maximum swap limit");
+			} else {
+				player->SetSwapLimit( );
+			}
+		}
                 uint32_t SID1;
                 uint32_t SID2;
                 stringstream SS;

@@ -285,6 +285,8 @@ public:
     string m_GlobalMySQLPath;
     bool m_PVPGNMode;
     uint32_t m_AutoRehostTime;
+    uint32_t m_DenyLimit;
+    uint32_t m_SwapLimit;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

@@ -1501,6 +1501,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     if(m_AutoRehostTime<10) { 
 	m_AutoRehostTime=10; 
     }
+    m_DenyLimit = CFG->GetInt("oh_cc_deny_limit", 2);
+    m_SwapLimit = CFG->GetInt("oh_cc_swap_limit", 2);
  
     LoadDatas();
     LoadRules();
