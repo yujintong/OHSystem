@@ -1629,9 +1629,9 @@ CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server,
     string Query;
 
     if( ip.empty( ) )
-        Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
     else
-        Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' OR ip='" + EscIP + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' OR ip='" + EscIP + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -1643,8 +1643,8 @@ CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server,
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            if( Row.size( ) == 11 )
-                Ban = new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10], 0 );
+            if( Row.size( ) == 12 )
+                Ban = new CDBBan( UTIL_ToUInt32( Row[0] ), server, Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10], Row[11], 0 );
             /* else
                 *error = "error checking ban [" + server + " : " + user + "] - row doesn't have 6 columns"; */
 
@@ -1990,9 +1990,9 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
     vector<CDBBan *> BanList;
     string Query = "";
     if( EscServer == "Garena")
-        Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' OR server='WC3Connect' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' OR server='WC3Connect' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
     else
-        Query = "SELECT name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -2004,9 +2004,9 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            while( Row.size( ) == 11 )
+            while( Row.size( ) == 12 )
             {
-                BanList.push_back( new CDBBan( server, Row[0], Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10], 0 ) );
+                BanList.push_back( new CDBBan( UTIL_ToUInt32( Row[0] ), server, Row[1], Row[2], Row[3], Row[4], Row[5], Row[6], Row[7], Row[8], Row[9], Row[10], Row[11], 0 ) );
                 Row = MySQLFetchRow( Result );
             }
 

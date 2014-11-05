@@ -531,7 +531,7 @@ public:
     string BanReasonIs( );
     string UnableToJoin( );
     string YouAreBanned( );
-    string BannedAt( string name, string server );
+    string BannedAt(uint32_t id, string name, string server );
     string BanDateAndRemain( string date, string remain );
     string BanDateWithoutRemain( string date );
     string BanGameName( string game );

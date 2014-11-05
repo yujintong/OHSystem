@@ -2288,7 +2288,7 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
     player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->UnableToJoin( ) ) );
     if(1==type) {
         player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->YouAreBanned( ) ) );
-        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BannedAt( Ban->GetName(), Ban->GetServer()) ) );
+        player->GetSocket( )->PutBytes( m_Protocol->SEND_W3GS_CHAT_FROM_HOST( 1, UTIL_CreateByteArray( 2 ), 16, BYTEARRAY( ), m_GHost->m_Language->BannedAt( Ban->GetID(), Ban->GetName(), Ban->GetServer()) ) );
         string Remain = "";
         if( Ban->GetMonths() != "0" && Ban->GetMonths() != "" )
             Remain += Ban->GetMonths() +m_GHost->m_Language->Month()+" ";
@@ -2458,10 +2458,13 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
     if( !m_GameLoading && !m_GameLoaded )
     {
 
-        if( GetSIDFromPID( player->GetPID( ) ) == 11 )
+        if( m_Slots[GetSIDFromPID( player->GetPID() )].GetTeam() == 12 )
         {
-            m_AutoStartPlayers = 10;
+            m_ObservingPlayers -= 1;
             CloseSlot( 11, true );
+            m_AutoStartPlayers = m_AutoStartPlayers-1;
+            SendAllChat( m_GHost->m_Language->UserWillNoLongerObserveGame( player->GetName( ) ) );
+            SendAllChat( m_GHost->m_Language->AutoStartEnabled( UTIL_ToString( m_AutoStartPlayers ) ) );
         }
         m_LogData = m_LogData + "2" + "\t" + "blm" + "\t" + player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + player->GetName() + " " + player->GetLeftReason() + "\n";
         GAME_Print( 3, "", "", player->GetName(), "", player->GetLeftReason() );
@@ -2478,7 +2481,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
             m_Voted = false;
         }
 
-        if(m_GHost->m_AutoDenyUsers && player->GetLevel() > 1)
+        if(m_GHost->m_AutoDenyUsers && player->GetLevel() < 1)
             DenyPlayer( player->GetName( ),player->GetExternalIPString( ), false );
 
     }
@@ -2680,7 +2683,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     if( joinPlayer->GetName( ).empty( ) || joinPlayer->GetName( ).size( ) > 15 || LowerName.find( " " ) != string::npos || ( LowerName.find( "|" ) != string::npos && m_GHost->m_AutokickSpoofer ) )
     {
         // autoban the player for spoofing name
-        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) );
+        m_PairedBanAdds.push_back( PairedBanAdd( "", m_GHost->m_DB->ThreadedBanAdd( m_GHost->m_BNETs[0]->GetServer( ), joinPlayer->GetName( ), potential->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "attempted to join with spoofed name: " + joinPlayer->GetName( ), 0, "" ) ) );
         CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + joinPlayer->GetName( ) + "|" + potential->GetExternalIPString( ) + "] is trying to join the game with an invalid name of length " + UTIL_ToString( joinPlayer->GetName( ).size( ) ) );
         DenyPlayer( joinPlayer->GetName( ), potential->GetExternalIPString( ), true);
         potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
@@ -3501,7 +3504,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                         player->SetDeleteMe( true );
                         player->SetLeftReason( "was kicked by host" );
                         player->SetLeftCode( PLAYERLEAVE_LOST );
-                        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) );
+                        m_PairedBanAdds.push_back( PairedBanAdd( "", m_GHost->m_DB->ThreadedBanAdd( player->GetSpoofedRealm( ), player->GetName( ), player->GetExternalIPString( ), m_GameName, m_GHost->m_BotManagerName, "MapHack", 0, "" ) ));
                         delete action;
                         return false;
                     }
@@ -4480,7 +4483,7 @@ void CBaseGame :: EventGameStarted( )
     // move this here, lets test if this does work :-P
     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
     {
-        m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), UTIL_ToString((*i)->GetID()), string( ), string( ), string( ), string(), string(), string(), string(), string(), (*i)->GetPenalityLevel( ) ) );
+        m_DBBans.push_back( new CDBBan( 0, (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), UTIL_ToString((*i)->GetID()), string( ), string( ), string( ), string(), string(), string(), string(), string(), (*i)->GetPenalityLevel( ) ) );
     }
 
     m_CallableGameDBInit = m_GHost->m_DB->ThreadedGameDBInit( m_DBBans, string( ), m_HostCounter, m_GameAlias );
@@ -6714,7 +6717,7 @@ void CBaseGame :: BanPlayerByPenality( string player, string playerid, string ad
          break;
         }
 
-        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedBanAdd( "", player, playerid, m_GameName, admin, reason, bantime, "" ) );	
+        m_PairedBanAdds.push_back( PairedBanAdd( "", m_GHost->m_DB->ThreadedBanAdd( "", player, playerid, m_GameName, admin, reason, bantime, "" ) ) );
 }
 
 bool CBaseGame :: AllSlotsOccupied() {

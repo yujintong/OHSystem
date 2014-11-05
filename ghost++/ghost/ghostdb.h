@@ -1225,6 +1225,7 @@ public:
 class CDBBan
 {
 private:
+    uint32_t m_ID;
     string m_Server;
     string m_Name;
     string m_IP;
@@ -1239,9 +1240,12 @@ private:
     string m_Minutes;
     uint32_t m_PenalityLevel;
 public:
-    CDBBan( string nServer, string nName, string nIP, string nDate, string nGameName, string nAdmin, string nReason, string nExpireDate, string nMonths, string nDays, string nHours, string nMinutes, uint32_t nPenalityLevel );
+    CDBBan( uint32_t id, string nServer, string nName, string nIP, string nDate, string nGameName, string nAdmin, string nReason, string nExpireDate, string nMonths, string nDays, string nHours, string nMinutes, uint32_t nPenalityLevel );
     ~CDBBan( );
 
+    uint32_t GetID( ) {
+        return m_ID;
+    }
     string GetServer( )		{
         return m_Server;
     }

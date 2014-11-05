@@ -4395,7 +4395,7 @@ CDBBan *CBNET :: IsBannedIP( string ip )
 void CBNET :: AddBan( string name, string ip, string gamename, string admin, string reason )
 {
     transform( name.begin( ), name.end( ), name.begin( ), ::tolower );
-    m_Bans.push_back( new CDBBan( m_Server, name, ip, "NA", gamename, admin, reason, string(), string(), string(), string(), string(), 0 ) );
+    m_Bans.push_back( new CDBBan( 0, m_Server, name, ip, "NA", gamename, admin, reason, string(), string(), string(), string(), string(), 0 ) );
 }
 
 void CBNET :: RemoveBan( string name )

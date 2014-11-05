@@ -3443,9 +3443,10 @@ string CLanguage :: YouAreBanned( )
     return Out;
 }
 
-string CLanguage :: BannedAt( string name, string server )
+string CLanguage :: BannedAt( uint32_t id, string name, string server )
 {
     string Out = m_CFG->GetString( "oh_269", "oh_269" );
+    UTIL_Replace( Out, "$ID$", UTIL_ToString(id) );
     UTIL_Replace( Out, "$NAME$", name );
     UTIL_Replace( Out, "$SERVER$", server );
     return Out;

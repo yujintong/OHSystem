@@ -719,7 +719,7 @@ CCallableW3MMDVarAdd :: ~CCallableW3MMDVarAdd( )
 // CDBBan
 //
 
-CDBBan :: CDBBan( string nServer, string nName, string nIP, string nDate, string nGameName, string nAdmin, string nReason, string nExpireDate, string nMonths, string nDays, string nHours, string nMinutes, uint32_t nPenalityLevel ) : m_Server( nServer ), m_Name( nName ), m_IP( nIP ), m_Date( nDate ), m_GameName( nGameName ), m_Admin( nAdmin ), m_Reason( nReason ), m_ExpireDate( nExpireDate ), m_Months( nMonths ), m_Days( nDays ), m_Hours( nHours ), m_Minutes( nMinutes ), m_PenalityLevel( nPenalityLevel )
+CDBBan :: CDBBan( uint32_t nID, string nServer, string nName, string nIP, string nDate, string nGameName, string nAdmin, string nReason, string nExpireDate, string nMonths, string nDays, string nHours, string nMinutes, uint32_t nPenalityLevel ) : m_ID( nID ), m_Server( nServer ), m_Name( nName ), m_IP( nIP ), m_Date( nDate ), m_GameName( nGameName ), m_Admin( nAdmin ), m_Reason( nReason ), m_ExpireDate( nExpireDate ), m_Months( nMonths ), m_Days( nDays ), m_Hours( nHours ), m_Minutes( nMinutes ), m_PenalityLevel( nPenalityLevel )
 {
 
 }

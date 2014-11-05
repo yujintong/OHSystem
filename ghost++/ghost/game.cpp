@@ -1196,7 +1196,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !FORCE MODE
             //
-            else if( Command == "forcemode" && (Level >= 9||hasAccess) && !m_Voted) {
+            else if( Command == "forcemode" && (Level >= 9||hasAccess)) {
                 if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
                     SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
@@ -2750,7 +2750,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !MUTEALL
             //
-            else if( Command == "muteall" && m_GameLoaded && Level >= 6 )
+            else if( Command == "muteall" && m_GameLoaded && Level >= 5 )
             {
                 if( Payload.empty())
                 {
@@ -3157,7 +3157,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !UNHOST
             //
-            else if( Command == "unhost" && !m_CountDownStarted && Level >= 8 )
+            else if( Command == "unhost" && !m_CountDownStarted && Level >= 7 )
                 m_Exiting = true;
 
             //
@@ -5021,7 +5021,7 @@ void CGame :: EventGameStarted( )
     {
         for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         {
-            m_DBBans.push_back( new CDBBan( (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string(), (*i)->GetPenalityLevel( ) ) );
+            m_DBBans.push_back( new CDBBan( 0, (*i)->GetJoinedRealm( ), (*i)->GetName( ), (*i)->GetExternalIPString( ), string( ), string( ), string( ), string( ), string(), string(), string(), string(), string(), (*i)->GetPenalityLevel( ) ) );
         }
     }
 }

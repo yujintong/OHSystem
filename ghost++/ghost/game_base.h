@@ -213,6 +213,8 @@ protected:
 	bool m_ForcedMode;
 	uint32_t m_ForcedGameMode;
 
+    uint32_t m_ObservingPlayers;
+
 public:
     CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
     virtual ~CBaseGame( );
