@@ -1727,7 +1727,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !AUTOBALANCE
             // !ABC
             //
-            else if ( ( Command == "autobalance" || Command == "ab" || Command == "abc" ) && Level >= 9 && Payload.empty() )
+            else if ( ( Command == "autobalance" || Command == "ab" || Command == "abc" ) && Level >= 9 && Payload.empty() && !m_GameLoaded && !m_GameLoading)
             {
                 OHFixedBalance( );
             }
@@ -4860,7 +4860,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !VOTEBALANCE
     //
-    else if( Command == "votebalance") {
+    else if( Command == "votebalance" && m_GameLoaded && !m_GameLoading) {
         if(! player->GetVotedForBalance () ) {
             m_BalanceVotes++;
             SendAllChat( m_GHost->m_Language->UserVotedForBalance ( player->GetName ()  ) );
