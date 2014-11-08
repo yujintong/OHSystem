@@ -27,6 +27,11 @@ using namespace std;
 #include "util.h"
 #include "commandpacket.h"
 #include "game_base.h"
+
+#ifdef WIN32
+ #include <string>
+#endif
+
 //
 // OHConnect
 //
