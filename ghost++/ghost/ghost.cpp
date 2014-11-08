@@ -1498,7 +1498,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_GlobalMySQLPath = UTIL_AddPathSeperator( CFG->GetString( "oh_globalmysqlpath", "../" ) );
     m_PVPGNMode = CFG->GetInt("oh_pvpgn_mode", 0) == 0 ? false : true;
     m_AutoRehostTime = CFG->GetInt("oh_auto_rehost_time", 0);
-    if(m_AutoRehostTime<10) { 
+    if(m_AutoRehostTime<10 && m_AutoRehostTime!=0) { 
 	m_AutoRehostTime=10; 
     }
     m_DenyLimit = CFG->GetInt("oh_cc_deny_limit", 2);
