@@ -1,5 +1,3 @@
-![Logo](http://s13.postimg.org/x6jpyoaty/new_logo.jpg)
-
 #OpenHosting
 
 OpenHosting is a major modification of the official GHost++ source.
