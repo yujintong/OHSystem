@@ -40,7 +40,7 @@ struct OHCHeader {
     BINARY_FRAME = 0x2,
     CLOSE = 8,
     PING = 9,
-    PONG = 0xa,
+    PONG = 0xa
   } opcode;
   uint64_t N0;
   uint64_t N;
