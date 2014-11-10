@@ -1,3 +1,4 @@
+![Logo](http://ohsystem.net/storage/img/new_logo.jpg)
 #OpenHosting
 
 OpenHosting is a major modification of the official GHost++ source.
