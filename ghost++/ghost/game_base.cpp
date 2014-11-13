@@ -4494,7 +4494,7 @@ void CBaseGame :: EventGameStarted( )
 void CBaseGame :: EventGameLoaded( )
 {
     // UPDATE STATUS
-    m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, sirin 2, uint32_t(), m_GameAlias ) );
+    m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, string(),  2, uint32_t(), m_GameAlias ) );
 
     CONSOLE_Print( "[GAME: " + m_GameName + "] finished loading with " + UTIL_ToString( GetNumHumanPlayers( ) ) + " players" );
 
