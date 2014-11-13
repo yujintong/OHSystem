@@ -4521,8 +4521,6 @@ void CBaseGame :: EventGameLoaded( )
     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
         SendChat( *i, m_GHost->m_Language->YourLoadingTimeWas( UTIL_ToString( (float)( (*i)->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
 
-
-		string bin = j->binaryPermissions;
     m_GameLoadedTime = GetTime();
 }
 

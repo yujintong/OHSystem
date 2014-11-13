@@ -2153,6 +2153,7 @@ bool CGHost :: CanAccessCommand( string name, string command ) {
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i ) {
 	for( vector<permission> :: iterator j = (*i)->m_Permissions.begin( ); j != (*i)->m_Permissions.end( ); ++j ) {
             if( j->player == name ) {
+		string bin = j->binaryPermissions;
 		if(    (command=="ping" && bin.substr(0,1) == "1" )
 		    || (command=="from" && bin.substr(1,1) == "1" )
                     || (command=="drop" && bin.substr(2,1) == "1" )
