@@ -1235,6 +1235,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         // delete the old game
         DoGameUpdate(true);
 
+	m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, string(), 3, uint32_t(), m_GameAlias ) );
+
         // there's a slim chance that this isn't actually an autohosted game since there is no explicit autohost flag
         // however, if autohosting is enabled and this game is public and this game is set to autostart, it's probably autohosted
         // so rehost it using the current autohost game name
@@ -1244,7 +1246,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         m_LastGameName = m_GameName;
         m_GameName = GameName;
         m_RefreshError = false;
-	SendAllChat("Automatically rehosted game as public gamei [" + GameName + "]");
+	SendAllChat("Automatically rehosted game as public game [" + GameName + "]");
         for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
         {
             (*i)->QueueGameUncreate( );
@@ -4492,7 +4494,7 @@ void CBaseGame :: EventGameStarted( )
 void CBaseGame :: EventGameLoaded( )
 {
     // UPDATE STATUS
-    m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, string(), 2, uint32_t(), m_GameAlias ) );
+    m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, sirin 2, uint32_t(), m_GameAlias ) );
 
     CONSOLE_Print( "[GAME: " + m_GameName + "] finished loading with " + UTIL_ToString( GetNumHumanPlayers( ) ) + " players" );
 
@@ -4520,6 +4522,7 @@ void CBaseGame :: EventGameLoaded( )
         SendChat( *i, m_GHost->m_Language->YourLoadingTimeWas( UTIL_ToString( (float)( (*i)->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000, 2 ) ) );
 
 
+		string bin = j->binaryPermissions;
     m_GameLoadedTime = GetTime();
 }
 
