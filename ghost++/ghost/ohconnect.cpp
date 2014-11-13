@@ -29,7 +29,7 @@ using namespace std;
 #include "game_base.h"
 
 #ifdef WIN32
- #include <string>
+ #include <cstdint>
 #endif
 
 //
