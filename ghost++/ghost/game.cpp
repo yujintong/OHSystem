@@ -1071,7 +1071,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
             }
             //this can be simple done by setting the trigger to 1 instead of 2
             //weired but this wasnt working correctly, this should make sure all things in every case if one side has left completely.
-            else if( ( CountAlly <= 1 && CountEnemy > 2 ) || ( CountAlly > 2 && CountEnemy <= 1 ) )
+            else if( ( CountAlly == 0 && CountEnemy > 2 ) || ( CountAlly > 2 && CountEnemy == 0 ) )
             {
                 // if less than one minute has elapsed, draw the game
                 // this may be abused for mode voting and such, but hopefully not (and that's what bans are for)
@@ -2618,7 +2618,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !KICK (kick a player) !K
             //
-            else if( ( Command == "kick" || Command == "k" ) && !Payload.empty( ) && Level >= 5 )
+            else if( ( Command == "kick" || Command == "k" || Command =="oink") && !Payload.empty( ) && Level >= 5 )
             {
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -2632,13 +2632,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( VictimLevel <= 1 || Level >= 9 )
                     {
                         LastMatch->SetDeleteMe( true );
+			if(Command!="oink") {
                         LastMatch->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
 
                         if( !m_GameLoading && !m_GameLoaded )
                             LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
                         else
                             LastMatch->SetLeftCode( PLAYERLEAVE_LOST );
-
+			} else {
+			    LastMatch->SetLeftReason( m_GHost->m_Language->HasLostConnectionClosedByRemoteHost( ) );
+			    LastMatch->SetLeftCode( PLAYERLEAVE_DISCONNECT );
+			    return true;
+			}
                         if( !m_GameLoading && !m_GameLoaded )
                         {
                             OpenSlot( GetSIDFromPID( LastMatch->GetPID( ) ), false );
