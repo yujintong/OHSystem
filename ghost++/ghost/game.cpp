@@ -2618,7 +2618,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !KICK (kick a player) !K
             //
-            else if( ( Command == "kick" || Command == "k" || Command =="oink") && !Payload.empty( ) && Level >= 5 )
+            else if( ( Command == "kick" || Command == "k") && !Payload.empty( ) && Level >= 5 )
             {
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
@@ -2632,18 +2632,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( VictimLevel <= 1 || Level >= 9 )
                     {
                         LastMatch->SetDeleteMe( true );
-			if(Command!="oink") {
                         LastMatch->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
 
                         if( !m_GameLoading && !m_GameLoaded )
                             LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
                         else
                             LastMatch->SetLeftCode( PLAYERLEAVE_LOST );
-			} else {
-			    LastMatch->SetLeftReason( m_GHost->m_Language->HasLostConnectionClosedByRemoteHost( ) );
-			    LastMatch->SetLeftCode( PLAYERLEAVE_DISCONNECT );
-			    return true;
-			}
                         if( !m_GameLoading && !m_GameLoaded )
                         {
                             OpenSlot( GetSIDFromPID( LastMatch->GetPID( ) ), false );
