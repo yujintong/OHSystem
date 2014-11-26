@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/ohsystem/ohsystem.png?label=ready&title=Ready)](https://waffle.io/ohsystem/ohsystem)
+
 ![Logo](http://ohsystem.net/storage/img/new_logo.jpg)
 #OpenHosting
 
@@ -21,7 +21,8 @@ the Free Software Foundation, either version 3 of the License, or
 [![Build Status](https://travis-ci.org/OHSystem/OHSystem.svg?branch=master)](https://travis-ci.org/OHSystem/OHSystem)
 [![Build Status](https://drone.io/github.com/OHSystem/ohsystem/status.png)](https://drone.io/github.com/OHSystem/ohsystem/latest)
 [![Project Status](http://stillmaintained.com/OHSystem/ohsystem.png)](http://stillmaintained.com/OHSystem/ohsystem)
-
+[![Stories in Ready](https://badge.waffle.io/ohsystem/ohsystem.png?label=ready&title=Ready)](https://waffle.io/ohsystem/ohsystem)
+[![Throughput Graph](https://graphs.waffle.io/ohsystem/ohsystem/throughput.svg)](https://waffle.io/ohsystem/ohsystem/metrics) 
 ###### Consider a donation to support us and keep up our work, we sometimes need a cup of :coffee:
 [![ScreenShot](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ARP4DEP4E429Y)
 
