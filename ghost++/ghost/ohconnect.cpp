@@ -35,7 +35,7 @@ using namespace std;
 //
 // OHConnect
 //
-OHConnect :: OHConnect( CGHost *nGHost, CBaseGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Game(nGame), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( GetTime() ), m_Room("1"), m_RoomName("OHC ROOM 1"), LastConnectionAttemp( GetTime( ) )
+OHConnect :: OHConnect( CGHost *nGHost, CBaseGame *nGame, string nIP, uint32_t nPort ) : m_GHost( nGHost ), m_Game(nGame), m_Connected( false ), IP( nIP ), Port( nPort ), m_FirstConnect(false), m_LastSendTime(0), m_Socket(new CTCPClient( )), m_Handshake(false), m_ClientID(0), LastPingTime( GetTime() ), m_Room("1"), m_RoomName("OHC ROOM 1"), LastConnectionAttemp( 0 )
 {
 
 }
@@ -79,14 +79,9 @@ string toSend="GET / HTTP/1.1\r\nHost: 5.45.181.151:6973\r\nUpgrade: websocket\r
       m_Socket->PutBytes(toSend);
       m_Socket->DoSendPlain( (fd_set *)send_fd);
     }
-    else {
-      CONSOLE_Print("[OHConnect] Connection check failed, reseting socket");
-      m_Socket->Reset( );
-      m_Handshake = false;
-    }
   }
 
-  if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && GetTime( ) - LastConnectionAttemp > 15 ) {
+  if( !m_Socket->GetConnecting( ) && !m_Socket->GetConnected( ) && ( GetTime( ) - LastConnectionAttemp > 15 || LastConnectionAttemp == 0 ) ) {
     CONSOLE_Print("[OHConnect] Server isn't connected, init a new connection");
     Connect( );
     LastConnectionAttemp = GetTime( );
