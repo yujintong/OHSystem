@@ -2029,14 +2029,21 @@ string CGHost :: GetLODMode( string fullmode ) {
         shortenmode = "ap";
     else if(fullmode == "ardms6omfrulabzm")
         shortenmode = "ar";
-    else if(fullmode == "sds6sofnulboabd3")
-        shortenmode = "chev1";
-    else if(fullmode == "ardms6sofnulboab")
-        shortenmode = "chev2";
+    else if(fullmode == "sds6fnulboabd3")
+        shortenmode = "ohs1";
+    else if(fullmode == "ardms6fnulboab")
+        shortenmode = "ohs2";
     else if(fullmode == "aps6fnulboabssosls")
-        shortenmode = "chev3";
-    else if(fullmode == "sdd5s6soulabbofnfrer")
-        shortenmode = "chev5";
+        shortenmode = "ohs3";
+    else if(fullmode == "sdd5s6ulabbofnfrer")
+        shortenmode = "ohs4";
+    else if(fullmode == "mds6d3scfnulbonm")
+        shortenmode = "ohs5";
+    else if(fullmode == "mds6d2omfnulbo")
+        shortenmode = "o1";
+    else if(fullmode == "ardms6boomfnul")
+        shortenmode = "o2";
+
     return shortenmode;
 }
 
