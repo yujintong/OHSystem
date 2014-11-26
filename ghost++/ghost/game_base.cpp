@@ -3381,25 +3381,22 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
                 switch ( CurrentID )
                 {
-                case 0x00 :
+                case 0x00:
                     Failed = true;
                     break;
-                case 0x01 :
+
+                case 0x01:
+                case 0x02:
+                case 0x04:
+                case 0x05:
+                case 0x1A:
                     n += 1;
                     break;
-                case 0x02 :
-                    n += 1;
-                    break;
-                case 0x03 :
+                case 0x03:
+                case 0x75:
                     n += 2;
                     break;
-                case 0x04 :
-                    n += 1;
-                    break;
-                case 0x05 :
-                    n += 1;
-                    break;
-                case 0x06 :
+                case 0x06:
                     Failed = true;
                     while( n < PacketLength )
                     {
@@ -3416,40 +3413,36 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                     CONSOLE_Print( "[GAME: " + m_GameName + "] player [" + player->GetName( ) + "] is saving the game" );
                     SendAllChat( m_GHost->m_Language->PlayerIsSavingTheGame( player->GetName( ) ) );
                     break;
-                case 0x07 :
+                case 0x07:
                     n += 5;
                     break;
-                case 0x08 :
+                case 0x08:
+                case 0x09:
+		case 0x15:
                     Failed = true;
                     break;
-                case 0x09 :
-                    Failed = true;
-                    break;
-                case 0x10 :
+                case 0x10:
                     n += 15;
                     PlayerActivity = true;
                     break;
-                case 0x11 :
+                case 0x11:
                     n += 23;
                     PlayerActivity = true;
                     break;
-                case 0x12 :
+                case 0x12:
                     n += 31;
                     PlayerActivity = true;
                     break;
-                case 0x13 :
+                case 0x13:
                     n += 39;
                     PlayerActivity = true;
                     break;
-                case 0x14 :
+                case 0x14:
                     n += 44;
                     PlayerActivity = true;
                     break;
-                case 0x15 :
-                    Failed = true;
-                    break;
-                case 0x16 :
-                case 0x17 :
+                case 0x16:
+                case 0x17:
                     if( n + 4 > PacketLength )
                         Failed = true;
                     else
@@ -3462,44 +3455,35 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                     }
                     PlayerActivity = true;
                     break;
-                case 0x18 :
+                case 0x18:
                     n += 3;
                     break;
-                case 0x19 :
+                case 0x19:
+                case 0x62:
+                case 0x68:
                     n += 13;
                     break;
-                case 0x1A :
-                    n += 1;
-                    break;
-                case 0x1B :
+                case 0x1B:
+                case 0x1C:
                     n += 10;
                     PlayerActivity = true;
                     break;
-                case 0x1C :
-                    n += 10;
-                    PlayerActivity = true;
-                    break;
-                case 0x1D :
+                case 0x1D:
+                case 0x21:
                     n += 9;
                     break;
-                case 0x1E :
+                case 0x1E:
                     n += 6;
                     PlayerActivity = true;
                     break;
-                case 0x1F :
+                case 0x1F:
+                case 0x20:
                     Failed = true;
                     break;
-                case 0x20 :
-                    Failed = true;
-                    break;
-                case 0x21 :
-                    n += 9;
-                    break;
-
-                case 0x50 :
+                case 0x50:
                     n += 6;
                     break;
-                case 0x51 :
+                case 0x51:
                     n += 10;
                     if( !m_AllowMapTrading ) {
                         SendAllChat( "["+m_GHost->m_BotManagerName+"] "+ m_GHost->m_Language->PreventUserFromTransferResources( player->GetName( ) ) );
@@ -3511,49 +3495,23 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                         return false;
                     }
                     break;
-                case 0x52 :
+                case 0x52:
+                case 0x53:
+                case 0x54:
+                case 0x55:
+                case 0x56:
+                case 0x57:
+                case 0x58:
+                case 0x59:
+                case 0x5A:
+                case 0x5B:
+                case 0x5C:
+                case 0x5D:
+                case 0x5E:
+                case 0x5F:
                     Failed = true;
                     break;
-                case 0x53 :
-                    Failed = true;
-                    break;
-                case 0x54 :
-                    Failed = true;
-                    break;
-                case 0x55 :
-                    Failed = true;
-                    break;
-                case 0x56 :
-                    Failed = true;
-                    break;
-                case 0x57 :
-                    Failed = true;
-                    break;
-                case 0x58 :
-                    Failed = true;
-                    break;
-                case 0x59 :
-                    Failed = true;
-                    break;
-                case 0x5A :
-                    Failed = true;
-                    break;
-                case 0x5B :
-                    Failed = true;
-                    break;
-                case 0x5C :
-                    Failed = true;
-                    break;
-                case 0x5D :
-                    Failed = true;
-                    break;
-                case 0x5E :
-                    Failed = true;
-                    break;
-                case 0x5F :
-                    Failed = true;
-                    break;
-                case 0x60 :
+                case 0x60:
                 {
                     n += 9;
                     unsigned int j = 0;
@@ -3571,40 +3529,22 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                     ++n;
                 }
                 break;
-                case 0x61 :
+                case 0x61:
+                case 0x66:
+                case 0x67:
                     n += 1;
                     PlayerActivity = true;
                     break;
-                case 0x62 :
-                    n += 13;
-                    break;
-                case 0x63 :
+                case 0x63:
+                case 0x64:
+                case 0x65:
                     n += 9;
                     break;
-                case 0x64 :
-                    n += 9;
-                    break;
-                case 0x65 :
-                    n += 9;
-                    break;
-                case 0x66 :
-                    n += 1;
-                    PlayerActivity = true;
-                    break;
-                case 0x67 :
-                    n += 1;
-                    PlayerActivity = true;
-                    break;
-                case 0x68 :
-                    n += 13;
-                    break;
-                case 0x69 :
+                case 0x69:
+                case 0x6A:
                     n += 17;
                     break;
-                case 0x6A :
-                    n += 17;
-                    break;
-                case 0x6B : // used by W3MMD
+                case 0x6B: // used by W3MMD
                 {
                     ++n;
                     unsigned int j = 0;
@@ -3618,35 +3558,16 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
                     n += 4;
                 }
                 break;
-                case 0x6C :
+                case 0x6C:
+                case 0x6D:
+                case 0x6E:
+                case 0x6F:
+                case 0x70:
+                case 0x71:
+                case 0x72:
+                case 0x73:
+                case 0x74:
                     Failed = true;
-                    break;
-                case 0x6D :
-                    Failed = true;
-                    break;
-                case 0x6E :
-                    Failed = true;
-                    break;
-                case 0x6F :
-                    Failed = true;
-                    break;
-                case 0x70 :
-                    Failed = true;
-                    break;
-                case 0x71 :
-                    Failed = true;
-                    break;
-                case 0x72 :
-                    Failed = true;
-                    break;
-                case 0x73 :
-                    Failed = true;
-                    break;
-                case 0x74 :
-                    Failed = true;
-                    break;
-                case 0x75 :
-                    n += 2;
                     break;
                 default:
                     Failed = true;
