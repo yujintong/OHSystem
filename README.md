@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/ohsystem/ohsystem.png?label=ready&title=Ready)](https://waffle.io/ohsystem/ohsystem)
 ![Logo](http://ohsystem.net/storage/img/new_logo.jpg)
 #OpenHosting
 
