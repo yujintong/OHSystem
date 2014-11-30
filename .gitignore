@@ -10,6 +10,7 @@ ghost++/ghost/Release MySQL/
 ghost++/update_dota_elo/Release/
 ghost++/update_stats/Release/
 ghost++/update_w3mmd_elo/Release/
+ghost++/ghost/statsdota.cpp
 *.sdf
 *.opensdf
 *.suo
