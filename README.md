@@ -3,6 +3,9 @@
 #OpenHosting
 
 OpenHosting is a major modification of the official GHost++ source.
+I recently starting remake the bot on a new base. Follow and track the bot here:
+https://github.com/Grief-Code/ohbot_v2
+Official releases will be still made on this repository, however there is still a main support for the current ghost. But it will become from time to time outdated.
 
 ---
 
