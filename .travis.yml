@@ -7,13 +7,13 @@ branches:
  
 before_script: 
  - sudo apt-get install -qq libboost-all-dev build-essential g++ libmysql++-dev libbz2-dev libgmp3-dev
- - cd ghost++/bncsutil/src/bncsutil 
+ - cd ghost_v1/bncsutil/src/bncsutil 
  - make 
  - sudo make install 
  - cd ../../../StormLib/stormlib 
  - make 
  - sudo make install 
- - cd ../../ghost 
+ - cd ../../../ghost_v2/src/ 
  
 # Change this to your needs
 script: 
