@@ -27,7 +27,6 @@
 #include "language.h"
 #include "socket.h"
 #include "ghostdb.h"
-#include "ghostdbsqlite.h"
 #include "ghostdbmysql.h"
 #include "bnet.h"
 #include "map.h"
@@ -38,7 +37,6 @@
 #include "gpsprotocol.h"
 #include "game_base.h"
 #include "game.h"
-#include "game_admin.h"
 
 #include <signal.h>
 #include <stdlib.h>
@@ -49,43 +47,6 @@
 
 #define __STORMLIB_SELF__
 #include <StormLib/StormLib.h>
-
-/*
-
-#include "ghost.h"
-#include "util.h"
-#include "crc32.h"
-#include "sha1.h"
-#include "csvparser.h"
-#include "config.h"
-#include "language.h"
-#include "socket.h"
-#include "commandpacket.h"
-#include "ghostdb.h"
-#include "ghostdbsqlite.h"
-#include "ghostdbmysql.h"
-#include "bncsutilinterface.h"
-#include "warden.h"
-#include "bnlsprotocol.h"
-#include "bnlsclient.h"
-#include "bnetprotocol.h"
-#include "bnet.h"
-#include "map.h"
-#include "packed.h"
-#include "savegame.h"
-#include "replay.h"
-#include "gameslot.h"
-#include "gameplayer.h"
-#include "gameprotocol.h"
-#include "gpsprotocol.h"
-#include "game_base.h"
-#include "game.h"
-#include "game_admin.h"
-#include "stats.h"
-#include "statsdota.h"
-#include "sqlite3.h"
-
-*/
 
 #ifdef WIN32
  #include <windows.h>
@@ -402,23 +363,11 @@ CGHost :: CGHost( CConfig *CFG )
 	m_CRC->Initialize( );
 	m_SHA = new CSHA1( );
 	m_CurrentGame = NULL;
-	string DBType = CFG->GetString( "db_type", "sqlite3" );
 	CONSOLE_Print( "[GHOST] opening primary database" );
 
-	if( DBType == "mysql" )
-	{
 #ifdef GHOST_MYSQL
 		m_DB = new CGHostDBMySQL( CFG );
-#else
-		CONSOLE_Print( "[GHOST] warning - this binary was not compiled with MySQL database support, using SQLite database instead" );
-		m_DB = new CGHostDBSQLite( CFG );
 #endif
-	}
-	else
-		m_DB = new CGHostDBSQLite( CFG );
-
-	CONSOLE_Print( "[GHOST] opening secondary (local) database" );
-	m_DBLocal = new CGHostDBSQLite( CFG );
 
 	// get a list of local IP addresses
 	// this list is used elsewhere to determine if a player connecting to the bot is local or not
@@ -509,10 +458,6 @@ CGHost :: CGHost( CConfig *CFG )
 	m_Reconnect = CFG->GetInt( "bot_reconnect", 1 ) == 0 ? false : true;
 	m_ReconnectPort = CFG->GetInt( "bot_reconnectport", 6114 );
 	m_DefaultMap = CFG->GetString( "bot_defaultmap", "map" );
-	m_AdminGameCreate = CFG->GetInt( "admingame_create", 0 ) == 0 ? false : true;
-	m_AdminGamePort = CFG->GetInt( "admingame_port", 6113 );
-	m_AdminGamePassword = CFG->GetString( "admingame_password", string( ) );
-	m_AdminGameMap = CFG->GetString( "admingame_map", string( ) );
 	m_LANWar3Version = CFG->GetInt( "lan_war3version", 26 );
 	m_ReplayWar3Version = CFG->GetInt( "replay_war3version", 26 );
 	m_ReplayBuildNumber = CFG->GetInt( "replay_buildnumber", 6059 );
@@ -634,54 +579,11 @@ CGHost :: CGHost( CConfig *CFG )
 	MapCFG.Read( m_MapCFGPath + m_DefaultMap );
 	m_Map = new CMap( this, &MapCFG, m_MapCFGPath + m_DefaultMap );
 
-	if( !m_AdminGameMap.empty( ) )
-	{
-		if( m_AdminGameMap.size( ) < 4 || m_AdminGameMap.substr( m_AdminGameMap.size( ) - 4 ) != ".cfg" )
-		{
-			m_AdminGameMap += ".cfg";
-			CONSOLE_Print( "[GHOST] adding \".cfg\" to default admin game map -> new default is [" + m_AdminGameMap + "]" );
-		}
-
-		CONSOLE_Print( "[GHOST] trying to load default admin game map" );
-		CConfig AdminMapCFG;
-		AdminMapCFG.Read( m_MapCFGPath + m_AdminGameMap );
-		m_AdminMap = new CMap( this, &AdminMapCFG, m_MapCFGPath + m_AdminGameMap );
-
-		if( !m_AdminMap->GetValid( ) )
-		{
-			CONSOLE_Print( "[GHOST] default admin game map isn't valid, using hardcoded admin game map instead" );
-			delete m_AdminMap;
-			m_AdminMap = new CMap( this );
-		}
-	}
-	else
-	{
-		CONSOLE_Print( "[GHOST] using hardcoded admin game map" );
-		m_AdminMap = new CMap( this );
-	}
-
 	m_AutoHostMap = new CMap( *m_Map );
 	m_SaveGame = new CSaveGame( );
 
-	// load the iptocountry data
-
-	LoadIPToCountryData( );
-
-	// create the admin game
-
-	if( m_AdminGameCreate )
-	{
-		CONSOLE_Print( "[GHOST] creating admin game" );
-		m_AdminGame = new CAdminGame( this, m_AdminMap, NULL, m_AdminGamePort, 0, "GHost++ Admin Game", m_AdminGamePassword );
-
-		if( m_AdminGamePort == m_HostPort )
-			CONSOLE_Print( "[GHOST] warning - admingame_port and bot_hostport are set to the same value, you won't be able to host any games" );
-	}
-	else
-		m_AdminGame = NULL;
-
-	if( m_BNETs.empty( ) && !m_AdminGame )
-		CONSOLE_Print( "[GHOST] warning - no battle.net connections found and no admin game created" );
+	if( m_BNETs.empty( ) )
+		CONSOLE_Print( "[GHOST] warning - no battle.net connections found." );
 
 #ifdef GHOST_MYSQL
 	CONSOLE_Print( "[GHOST] GHost++ Version " + m_Version + " (with MySQL support)" );
@@ -706,13 +608,11 @@ CGHost :: ~CGHost( )
 		delete *i;
 
 	delete m_CurrentGame;
-	delete m_AdminGame;
 
         for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
 		delete *i;
 
 	delete m_DB;
-	delete m_DBLocal;
 
 	// warning: we don't delete any entries of m_Callables here because we can't be guaranteed that the associated threads have terminated
 	// this is fine if the program is currently exiting because the OS will clean up after us
@@ -723,7 +623,6 @@ CGHost :: ~CGHost( )
 
 	delete m_Language;
 	delete m_Map;
-	delete m_AdminMap;
 	delete m_AutoHostMap;
 	delete m_SaveGame;
 }
@@ -735,12 +634,6 @@ bool CGHost :: Update( long usecBlock )
 	if( m_DB->HasError( ) )
 	{
 		CONSOLE_Print( "[GHOST] database error - " + m_DB->GetError( ) );
-		return true;
-	}
-
-	if( m_DBLocal->HasError( ) )
-	{
-		CONSOLE_Print( "[GHOST] local database error - " + m_DBLocal->GetError( ) );
 		return true;
 	}
 
@@ -763,13 +656,6 @@ bool CGHost :: Update( long usecBlock )
 			CONSOLE_Print( "[GHOST] deleting current game in preparation for exiting nicely" );
 			delete m_CurrentGame;
 			m_CurrentGame = NULL;
-		}
-
-		if( m_AdminGame )
-		{
-			CONSOLE_Print( "[GHOST] deleting admin game in preparation for exiting nicely" );
-			delete m_AdminGame;
-			m_AdminGame = NULL;
 		}
 
 		if( m_Games.empty( ) )
@@ -859,17 +745,12 @@ bool CGHost :: Update( long usecBlock )
 	if( m_CurrentGame )
 		NumFDs += m_CurrentGame->SetFD( &fd, &send_fd, &nfds );
 
-	// 3. the admin game's server and player sockets
-
-	if( m_AdminGame )
-		NumFDs += m_AdminGame->SetFD( &fd, &send_fd, &nfds );
-
-	// 4. all running games' player sockets
+	// 3. all running games' player sockets
 
         for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
 		NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
 
-	// 5. the GProxy++ reconnect socket(s)
+	// 4. the GProxy++ reconnect socket(s)
 
 	if( m_Reconnect && m_ReconnectSocket )
 	{
@@ -926,7 +807,6 @@ bool CGHost :: Update( long usecBlock )
 		MILLISLEEP( 50 );
 	}
 
-	bool AdminExit = false;
 	bool BNETExit = false;
 
 	// update current game
@@ -947,21 +827,6 @@ bool CGHost :: Update( long usecBlock )
 		}
 		else if( m_CurrentGame )
 			m_CurrentGame->UpdatePost( &send_fd );
-	}
-
-	// update admin game
-
-	if( m_AdminGame )
-	{
-		if( m_AdminGame->Update( &fd, &send_fd ) )
-		{
-			CONSOLE_Print( "[GHOST] deleting admin game" );
-			delete m_AdminGame;
-			m_AdminGame = NULL;
-			AdminExit = true;
-		}
-		else if( m_AdminGame )
-			m_AdminGame->UpdatePost( &send_fd );
 	}
 
 	// update running games
@@ -1173,50 +1038,35 @@ bool CGHost :: Update( long usecBlock )
 		m_LastAutoHostTime = GetTime( );
 	}
 
-	return m_Exiting || AdminExit || BNETExit;
+	return m_Exiting || BNETExit;
 }
 
 void CGHost :: EventBNETConnecting( CBNET *bnet )
 {
-	if( m_AdminGame )
-		m_AdminGame->SendAllChat( m_Language->ConnectingToBNET( bnet->GetServer( ) ) );
-
 	if( m_CurrentGame )
 		m_CurrentGame->SendAllChat( m_Language->ConnectingToBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETConnected( CBNET *bnet )
 {
-	if( m_AdminGame )
-		m_AdminGame->SendAllChat( m_Language->ConnectedToBNET( bnet->GetServer( ) ) );
-
 	if( m_CurrentGame )
 		m_CurrentGame->SendAllChat( m_Language->ConnectedToBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETDisconnected( CBNET *bnet )
 {
-	if( m_AdminGame )
-		m_AdminGame->SendAllChat( m_Language->DisconnectedFromBNET( bnet->GetServer( ) ) );
-
 	if( m_CurrentGame )
 		m_CurrentGame->SendAllChat( m_Language->DisconnectedFromBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETLoggedIn( CBNET *bnet )
 {
-	if( m_AdminGame )
-		m_AdminGame->SendAllChat( m_Language->LoggedInToBNET( bnet->GetServer( ) ) );
-
 	if( m_CurrentGame )
 		m_CurrentGame->SendAllChat( m_Language->LoggedInToBNET( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETGameRefreshed( CBNET *bnet )
 {
-	if( m_AdminGame )
-		m_AdminGame->SendAllChat( m_Language->BNETGameHostingSucceeded( bnet->GetServer( ) ) );
-
 	if( m_CurrentGame )
 		m_CurrentGame->EventGameRefreshed( bnet->GetServer( ) );
 }
@@ -1233,9 +1083,6 @@ void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
 				(*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ), m_CurrentGame->GetCreatorName( ), true );
 		}
 
-		if( m_AdminGame )
-			m_AdminGame->SendAllChat( m_Language->BNETGameHostingFailed( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
-
 		m_CurrentGame->SendAllChat( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
 
 		// we take the easy route and simply close the lobby if a refresh fails
@@ -1251,53 +1098,20 @@ void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
 
 void CGHost :: EventBNETConnectTimedOut( CBNET *bnet )
 {
-	if( m_AdminGame )
-		m_AdminGame->SendAllChat( m_Language->ConnectingToBNETTimedOut( bnet->GetServer( ) ) );
-
 	if( m_CurrentGame )
 		m_CurrentGame->SendAllChat( m_Language->ConnectingToBNETTimedOut( bnet->GetServer( ) ) );
 }
 
 void CGHost :: EventBNETWhisper( CBNET *bnet, string user, string message )
 {
-	if( m_AdminGame )
-	{
-		m_AdminGame->SendAdminChat( "[W: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-		if( m_CurrentGame )
-			m_CurrentGame->SendLocalAdminChat( "[W: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-                for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-			(*i)->SendLocalAdminChat( "[W: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-	}
 }
 
 void CGHost :: EventBNETChat( CBNET *bnet, string user, string message )
 {
-	if( m_AdminGame )
-	{
-		m_AdminGame->SendAdminChat( "[L: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-		if( m_CurrentGame )
-			m_CurrentGame->SendLocalAdminChat( "[L: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-                for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-			(*i)->SendLocalAdminChat( "[L: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-	}
 }
 
 void CGHost :: EventBNETEmote( CBNET *bnet, string user, string message )
 {
-	if( m_AdminGame )
-	{
-		m_AdminGame->SendAdminChat( "[E: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-		if( m_CurrentGame )
-			m_CurrentGame->SendLocalAdminChat( "[E: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-
-                for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i )
-			(*i)->SendLocalAdminChat( "[E: " + bnet->GetServerAlias( ) + "] [" + user + "] " + message );
-	}
 }
 
 void CGHost :: EventGameDeleted( CBaseGame *game )
@@ -1381,7 +1195,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
 	m_MOTDFile = CFG->GetString( "bot_motdfile", "motd.txt" );
 	m_GameLoadedFile = CFG->GetString( "bot_gameloadedfile", "gameloaded.txt" );
 	m_GameOverFile = CFG->GetString( "bot_gameoverfile", "gameover.txt" );
-	m_LocalAdminMessages = CFG->GetInt( "bot_localadminmessages", 1 ) == 0 ? false : true;
 	m_TCPNoDelay = CFG->GetInt( "tcp_nodelay", 0 ) == 0 ? false : true;
 	m_MatchMakingMethod = CFG->GetInt( "bot_matchmakingmethod", 1 );
 	m_MapGameType = CFG->GetUInt( "bot_mapgametype", 0 );
@@ -1457,73 +1270,6 @@ void CGHost :: ExtractScripts( )
 		CONSOLE_Print( "[GHOST] warning - unable to load MPQ file [" + PatchMPQFileName + "] - error code " + UTIL_ToString( GetLastError( ) ) );
 }
 
-void CGHost :: LoadIPToCountryData( )
-{
-	ifstream in;
-	in.open( "ip-to-country.csv" );
-
-	if( in.fail( ) )
-		CONSOLE_Print( "[GHOST] warning - unable to read file [ip-to-country.csv], iptocountry data not loaded" );
-	else
-	{
-		CONSOLE_Print( "[GHOST] started loading [ip-to-country.csv]" );
-
-		// the begin and commit statements are optimizations
-		// we're about to insert ~4 MB of data into the database so if we allow the database to treat each insert as a transaction it will take a LONG time
-		// todotodo: handle begin/commit failures a bit more gracefully
-
-		if( !m_DBLocal->Begin( ) )
-			CONSOLE_Print( "[GHOST] warning - failed to begin local database transaction, iptocountry data not loaded" );
-		else
-		{
-			unsigned char Percent = 0;
-			string Line;
-			string IP1;
-			string IP2;
-			string Country;
-			CSVParser parser;
-
-			// get length of file for the progress meter
-
-			in.seekg( 0, ios :: end );
-			uint32_t FileLength = in.tellg( );
-			in.seekg( 0, ios :: beg );
-
-			while( !in.eof( ) )
-			{
-				getline( in, Line );
-
-				if( Line.empty( ) )
-					continue;
-
-				parser << Line;
-				parser >> IP1;
-				parser >> IP2;
-				parser >> Country;
-				m_DBLocal->FromAdd( UTIL_ToUInt32( IP1 ), UTIL_ToUInt32( IP2 ), Country );
-
-				// it's probably going to take awhile to load the iptocountry data (~10 seconds on my 3.2 GHz P4 when using SQLite3)
-				// so let's print a progress meter just to keep the user from getting worried
-
-				unsigned char NewPercent = (unsigned char)( (float)in.tellg( ) / FileLength * 100 );
-
-				if( NewPercent != Percent && NewPercent % 10 == 0 )
-				{
-					Percent = NewPercent;
-					CONSOLE_Print( "[GHOST] iptocountry data: " + UTIL_ToString( Percent ) + "% loaded" );
-				}
-			}
-
-			if( !m_DBLocal->Commit( ) )
-				CONSOLE_Print( "[GHOST] warning - failed to commit local database transaction, iptocountry data not loaded" );
-			else
-				CONSOLE_Print( "[GHOST] finished loading [ip-to-country.csv]" );
-		}
-
-		in.close( );
-	}
-}
-
 void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, string gameName, string ownerName, string creatorName, string creatorServer, bool whisper )
 {
 	if( !m_Enabled )
@@ -1533,9 +1279,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 			if( (*i)->GetServer( ) == creatorServer )
 				(*i)->QueueChatCommand( m_Language->UnableToCreateGameDisabled( gameName ), creatorName, whisper );
 		}
-
-		if( m_AdminGame )
-			m_AdminGame->SendAllChat( m_Language->UnableToCreateGameDisabled( gameName ) );
 
 		return;
 	}
@@ -1548,9 +1291,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 				(*i)->QueueChatCommand( m_Language->UnableToCreateGameNameTooLong( gameName ), creatorName, whisper );
 		}
 
-		if( m_AdminGame )
-			m_AdminGame->SendAllChat( m_Language->UnableToCreateGameNameTooLong( gameName ) );
-
 		return;
 	}
 
@@ -1561,9 +1301,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 			if( (*i)->GetServer( ) == creatorServer )
 				(*i)->QueueChatCommand( m_Language->UnableToCreateGameInvalidMap( gameName ), creatorName, whisper );
 		}
-
-		if( m_AdminGame )
-			m_AdminGame->SendAllChat( m_Language->UnableToCreateGameInvalidMap( gameName ) );
 
 		return;
 	}
@@ -1577,9 +1314,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 				if( (*i)->GetServer( ) == creatorServer )
 					(*i)->QueueChatCommand( m_Language->UnableToCreateGameInvalidSaveGame( gameName ), creatorName, whisper );
 			}
-
-			if( m_AdminGame )
-				m_AdminGame->SendAllChat( m_Language->UnableToCreateGameInvalidSaveGame( gameName ) );
 
 			return;
 		}
@@ -1599,9 +1333,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 					(*i)->QueueChatCommand( m_Language->UnableToCreateGameSaveGameMapMismatch( gameName ), creatorName, whisper );
 			}
 
-			if( m_AdminGame )
-				m_AdminGame->SendAllChat( m_Language->UnableToCreateGameSaveGameMapMismatch( gameName ) );
-
 			return;
 		}
 
@@ -1612,9 +1343,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 				if( (*i)->GetServer( ) == creatorServer )
 					(*i)->QueueChatCommand( m_Language->UnableToCreateGameMustEnforceFirst( gameName ), creatorName, whisper );
 			}
-
-			if( m_AdminGame )
-				m_AdminGame->SendAllChat( m_Language->UnableToCreateGameMustEnforceFirst( gameName ) );
 
 			return;
 		}
@@ -1628,9 +1356,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 				(*i)->QueueChatCommand( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ), creatorName, whisper );
 		}
 
-		if( m_AdminGame )
-			m_AdminGame->SendAllChat( m_Language->UnableToCreateGameAnotherGameInLobby( gameName, m_CurrentGame->GetDescription( ) ) );
-
 		return;
 	}
 
@@ -1641,9 +1366,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 			if( (*i)->GetServer( ) == creatorServer )
 				(*i)->QueueChatCommand( m_Language->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ), creatorName, whisper );
 		}
-
-		if( m_AdminGame )
-			m_AdminGame->SendAllChat( m_Language->UnableToCreateGameMaxGamesReached( gameName, UTIL_ToString( m_MaxGames ) ) );
 
 		return;
 	}
@@ -1688,14 +1410,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 			(*i)->QueueGameCreate( gameState, gameName, string( ), map, m_SaveGame, m_CurrentGame->GetHostCounter( ) );
 		else
 			(*i)->QueueGameCreate( gameState, gameName, string( ), map, NULL, m_CurrentGame->GetHostCounter( ) );
-	}
-
-	if( m_AdminGame )
-	{
-		if( gameState == GAME_PRIVATE )
-			m_AdminGame->SendAllChat( m_Language->CreatingPrivateGame( gameName, ownerName ) );
-		else if( gameState == GAME_PUBLIC )
-			m_AdminGame->SendAllChat( m_Language->CreatingPublicGame( gameName, ownerName ) );
 	}
 
 	// if we're creating a private game we don't need to send any game refresh messages so we can rejoin the chat immediately
