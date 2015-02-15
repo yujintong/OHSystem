@@ -632,6 +632,9 @@ CGHost :: ~CGHost( )
 
 bool CGHost :: Update( long usecBlock )
 {
+
+	m_StartTicks = GetTicks();
+
 	// todotodo: do we really want to shutdown if there's a database error? is there any way to recover from this?
 
 	if( m_DB->HasError( ) )
@@ -1041,6 +1044,26 @@ bool CGHost :: Update( long usecBlock )
 		m_LastAutoHostTime = GetTime( );
 	}
 
+	m_EndTicks = GetTicks();
+	m_Sampler++;
+	uint32_t SpreadTicks = m_EndTicks - m_StartTicks;
+	if(SpreadTicks > m_MaxTicks) {
+		m_MaxTicks = SpreadTicks;
+	}
+	if(SpreadTicks < m_MinTicks) {
+		m_MinTicks = SpreadTicks;
+	}
+	m_TicksCollection += SpreadTicks;
+	if(GetTicks() - m_TicksCollectionTimer >= 60000) {
+        	m_AVGTicks = m_TicksCollection/m_Sampler;
+        	m_TicksCollectionTimer = GetTicks();
+        	CONSOLE_Print("[OHSystem-Performance-Check] AVGTicks: " + UTIL_ToString(m_AVGTicks, 0) + "ms | MaxTicks: " + UTIL_ToString(m_MaxTicks) + "ms | MinTicks: " + UTIL_ToString(m_MinTicks) + "ms | Updates: " + UTIL_ToString(m_Sampler) );
+		CONSOLE_Print("[OHSystem-Performance-Check] " + m_DB->GetStatus( ));
+        	m_MinTicks = -1;
+       		m_MaxTicks = 0;
+        	m_TicksCollection = 0;
+        	m_Sampler = 0;
+    	}
 	return m_Exiting || BNETExit;
 }
 
