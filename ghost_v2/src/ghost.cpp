@@ -46,7 +46,7 @@
 #endif
 
 #define __STORMLIB_SELF__
-
+#include <StormLib/StormLib.h>
 
 #ifdef WIN32
  #include <windows.h>
