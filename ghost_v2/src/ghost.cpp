@@ -46,7 +46,7 @@
 #endif
 
 #define __STORMLIB_SELF__
-#include <StormLib/StormLib.h>
+
 
 #ifdef WIN32
  #include <windows.h>
@@ -194,16 +194,19 @@ int main( int argc, char **argv )
 {
 	srand( time( NULL ) );
 
-	gCFGFile = "ghost.cfg";
-
 	if( argc > 1 && argv[1] )
 		gCFGFile = argv[1];
 
-	// read config file
+	CONSOLE_Print("***************************************************************************************");
+	CONSOLE_Print("**                      WELCOME TO THE OHSYSTEM BOT V2                               **");
+	CONSOLE_Print("**       PLEASE DO NOT REMOVE ANY COPYRIGHT NOTICE TO RESPECT THE PROJECT            **");
+	CONSOLE_Print("**       ----------------------------------------------------------------            **");
+	CONSOLE_Print("**        For any questions and required support use our git repository              **");
+	CONSOLE_Print("**                    https://github.com/OHSystem/OHSystem                           **");
+	CONSOLE_Print("***************************************************************************************");
 
 	CConfig CFG;
 	CFG.Read( "default.cfg" );
-	CFG.Read( gCFGFile );
 	gLogFile = CFG.GetString( "bot_log", string( ) );
 	gLogMethod = CFG.GetInt( "bot_logmethod", 1 );
 
@@ -1207,7 +1210,6 @@ void CGHost :: ExtractScripts( )
 
 	if( SFileOpenArchive( PatchMPQFileName.c_str( ), 0, MPQ_OPEN_FORCE_MPQ_V1, &PatchMPQ ) )
 	{
-		CONSOLE_Print( "[GHOST] loading MPQ file [" + PatchMPQFileName + "]" );
 		HANDLE SubFile;
 
 		// common.j
@@ -1223,7 +1225,6 @@ void CGHost :: ExtractScripts( )
 
 				if( SFileReadFile( SubFile, SubFileData, FileLength, &BytesRead ) )
 				{
-					CONSOLE_Print( "[GHOST] extracting Scripts\\common.j from MPQ file to [" + m_MapCFGPath + "common.j]" );
 					UTIL_FileWrite( m_MapCFGPath + "common.j", (unsigned char *)SubFileData, BytesRead );
 				}
 				else
@@ -1250,7 +1251,6 @@ void CGHost :: ExtractScripts( )
 
 				if( SFileReadFile( SubFile, SubFileData, FileLength, &BytesRead ) )
 				{
-					CONSOLE_Print( "[GHOST] extracting Scripts\\blizzard.j from MPQ file to [" + m_MapCFGPath + "blizzard.j]" );
 					UTIL_FileWrite( m_MapCFGPath + "blizzard.j", (unsigned char *)SubFileData, BytesRead );
 				}
 				else
