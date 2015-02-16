@@ -268,6 +268,7 @@ public:
 	virtual void DeleteVirtualHost( );
 	virtual void CreateFakePlayer( );
 	virtual void DeleteFakePlayer( );
+	virtual bool IsDenied(string name, string ip);
 };
 
 #endif

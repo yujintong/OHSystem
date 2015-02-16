@@ -1617,6 +1617,15 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 		return;
 	}
 
+	// check if the new player was already denied
+	// TODO: put the player into a virtual lobby on hold, and later redirect him back into the new lobby
+	// Sidenote: put virtual lobbys in ghost.cpp instead of gamebase
+	if( IsDenied(joinPlayer->GetName(), potential->GetExternalIPString()) ) {
+		potential->Send( m_Protocol->SEND_W3GS_REJECTJOIN( REJECTJOIN_FULL ) );
+                potential->SetDeleteMe( true );
+                return;
+	}
+
 	// identify their joined realm
 	// this is only possible because when we send a game refresh via LAN or battle.net we encode an ID value in the 4 most significant bits of the host counter
 	// the client sends the host counter when it joins so we can extract the ID value here
@@ -4592,4 +4601,19 @@ void CBaseGame :: DeleteFakePlayer( )
 	SendAll( m_Protocol->SEND_W3GS_PLAYERLEAVE_OTHERS( m_FakePlayerPID, PLAYERLEAVE_LOBBY ) );
 	SendAllSlotInfo( );
 	m_FakePlayerPID = 255;
+}
+
+bool CBaseGame :: IsDenied( string name, string ip) {
+	transform( name.begin( ), name.end( ), name.begin( ), (int(*)(int))tolower );
+
+	bool isDenied = false;
+
+	for( vector<DeniedPlayer> :: iterator i = DeniedPlayers.begin( ); i != DeniedPlayers.end( ); ++i )
+        {
+		if((*i).name == name || (*i).name.find(name) != string::npos || (*i).ip == ip) {
+			isDenied = true;
+			CONSOLE_Print("Player ["+name+"] tried to join the game, but is denied for this lobby.");
+		}
+	}
+	return isDenied;
 }
