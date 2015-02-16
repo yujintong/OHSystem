@@ -41,6 +41,8 @@ class CLanguage;
 class CMap;
 class CSaveGame;
 class CConfig;
+class Logger;
+class Log;
 
 class CGHost
 {
@@ -55,6 +57,7 @@ private:
 	uint32_t m_Sampler;
 
 public:
+	Logger* OHSLogger;
 	CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
 	CTCPServer *m_ReconnectSocket;			// listening socket for GProxy++ reliable reconnects
 	vector<CTCPSocket *> m_ReconnectSockets;// vector of sockets attempting to reconnect (connected but not identified yet)

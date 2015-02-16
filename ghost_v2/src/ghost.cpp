@@ -37,6 +37,7 @@
 #include "gpsprotocol.h"
 #include "game_base.h"
 #include "game.h"
+#include "modules/logger.h"
 
 #include <signal.h>
 #include <stdlib.h>
@@ -357,6 +358,8 @@ int main( int argc, char **argv )
 
 CGHost :: CGHost( CConfig *CFG )
 {
+	OHSLogger = new Logger();
+
 	m_UDPSocket = new CUDPSocket( );
 	m_UDPSocket->SetBroadcastTarget( CFG->GetString( "udp_broadcasttarget", string( ) ) );
 	m_UDPSocket->SetDontRoute( CFG->GetInt( "udp_dontroute", 0 ) == 0 ? false : true );
