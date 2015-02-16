@@ -44,6 +44,16 @@ class CConfig;
 
 class CGHost
 {
+private:
+	uint32_t m_StartTicks;
+	uint32_t m_EndTicks;
+	uint32_t m_MaxTicks;
+	uint32_t m_MinTicks;
+	float m_AVGTicks;
+	uint32_t m_TicksCollection;
+	uint32_t m_TicksCollectionTimer;
+	uint32_t m_Sampler;
+
 public:
 	CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
 	CTCPServer *m_ReconnectSocket;			// listening socket for GProxy++ reliable reconnects

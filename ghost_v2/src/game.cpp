@@ -894,6 +894,43 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 				SendAllChat( m_GHost->m_DB->GetStatus( ) );
 
 			//
+			// !DENY
+			//
+
+			else if( Command == "deny" && !m_GameLoading && !m_GameLoaded) {
+
+				CGamePlayer *LastMatch = NULL;
+				uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
+                                if( Matches == 0 )
+				{
+                                        DeniedPlayer toBeDenied;
+                                        toBeDenied.name = Payload;
+                                        toBeDenied.ip   = "";
+                                        toBeDenied.time = GetTime();
+                                        DeniedPlayers.push_back(toBeDenied);
+
+                                        SendAllChat( "Player ["+player->GetName()+"] denied a pattern: "+Payload);
+				}
+                                else if( Matches == 1 )
+                                {
+					DeniedPlayer toBeDenied;
+					toBeDenied.name = LastMatch->GetName();
+					toBeDenied.ip   = LastMatch->GetExternalIPString( );
+					toBeDenied.time = GetTime();
+					DeniedPlayers.push_back(toBeDenied);
+
+                                        LastMatch->SetDeleteMe( true );
+                                        LastMatch->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
+                                        LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
+                                        OpenSlot( GetSIDFromPID( LastMatch->GetPID( ) ), false );
+
+					SendAllChat("Player ["+player->GetName()+"] denied player ["+LastMatch->GetName()+"] for the current game.");
+				}
+                                else
+                                        SendAllChat( m_GHost->m_Language->UnableToStartDownloadFoundMoreThanOneMatch( Payload ) );
+			}
+
+			//
 			// !DOWNLOAD
 			// !DL
 			//

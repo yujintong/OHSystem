@@ -26,6 +26,11 @@ class CCommandPacket;
 class CGameProtocol;
 class CGame;
 class CIncomingJoinPlayer;
+struct DeniedPlayer {
+	string name;
+	string ip;
+	uint32_t time;
+};
 
 //
 // CPotentialPlayer
