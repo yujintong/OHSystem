@@ -1250,6 +1250,7 @@ bool CGHost :: Update( long usecBlock )
         m_AVGTicks = m_TicksCollection/m_Sampler;
         m_TicksCollectionTimer = GetTicks();
         CONSOLE_Print("[OHSystem-Performance-Check] AVGTicks: "+UTIL_ToString(m_AVGTicks, 0)+"ms | MaxTicks: "+UTIL_ToString(m_MaxTicks)+"ms | MinTicks: "+UTIL_ToString(m_MinTicks)+"ms | Updates: "+UTIL_ToString(m_Sampler));
+        CONSOLE_Print("[OHSystem-Performance-CHeck] MySQL: "+m_DB->GetStatus( ));
         m_MinTicks = -1;
         m_MaxTicks = 0;
         m_TicksCollection = 0;
