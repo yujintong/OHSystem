@@ -44,6 +44,15 @@ class CConfig;
 class Logger;
 class Log;
 
+
+struct GProxyReconnector {
+	CTCPSocket *socket;
+	unsigned char PID;
+	uint32_t ReconnectKey;
+	uint32_t LastPacket;
+	uint32_t PostedTime;
+};
+
 class CGHost
 {
 private:
@@ -67,9 +76,12 @@ public:
 	vector<CBNET *> m_BNETs;				// all our battle.net connections (there can be more than one)
 	CBaseGame *m_CurrentGame;				// this game is still in the lobby state
 	vector<CBaseGame *> m_Games;			// these games are in progress
+	boost::thread_group m_GameThreads;		// the threads for games in progress and stuff
+	boost::mutex m_GamesMutex;
 	CGHostDB *m_DB;							// database
 	CGHostDB *m_DBLocal;					// local database (for temporary data)
 	vector<CBaseCallable *> m_Callables;	// vector of orphaned callables waiting to die
+	boost::mutex m_CallablesMutex;
 	vector<BYTEARRAY> m_LocalAddresses;		// vector of local IP addresses
 	CLanguage *m_Language;					// language
 	CMap *m_Map;							// the currently loaded map
@@ -138,6 +150,8 @@ public:
 	uint32_t m_ReplayBuildNumber;			// config value: replay build number (for saving replays)
 	bool m_TCPNoDelay;						// config value: use Nagle's algorithm or not
 	uint32_t m_MatchMakingMethod;			// config value: the matchmaking method
+	vector<GProxyReconnector *> m_PendingReconnects;
+	boost::mutex m_ReconnectMutex;
 	uint32_t m_MapGameType;                 // config value: the MapGameType overwrite (aka: refresh hack)
 
 	CGHost( CConfig *CFG );

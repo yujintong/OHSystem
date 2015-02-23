@@ -126,10 +126,21 @@ protected:
 	bool m_AutoSave;								// if we should auto save the game before someone disconnects
 	bool m_MatchMaking;								// if matchmaking mode is enabled
 	vector<DeniedPlayer> DeniedPlayers;
+	int m_DoDelete;									// notifies thread to exit
+	uint32_t m_LastReconnectHandleTime;				// last time we tried to handle GProxy reconnects
+
+public:
+	vector<string> m_DoSayGames;					// vector of strings we should announce to the current game
+	boost::mutex m_SayGamesMutex;					// mutex for the above vector
+ 
 public:
 	CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer );
 	virtual ~CBaseGame( );
 
+
+	virtual void loop( );
+	virtual void doDelete( );
+	virtual bool readyDelete( );
 	virtual vector<CGameSlot> GetEnforceSlots( )	{ return m_EnforceSlots; }
 	virtual vector<PIDPlayer> GetEnforcePlayers( )	{ return m_EnforcePlayers; }
 	virtual CSaveGame *GetSaveGame( )				{ return m_SaveGame; }
