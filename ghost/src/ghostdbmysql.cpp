@@ -116,7 +116,6 @@ string CGHostDBMySQL :: GetStatus( )
 {
     //DEBUG OPTION
     //return "DB STATUS --- Connections: " + UTIL_ToString( m_IdleConnections.size( ) ) + "/" + UTIL_ToString( m_NumConnections ) + " idle. Outstanding callables: " + UTIL_ToString( m_OutstandingCallables ) + ".";
-    m_Name.clear( );
     return "DB STATUS --- Connections: " + UTIL_ToString( m_IdleConnections.size( ) ) + "/" + UTIL_ToString( m_NumConnections ) + " idle. Outstanding callables: " + UTIL_ToString( m_OutstandingCallables ) + ".";
 }
 
@@ -200,7 +199,6 @@ CCallableRegAdd *CGHostDBMySQL :: ThreadedRegAdd( string user, string server, st
     CCallableRegAdd *Callable = new CMySQLCallableRegAdd( user, server, mail, password, type, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "reg" );
     return Callable;
 }
 
@@ -214,7 +212,6 @@ CCallableStatsSystem *CGHostDBMySQL :: ThreadedStatsSystem( string user, string 
     CCallableStatsSystem *Callable = new CMySQLCallableStatsSystem( user, input, one, type, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "stats" );
     return Callable;
 }
 
@@ -228,7 +225,6 @@ CCallablePWCheck *CGHostDBMySQL :: ThreadedPWCheck( string user )
     CCallablePWCheck *Callable = new CMySQLCallablePWCheck( user, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "pw" );
     return Callable;
 }
 
@@ -242,7 +238,6 @@ CCallablePassCheck *CGHostDBMySQL :: ThreadedPassCheck( string user, string pass
     CCallablePassCheck *Callable = new CMySQLCallablePassCheck( user, pass, st, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "pass" );
     return Callable;
 }
 
@@ -256,7 +251,6 @@ CCallablepm *CGHostDBMySQL :: Threadedpm( string user, string listener, uint32_t
     CCallablepm *Callable = new CMySQLCallablepm( user, listener, status, message, type, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "pm" );
     return Callable;
 }
 
@@ -270,7 +264,6 @@ CCallablePList *CGHostDBMySQL :: ThreadedPList( string server )
     CCallablePList *Callable = new CMySQLCallablePList( server, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "plist" );
     return Callable;
 }
 
@@ -284,7 +277,6 @@ CCallableFlameList *CGHostDBMySQL :: ThreadedFlameList( )
     CCallableFlameList *Callable = new CMySQLCallableFlameList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "flame" );
     return Callable;
 }
 
@@ -298,7 +290,6 @@ CCallableForcedGProxyList *CGHostDBMySQL :: ThreadedForcedGProxyList( )
     CCallableForcedGProxyList *Callable = new CMySQLCallableForcedGProxyList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "flame" );
     return Callable;
 }
 
@@ -312,7 +303,6 @@ CCallableAliasList *CGHostDBMySQL :: ThreadedAliasList( )
     CCallableAliasList *Callable = new CMySQLCallableAliasList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "Alias" );
     return Callable;
 }
 
@@ -326,7 +316,6 @@ CCallableDeniedNamesList *CGHostDBMySQL :: ThreadedDeniedNamesList( )
     CCallableDeniedNamesList *Callable = new CMySQLCallableDeniedNamesList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "deniednames" );
     return Callable;
 }
 
@@ -340,7 +329,6 @@ CCallableAnnounceList *CGHostDBMySQL :: ThreadedAnnounceList( )
     CCallableAnnounceList *Callable = new CMySQLCallableAnnounceList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "AnnounceList" );
     return Callable;
 }
 
@@ -354,7 +342,6 @@ CCallableDCountryList *CGHostDBMySQL :: ThreadedDCountryList( )
     CCallableDCountryList *Callable = new CMySQLCallableDCountryList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "countrylist" );
     return Callable;
 }
 
@@ -368,7 +355,6 @@ CCallableStoreLog *CGHostDBMySQL :: ThreadedStoreLog( uint32_t chatid, string ga
     CCallableStoreLog *Callable =new CMySQLCallableStoreLog( chatid, game, admin, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "store" );
     return Callable;
 }
 
@@ -382,7 +368,6 @@ CCallablegs *CGHostDBMySQL :: Threadedgs( uint32_t chatid, string gn, uint32_t s
     CCallablegs *Callable =new CMySQLCallablegs( chatid, gn, st, gametype, gamealias, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "gs" );
     return Callable;
 }
 
@@ -513,7 +498,6 @@ CCallableTBRemove *CGHostDBMySQL :: ThreadedTBRemove( string server )
     CCallableTBRemove *Callable = new CMySQLCallableTBRemove( server, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "tbr" );
     return Callable;
 }
 
@@ -527,7 +511,6 @@ CCallableCommandList *CGHostDBMySQL :: ThreadedCommandList( )
     CCallableCommandList *Callable = new CMySQLCallableCommandList( Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "commandlist" );
     return Callable;
 }
 
@@ -620,7 +603,6 @@ CCallableInboxSummaryCheck *CGHostDBMySQL :: ThreadedInboxSummaryCheck( string n
     CCallableInboxSummaryCheck *Callable = new CMySQLCallableInboxSummaryCheck( name, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
     ++m_OutstandingCallables;
-    m_Name.push_back( "inbox" );
     return Callable;
 }
 
@@ -699,7 +681,6 @@ CCallableConnectCheck *CGHostDBMySQL :: ThreadedConnectCheck( string name, uint3
 
     CCallableConnectCheck *Callable = new CMySQLCallableConnectCheck( name, sessionkey, Connection, m_BotID, m_Server, m_Database, m_User, m_Password, m_Port );
     CreateThread( Callable );
-    m_Name.push_back("WC3Connect");
     ++m_OutstandingCallables;
     return Callable;
 }

@@ -916,7 +916,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
         if( m_Socket->GetError( ) == ECONNRESET && GetTime( ) - m_LastConnectionAttemptTime <= 15 )
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - you are probably using an IP temporarilythe  banned from battle.net" );
 
-        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 2 ) ) );
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
         m_GHost->EventBNETDisconnected( this );
         delete m_BNLSClient;
@@ -953,7 +952,6 @@ bool CBNET :: Update( void *fd, void *send_fd )
         // the socket is connected and everything appears to be working properly
 
         if( GetTime() - LastUpdateTime >= 10) {
-            m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
             LastUpdateTime = GetTime();
         }
 
@@ -1055,14 +1053,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
             while( !m_OutPackets.empty( ) )
                 m_OutPackets.pop( );
 
-            m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 1 ) ) );
             return m_Exiting;
         }
         else if( GetTime( ) - m_LastConnectionAttemptTime >= 15 )
         {
             // the connection attempt timed out (15 seconds)
 
-            m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 3 ) ) );
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] connect timed out" );
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
             m_GHost->EventBNETConnectTimedOut( this );
@@ -1302,23 +1298,18 @@ void CBNET :: ProcessPackets( )
                     {
                     case CBNETProtocol :: KR_ROC_KEY_IN_USE:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - ROC CD key in use by user [" + m_Protocol->GetKeyStateDescription( ) + "], disconnecting" );
-                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 4 ) ) );
                         break;
                     case CBNETProtocol :: KR_TFT_KEY_IN_USE:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - TFT CD key in use by user [" + m_Protocol->GetKeyStateDescription( ) + "], disconnecting" );
-                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 5 ) ) );
                         break;
                     case CBNETProtocol :: KR_OLD_GAME_VERSION:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - game version is too old, disconnecting" );
-                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 7 ) ) );
                         break;
                     case CBNETProtocol :: KR_INVALID_VERSION:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - game version is invalid, disconnecting" );
-                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 7 ) ) );
                         break;
                     default:
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - cd keys not accepted, disconnecting" );
-                        m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 8) ) );
                         break;
                     }
 
@@ -1354,7 +1345,6 @@ void CBNET :: ProcessPackets( )
                 else
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - invalid username, disconnecting" );
-                    m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 6 ) ) );
                     m_Socket->Disconnect( );
                     delete Packet;
                     return;
@@ -1378,7 +1368,6 @@ void CBNET :: ProcessPackets( )
                 else
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon failed - invalid password, disconnecting" );
-                    m_BotStatusUpdate.push_back( BotStatusUpdate( string( ), m_GHost->m_DB->ThreadedBotStatusUpdate(m_ServerAlias, 6 ) ) );
 
                     // try to figure out if the user might be using the wrong logon type since too many people are confused by this
 
