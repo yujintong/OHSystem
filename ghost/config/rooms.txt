@@ -1,0 +1,3894 @@
+589876	 Garena CS1.6 Tournament Room
+589883	 WC3 ROC USA Room
+589884	 WC3 ROC International Room
+589885	 WC3 ROC Australia Room 
+589886	 WC3 ROC ASEAN Room
+589888	 WC3 ROC South America Room
+589889	 Garena ROC Tournament Room
+589890	 WC3 ROC Europe Room 
+589931	 North America DotA Room 02
+589932	 North America DotA Room 01
+589942	 [del]Sheep Tag Room
+589949	 [del]International RPG Room
+589951	 International DotA Room
+589955	 South America RPG Room
+589963	 Europe DotA Clan War Room 1
+589975	 Taiwan ESM Clan War Room
+589977	 Canada Room
+589978	 USA Room
+589985	 India Room
+589986	 International Pro 1v1 Room
+589987	 International Room
+589989	 Australia Room
+589990	 Singapore Room
+589995	 [del]Hangar Network TFT Room
+590017	 Europe Room 07
+590018	 Bulgaria Room
+590019	 Sweden Room
+590021	 CoD4 1.7 Russia Room 01
+590067	 Romania DotA Room 18
+590068	 Romania DotA Room 19
+590069	 Romania DotA Room 20
+590070	 Romania DotA Room 21
+590192	 China-Overseas Nobu Room
+590195	 ASEAN DotA Room 03
+590198	 IHRDL Room
+590215	 Russia Room 05
+590223	 1.7 Europe Room 02
+590369	 [del]Moderator Gathering Room
+590387	 DDayWorld Room 
+590390	 South America DotA High Level Room
+590399	 Everstill Room
+590401	 Castle Fight Room
+590513	 Romania DotA Room 11
+590555	 MCC Room
+590594	 Hellfire War Room
+590604	 Europe Room
+590616	 Europe DotA Clan War Room 2
+590620	 DotaInvite Room
+590628	 Colombia DotA Room 04
+590629	 Colombia DotA Room 03
+590631	 China-Overseas Sanguo Room
+590632	 China-Overseas DotA Room
+590633	 Caribbean DotA Room
+590650	 ASEAN Vampirism Room
+65542	 Europe DotA Room 24
+983103	 Brazil DotA Room 30
+983108	 1.20 China Nobu Room 02
+983109	 1.20 China Nobu Room 01
+983110	 1.20 China 3C-ORC-AI Room 01
+983111	 1.20 China 3C-ORC-AI Room 02
+983112	 1.20 China Chenghai 3C Room 01
+983113	 1.20 China Chenghai 3C Room 02
+983153	 QiLu NetCom 1.0 Scene Room 01
+983154	 QiLu NetCom 1.0 Arab Room 01
+983155	 QiLu NetCom 1.0 Dual Room 01
+983156	 QiLu NetCom 1.0c Room 01
+983157	 QiLu NetCom Room
+983159	 QiLu NetCom Room 01
+983162	 QiLu NetCom Room 01
+983166	 QiLu NetCom Room 01
+983168	 QiLu NetCom Room 01
+983170	 HLTV Room 01
+983171	 HLTV Room 02
+983172	 QiLu NetCom Room 01
+983174	 HLTV Room 02
+983175	 HLTV Room 01
+983176	 QiLu NetCom Room 01
+983180	 QiLu 1.22 RPG Room
+983181	 QiLu1.02 RPG room
+983197	 QiLu NetCom 1.22 Fast Room 01
+983198	 QiLu NetCom 1.20 Fast Room 01
+65543	 AOE II: The Conquerors Europe 1v1 Room v1.0C
+65544	 AOE II: The Conquerors ASEAN 1v1 Room
+65545	 AOE II: The Conquerors International 1v1 Room
+65546	 AOE2: The Conquerors Brazil Room
+65548	 AOE: The Rise of Rome International 1v1 Room
+65549	 AOE: The Rise of Rome ASEAN 1v1 Room
+65550	 AOE1: The Rise of Rome Brazil Room
+65551	 AOE: The Rise of Rome Europe 1v1 Room 01
+65552	 North America Room
+65553	 Philippines Room
+65554	 International Room
+65555	 Oceania Room
+65556	 ASEAN Room
+65558	 South America Room
+65559	 Europe Room
+65560	 1.7 Taiwan Room
+65561	 1.7 Malaysia Room 01
+65562	 1.7 North America Room
+65563	 1.7 Philippines Room
+65565	 1.7 India Room
+65566	 1.7 International Room
+65567	 1.7 Oceania Room
+65568	 1.7 ASEAN Room
+65572	 Malaysia Starcraft Room
+65574	 CS 1.6 Malaysia Tournament Room
+65575	 CS 1.6 Malaysia Room 02
+65576	 CS 1.6 Pakistan Room
+65656	 Romania DotA Room 15
+65691	 [del]DotA Beta Room
+65699	 ASEAN DotA Room 02
+65724	 GosuArena Seasonal Tournament Room
+65729	 Italian Inhouse League Room
+65733	 Malaysia Room 05
+65750	 Russia Room 02
+65752	 [del]Sweden Dotti DotA Room
+65754	 Taiwan ESM Room
+65766	 TriniGamers AOE II Room
+65767	 Age of Empires I: The Rise of Rome Taiwan Room
+65768	 TriniGamers COD4 Room
+65769	 TriniGamers CSS Room
+65770	 TriniGamers SCBW Room
+65773	 TriniGamers CS1.6 Room
+65774	 CS 1.6 Arabia Room
+65775	 CS 1.6 Bulgaria Room
+65776	 Brasil DotA Orkut Room 02
+65862	 Romania DotA Room 12
+65863	 Romania DotA Room 13
+65931	 Estonia and Finland DotA Room 01
+65932	 Israel DotA Room 01
+65933	 Europe RPG Room 03
+65935	 IHPA Room
+65937	 Europe RPG Room 05
+65938	 Europe RPG Vampirism Fire Room
+65941	 Portugal DotA Room 01
+65950	 TriniGamers Warcraft III Room
+983114	 1.22 China Sanguo Room
+983207	 1.22 China Net xinchang room 01
+590288	 Romania DotA Clan War Room
+458759	 Naruto Wars Room
+458764	 NewZealand Room
+458765	 [del]Night Of The Dead Room
+458776	 South Africa DotA Room
+458815	 Colombia DotA Room 05
+458868	 Europe DotA Room 03
+458869	 Europe DotA Room 04
+458886	 CS 1.6 Vietnam Room 01
+458888	 Dawn Of War Vietnam Room
+458889	 1.7 Vietnam Room
+262145	 Malaysia DotA ROOM 10 (v1.24e)
+262146	 Malaysia DotA ROOM 11 (v1.24e)
+262147	 Malaysia DotA ROOM 12 (v1.24e)
+262160	 South America DotA Room 01
+262161	 South America DotA Room 02
+262162	 Central America DotA Room
+262177	 Romania DotA Room 08
+262178	 Romania DotA Room 07
+262207	 Australia DotA Room 05
+262208	 Australia DotA Room 04
+262213	 Paraguay DotA Room
+262215	 Europe DotA Room 14
+262216	 Europe DotA Room 13
+262217	 Europe DotA Room 12
+262227	 Germany DotA Room
+262229	 Lithuania DotA Room
+262232	 International Room 01
+262234	 Europe Room 01
+262245	 AOE II: The Conquerors India Room
+262248	 CS Source Thailand Room
+262251	 CS 1.6 Malaysia Room 
+262252	 CS 1.6 Canada Room
+262253	 CS 1.6 USA Room
+262254	 CS 1.6 Philippines Room
+262255	 KODE5 CS Tournament Room
+262257	 CS 1.6 International Room 01
+262258	 CS 1.6 International Room 02
+262259	 CS 1.6 International Room 03
+262261	 CS 1.6 Australia Room
+262262	 CS 1.6 NewZealand Room
+262265	 CS 1.6 Thailand Room
+262268	 CS 1.6 Europe 1v1 Arena Room 
+262269	 CS 1.6 Europe Clan War Room
+262270	 CS 1.6 Europe Public Room
+262271	 CS 1.6 Germany Public Room
+262272	 CS 1.6 Romania Room
+262273	 CS 1.6 Russia Room
+262274	 CS 1.6 Russia Room 02
+262275	 CS 1.6 Sweden Public Room 
+262282	 Brazil RPG Room 06
+262288	 Singapore Vampire Room 02
+262289	 Singapore Vampire Room 03
+262371	 War 3 Custom Map : Vampire ROOM 1 (v1.24e)
+262372	 War 3 Custom Map : Tree Tag ROOM 2 (v1.24e)
+262373	 War 3 Custom Map : Tree Tag ROOM 1 (v1.24e)
+262403	 Colombia DotA Room 01
+458931	 South America DotA Room 03
+458933	 Czech and Slovakia DotA Room 06 [Moderated]
+458947	 Russia Room 06
+458948	 Russia Room 07
+131064	 Hongkong/Macao Room 01
+327671	 Singapore Vampire Room 04
+327660	 Singapore DotA Room 41
+327665	 ASEAN Room 03
+327649	 Denmark DotA Room 01
+327648	 Cyberstar Room
+262578	 Australia DotA Room 09 [Moderated]
+262583	 DBZ Tribute Room
+262586	 Element TD Room
+262591	 [del]Greece DotA Room 02
+262594	 [del]Serbian DotA Room 01 [moderated]
+262599	 Czech and Slovakia DotA Room 05 [Moderated]
+262600	 Europe RPG Room 11 (Element TD)
+262601	 Russia Room 03
+262602	 Russia Room 04
+262605	 South America Room 01
+262606	 South America Room 02
+262607	 South America Room 03
+524284	 Brazil RPG Room 07
+524285	 Brazil Room 02
+524270	 North America WoW Arena Room 01
+524273	 Myanmar DotA Room 01
+524275	 CS:Source Kazakhstan Room
+524262	 Philippines Room
+524263	 Singapore Room
+524264	 Malaysia Room
+524243	 Singapore Room 02
+524241	 Singapore Room 03
+327679	 [del]BG Inhouse League
+524232	 Singapore Room 04
+524233	 Serbian DotA Room 01 [Moderated]
+524234	 Poland DotA Room 03
+524235	 [del]Greece DotA Room 04
+524228	 Philippines Room 02
+524229	 Malaysia Room 02
+458960	 Europe DotA Room 10
+458961	 Europe DotA Room 09
+458962	 Europe DotA Room 08
+524217	 Czech and Slovakia DotA Room 07
+458798	 Brazil DotA Room 11
+458799	 Brazil DotA Room 12
+458803	 Brazil DotA Room 13
+458804	 Brazil DotA Room 14
+458805	 Brazil DotA Room 15
+459006	 Taiwan ESM Survival Game 01
+459073	 Romania DotA Room 23
+459075	 Romania DotA Room 09
+459098	 Europe Room 06
+459099	 Europe Room 05
+459100	 Europe Room 04
+459101	 Europe Room 03
+459103	 CS 1.6 South America Room
+459104	 CS 1.6 Singapore Room 02
+459105	 CS 1.6 Singapore Room
+459106	 Colombia DotA Room 02
+459107	 Brazil RPG Room 05
+459110	 Brazil DotA Room 37
+459113	 Australia DotA Room 08 [Moderated]
+459114	 ASEAN Room 01
+459115	 Argentina DotA Room 01 [Moderada]
+327636	 Russia Room 09
+327646	 Russia Room 08
+327655	 Romania DotA Room 26
+327635	 Singapore Room 05
+327631	 Russia Room 11
+327632	 Russia Room 10
+65721	 Wicked Inhouse League Room
+262205	 Thailand Room
+262219	 Thailand DotA Room 14
+262221	 Thailand DotA Room 12
+262222	 Thailand DotA Room 11
+262233	 Thailand DotA Room 10
+262246	 Thailand DotA Room 09
+262247	 Thailand DotA Room 08
+262263	 Thailand DotA Room 07
+262264	 Thailand DotA Room 06
+262267	 Thailand DotA Room 05
+524187	 Australia Room
+524194	 North America Room
+65557	 Korea Room
+65564	 1.7 Mongolia Room
+65569	 1.7 Korea Room
+65571	 1.7 Europe Room 01
+65735	 [del]Mongolia DotA High Level Room
+65736	 Mongolia DotA Room 05
+65760	 [del]DotA Pro Public Room
+65762	 Venezuela DotA Room 05
+65763	 Venezuela DotA Room 06
+65764	 Venezuela DotA Room 07
+262209	 Peru DotA Room 04
+262210	 Peru DotA Room 03 [Moderada]
+262211	 Venezuela DotA Room 02 [Moderada]
+262212	 Venezuela DotA Room 01 [Moderated]
+262223	 Bulgaria DotA Room 01 [moderated]
+262224	 Bulgaria DotA Room 02 [moderated]
+262225	 [del]Ukraine DotA Room 04 (1.26a)
+262260	 CS 1.6 Mongolia Room
+262266	 CS 1.6 Korea Room
+262394	 India DotA Room 11
+262395	 India DotA Room 06
+262580	 Peru DotA Room 05
+262589	 Peru DotA Room 06
+262597	 [del]Ukraine DotA Room 08 (1.26a)
+327650	 Ukraine RPG High Level Room 01 (1.26a)
+458780	 [del]Tofu Clan Room
+458796	 Mongolia DotA Room 03 [Moderated]
+458819	 Venezuela DotA Room 03
+458820	 Venezuela DotA Room 04
+458821	 Peru DotA Room 01 [Moderada]
+458822	 Peru DotA Room 02 [Moderada]
+458837	 Bulgaria DotA Room 04 [moderated]
+458838	 Bulgaria DotA Room 03 [moderated]
+458925	 Peru DotA Room 12
+458926	 Peru DotA Room 13
+458929	 Venezuela DotA Room 09
+458930	 Venezuela DotA Room 10
+458935	 [del]Ukraine DotA Room 10 (1.26a)
+458936	 [del]Ukraine DotA Room 11 (1.26a)
+458997	 [del]Ukraine DotA Room 09 (1.26a)
+524152	 1.7 Europe Room 04
+524153	 1.7 Europe Room 03
+524216	 [del]Ukraine DotA Room 14 (1.26a)
+524218	 Bulgaria DotA Room 10
+524219	 USA Room
+524245	 Mongolia DotA Room 09
+589887	 WC3 ROC Korea Room
+589945	 India DotA Room 12
+589947	 Mongolia DotA Room 04
+589954	 Korea RPG Room 
+589991	 Korea Pro-Gamer 2v2
+589992	 Korea Pro-Gamer 1v1
+589993	 Korea Room
+590204	 Bulgaria DotA Room 08
+590205	 Bulgaria DotA Room 09
+590206	 Bulgaria DotA Room 11
+590371	 Mongolia DotA Room 06
+590396	 Peru DotA Room 09
+590417	 Bulgaria DotA Room 07
+590450	 Venezuela DotA Room 08
+590544	 Peru DotA Room 08
+524156	 [deleted] Croatia DotA Room 03
+590375	 imbaGamer Tournament Room
+65944	 DotABR.com.br Room
+131036	 Japan Room 01
+131037	 Japan Room 01
+131038	 Japan Room 01
+131039	 Japan Room 01
+131040	 Japan Room 01
+131041	 Japan Room 01
+458934	 Czech and Slovakia DotA Room 09
+262280	 New Zealand DotA Room 01 [Moderated]
+327673	 Brazil Room 01
+590071	 Romania RPG Room 05
+327628	 Naruto Wars Room 02
+327629	 Europe DotA Room 48
+327630	 Europe DotA Room 47
+327627	 Romania RPG Tournaments Room
+65677	 Venezuela DotA Room 11
+65678	 Europe DotA Room 46
+65679	 North America Room
+65697	 ESVN Ladder Seasons
+65876	 Mineski StarCraft Room
+65949	 Dawn Of War Europe Room 
+65961	 Dawn Of War Korea Room 
+65962	 Dawn Of War Australia Room 
+65963	 Dota.kz Room
+65964	 CS Source Europe Public Room
+65965	 CS Source Korea Room
+65966	 CS Source Australia Room 
+65967	 CS Source International Room 01
+65968	 CS Source Malaysia Room 
+65978	 South America Room
+66014	 Peru DotA Room 14
+66026	 Europe DotA Room 42
+66054	 eSports-Host DotA Room
+589825	 ASEAN Room 02
+589827	 Philippines Room 03
+589828	 Philippines Room 04
+589829	 Singapore Room 06
+589830	 South America L4D Room
+589831	 Brazil Room 03
+589833	 Europe Room 02
+589834	 International Room
+589835	 Europe Room
+589838	 International Room
+589839	 Europe Room
+589840	 International Room
+589841	 Europe Room
+589852	 CS Source Canada Room
+589853	 CS Source USA Room
+589854	 CS Source International Room 02
+589855	 CS Source NewZealand Room
+589856	 CS Source Singapore Room
+589858	 CS Source South America Room
+589860	 Garena CS Source Tournament Room
+589862	 Dawn Of War International Room 
+589863	 Dawn Of War ASEAN Room 
+589864	 Dawn Of War South America Room 
+589865	 Garena Dawn Of War Tournament Room
+589866	 Philippines Starcraft Room
+589867	 Hangar Network BroodWar Room
+589868	 Garena Broodwar Tournament Room
+589869	 Asean Room
+589870	 CS 1.6 Kazakhstan Room 02
+589871	 [deleted] Venezuela rmaldera.com Room 01
+589872	 [deleted] Venezuela rmaldera.com Room 02
+589873	 Venezuela DotA Room 13
+589881	 Mongolia RPG Room
+589894	 [del]Kazakhstan DotA Room 19 (1.26a)
+589899	 [del]Kazakhstan DotA Room 20 (1.26a)
+589903	 Greece DotA Room 03
+589915	 Bulgaria DotA Room 12
+589917	 Bulgaria DotA Room 14
+590084	 Romania RPG Room 03
+590085	 Romania RPG Room 04
+590087	 Romania DotA Room 24
+590088	 Romania DotA Room 25
+590263	 Qatar DotA Room 01
+590311	 Russia Room 12
+590314	 Brazil Room 02
+131028	 [del]World Cyber League room
+131027	 International DotA League Room
+131016	 Oceania RPG Room 01
+131019	 Boa Compra DotA Room
+131013	 Ecuador DotA Room 04
+65882	 TriniGamers DotA Room 2
+131001	 Russia Room 14
+131002	 Russia Room 13
+130992	 Arabian DotA High Level Room 02
+130997	 CoD4 1.7 Russia Room 02
+65680	 SCBW Europe Public Room 01
+65707	 SCBW International Room 01
+65922	 SCBW USA Room
+65971	 SCBW Korea Room
+66064	 SCBW International Room 02
+66065	 SCBW Europe Public Room 02
+66066	 SCBW Canada Room
+66067	 SCBW Australia Room
+130987	 International DotA League Room
+262249	 SCBW Thailand Room
+589857	 SCBW NewZealand Room
+589859	 SCBW Singapore Room
+589861	 SCBW South America Room
+130978	 Russia Room
+590372	 Kazakhstan DotA Clan War Room (1.26a)
+262231	 Taiwan ESM Room 02
+130968	 Europe DotA Room 49
+130971	 Brazil DotA Room 52
+130972	 Brazil DotA Room 51
+130974	 Kazakhstan Room
+130976	 CS 1.6 Kazakhstan Room 03
+130975	 Kazakhstan Room
+66070	 MWC Tournament Room
+130928	 The Black Road Room 01
+262367	 War 3 Custom Map : Tower Defense ROOM 4 (v1.24e)
+130919	 North America Room 02
+130920	 Vietnam Room
+130915	 Philippines Room 01
+130916	 Canada Room 02
+130917	 Argentina DotA Room 03
+65969	 Korea Room
+65970	 Australia Room
+65979	 South America Room
+66059	 Singapore Room 01
+327678	 Brazil Room
+589826	 International Room
+589832	 Europe Room
+589843	 Taiwan ESM Room
+589845	 USA Room
+589846	 Malaysia Room 01
+589847	 ASEAN Room 02
+589848	 Malaysia Room 02
+589849	 ASEAN Room
+589850	 Europe Room 02
+589851	 Tournament Room
+983164	 QiLu NetCom v1.05 Room 01
+130907	 Brazil DotA Room 58
+130908	 Brazil DotA Room 56
+130909	 Brazil DotA Room 55
+130910	 Mongolia DotA Room 14
+130911	 Mongolia DotA Room 13
+130912	 1.7 Philippines Room 02
+130913	 Europe Room 03
+130914	 Thailand Room 03
+262365	 War 3 Custom Map : Fufu United Ninja ROOM 6 (v1.24e)
+262366	 War 3 Custom Map : Fufu United Ninja ROOM 7 (v1.24e)
+262368	 War 3 Custom Map : Tower Defense ROOM 1 (v1.24e)
+262369	 War 3 Custom Map : Tower Defense ROOM 2 (v1.24e)
+130895	 Russia Room 01
+130897	 Ecuador Masters League Room
+130888	 GDL :: GameBend.com Test Games :: VouchGame.com Room
+130890	 [del]ODL Room
+130876	 Taiwan Room
+130877	 International Room
+130878	 Europe Room
+327620	 Russia Room 02
+327621	 Thailand Room 04
+458816	 Europe DotA Room 28
+458846	 Europe DotA Room 26
+458849	 [del]Bulgaria DotA Room 19
+458872	 Bulgaria DotA Room 13
+458892	 Brazil DotA Room 31
+458902	 Brazil DotA Room 24
+458904	 Saudi Arabia DotA Room 01
+524272	 Europe RPG Room 08 (Vampirism Frozen World)
+524277	 Europe RPG Room 07
+524279	 UAE DotA Room 01
+130864	 Uruguay DotA Room 01
+65725	 India DotA Clan War Room 01
+590389	 Venezuela DotA Clan War Room
+458774	 Serbian DotA Room 02
+524208	 CS 1.6 Russia Room 03
+327645	 Taiwan ESM Room 04
+327633	 Taiwan ESM Room 05
+524203	 Romania Room
+524204	 Russia Room
+524205	 Romania Room
+524189	 Australia DotA Room 12
+524190	 Australia DotA Room 11
+524191	 Russia Room
+524195	 CS 1.6 Russia Room 04
+524196	 CS 1.6 Indian Room 1
+524186	 Russia Room 15
+524188	 Europe Room 02
+590318	 Europe Room 04
+65573	 CS 1.6 Taiwan Room 2
+524178	 Europe Room 04
+524182	 Europe Room 03
+524171	 ASEAN Room
+524176	 Singapore Room
+130875	 ChinaNet Room 01
+524169	 ChinaNet Room 02
+983212	 [del]Ukraine DotA Room 22 (1.26a)
+983213	 [del]Ukraine DotA Room 23 (1.26a)
+524177	 Kazakhstan Tournaments Room (1.26a)
+327603	 Malaysia Room 04 (L4D v9)
+327608	 India DotA Room 07
+327634	 Malaysia Room 03 (L4D v5)
+524150	 Mongolia DotA Room 16
+65705	 Deportes Electronicos Cup Room
+65710	 ESL Pro Series Room
+65711	 ESWC Online Qualifier Room
+65712	 Esports Charity
+65713	 Fit 4 Gaming Tournament Room 01
+65714	 Fit 4 Gaming Tournament Room 02
+65716	 Garena Community Tournament Room 01
+65717	 Garena Community Tournament Room 02
+65718	 [del]New Zealand DotA High Level Room
+65719	 [del]Hangar Network â€“ Tournament
+65722	 GoodGame.ru Team Room 1
+65723	 GoodGame.ru Team Room 2
+65727	 Iran Tournament Room
+65732	 LowLandLions WC3 Cup Room
+65737	 NiceGameTV War3 League
+65749	 Cambodia Digi Dota Room
+65905	 Garena Tournament Room 2
+65936	 Gaming-United.org Tournament Room
+65939	 DotA For Kids Room
+65948	 ESL DotA Tournament Room 2
+65952	 Wicked Cup Tournament Room 2
+65953	 Wicked Cup Tournament Room 1
+65954	 Garena TFT Tournament Room 2
+65955	 Garena TFT Tournament Room 1
+131029	 UAE DotA High Level Room 01
+262595	 [del]DotA Clan War Room (mygarena.com)
+262596	 [del]DotA League Room (mygarena.com)
+262608	 Warcraft.Gieromaniak.pl League room
+327676	 [del]Liga Nacional de DotA Room
+458760	 KerchNET Online E-Cup Room 01
+458761	 KerchNET Online E-Cup Room 02
+458762	 National Premier League Room
+458763	 NCL Tournament Room
+458766	 Other Tournaments and Leagues
+458768	 Revolution Team Series Room
+458769	 rmaldera.com Room
+458770	 SegLive Tournament Room
+458775	 SnG.by League Room
+458777	 TGL Tournament Room 1
+458778	 TGL Tournament Room 2
+458779	 TGL Tournament Room 3
+458818	 ESWC Online Qualifier Room
+458932	 [del]KODE5 DotA Challenge Tournament Room
+458939	 [del]Garena Tournament Room 5
+458940	 [del]Garena Tournament Room 6
+458941	 [del]Garena Tournament Room 7
+458942	 [del]GosuGamer Tournament Room 02
+458955	 [RAW3] Russian Warcraft League Room
+458956	 [Raw3] Russian Association of Warcraft 3
+458957	 KODE5 Tournament Room
+458958	 Incup Tournament Room 1
+458959	 Incup Tournament Room 2
+589943	 BoaCompra DotA BYS 1
+589944	 Europe DotA High Level Room 1
+589952	 FunWar DotA Room
+589965	 [del]Europe DotA High Level Room 3
+589968	 ESL DotA Tournament Room
+589969	 [del]HTGN DotA Tournament Room
+589980	 iP-Cup Tournament Room
+589981	 xLoCup Tournament Room 2
+589982	 WCSL Tournament Room
+589983	 GameSports Cup Room 02
+589998	 W3AL Tournament Room
+589999	 ClickMasters League Room
+590002	 Garena TFT Tournament Room 4
+590003	 Garena TFT Tournament Room 3
+590006	 NGL Room 1
+590007	 NGL Room 2
+590008	 NGL-ONE Room
+590009	 WGS Tournament Room 2
+590010	 European Nations Championship 
+590011	 Nydus Warcraft League Tournament Room
+590012	 ClanBase Europe Tournament Room 
+590015	 WC3L Tournament Room 2
+590016	 WC3L Tournament Room 1
+590220	 Masters League Room
+590346	 Garena Tournament Room 4
+590347	 Garena Tournament Room 3
+590360	 eSports DotA Tournament Room
+590368	 [del]ENADC Tounament Room 3
+590411	 [del]SiR-e Room
+590425	 inDotA Cup Room
+590426	 [del]CGESA DotA Room
+590433	 WCL Tournament Room
+590435	 xLoCup Tournament Room 1
+590436	 WCIP Tournament Room 3
+590437	 WCIP Tournament Room 2
+590440	 International Esports League Room 02
+590444	 WGP League Room
+590445	 WCIP Tournament Room 1
+590447	 WGS Tournament Room 1
+590449	 WC3.pl Tourneys and Leagues Room
+590500	 SKOTH Warcraft Tournament Room 1
+590501	 [del]SKOTH DotA Tournament Room 2
+590502	 SKOTH DotA Tournament Room 1
+590547	 PCGL League Room 4
+590548	 PCGL League Room 3
+590549	 PCGL League Room 2
+590550	 PCGL League Room 1
+590595	 Head Hunters Tournament Room
+590596	 [del]GosuGamers DotA Tournament Room
+590597	 GGL League Room
+590617	 ESVN Ladder Seasons
+590623	 Europe DotA High Level Room 2
+590624	 Europe DotA High Level Room 4
+590630	 Europe DotA High Level Room 5
+590648	 Europe DotA High Level Room 6
+983128	 Replays.Net DotA Room
+983129	 Gamer.LK DOTA Tournament Room
+983130	 NSL Tournament Room
+983132	 Ultimate Alliance League Room 05 (Test Room)
+983133	 Ultimate Alliance League Room 04
+983134	 Ultimate Alliance League Room 03
+983135	 Ultimate Alliance League Room 02
+983136	 Ultimate Alliance League Room 01
+983142	 Ultimate College League Match Room 03
+983143	 Ultimate College League Match Room 02
+983144	 Ultimate College League Match Room 01
+983146	 GamesTV Tournament Room
+983148	 NeoTV Tournament Room 
+983149	 DreamCup China Room 4
+983150	 DreamCup China Room 3
+983151	 DreamCup China Room 2
+983152	 DreamCup China Room 1
+327677	 Taiwan ESM Room 03
+65585	 China v1.08 Room
+65601	 Ali213.Net v1.08 Room
+65604	 Ali213.Net v1.08 Room 02
+590329	 North American Inhouse League Tryouts Room
+1179673	 India DotA Room 05
+1179683	 Gnet Shinobi Wars Room 1
+1179684	 Gnet Shinobi Wars Room 01
+1179695	 Czech and Slovakia DotA Room 04
+1179696	 Bulgaria RPG Room 01
+1179699	 Brazil DotA Room 41
+1179700	 Brazil DotA Room 36
+1179701	 Brazil DotA Room 35
+1179702	 Brazil DotA Room 23
+1179707	 [del]Ukraine DotA Room 25 (1.26a)
+1179708	 [del]Ukraine DotA Room 24 (1.26a)
+1179783	 Romania DotA Room 22
+1179784	 Romania DotA Room 17
+1179785	 Romania DotA Room 16
+1179786	 Romania DotA Room 14
+1179787	 Thailand DotA Room 15
+1179788	 Thailand DotA Room 13
+1179819	 Peru DotA Room 11
+1179820	 Peru DotA Room 07
+1179822	 Mongolia DotA Room 08
+1179829	 India DotA Room 08
+1179837	 Brazil DotA Room 40
+1179848	 [del]Ukraine DotA Room 13 (1.26a)
+1179849	 [del]Ukraine DotA Room 12 (1.26a)
+1179865	 Romania DotA Room 10
+1179876	 Mongolia DotA Room 10
+1179888	 Europe WoW Arena Room 01
+1179889	 Europe DotA Room 45
+1179897	 Brazil DotA Room 34
+1179898	 Brazil DotA Room 25
+1179910	 Peru DotA Room 17
+1179912	 Peru DotA Room 15
+1179913	 Mongolia DotA Room 12
+1179914	 Mongolia DotA Room 07
+1179929	 [del]Kazakhstan DotA Room 16 (1.26a)
+1179932	 Europe DotA Room 36
+1179939	 Europe DotA Room 20
+1179942	 Bulgaria DotA Room 15
+1179943	 Brazil RPG Room 10
+1179944	 Brazil RPG Room 08
+1179945	 Brazil DotA Room 38
+1179946	 Brazil DotA Room 33
+1179947	 Brazil DotA Room 32
+1179948	 Brazil DotA Room 29
+1179949	 Brazil DotA Room 28
+1179985	 Romania DotA Room 30
+327604	 North American DotA High level Room 01
+65771	 1.15/1.16 Taiwan Room 02
+65772	 1.15/1.16 Taiwan Room 01
+131065	 Taiwan Room 01
+65940	 Kingdom DotA Room
+524274	 Nepal DotA Room 01
+590370	 Bangladesh DotA Room
+590382	 Sri Lanka DotA Room
+1245172	 European Nations Championship Room
+1245165	 CS 1.6 Brazil Room 01
+1245166	 SAKT Tournament Room
+1179686	 Europe RPG Room 02
+262276	 Thailand DotA Room 03
+983115	 zm clan room
+1245152	 Iraq DotA Room
+65731	 Kazakhstan OSPL Room
+65956	 Europe Room 05
+590004	 Europe Room 06
+1179663	 1.7 GameStation COD4 Room
+1179664	 1.7 VivaGamers Room
+1179805	 CS1.6 GameStation Room
+1179806	 CS1.6 VivaGamers Room
+1179991	 Indonesia DotA League Room
+1179992	 VivaGamers DotA Room 01
+1245143	 USA Room 03
+1245144	 USA Room 02
+262278	 Thailand DotA Room 04
+262279	 Thailand DotA Room 02
+262202	 [del]Kazakhstan DotA Room 02 (1.26a)
+458797	 Argentina DotA Room 05
+458912	 [del]Kazakhstan DotA Room 03 (1.26a)
+65730	 [del]DotA Pro League Room
+458800	 Bolivia DotA Room 02
+458801	 [del]Kazakhstan DotA Room 05 (1.26a)
+458911	 [del]Kazakhstan DotA Room 08 (1.26a)
+459092	 [del]Kazakhstan DotA Room 13 (1.26a)
+459093	 [del]Kazakhstan DotA Room 12 (1.26a)
+590379	 [del]Kazakhstan DotA Room 07 (1.26a)
+1179885	 [del]Kazakhstan DotA Room 11 (1.26a)
+1179886	 [del]Kazakhstan DotA Room 10 (1.26a)
+1179887	 [del]Kazakhstan DotA Room 09 (1.26a)
+262400	 [del]Kazakhstan DotA Room 14 (1.26a)
+1179930	 [del]Kazakhstan DotA Room 15 (1.26a)
+524185	 [del]Kazakhstan DotA Room 21 (1.26a)
+1245125	 Brazil Room 03
+458771	 Australia DotA Room 06
+1245103	 North American Open League
+1245104	 Cambodia DotA Room
+262609	 Royal Premier League Room
+327668	 United Kingdom DotA Room 02
+458840	 Brazil DotA Room 20
+458845	 Brazil DotA Room 19
+458848	 Brazil DotA Room 18
+458865	 Brazil DotA Room 17
+458891	 Brazil DotA Room 16
+327667	 Turkey Room 01
+65765	 Age of Empires II: The Conquerors Taiwan Room 01
+131063	 Age of Empires II: The Conquerors Taiwan Room 04
+131070	 Age of Empires II: The Conquerors Taiwan Room 03
+262590	 MG Dota League Room
+327662	 New Zealand DotA Room 02 [Moderated]
+1245173	 [del]Kazakhstan DotA Room 23 (1.26a)
+1245155	 Mexico DotA Room 01
+1245156	 North America Room
+262558	 Turkey DotA League Room
+262220	 USA DotA Room 07
+262281	 Canada DotA Room 02
+262283	 Canada DotA Room 01
+262287	 Canada DotA Room 05
+262542	 USA DotA Room 08
+458772	 USA DotA Room 15
+458773	 USA DotA Room 14
+458793	 USA DotA Room 13
+458807	 USA DotA Room 12
+458809	 USA DotA Room 11
+458829	 Canada DotA Room 09
+458830	 Canada DotA Room 08
+458831	 Canada DotA Room 07
+458839	 Canada DotA Room 06
+458847	 Canada DotA Room 10
+458994	 USA DotA Room 10
+458995	 USA DotA Room 09
+524225	 Canada DotA Room 03
+524271	 Canada DotA Room 04
+524280	 USA DotA Clan War Room
+590334	 USA RPG Room 01
+1245129	 Canada RPG Room 01
+1245147	 USA DotA Room 18
+1245148	 USA DotA Room 17
+1245149	 USA DotA Room 16
+1245154	 Korea Room 01
+1179993	 Indonesia GameStation DotA Room 01
+1245120	 Korea Room
+1245101	 1.7 Europe Tournament Room
+1245130	 Middle East Room 02
+1245131	 Middle East Room 01
+131062	 CNC3 room
+1245099	 DTS-Cup Room
+590377	 Japan RPG Room 01
+458767	 Bulgaria DotA Room 06
+1245096	 [del]Australia DotA Room 14
+589880	 Mongolia DotA Clan War Room
+524215	 Vietnam Room 01
+1245078	 Vietnam Room 03
+1245079	 Vietnam Room 02
+1245075	 Fnatic Cup Room 2
+1245076	 Fnatic Cup Room 1
+1245077	 [del]NDD-Cup Room
+1245110	 [del]Russia DotA Room 99
+130980	 Korea Room 02
+130981	 Asia Room 01
+130982	 USA Room 01
+130983	 International Room 01
+130984	 South America Room 01
+130985	 Europe Room 01
+130989	 Europe Room 01
+130991	 Brazil Room 01
+130993	 South America Room 01
+130996	 ASEAN Room 01
+130998	 International Room 01
+130999	 USA Room 01
+131004	 ChinaNet Room 01
+131005	 Taiwan Room 01
+131007	 Taiwan Room 01
+131010	 ChinaNet Room 01
+131011	 USA Room 01
+131017	 International Room 01
+131018	 ASEAN Room 01
+131020	 Brazil Room 01
+131021	 South America Room 01
+131022	 Russia Room 01
+262277	 Thailand DotA Room 01
+524287	 Mexico DotA Room 02
+1245067	 GWI Tournament Room
+983141	 Ultimate College League Match Room 04
+65738	 [del]Oceania DotA High Level Room
+1245066	 GameSports Cup Room 03
+65728	 [del]Iran iPlay-Gaming Private League Room
+524276	 CS 1.6 Kazakhstan Room 01
+130973	 Europe Room 01
+262402	 Korea DotA Room 01
+589958	 [del]Europe DotA High Level Room 2
+262308	 Genesis Dota Room 01
+262517	 DotA Room 02 (MyGarena.com)
+262519	 DotA Room 01 (MyGarena.com)
+130932	 Taiwan Room 01
+130934	 USA Room 01
+130937	 International Room 01
+130939	 ASEAN Room 01
+130940	 Korea Room 01
+130941	 South America Room 01
+1245064	 [deleted] DotA-Gaming.com Ecuador League Room
+262306	 Belarus DotA Room 01 (1.26a)
+327610	 Belarus DotA Room 02 (1.26a)
+524250	 Moldova DotA Room 02 (1.26a)
+1245158	 Kyrgyzstan DotA Room (1.26a)
+1245159	 Uzbekistan DotA Room (1.26a)
+262206	 Mongolia DotA Room 02 [Moderated]
+458794	 Mongolia DotA Room 01 [Moderated]
+262284	 PMS Asterisk Headquarters
+458887	 Vietnam Room 01
+1245106	 Azerbaijan DotA Room 01 (1.26a)
+196591	 Greece DotA Room 02 [Moderated]
+524221	 ESL DotA 1v1
+1245062	 Russia TD Room 14 (1.26a)
+1245063	 [del]Ukraine DotA Room 27 (1.26a)
+1245163	 [del]Ukraine DotA Room 26 (1.26a)
+130942	 Europe Room 01
+196581	 Europe Room 02
+1245060	 EOG Tournament  Room 02
+1245061	 EOG Tournament  Room 01
+65703	 Czech and Slovakia DotA Room 03
+196579	 Poland DotA Room 05
+196580	 Czech and Slovakia DotA Room 11
+262214	 Europe DotA Room 15
+524201	 [delted] e-stufu Colombia DotA Room
+590503	 [deleted] e-stufu MDF Room
+130896	 Europe RPG Room 09 (Castle Fight)
+327656	 Castle Fight room
+1245059	 IGL Tournament Room 1
+1245056	 PPLive Race War 2009 Room
+590367	 Argh League Room
+590376	 Japan DotA Room 01
+458757	 [del]USA DotA High Level Room 01
+458913	 Europe DotA Room 11
+130889	 GDL :: GameBend.com DotA League Invite Room
+130924	 Algeria DotA Room 02
+1245057	 GuerillaMethod DotA Public Room
+262250	 CS 1.6 Taiwan Room 1
+66058	 Sweden DotA Room 02
+983041	 ChinaNet Room 01
+983042	 ChinaNet Room 01
+983043	 Ali213.Net Room
+983044	 ChinaNet Room 02
+983046	 NetCom Room 01
+983047	 NetCom Room 01
+983048	 NetCom Room 01
+983057	 1.7 COD4 Huadong Fast Room
+983058	 1.7 China Net Room
+983059	 China League Room
+983060	 1.7 China Net Room 02
+983061	 1.24 China Net CangFans Club
+983062	 1.24 war3 room
+983063	 1.24 China Net Room
+983064	 1.21 PC-Games Room
+983065	 1.20 China Net Room
+983066	 1.24 China Net =ForDream= club
+983068	 1.24 China Net 2v2 Room
+983072	 1.24 China DotA PUB Room 02
+983081	 1.24 China DotA PUB Room 03
+983116	 NetCom Room
+983117	 NetCom Room 01
+983118	 NetCom Room 02
+983160	 AOE II: The Conquerors NetCom 1v1 Room
+983161	 AOE: The Rise of Rome NetCom 1v1 Room
+983163	 China NetCom Room
+983167	 sxycqhwb
+983169	 1.7 China NetCom Room
+983173	 Ali213.Net v1.08 Room
+983177	 NetCom v1.08 Room
+983178	 NetCom v1.08 Room 02
+983179	 ra3.cn RA3 v1.08 Room
+983182	 GTRTS.com RA3 v1.08 Room
+983183	 CS Source China NetCom Public Room
+983184	 China NetCom Public Room
+983185	 NetCom Room
+983186	 CS 1.6 China NetCom Room 01
+983187	 CS 1.6 China NetCom Room 02
+983188	 CS 1.6 China NetCom Pro Room
+983218	 SouthWest JiaoTong University Room 02
+983219	 1.20 China NetCom Room
+983220	 1.24 China NetCom Room
+983221	 SouthWest JiaoTong University Room
+983223	 AOE II: The Conquerors China 1v1 Room v1.0C
+983224	 AOE II: The Conquerors China 1v1 Room v1.0
+983225	 1.0A China Xinjiang room
+983226	 AOE: The Rise of Rome China 1v1 Room
+983228	 China Net Room
+983229	 GTRTS.com RA3 v1.08 Room
+983230	 ra3.cn RA3 v1.08 Room
+983231	 China v1.08 Room 02
+983232	 Shengzhou 81 Clan Room
+983233	 CS Source China Net Public Room
+983234	 Dawn Of War China Room 
+983235	 1.16 YaoYuan Tournament Room
+983236	 1.161 China Net Public Room
+983237	 STL Group B Room 01
+983238	 STL Group B Room 02
+983239	 STL Group B Room 03
+983240	 STL Group B Room 04
+983241	 STL Group B Room 05
+983242	 STL Group B Room 06
+983243	 STL Group B Room 07
+983244	 STL Group C Room 01
+983245	 STL Group C Room 02
+983246	 STL Group C Room 03
+983247	 STL Group C Room 04
+983248	 STL Group C Room 05
+983249	 STL Group C Room 06
+983250	 STL Group C Room 07
+983251	 STL Group A Room 01
+983252	 STL Group A Room 02
+983253	 STL Group A Room 03
+983254	 STL Group A Room 04
+983255	 STL Group A Room 05
+983256	 STL Group A Room 06
+983257	 STL Group A Room 07
+983258	 FSS Tournament Room 01
+983259	 FSS Tournament Room 02
+983260	 FSS Tournament Room 03
+983261	 FSS Tournament Room 04
+983262	 FSS Tournament Room 05
+983263	 FSS Tournament Room 06
+983264	 FSS Tournament Room 07
+983265	 FSS Tournament Room 08
+983266	 KCL Tournament Room 01
+983267	 KCL Tournament Room 02
+983268	 KCL Tournament Room 03
+983269	 KCL Tournament Room 04
+983270	 KCL Tournament Room 05
+983271	 KCL Tournament Room 06
+983272	 KCL Tournament Room 07
+983273	 KCL Tournament Room 08
+983274	 KCL Tournament Room 09
+983275	 KCL Tournament Room 10
+983276	 KCL Tournament Room 11
+983277	 KCL Tournament Room 12
+983278	 Starcraft Huadong Fast Room
+983279	 China Net Room
+983280	 CS 1.6 China Net Room 01
+983281	 CS 1.6 Chengdu GongChengXueYuan Room
+983282	 CS 1.6 China Net Pro Room
+983283	 CS 1.6 Huadong Fast Room
+983288	 CS 1.6 Yunnan Room
+983289	 WC3 ROC China Room
+983290	 1.20 China Net RPG Room
+983291	 1.22 China Net RPG Room
+262195	 Malaysia DotA ROOM 13 (v1.24e)
+262193	 Malaysia DotA ROOM 15 (v1.24e)
+262194	 Malaysia DotA ROOM 14 (v1.24e)
+262293	 Canada DotA High Level Room 01
+1245170	 Sweden DotA High Level Room 01
+262167	 Brazil DotA Room 03
+589924	 [deleted] Remakes.com.br ClanWar Room
+1245157	 [del]MCC-IHL-Open
+1245053	 Ukraine DotA Clan War Room (1.26a)
+1245054	 Pakistan DotA Clan War Room
+524220	 ESL DotA 5v5
+458867	 Europe DotA Room 02
+458792	 Indonesia DotA Room 02
+1245051	 CS 1.6 Mongolia Room
+590315	 Europe Room 03
+1245043	 Cybergamer Room
+262164	 Brazil DotA Room 02
+590287	 Romania RPG Room 02
+524192	 Egypt DotA Room 03
+524193	 Egypt DotA Room 02
+262230	 Taiwan ESM Room 01
+589920	 [del]Romania Castle Fight Room
+262204	 India DotA Room 02
+262166	 Brazil DotA Room 04
+65951	 Germany Room
+65720	 Georgia DotA Room 01 [Moderated]
+327661	 Singapore DotA Room 40
+590441	 ProPlay.ru Online Cup Room 2
+590446	 ProPlay.ru Online Cup Room 1
+1245040	 Brazil OpenRPG Room Load/Save
+65884	 TriniGamers DotA Room 1
+1179994	 Indonesia Tournament Room 01
+65583	 [deleted] Remakes.com.br League Room
+458836	 Bulgaria DotA Room 05 [Moderated]
+327674	 [del]Czech and Slovakia DotA High Level Room
+262290	 Indonesia DotA Room 01
+262300	 Pakistan DotA Room 03
+327609	 Yemen DotA Room 01
+130921	 Brazil DotA High Level Room 04
+589974	 Russia Room
+327666	 Iran DotA Room 05
+1245058	 NIHL Clanwar Room
+131069	 CWCL ChinaNet Room
+458866	 Europe DotA Room 01
+589979	 GameSports Cup Room 01
+1245074	 Iran DotA Clan War Room
+524168	 [del]YEA RPG Tournament Room
+983145	 YEA League Room 02
+983147	 YEA League Room
+524249	 [del]Romania DotA OMG Room
+1245049	 [del]Hangar Network - Clan War
+1245050	 [del]Hangar Network - Elite
+65698	 Arena Cyber League Room
+262393	 Kazakhstan RPG Room (1.26a)
+1179828	 Kazakhstan RPG Room 2 (1.26a)
+262179	 Romania DotA Room 06
+590221	 Europe Room 02
+458870	 Europe DotA Room 05
+458871	 Europe DotA Room 06
+458963	 Europe DotA Room 07
+589967	 Garena Tournament Room 1
+458826	 USA DotA Room 01 [Moderated]
+327626	 Romania Black Shield Room 1
+1245030	 [del]Egypt Tournament Room
+1245033	 Peru DotA Room 18
+1245055	 [del]Romania CyberGames Public League
+1245042	 XP League Room
+1245171	 [del]Ukraine DotA High Level Room 03 (1.26a)
+590512	 Romania RPG Room
+262226	 [del]Ukraine DotA Room 03 (1.26a)
+458832	 [del]Ukraine DotA Room 01 (1.26a)
+458833	 [del]Ukraine DotA Room 02 (1.26a)
+65930	 Europa IHAL Room
+65946	 MWC DotA League Room
+590227	 CS Iran MGGSNET.COM Room
+65570	 South America Room 01
+1245027	 South America Room 02
+1245068	 [del]Faculdade Puc Room 01
+458810	 Brazil DotA Room 06
+458811	 Brazil DotA Room 07
+458812	 Brazil DotA Room 08
+458813	 Brazil DotA Room 09
+458814	 Brazil DotA Room 10
+65924	 India DotA Room 04
+262203	 India DotA Room 03
+458802	 India DotA Room 01
+590302	 [del]iPlay Series Tournament
+262188	 Singapore DotA Room 07
+262189	 Singapore DotA Room 06
+262190	 Singapore DotA Room 05
+262191	 Singapore DotA Room 04
+262192	 Singapore DotA Room 03
+327669	 United Kingdom DotA Room 01
+983074	 1.24 China DotA CW Room
+65957	 North America COOP Room 01
+65958	 Australia Room 01
+65959	 ASEAN Room
+65960	 South America Room
+262235	 Taiwan ESM Room 01
+262236	 North America COOP Room 02
+262237	 North America Game Room 03
+262238	 North America Game Room 04
+262239	 ASEAN Room 02
+262240	 Europe COOP Room 02
+262241	 Europe COOP Room 03
+262242	 Europe Game Room 04
+262243	 Europe Game Room 05
+262244	 Europe Game Room 06
+589836	 International Room
+589837	 Europe COOP Room 01
+983045	 Game: Ali213.Net CoD5 COOP v1.6 Room 01
+983051	 COOP: CODCHINA.Net CoD5 Game v1.6 Room 03
+983052	 COOP: PCGames.com.cn CoD5 COOP v1.6 Room 05
+983053	 COOP: PCGames.com.cn CoD5 COOP v1.6 Room 04
+983054	 Game: CODCHINA.Net CoD5 COOP v1.6 Room 02
+983055	 COOP: Ali213.Net CoD5 COOP v1.6 Room 02
+983056	 COOP: China  v1.6 Room 01
+983120	 Ali213.Net CoD5 COOP v1.6 Room 02
+983131	 Ali213.Net CoD5 COOP v1.6 Room 01
+983137	 PCGames.com.cn CoD5 COOP v1.6 Room 05
+983138	 PCGames.com.cn CoD5 COOP v1.6 Room 06
+983139	 CODCHINA.Net CoD5 COOP v1.6 Room 03
+983140	 CODCHINA.Net CoD5 Game v1.6 Room 04
+983158	 NetCom v1.6 Room 01
+1048573	 QiLu v1.6 Room 01
+65923	 Algeria DotA Room 01
+262286	 Jordan DotA Room 03
+524211	 Kazakhstan DotA High Level Room 02 (1.26a)
+459102	 Ecuador DotA Room 02
+262165	 Brazil DotA Room 05
+458781	 Iran DotA Room 03
+262296	 Ecuador DotA Room 06
+262158	 Jordan DotA Room 01
+65751	 Spain DotA Room
+524226	 Brazil Room 01
+459097	 Iran DotA Room 02
+131071	 [del]IDEC Room
+65927	 [del]Europe DotA High Level Room 5
+589874	 Peru DotA Retos Room
+590402	 [del]Europe DotA High Level Room 3
+458795	 Pakistan DotA Room 02
+524231	 NGACN Room
+589844	 Taiwan ESM Room 02
+590186	 Iran DotA High Level Room 01 + Hostbot
+458823	 [deleted] Turkey DotA Room 03
+262389	 Arabian DotA Room 01
+524213	 [del]Romania CyberCafe Alliance Room
+590328	 North American Inhouse League
+262297	 Macedonia DotA Room 01 [Moderated]
+458844	 Romania DotA High Level Room 04
+130977	 Iran DotA Room 07
+262256	 CS 1.6 Indian High Level Room
+1245020	 Mexico DotA Room 03
+1245021	 New Zealand DotA Room 04
+1245023	 USA DotA Room 19
+458834	 [deleted] Turkey DotA Room 02
+1245018	 1.24 China DotA PUB Room 04
+1245017	 1.24 China RPG Room 01
+1245019	 1.24 China DotA IH Room
+590439	 International Esports League Room 01
+1245015	 [del]DotA-Gaming.com Romanian Public League Room
+1245016	 [del]DotA-Gaming.com Romanian League Room
+262180	 Romania DotA Room 05
+262295	 [deleted] Turkey DotA Room
+262228	 Moldova DotA Room 01 (1.26a)
+65945	 Hungary DotA Room 02
+262157	 Egypt DotA Room 01
+589953	 ASEAN DotA Room
+1245133	 DotA-Gaming.com Public League Room
+1245160	 DotA-Gaming.com League Room
+262148	 Digi ResurrectioN Room
+459116	 Arabian DotA Room 02
+262285	 Jordan DotA Room 02
+458791	 Australia DotA Room 03
+65547	 AOE II: The Conquerors Europe 1v1 Room v1.0C
+65580	 [deleted] Remakes.com.br Community Room
+262584	 [deleted] Remakes.com.br Peru Elite League Room
+1245010	 [deleted] Remakes.com.br Chile Elite League Room
+1245011	 [deleted] Remakes.com.br Colombia Elite League Room
+1245161	 Cyberarena.TV Room
+65759	 Ukraine DotA High Level Room 01 (1.26a)
+590374	 Iran DotA Room 04
+262163	 Brazil DotA Room 01
+590621	 DotA.org.ua League Room
+262196	 USA DotA Room 05
+262197	 USA DotA Room 04 [Moderated]
+262546	 USA DotA Room 06
+458827	 USA DotA Room 02 [Moderated]
+458828	 USA DotA Room 03 [Moderated]
+458843	 Romania DotA High Level Room 03
+458841	 Romania DotA High Level Room 01
+1245142	 Vietnam Room
+65701	 GosuArena DotA Tournament Room
+590398	 [deleted] UnionGamer Room
+983070	 1.24 China DotA PUB Room 01
+589948	 Kazakhstan DotA High Level Room 01 (1.26a)
+65696	 Europe Room 01
+458842	 Romania DotA High Level Room 02
+590404	 [del]Europe DotA High Level Room 4
+65578	 Brazil DotA High Level Room 03
+65579	 Brazil DotA High Level Room 02
+590199	 [del]Bulgaria DotA Room 20
+590405	 [.del]Bulgaria DotA Room 19
+262159	 Pakistan DotA Room
+590403	 Bulgaria LoD DotA Room 01 [Moderated]
+458789	 Australia DotA Room 01
+458790	 Australia DotA Room 02
+589957	 [del]Europe DotA High Level Room 1
+131055	 Age of Empires II: The Conquerors Taiwan Room 02
+1244997	 CS 1.6 Tournament Room
+1244998	 1.7 Asia Tournament Room
+1244999	 Asia Tournament Room
+1245001	 Korea Room 04
+1244995	 LifeLine Tournament Room
+1244996	 India Room 01
+1244991	 Vietnam Room
+1244968	 Oceania RPG Room 02
+1244969	 CS Source Vietnam Room
+1244970	 CS 1.6 Vietnam Room 02
+1244971	 Vietnam Room
+1244972	 Vietnam Room 02
+1244967	 North American DotA Syndicate Room
+1244966	 SL - Trophy of Legends Room
+1179693	 [del]Ukraine DotA Room 06 (1.26a)
+1179839	 Romania DotA Room 29
+1244963	 USA DotA Room 21
+1244964	 USA DotA Room 20
+1244990	 Middle East Room
+1244949	 Team WE Twitter Contest
+1244948	 Europe RPG High Level Room
+1244911	 Brunei DotA Room 02
+1244912	 Sweden DotA Room 07
+1244875	 Sweden DotA Room 10
+1244878	 Nicaragua DotA Room
+1244879	 [deleted] Dota-Gaming.com PerÃº League Room
+1244880	 [del]Paraguay DotA Room 02
+1244881	 New Zealand DotA Room 03
+1244882	 [del]New Zealand DotA Room 05
+1244883	 Mexico DotA Room 05
+1244884	 Mexico DotA Room 04
+1244890	 Indonesia BvO Room
+1244892	 Europe Room 08
+1244894	 Canada DotA Room 15
+1244895	 Canada DotA Room 14
+1244896	 Canada DotA Room 13
+1244870	 ieS Virtual Gaming Room
+1244913	 Turkey DotA Room 01
+1244914	 Turkey DotA Room 06
+1244900	 Dota.org.ua Public League Room
+1244893	 DotA Pride League Room
+327651	 Argentina Room 01
+1244842	 Pakistan RPG Room 01
+1244839	 Pakistan League Room
+1244834	 IGL Tournament Room 3
+1244835	 IGL Tournament Room 2
+589842	 CDEC Room
+1244828	 1.7 Iran Room
+1244823	 Kazakhstan Room
+1244802	 Venezuela DotA Room 15
+1244803	 Venezuela DotA Room 14
+1244804	 Venezuela DotA Room 12
+1244805	 Peru RPG Room 02
+1244806	 Peru RPG Room 01
+1244807	 Peru DotA Room 24
+1244808	 Peru DotA Room 23
+1244811	 Brazil RPG Room 12
+1244812	 Brazil RPG Room 11
+1244813	 Brazil RPG Room 09
+130900	 Canada DotA Clan War Room
+130901	 Gosuclub.kz Dota League
+130902	 OK Room
+130903	 [del]Ukraine DotA Room 29 (1.26a)
+130904	 [del]Ukraine DotA Room 28 (1.26a)
+130879	 European DotA Championship Room
+130861	 Mongolia TFT ROOM 01 (v1.24b)
+130865	 Mongolia Tournament Room
+130866	 Lebanon DotA Room 01
+130871	 Philippines ROOM (v1.24e)
+130874	 Europe JFA Room
+130857	 Argentina DotA Room 02 [Moderada]
+130858	 CoD4 1.7 Russia Room 03
+130854	 Russia High Level Room
+130851	 Korea Room 03
+130850	 [del]PlayDotA.com Room
+130849	 India DotA Room 10
+130853	 India DotA Room 09
+1244989	 Australia DotA Room 18
+1245181	 Australia DotA Room 17
+1245182	 [del]Australia DotA Room 15
+131106	 Arabian DotA League Room
+131131	 Iran DotA Room 01
+131134	 [del]Greece DotA Room 03 [Moderated]
+131135	 [del]Greece DotA Room 08
+131136	 [del]Greece DotA Room 07
+131137	 Iran DotA High Level Room 03
+131139	 Europe DotA Room 33
+131140	 Europe DotA Room 32
+131141	 Europe DotA Room 30
+131142	 Europe DotA Room 29
+131193	 Europe DotA Room 27
+131194	 Europe DotA Room 23
+131195	 Egypt DotA High Level Room 02
+131196	 [del]Czech and Slovakia DotA Room 14
+131197	 Godlike Dota League Room
+131198	 Czech and Slovakia DotA Room 12
+131203	 Canada DotA Room 12
+131204	 Canada DotA Room 11
+131211	 Bulgaria DotA Room 16
+131213	 Brazil DotA Room 65
+131214	 Brazil DotA Room 64
+131215	 Brazil DotA Room 63
+131216	 Brazil DotA Room 62
+131224	 Brazil DotA Room 43
+131225	 Armenia DotA Room (1.26a)
+131226	 Arabian Tournament Room
+131227	 Arabian DotA Room 03
+131259	 Russia Room 03
+131260	 Europe Tournament Room
+131261	 Poland Room
+131262	 Portugal Room
+131263	 Balkan Room 01
+131264	 Balkan Room 02
+131265	 Poland Room 01
+131266	 Russia Room
+131267	 AOE II: The Conquerors v1.0 room
+131268	 AOE: The Rise of Rome Europe 1v1 Room 03
+131272	 1.7 Europe Room 05
+131273	 1.7 Europe Room 06
+131274	 CoD4 1.7 Russia Room 04
+131275	 1.7 Balkan Room 02
+131276	 1.7 Balkan Room 01
+131282	 [del]Turkey DotA High Level Room 01
+131283	 DotA Pride Tournament Room
+131284	 Europe RPG Room 13 (Element TD)
+131285	 Europe RPG Room 14 (Element TD)
+131287	 Greece DotA Room 04
+131288	 [del]Bulgaria DotA High Level Room 04
+131289	 [del]Bulgaria DotA High Level Room 05
+131290	 Poland DotA Room 06
+131291	 [del]Republic of Srpska DotA Room
+131292	 Italy DotA Room 02
+131293	 Macedonia Tournament Room
+131294	 Latvia DotA Room
+131295	 Europe Fufu United Ninja Room 01
+131296	 Czech and Slovakia DotA Clanwar Room
+131297	 [del]Pakistan Master DotA League
+131298	 My DotaPE.com DotA Room
+131299	 Norwegian DotA Room
+131300	 AL DotA League
+131301	 Turkey DotA Room 05 [Moderated]
+131302	 Europe DotA Room 37
+131303	 Europe DotA Room 39
+131305	 Europe DotA Room 51
+131306	 Europe DotA Tournaments Room
+131307	 Georgia DotA Room 02 [Moderated]
+131308	 Czech and Slovakia DotA Room 10
+130848	 Russia High Level Room
+130847	 Korea Room 05
+196525	 USA Room 01
+196526	 Brazil Room 01
+196527	 Singapore Room 01
+196528	 Singapore Room 02
+196529	 Malaysia Room 02
+196530	 Malaysia Room 01
+196531	 Thailand Room 01
+196532	 Philippines Room 01
+196533	 Philippines Room 02
+196534	 ASEAN Room 02
+196535	 ASEAN Room 01
+196536	 3dmgame.chnren.com NetCom Room 01
+196537	 3dmgame.chnren.com NetCom Room 02
+196538	 3dmgame.chnren.com NetCom Room 03
+196539	 CODCHINA.Net Room 04
+196540	 CODCHINA.Net Room 04
+196541	 3dmgame.chnren.com ChinaNet Room 03
+196542	 3dmgame.chnren.com ChinaNet Room 02
+196543	 3dmgame.chnren.com ChinaNet Room 01
+196544	 Japan Room 01
+196545	 International Room 01
+196546	 Australia Room 01
+196547	 Korea Room 01
+196548	 Taiwan Room 01
+196549	 Taiwan Room 04
+196550	 Taiwan Room 03
+196551	 Taiwan Room 02
+196552	 Taiwan Room 01
+196553	 NetCom Room 01
+196554	 NetCom Room 02
+196555	 ChinaNet Room 02
+196556	 ChinaNet Room 01
+196557	 Japan Room
+196558	 USA Room 02
+196559	 USA Room 01
+196560	 International Room 01
+196561	 Australia Room 01
+196562	 Philippines Room 02
+196563	 Philippines Room 01
+196564	 Singapore Room 01
+196565	 Singapore Room 02
+196566	 Malaysia Room 02
+196567	 Malaysia Room 01
+196568	 ASEAN Room 02
+196569	 ASEAN Room 01
+196570	 Korea Room 03
+196571	 Korea Room 01
+196572	 South America Room 01
+196573	 Brazil Room 02
+196574	 Brazil Room 01
+196575	 Europe Room 04
+196577	 Europe Room 02
+196578	 Europe Room 02
+196595	 Europe Room 01
+196596	 Europe Room 01
+196597	 Taiwan Room 01
+196598	 Netcom Room 01
+196603	 ChinaNet Room 01
+196523	 Ecuador DotA Room 03 [Moderada]
+196518	 ChinaNet Room 03
+196519	 ChinaNet Room 02
+196516	 Europe Room 02
+196517	 Europe Room 03
+262173	 Australia Chinese Community DotA Room (CCR)
+196514	 Mongolia DotA Room 18
+196512	 Bulgaria DotA Room 17
+196513	 Brazil DotA Room 70
+196521	 Brazil DotA Room 69
+196522	 Bulgaria DotA Room 20
+196504	 Russia Room 01
+196506	 Europe Room 03
+196497	 Europe Room 07
+196498	 Europe Room 06
+196499	 3dmgame.chnren.com ChinaNet Room 03
+196500	 3dmgame.chnren.com ChinaNet Room 02
+196501	 3dmgame.chnren.com ChinaNet Room 01
+196493	 Russia LoD DotA Room 01 (1.26a)
+196494	 [del]Serbian DotA Clanwar Room
+196502	 Pakistan Master DotA League
+196492	 Europe Room 03
+196484	 Georgia DotA Room 03
+196482	 International Exclusive DotA Public League Room
+196483	 International Exclusive DotA League Room
+262174	 Czech and Slovakia DotA Room 02
+196515	 Korea Room 02
+196520	 Kazakhstan DotA High Level Room 03 (1.26a)
+262175	 Czech and Slovakia DotA Room 01
+131433	 [del]Cro-DotA League Room
+131434	 ChinaNet Room 04
+131435	 ChinaNet Room 03
+131436	 Brazil RPG Room 04
+131437	 Brazil RPG Room 03
+131438	 Brazil RPG Room 02
+131439	 Brazil RPG Room 01
+131440	 Brazil PudgeWar Room
+131444	 Brazil DotA Room 66
+131451	 Brazil DotA Room 42
+131452	 Brazil DotA Room 39
+131453	 Brazil DotA Room 27
+131454	 Brazil DotA Room 26
+131455	 Brazil DotA Room 22
+131456	 Brazil DotA Room 21
+131457	 Brazil DotA High Level Room 01
+131458	 Brazil DotA Clan War Room 01
+131459	 Brasil DotA Orkut Room 03
+131460	 Brasil DotA Orkut Room 01
+131461	 Greece DotA High Level Room 01
+131462	 ASEAN Room 03
+131463	 Angola DotA Room
+131464	 3dmgame.chnren.com ChinaNet Room 06
+131465	 3dmgame.chnren.com ChinaNet Room 05
+131466	 3dmgame.chnren.com ChinaNet Room 04
+131467	 1.7 Malaysia Room 02
+262298	 Taiwan Room 08
+262299	 Taiwan Room 07
+262301	 Taiwan Room 06
+262302	 Taiwan Room 05
+589875	 Japan Room 03
+589877	 Japan Room 02
+589878	 Hong Kong Room 01
+589879	 Hong Kong Room 02
+589882	 NetCom Room 03
+589891	 NetCom Room 04
+589892	 Singapore Room 03
+589893	 Vietnam Room 01
+589900	 Korea Room 04
+589902	 Korea Room 06
+589904	 Korea Room 05
+589905	 Korea Room 07
+589906	 Korea Room 08
+589925	 Europe Room 06
+589926	 Europe Room 07
+589927	 Europe Room 09
+589930	 Russia Room 01
+589946	 Europe Room 08
+589950	 Europe Room 10
+589959	 Europe Room 11
+589960	 Russia Room 02
+589961	 Russia Room 04
+589962	 Russia Room 03
+589964	 Xinyu Tournament
+589970	 SanSan Room
+589971	 Noob Room
+589972	 Russia High Level Room 01
+589973	 Malaysia Room 01
+589976	 Malaysia Room 02
+589984	 Malaysia Room 03
+589988	 Malaysia Room 04
+589994	 Malaysia Room 06
+589996	 Malaysia Room 07
+589997	 Malaysia Room 08
+590000	 Malaysia Room 09
+1179652	 Europe RPG Room 15 (Warlocks)
+1179653	 Ukraine RPG Room 02 (1.26a)
+1179657	 [del]Ukraine DotA Room 07 (1.26a)
+1179658	 Ukraine DotA High Level Room 02 (1.26a)
+1179667	 Sweden DotA Room 01
+1179668	 [del]Slovenia DotA Room
+1179670	 [del]Serbian DotA Room 04
+1179765	 Europe DotA Room 52
+1179768	 [del]Poland DotA High Level Room 01
+1179780	 Northrend Inhouse League Room
+1179841	 Kosova DotA Room 01
+1179842	 Kingsurf.int Room
+1179843	 Italy DotA Room
+1179844	 International Tropical Tower Wars Room
+1179845	 International Exclusive Test-Game League Room
+1179847	 [del]IDEC Tournament and Clan War Room
+1179863	 [del]Hunters Arena Room
+1179866	 Hungary DotA Room 01
+1179870	 Greece DotA Room 05
+1179872	 Germany DotaSource.de Room
+1179879	 French DotA Room
+1179881	 Europe Tower Defence Room
+1179882	 Europe RPG Room 06
+1179883	 Europe RPG Room 04
+1179884	 Europe RPG Room 01
+1179890	 Europe Football Room
+1179891	 Europe DotA Room 44
+1179892	 Europe DotA Room 41
+1179893	 Europe DotA Room 40
+1179894	 Europe DotA Room 38
+1179895	 Europe DotA Room 31
+1179904	 Europe RPG Room 12 (Element TD)
+1179905	 Europe RPG Room 10 (Element TD)
+1179906	 ECDL Room
+1179907	 Dota Pride Public League Room
+1179908	 DotA Pride Asia League Room
+1179917	 Czech and Slovakia DotA Room 08
+1179918	 [del]Czech and Slovakia DotA Pickup Room
+196614	 Russia DotA Room 012 (1.26a)
+196615	 Russia DotA Room 011 (1.26a)
+196616	 Russia DotA Room 010 (1.26a)
+196617	 Russia DotA Room 009 (1.26a)
+196618	 Russia DotA Room 008 (1.26a)
+196619	 Russia DotA Room 007 (1.26a)
+196620	 [del]Kazakhstan DotA Room 25 (1.26a)
+196621	 [del]Kazakhstan DotA Room 22 (1.26a)
+196622	 [del]Greece DotA Room 09
+196623	 [del]Europe Room 05
+196624	 [del]Europe Room 05
+196625	 [del]Europe Room 04
+196626	 [del]Europe DotA Room 50
+196627	 [del]Europe DotA Room 43
+196628	 [del]Europe DotA Room 34
+196629	 Russia DotA Room 006 (1.26a)
+196630	 Russia DotA Room 005 (1.26a)
+196631	 Russia DotA Room 004 (1.26a)
+196632	 Russia DotA Room 003 (1.26a)
+196633	 Russia DotA Room 002 (1.26a)
+196634	 [del]CS1.6 Balkan Room
+196635	 [del]CS 1.6 Ukraine Room 02
+196636	 [del]CS 1.6 Ukraine Room 01
+196637	 [del]CS 1.6 Tournament Room
+196638	 [del]CS 1.6 Macedonia Room
+196639	 [del]Brazil DotA Room 70
+196640	 [del]Brazil DotA Room 69
+196641	 [del]Brazil DotA Room 68
+196642	 [del]Brazil DotA Room 67
+196643	 [del]Brazil DotA Room 61
+196644	 [del]Brazil DotA Room 60
+196645	 [del]Brazil DotA Room 59
+196646	 [del]Brazil DotA Room 57
+196647	 [del]Brazil DotA Room 54
+196648	 [del]Brazil DotA Room 53
+196649	 [del]Brazil DotA Room 50
+196650	 [del]Brazil DotA Room 49
+196651	 [del]Brazil DotA Room 48
+196652	 [del]Brazil DotA Room 47
+196653	 [del]Brazil DotA Room 46
+196654	 [del]Brazil DotA Room 45
+196655	 Russia LoD DotA Room 02 (1.26a)
+196656	 Russia DotA Room 001 (1.26a)
+196657	 [del]Russia DotA High Level Room 06 (1.26a)
+196658	 [del]Russia DotA High Level Room 05 (1.26a)
+196659	 [del]Russia DotA High Level Room 04 (1.26a)
+196660	 [del]Russia DotA High Level Room 03 (1.26a)
+196661	 [del]Russia DotA High Level Room 02 (1.26a)
+196662	 [del]Russia DotA High Level Room 01 (1.26a) + HOSTBOT
+196663	 Russia DotA Clanwar Room 02 (1.26a)
+196664	 Russia DotA Clanwar Room 01 (1.26a)
+196665	 [del]RoX.KIS Female League
+196666	 [del]AOE: The Rise of Rome Europe 1v1 Room 04
+196667	 AOE: The Rise of Rome Europe 1v1 Room 08
+196668	 [del]AOE: The Rise of Rome Europe 1v1 Room 02
+196671	 Russia TD Room 04 (1.26a)
+196672	 Russia DotA Room 121 (1.26a)
+196673	 Russia DotA Room 100 (1.26a)
+196674	 [del]Russia DotA Room 101 (1.26a)
+196675	 Russia DotA Room 044 (1.26a)
+196676	 Russia DotA Room 047 (1.26a)
+196677	 Russia DotA Room 052 (1.26a)
+196678	 Russia DotA Room 069 (1.26a)
+196679	 Russia DotA Room 070 (1.26a)
+196680	 Russia DotA Room 072 (1.26a)
+196681	 Russia DotA Room 073 (1.26a)
+196682	 Russia DotA Room 074 (1.26a)
+196683	 Russia DotA Room 075 (1.26a)
+196684	 Russia DotA Room 079 (1.26a)
+196685	 Russia LoD DotA Room 03 (1.26a)
+196686	 [del]Blizzplanet.ru Room
+196687	 Russia DotA Room 049 (1.26a)
+196688	 Russia DotA Room 048 (1.26a)
+196689	 Russia DotA Room 046 (1.26a)
+196690	 Russia DotA Room 045 (1.26a)
+196691	 Russia DotA Room 043 (1.26a)
+196692	 Russia DotA Room 042 (1.26a)
+196693	 Russia DotA Room 041 (1.26a)
+196764	 [del]Sweden DotA Room 04
+196765	 [del]Sweden DotA Room 03
+196766	 Russia DotA Room 115 (1.26a)
+196767	 Russia DotA Room 114 (1.26a)
+196768	 Russia DotA Room 113 (1.26a)
+196770	 Russia DotA Room 077 (1.26a)
+196771	 Russia DotA Room 076 (1.26a)
+196772	 Russia DotA Room 066 (1.26a)
+196778	 Russia DotA Room 106 (1.26a)
+196779	 [del]0SPL-Allstars Slaves Room
+196780	 Russia DotA Room 105 (1.26a)
+196788	 Russia TD Room 10 (1.26a)
+196789	 Russia TD Room 09 (1.26a)
+196790	 Russia TD Room 08 (1.26a)
+196791	 Russia TD Room 07 (1.26a)
+196792	 Russia DotA Room 071 (1.26a)
+196793	 Russia DotA Room 068 (1.26a)
+196794	 Russia DotA Room 067 (1.26a)
+196795	 Russia DotA Room 064 (1.26a)
+196796	 Russia DotA Room 054 (1.26a)
+196797	 Russia DotA Room 051 (1.26a)
+196812	 [del]Peru DotA Room 10
+196813	 Russia RPG Room 05 (1.26a)
+196814	 Russia RPG Room 04 (1.26a)
+196815	 Russia RPG Room 03 (1.26a)
+196816	 Russia RPG Room 02 (1.26a)
+196817	 Russia RPG Room 01 (1.26a)
+196822	 [del]Bulgaria DotA Room 18
+196823	 [del]Bulgaria DotA Room 17
+196824	 [del]Brunei DotA Room
+196825	 [del]Bolivia DotA Room 01
+196826	 [del]Australia DotA Room 10
+196827	 [del]Australia DotA Room 07
+196835	 Russia RPG Room 14 (Castle Fight) (1.26a)
+196836	 Russia DotA Room 122 (1.26a)
+196837	 Russia DotA Room 123 (1.26a)
+196838	 Russia DotA Room 126 (1.26a)
+196839	 Russia DotA Room 127 (1.26a)
+196840	 Russia DotA Room 128 (1.26a)
+196855	 [del]Australia DotA Room 13
+196856	 [del]Australia DotA Room 16
+196857	 [del]MCC League Room (Testing)
+196858	 [del]Europe DotA Room 16
+196859	 [del]Europe DotA Room 17
+196860	 [del]Europe DotA Room 18
+196861	 [del]Europe DotA Room 19
+196862	 [del]Europe DotA Room 21
+196863	 [del]Europe DotA Room 25
+196864	 [del]Mini Wars Room
+196865	 [del]Sweden DotA Room 08
+196866	 [del]Sweden DotA Room 09
+196867	 [del]Poland DotA Room 01
+196868	 [del]Poland DotA Room 02
+196870	 [del]Europe DotA Room 22
+196871	 [del]Europe DotA Room 35
+196879	 [del]0SPL-Allstars Mortals Room
+196880	 [del]0SPL-Allstars Gods Room
+196882	 [del]USA DotA Room 25
+196883	 [del]USA DotA Room 24
+196884	 [del]USA DotA Room 23
+196885	 [del]Russia DotA High Level Room 09 (1.26a)
+196886	 [del]Ukraine DotA Room 20 (1.26a)
+196887	 [del]Ukraine DotA Room 19 (1.26a)
+196888	 [del]Ukraine DotA Room 18 (1.26a)
+196889	 [del]Ukraine DotA Room 17 (1.26a)
+196890	 [del]Ukraine DotA Room 15 (1.26a)
+196929	 [del]Romania DotA Room 32
+196930	 [del]Romania DotA Room 31
+196931	 [del]Romania DotA Room 28
+196932	 [del]Romania DotA Room 27
+196936	 [del]Peru DotA Room 22
+196937	 [del]Peru DotA Room 21
+196938	 [del]Peru DotA Room 20
+196939	 [del]Peru DotA Room 19
+196940	 [del]Peru DotA Room 16
+196941	 [del]Montenegro DotA Room
+196942	 [del]Mongolia DotA Room 17
+196943	 [del]Mongolia DotA Room 15
+196944	 [del]Mongolia DotA Room 11
+262123	 [del]GodLikeroom.com Public
+262124	 [del]GodLikeroom.com League
+262126	 [del]Colombia DotA High Level Room 01
+262131	 [del]Pakistan DotA Room 04
+262133	 Kazakhstan Room 01
+262134	 Kazakhstan RPG Room 3 (1.26a)
+262135	 Kazakhstan OMG DotA Room 01 (1.26a)
+262137	 Ukraine OMG DotA Room 01 (1.26a)
+262138	 [del]Ukraine RPG Room 04 (1.26a)
+262139	 DotA.by Tournaments Room
+262140	 Russia RPG Room 11 (Naruto) (1.26a)
+262141	 Russia RPG Room 16 (Warlocks) (1.26a)
+262142	 Russia Imba DotA Room 05 (1.26a)
+262143	 Russia Imba DotA Room 04 (1.26a)
+327644	 Bosnia and Herzegovina DotA Room 01 [Moderated]
+262316	 PLU room
+262319	 NeoTV Race War
+262111	 Russia LoD DotA Room 09 (1.26a)
+262108	 [del]CS 1.6 Russia High Level Room 01
+262104	 [del]GuerillaMethod DotA VIP Room
+262106	 Russia TD Room 12 (1.26a)
+262101	 [del]Thailand Room
+262102	 [del]Vietnam Room 02
+262099	 [del]Iran iw3cup Private League Room
+262110	 [del]Iran iw3cup Private League Room
+327594	 Left 4 Dead 2 Asian Tournament Room 1
+327607	 DOTA 9tcw NetCom Room 01
+327588	 [del]Storm the Front DotA Room 2
+327589	 Storm the Front DotA Room
+327590	 [del]Storm the Front DotA Room 3
+262103	 [del]WCO League Room
+262107	 [del]CS 1.6 Kazakhstan High Level Room 01
+262105	 Russia DotA Clanwar Room 05 (1.26a)
+262089	 [del]Mexico DotA Clan War Room 01
+262090	 [del]Guatemala DotA Room
+262091	 [del]Peru DotA Clan War Room 01
+262092	 Bulgaria DotA Tournament Room
+262088	 [del]Oversea Chinese Star League
+262085	 Xtreme Professional League Room 2
+262086	 [del]Xtreme Professional League Room 1
+327593	 USA DotA High Level Room 02
+262082	 [del]Mexico DotA High Level Room 01
+262083	 [del]Ecuador DotA High Level Room 01
+262079	 [del]Greece Warlock Room 01
+262077	 [del]CS 1.6 Indian Room 2
+262075	 [del]Honduras DotA Room 01
+327606	 DOTA 9tcw NetCom Room 02
+262076	 [del]DotA Tournaments Room
+262078	 [del]India DotA High Level Room
+262067	 [del]EEDL Room
+262069	 AOE: The Rise of Rome Europe 1v1 Room 09
+262070	 [del]AOE: The Rise of Rome Europe 1v1 Room 05
+262087	 Russia RPG Room 20 (EWIX) (1.26a)
+262068	 [del]Giga Room
+262063	 [del]Alienware ADC 2010 Room 04
+262064	 [del]Alienware ADC 2010 Room 03
+262065	 [del]Alienware ADC 2010 Room 02
+262066	 [del]Alienware ADC 2010 Room 01
+262053	 [del]Alienware ADC 2010 - South Asia Qualifier Room
+262054	 [del]Alienware ADC 2010 - East Asia Qualifier Room
+262055	 [del]Alienware ADC 2010 - Vietnam Qualifier Room
+262056	 [del]Alienware ADC 2010 - Philippines Qualifier Room
+262057	 [del]Alienware ADC 2010 - Indonesia Qualifier Room
+262058	 [del]Alienware ADC 2010 - Thailand Qualifier Room
+262059	 [del]Alienware ADC 2010 - Malaysia Qualifier Room
+262060	 Russia RPG Room 23 (1.26a)
+262061	 [del]Alienware ADC 2010 - Singapore Qualifier Room
+262062	 Russia DotA Room 151 (1.26a)
+262084	 [del]USA DotA Room 27
+262100	 [del]USA DotA Room 26
+327638	 [del]Gamers Place Room
+262313	 Hungary DotA High Level Room
+262030	 Russia FarEast DotA Room 05 (1.26a)
+262112	 [del]FEARZ eSports Gamers Room
+262317	 Greece DotA Room 01 [Moderated]
+262028	 [del]Romania IHL Tournament Room
+131051	 CWCL NetCom Room
+262318	 Egypt DotA High Level Room
+262029	 [del]Romania IHL League Room
+262314	 Croatia DotA Room 02 [Moderated]
+262315	 Croatia DotA Room 01 [Moderated]
+131049	 AOE: The Rise of Rome Europe 1v1 Room 07
+196455	 GCA: City Hunter DotA Room
+196451	 CoD4 1.7 Russia Room 05
+196452	 CoD4 1.7 Russia High Level Room
+196446	 Albania DotA Room 01
+196447	 The Kingdom of Kaliron Room
+196448	 Mongolia RPG Room 2
+196449	 Iran DotA High Level Room 02
+196445	 Corrosive Game League room
+196524	 MYM Prime Defending Room
+196438	 Moldova DotA High Level Room (1.26a)
+196439	 ProDota.kz Room
+196440	 [del]Ukraine DotA Room 31 (1.26a)
+196437	 [del]BES-Gaming Dota Moderada Room
+131050	 X3M Dota League
+131025	 [del]Oceania Public DotA League
+131043	 [del]Turkey Dota Room 10
+131047	 [del]Turkey Dota Room 09
+131048	 Turkey Dota Room 07
+130988	 Binary Evasion Tournament Room
+130979	 Argentina DotA Room 04
+524143	 [del]Zapak Premier League Room
+524141	 [del]Razer Global Challenge Tournament Room 2
+524142	 [del]Razer Global Challenge Tournament Room 1
+130844	 CS 1.6 Vietnam Room 02
+130842	 Vietnam MST DotA Clan War Room
+130843	 CS Source Viet Nam Room 01
+130986	 Extremely Awesome League
+524135	 Cambodia DotA Room 02
+524133	 [deleted] Competitive Nations DotA Tournament
+524134	 Competitive Nations DotA League
+524130	 CyberStars Total Gamers League Room
+524132	 [del]DotA Mania Ladder Access Room
+262320	 Thailand Room
+262321	 Thailand Room 02
+262322	 Thailand Room
+262325	 1.7 Thailand Room
+262327	 Thailand DotA Room 16
+262328	 Thailand DotA Room 17
+262332	 Thailand DotA Room 18
+262333	 Thailand DotA Room 19
+262334	 Thailand DotA Room 20
+262335	 Thailand DotA Room 21
+262337	 Thailand DotA Room 22
+262339	 Thailand DotA Room 23
+262341	 Thailand DotA Room 24
+262348	 Thailand DotA Room 25
+262350	 Thailand Room 02
+524129	 [del]Greece GNet Dota League Room
+524140	 Nemesis Dota League Room
+524128	 Judgement Room
+327681	 Singapore DotA Room 30
+327682	 Singapore DotA Room 29
+327683	 Singapore DotA Room 28
+327684	 Singapore DotA Room 27
+327685	 Singapore DotA Room 26
+327686	 Singapore DotA Room 25
+327687	 Singapore DotA Room 24
+327688	 Singapore DotA Room 23
+327689	 [del]Singapore DotA Room 22
+327690	 [del]Singapore DotA Room 61 (1.26a)
+327691	 [del]Singapore DotA Room 60 (1.26a)
+327692	 [del]Singapore DotA Room 59 (1.26a)
+327693	 [del]Singapore DotA Room 58 (1.26a)
+327694	 [del]Singapore DotA Room 57 (1.26a)
+327695	 [del]Singapore DotA Room 56
+327696	 [del]Singapore DotA Room 55
+327697	 [del]Singapore DotA Room 54
+327698	 [del]Singapore DotA Room 53
+327699	 [del]Singapore DotA Room 52
+327700	 [del]Singapore DotA Room 51
+327701	 [del]Singapore DotA Room 50
+327702	 [del]Singapore DotA Room 49
+327703	 [del]Singapore DotA Room 48
+327704	 [del]Singapore DotA Room 47
+327705	 [del]Singapore DotA Room 46
+327706	 [del]Singapore DotA Room 45
+327707	 Singapore DotA Room 44
+327708	 Singapore DotA Room 43
+327709	 Singapore DotA Room 42
+327710	 Singapore DotA Room 39
+524131	 DotA Ladder by DotA Mania BR
+524136	 Hi-Gaming League Room
+130906	 [del]Indian Professional DotA League Room
+130787	 EDL DotA League ROOM
+130783	 Indian Professional Counter-Strike League
+130781	 [del]India DotA League Room
+130779	 Nepal DotA Room 03
+130780	 Nepal DotA Room 02
+130776	 Brazil DotA BYS Room
+130777	 Brazil RPG High Level Room 01
+130778	 Indonesia DotA Room 03
+130774	 [del]Jordan DotA High Level Room
+130775	 Arabian DotA High Level Room
+327528	 [del]Ukraine DotA Room 33 (1.26a)
+327529	 [del]Ukraine DotA Room 32 (1.26a)
+327527	 [del]X-DotA Tournaments Room
+327553	 [del]X-DotA Open Games Room
+130770	 CS 1.6 Indian Room 3
+327524	 LDHL Room
+327525	 LDCL Room
+130764	 Ecuador DotA Room 01
+130765	 Ecuador DotA Room 05
+130766	 Sanguo Room 01
+130767	 Twilight Eve RPG Room
+327523	 Navigator DotA Room
+130761	 [del]Pakistan Professional Dota Inhouse League
+130762	 Gameserver DotA Channel
+393217	 Taiwan ESM SanGuo 4.x 06
+393218	 Taiwan ESM Nobu  130 (new version)
+393219	 Taiwan ESM Nobu  129 (new version)
+393220	 Taiwan ESM Nobu  128 (new version)
+393221	 Taiwan ESM Nobu  127 (new version)
+393222	 Taiwan ESM Nobu  126 (new version)
+393223	 Taiwan ESM Nobu  125 (new version)
+393224	 Taiwan ESM Nobu  124 (new version)
+393225	 Taiwan ESM Nobu  123 (new version)
+393226	 Taiwan ESM Nobu  122 (new version)
+393227	 Taiwan ESM Nobu  121 (new version)
+393228	 Taiwan ESM Nobu  120 (new version)
+393229	 Taiwan ESM Nobu  119 (new version)
+393230	 Taiwan ESM Nobu  118 (new version)
+393231	 Taiwan ESM Nobu  117 (new version)
+393232	 Taiwan ESM Nobu  116 (new version)
+393233	 Taiwan ESM Nobu  115 (new version)
+393234	 Taiwan ESM Nobu  114 (new version)
+393235	 Taiwan ESM Nobu  113 (new version)
+393236	 Taiwan ESM Nobu  112 (new version)
+393237	 Taiwan ESM Nobu  111 (new version)
+393238	 Taiwan ESM Nobu  110 (new version)
+393239	 Taiwan ESM Nobu  109 (new version)
+393240	 Taiwan ESM Nobu  108 (new version)
+393241	 Taiwan ESM Nobu  107 (new version)
+393242	 Taiwan ESM Nobu  106 (new version)
+393243	 Taiwan ESM Nobu  105 (new version)
+393244	 Taiwan ESM Nobu  104 (new version)
+393245	 Taiwan ESM Nobu  103 (new version)
+393246	 Taiwan ESM Nobu  102 (new version)
+393247	 Taiwan ESM Nobu  101 (new version)
+393248	 Taiwan ESM Nobu  100 (new version)
+393249	 Taiwan ESM Nobu  001 (ladder)
+393250	 Taiwan ESM Nobu OverSea Player Room
+393251	 Taiwan ESM Nobu -high room 08
+393252	 Taiwan ESM Nobu -high room 07
+393253	 Taiwan ESM Nobu -high room 06
+393254	 Taiwan ESM Nobu -high room 05
+393255	 Taiwan ESM Nobu -high room 04
+393256	 Taiwan ESM Nobu -high room 03
+393257	 Taiwan ESM Nobu -high room 02
+393258	 Taiwan ESM Nobu -high room 01
+393259	 Taiwan ESM Nobu  702 for Bahamut
+393260	 Taiwan ESM Nobu  701 for PTT
+393261	 Taiwan ESM Nobu  700 for ESM
+393277	 Taiwan ESM SanGuo 4.x 05
+393278	 Taiwan ESM SanGuo 4.x 04
+393279	 Taiwan ESM SanGuo 4.x 03
+393280	 Taiwan ESM SanGuo 4.x 02
+393281	 Taiwan ESM SanGuo 4.x 01
+393294	 Taiwan ESM SanGuo 7.x 25 -AR
+393295	 Taiwan ESM SanGuo 7.x 24 -AR
+393296	 Taiwan ESM SanGuo 7.x 23 -AR
+393297	 Taiwan ESM SanGuo 7.x 22 -AR
+393298	 Taiwan ESM SanGuo 7.x 21 -AR
+393299	 Taiwan ESM SanGuo 7.x 20
+393300	 Taiwan ESM SanGuo 7.x 19
+393301	 Taiwan ESM SanGuo 7.x 18
+393302	 Taiwan ESM SanGuo 7.x 17
+393303	 Taiwan ESM SanGuo 7.x 16
+393304	 Taiwan ESM SanGuo 7.x 15
+393305	 Taiwan ESM SanGuo 7.x 14
+393306	 Taiwan ESM SanGuo 7.x 13
+393307	 Taiwan ESM SanGuo 7.x 12
+393308	 Taiwan ESM SanGuo 7.x 11
+393309	 Taiwan ESM SanGuo XD 6.x 45
+393310	 Taiwan ESM SanGuo XD 6.x 44
+393311	 Taiwan ESM SanGuo XD 6.x 43
+393312	 Taiwan ESM SanGuo XD 6.x 42
+393313	 Taiwan ESM SanGuo XD 6.x 41
+393314	 Taiwan ESM SanGuo XD 6.x 40
+393315	 Taiwan ESM SanGuo XD 6.x 39
+393316	 Taiwan ESM SanGuo XD 6.x 38
+393317	 Taiwan ESM SanGuo XD 6.x 37
+393318	 Taiwan ESM SanGuo XD 6.x 36
+393319	 Taiwan ESM SanGuo XD 6.x 35
+393320	 Taiwan ESM SanGuo XD 6.x 34
+393321	 Taiwan ESM SanGuo XD 6.x 33
+393322	 Taiwan ESM SanGuo XD 6.x 32
+393323	 Taiwan ESM SanGuo XD 6.x 31
+393324	 Taiwan ESM SanGuo XD 6.x 30
+393325	 Taiwan ESM SanGuo XD 6.x 29
+393326	 Taiwan ESM SanGuo XD 6.x 28
+393327	 Taiwan ESM SanGuo XD 6.x 27
+393328	 Taiwan ESM SanGuo XD 6.x 26
+393329	 Taiwan ESM SanGuo XD 6.x 25
+393330	 Taiwan ESM SanGuo XD 6.x 24
+393331	 Taiwan ESM SanGuo XD 6.x 23
+393332	 Taiwan ESM SanGuo XD 6.x 22
+393333	 Taiwan ESM SanGuo XD 6.x 21
+393334	 Taiwan ESM SanGuo XD 6.x 20
+393335	 Taiwan ESM SanGuo XD 6.x 19
+393336	 Taiwan ESM SanGuo XD 6.x 18
+393337	 Taiwan ESM SanGuo XD 6.x 17
+393338	 Taiwan ESM SanGuo XD 6.x 16
+393339	 Taiwan ESM SanGuo XD 6.x 15
+393340	 Taiwan ESM SanGuo XD 6.x 14
+393341	 Taiwan ESM SanGuo XD 6.x 13
+393342	 Taiwan ESM SanGuo XD 6.x 12
+393343	 Taiwan ESM SanGuo XD 6.x 11
+393344	 Taiwan ESM SanGuo XD 6.x 10
+393345	 Taiwan ESM SanGuo XD 6.x 09
+393346	 Taiwan ESM SanGuo XD 6.x 08
+393347	 Taiwan ESM SanGuo XD 6.x 07
+393348	 Taiwan ESM SanGuo XD 6.x 06
+393349	 Taiwan ESM SanGuo XD 6.x 05
+393350	 Taiwan ESM XianZhiXiaDao 01
+393351	 Taiwan ESM WuHuJianHouZhuan Room 01
+393352	 Taiwan ESM Warlock 01
+393353	 Taiwan ESM War of Imba 01
+393354	 Taiwan ESM VIP/Official Tournament Room 05
+393355	 Taiwan ESM VIP/Official Tournament Room 04
+393356	 Taiwan ESM VIP/Official Tournament Room 03
+393357	 Taiwan ESM VIP/Official Tournament Room 02
+393358	 Taiwan ESM VIP/Official Tournament Room 01
+393359	 Taiwan ESM Troll and Elves Room 01
+393360	 Taiwan ESM Troll and Elves Room normal 02
+393361	 Taiwan ESM Tower Defense 14
+393362	 Taiwan ESM Tower Defense 13
+393363	 Taiwan ESM Tower Defense 12
+393364	 Taiwan ESM Tower Defense 11
+393365	 Taiwan ESM Tower Defense 10
+393366	 Taiwan ESM Tower Defense 09
+393367	 Taiwan ESM Tower Defense 08
+393368	 Taiwan ESM Tower Defense 07
+393369	 Taiwan ESM Tower Defense 06
+393370	 Taiwan ESM Tower Defense 05
+393371	 Taiwan ESM Tower Defence 16
+393372	 Taiwan ESM Tower Defence 15
+393373	 Taiwan ESM Tower Defence 04
+393374	 Taiwan ESM Tower Defence 03
+393375	 Taiwan ESM Tower Defence 02
+393376	 Taiwan ESM Tower Defence 01
+393377	 Taiwan ESM strategy game 01
+393378	 Taiwan ESM Sanguo Qun Yin Online
+393379	 Taiwan ESM Sanguo Godness 01
+393380	 Taiwan ESM RPG Surprise Room 03
+393381	 Taiwan ESM RPG Surprise Room 02
+393382	 Taiwan ESM RPG Surprise Room 01
+393383	 Taiwan ESM RPG 16 -Load
+393384	 Taiwan ESM RPG 15 -Load
+393385	 Taiwan ESM RPG 14
+393386	 Taiwan ESM RPG 13
+393387	 Taiwan ESM RPG 12
+393388	 Taiwan ESM RPG 11
+393389	 Taiwan ESM RPG 10
+393390	 Taiwan ESM RPG 09
+393391	 Taiwan ESM RPG 08
+393392	 Taiwan ESM RPG 07
+393393	 Taiwan ESM RPG 06
+524309	 Taiwan ESM Nobu  151 (new version)
+524310	 Taiwan ESM Nobu  150 (new version)
+524311	 Taiwan ESM Nobu  149 (new version)
+524312	 Taiwan ESM Nobu  148 (new version)
+524313	 Taiwan ESM Nobu  147 (new version)
+524314	 Taiwan ESM Nobu  146 (new version)
+524315	 Taiwan ESM Nobu  145 (new version)
+524316	 Taiwan ESM Nobu  144 (new version)
+524317	 Taiwan ESM Nobu  143 (new version)
+524318	 Taiwan ESM Nobu  142 (new version)
+524319	 Taiwan ESM Nobu  141 (new version)
+524320	 Taiwan ESM Nobu  140 (new version)
+524321	 Taiwan ESM Nobu  139 (new version)
+524322	 Taiwan ESM Nobu  138 (new version)
+524323	 Taiwan ESM Nobu  137 (new version)
+524324	 Taiwan ESM Nobu  136 (new version)
+524325	 Taiwan ESM Nobu  135 (new version)
+524326	 Taiwan ESM Nobu  134 (new version)
+524327	 Taiwan ESM Nobu  133 (new version)
+524328	 Taiwan ESM Nobu  132 (new version)
+524329	 Taiwan ESM Nobu  131 (new version)
+524330	 Taiwan ESM Nobu Solo 01
+524331	 Taiwan ESM Nobu S 83(no 12.1c)
+524332	 Taiwan ESM Nobu S 82(no 12.1c)
+524333	 Taiwan ESM Nobu S 81(no 12.1c)
+524334	 Taiwan ESM Nobu S 80(no 12.1c)
+524335	 Taiwan ESM Nobu S 79(no 12.1c)
+524336	 Taiwan ESM Nobu S 78(no 12.1c)
+524337	 Taiwan ESM Nobu S 77(no 12.1c)
+524338	 Taiwan ESM Nobu S 76(no 12.1c)
+524339	 Taiwan ESM Nobu S 75(no 12.1c)
+524340	 Taiwan ESM Nobu S 74(no 12.1c)
+524341	 Taiwan ESM Nobu S 73(no 12.1c)
+524342	 Taiwan ESM Nobu S 72(no 12.1c)
+524343	 Taiwan ESM Nobu S 71(no 12.1c)
+524344	 Taiwan ESM Nobu S 70(no 12.1c)
+524345	 Taiwan ESM Nobu S 69(no 12.1c)
+524346	 Taiwan ESM Nobu S 68(no 12.1c)
+524347	 Taiwan ESM Nobu S 67(no 12.1c)
+524348	 Taiwan ESM Nobu S 66(no 12.1c)
+524349	 Taiwan ESM Nobu S 65(no 12.1c)
+524350	 Taiwan ESM Nobu S 64(no 12.1c)
+524351	 Taiwan ESM Nobu S 63(no 12.1c)
+524352	 Taiwan ESM Nobu S 62(no 12.1c)
+524353	 Taiwan ESM Nobu S 61(no 12.1c)
+524354	 Taiwan ESM Nobu S 60(no 12.1c)
+524355	 Taiwan ESM Nobu S 59(no 12.1c)
+524356	 Taiwan ESM Nobu S 58(no 12.1c)
+524357	 Taiwan ESM Nobu S 57(no 12.1c)
+524358	 Taiwan ESM Nobu S 56(no 12.1c)
+524359	 Taiwan ESM Nobu S 55(no 12.1c)
+524360	 Taiwan ESM Nobu S 54(no 12.1c)
+524361	 Taiwan ESM Nobu S 53(no 12.1c)
+524362	 Taiwan ESM Nobu S 52(no 12.1c)
+524363	 Taiwan ESM Nobu S 51(no 12.1c)
+524364	 Taiwan ESM Nobu S 50(no 12.1c)
+524365	 Taiwan ESM Nobu S 49(no 12.1c)
+524366	 Taiwan ESM Nobu S 48(no 12.1c)
+524367	 Taiwan ESM Nobu S 47(no 12.1c)
+524368	 Taiwan ESM Nobu S 46(no 12.1c)
+524369	 Taiwan ESM Nobu S 45(no 12.1c)
+524370	 Taiwan ESM Nobu S 44(no 12.1c)
+524371	 Taiwan ESM Nobu S 43(no 12.1c)
+524372	 Taiwan ESM Nobu S 42(no 12.1c)
+524374	 Taiwan ESM SanGuo XD 10
+524375	 Taiwan ESM SanGuo XD 09
+524376	 Taiwan ESM SanGuo XD 08
+524377	 Taiwan ESM SanGuo XD 07
+524378	 Taiwan ESM SanGuo XD 06
+524379	 Taiwan ESM SanGuo XD 05
+524380	 Taiwan ESM SanGuo XD 04
+524381	 Taiwan ESM SanGuo XD 03
+524382	 Taiwan ESM SanGuo XD 02
+524383	 Taiwan ESM SanGuo XD 01
+524385	 Taiwan ESM SanGuo for PTT
+524386	 Taiwan ESM SanGuo for Bahamut
+524395	 Taiwan ESM SanGuo 5.x 05
+524396	 Taiwan ESM SanGuo 5.x 04
+524397	 Taiwan ESM SanGuo 5.x 03
+524398	 Taiwan ESM SanGuo 5.x 02
+524399	 Taiwan ESM SanGuo 5.x 01
+524400	 Taiwan ESM SanGuo XD 6.x 88
+524401	 Taiwan ESM SanGuo XD 6.x 87
+524402	 Taiwan ESM SanGuo XD 6.x 86
+524406	 Taiwan ESM SanGuo 4.x 10
+524407	 Taiwan ESM SanGuo 4.x 09
+524408	 Taiwan ESM SanGuo 4.x 08
+524409	 Taiwan ESM SanGuo 4.x 07
+524410	 Taiwan ESM Sanguo Solo 02
+524411	 Taiwan ESM Sanguo Solo 01
+524412	 Taiwan ESM SanGuo XD 6.x 84
+524413	 Taiwan ESM SanGuo XD 6.x 83
+524414	 Taiwan ESM SanGuo XD 6.x 82
+524415	 Taiwan ESM SanGuo XD 6.x 81
+524416	 Taiwan ESM SanGuo XD 6.x 80
+524417	 Taiwan ESM SanGuo XD 6.x 79
+524418	 Taiwan ESM SanGuo XD 6.x 78
+524419	 Taiwan ESM SanGuo XD 6.x 77
+524420	 Taiwan ESM SanGuo XD 6.x 76
+524421	 Taiwan ESM SanGuo XD 6.x 75
+524422	 Taiwan ESM SanGuo XD 6.x 74
+524423	 Taiwan ESM SanGuo XD 6.x 73
+524424	 Taiwan ESM SanGuo XD 6.x 72
+524425	 Taiwan ESM SanGuo XD 6.x 71
+524426	 Taiwan ESM SanGuo XD 6.x 70
+524427	 Taiwan ESM SanGuo XD 6.x 69
+524428	 Taiwan ESM SanGuo XD 6.x 68
+524429	 Taiwan ESM SanGuo XD 6.x 67
+524430	 Taiwan ESM SanGuo XD 6.x 66
+524431	 Taiwan ESM SanGuo XD 6.x 65
+524432	 Taiwan ESM SanGuo XD 6.x 64
+524433	 Taiwan ESM SanGuo XD 6.x 63
+524434	 Taiwan ESM SanGuo XD 6.x 62
+524435	 Taiwan ESM SanGuo XD 6.x 61
+524436	 Taiwan ESM SanGuo XD 6.x 60
+524437	 Taiwan ESM SanGuo XD 6.x 59
+524438	 Taiwan ESM SanGuo XD 6.x 58
+524439	 Taiwan ESM SanGuo XD 6.x 57
+524440	 Taiwan ESM SanGuo XD 6.x 56
+524441	 Taiwan ESM SanGuo XD 6.x 55
+524442	 Taiwan ESM SanGuo XD 6.x 54
+524443	 Taiwan ESM SanGuo XD 6.x 53
+524444	 Taiwan ESM SanGuo XD 6.x 52
+524445	 Taiwan ESM SanGuo XD 6.x 51
+524446	 Taiwan ESM SanGuo XD 6.x 50
+524447	 Taiwan ESM SanGuo XD 6.x 49
+524448	 Taiwan ESM SanGuo XD 6.x 48
+524449	 Taiwan ESM SanGuo XD 6.x 47
+524450	 Taiwan ESM SanGuo XD 6.x 46
+524455	 HongKong ESM Nobu 12
+524456	 HongKong ESM Nobu 11
+524457	 HongKong ESM Nobu 10
+524458	 HongKong ESM Nobu 09
+524459	 HongKong ESM Nobu 08
+524460	 HongKong ESM Nobu 07
+524461	 HongKong ESM Nobu 06
+524462	 HongKong ESM Nobu 05
+524463	 HongKong ESM Nobu 04
+524464	 HongKong ESM Nobu 03
+524465	 HongKong ESM Nobu 02
+524466	 HongKong ESM Nobu 01
+524467	 HongKong ESM Nobu  S01
+524468	 HongKong ESM Nobu  AT00 tournament
+524470	 HongKong DotA Allstars 01
+655412	 Taiwan ESM Nobu S 41(no 12.1c)
+655413	 Taiwan ESM Nobu S 40(no 12.1c)
+655414	 Taiwan ESM Nobu S 39(no 12.1c)
+655415	 Taiwan ESM Nobu S 38(no 12.1c)
+655416	 Taiwan ESM Nobu S 37(no 12.1c)
+655417	 Taiwan ESM Nobu S 36(no 12.1c)
+655418	 Taiwan ESM Nobu S 35(no 12.1c)
+655419	 Taiwan ESM Nobu S 34(no 12.1c)
+655420	 Taiwan ESM Nobu S 33(no 12.1c)
+655421	 Taiwan ESM Nobu S 32(no 12.1c)
+655422	 Taiwan ESM Nobu S 31(no 12.1c)
+655423	 Taiwan ESM Nobu S 30-1(no 12.1c)
+655424	 Taiwan ESM Nobu S 30(no 12.1c)
+655425	 Taiwan ESM Nobu S 29(no 12.1c)
+655426	 Taiwan ESM Nobu S 28(no 12.1c)
+655427	 Taiwan ESM Nobu S 26(no 12.1c)
+655428	 Taiwan ESM Nobu S 26(no 12.1c)
+655429	 Taiwan ESM Nobu S 25(no 12.1c)
+655430	 Taiwan ESM Nobu S 24(no 12.1c)
+655431	 Taiwan ESM Nobu S 23(no 12.1c)
+655432	 Taiwan ESM Nobu S 22(no 12.1c)
+655433	 Taiwan ESM Nobu S 21(no 12.1c)
+655434	 Taiwan ESM Nobu S 20(no 12.1c)
+655435	 Taiwan ESM Nobu S 19(no 12.1c)
+655436	 Taiwan ESM Nobu S 18(no 12.1c)
+655437	 Taiwan ESM Nobu S 17(no 12.1c)
+655438	 Taiwan ESM Nobu S 16(no 12.1c)
+655439	 Taiwan ESM Nobu S 15(no 12.1c)
+655440	 Taiwan ESM Nobu S 14(no 12.1c)
+655441	 Taiwan ESM Nobu S 13(no 12.1c)
+655442	 Taiwan ESM Nobu S 12(no 12.1c)
+655443	 Taiwan ESM Nobu S 11(no 12.1c)
+655444	 Taiwan ESM Nobu S 10(no 12.1c)
+655445	 Taiwan ESM Nobu S 09(no 12.1c)
+655446	 Taiwan ESM Nobu S 08 (no 12.1c)
+655447	 Taiwan ESM Nobu S 07 (no 12.1c)
+655448	 Taiwan ESM Nobu S 06(no 12.1c)
+655449	 Taiwan ESM Nobu S 05(no 12.1c)
+655450	 Taiwan ESM Nobu S 04(no 12.1c)
+655451	 Taiwan ESM Nobu S 03(no 12.1c)
+655452	 Taiwan ESM Nobu S 02(no 12.1c)
+655453	 Taiwan ESM Nobu S 01(no 12.1c)
+655454	 Taiwan ESM Nobu S 00(no 12.1c)
+655455	 Taiwan ESM SanGuo XD 6.x 04
+655456	 Taiwan ESM SanGuo XD 6.x 03
+655457	 Taiwan ESM SanGuo XD 6.x 02
+655458	 Taiwan ESM SanGuo XD 6.x 01
+655488	 Taiwan ESM PiLi DotA 01
+655489	 Taiwan ESM ReinForce 01
+655490	 Taiwan ESM GoGoDie DotA 01
+655491	 Taiwan ESM PiLi DotA 03
+655492	 Taiwan ESM Mini DotA 01
+655495	 Taiwan DotA Allstars 02 all mode Room
+655496	 Taiwan DotA Allstars 01 all mode Room
+655497	 Taiwan DotA Allstars 03  -apsp Room
+655501	 Taiwan ESM PiLi DotA 02
+655502	 Taiwan JinYong 01
+655504	 Taiwan ESM DotA Chaos/EX 01
+655505	 Macau V8Game.Net Nobu Room 01
+655507	 HongKong ESM Tower Defense 01
+655510	 HongKong ESM Sango 01
+655511	 HongKong ESM nother map
+655512	 HongKong ESM RPG 02
+655513	 HongKong ESM RPG 01
+720933	 Taiwan ESM SanGuo 7.x 10
+720934	 Taiwan ESM SanGuo 7.x 09
+720935	 Taiwan ESM SanGuo 7.x 08
+720936	 Taiwan ESM SanGuo 7.x 07
+720937	 Taiwan ESM SanGuo 7.x 06
+720938	 Taiwan ESM SanGuo 7.x 05
+720939	 Taiwan ESM SanGuo 7.x 04 (admin)
+720940	 Taiwan ESM SanGuo 7.x 03 (admin)
+720941	 Taiwan ESM SanGuo 7.x 02 (admin)
+720942	 Taiwan ESM SanGuo 7.x 01
+720951	 Taiwan ESM SanGuo 3.7 XD 05
+720952	 Taiwan ESM SanGuo 3.7 XD 04
+720953	 Taiwan ESM SanGuo 3.7 XD 03
+720954	 Taiwan ESM SanGuo 3.7 XD 02
+720955	 Taiwan ESM SanGuo 3.7 XD 01
+720957	 Taiwan ESM SanGuo 3.7 05
+720958	 Taiwan ESM SanGuo 3.7 04
+720959	 Taiwan ESM SanGuo 3.7 03
+720960	 Taiwan ESM SanGuo 3.7 02
+720961	 Taiwan ESM SanGuo 3.7 01
+720962	 Taiwan ESM RPG 05
+720963	 Taiwan ESM RPG 04
+720964	 Taiwan ESM RPG 03
+720965	 Taiwan ESM RPG 02
+720966	 Taiwan ESM RPG 01
+720967	 Taiwan ESM Ragnarok Online 01
+720968	 Taiwan ESM Protect the Godness 04
+720969	 Taiwan ESM Protect the Godness 03
+720970	 Taiwan ESM Protect the Godness 02
+720971	 Taiwan ESM Protect the Godness 01
+720972	 Taiwan ESM One Piece 03
+720973	 Taiwan ESM One Piece 02
+720974	 Taiwan ESM One Piece 01
+720975	 Taiwan ESM Naruto Ninja 07
+720976	 Taiwan ESM Naruto Ninja 06
+720977	 Taiwan ESM Naruto Ninja 05
+720978	 Taiwan ESM Naruto Ninja 04
+720979	 Taiwan ESM Naruto Ninja 03
+720980	 Taiwan ESM Naruto Ninja 02
+720981	 Taiwan ESM Naruto Ninja 01
+720982	 Taiwan ESM Nanoha Fight 01
+720983	 Taiwan ESM FuJiaTianXia 01
+720984	 Taiwan ESM Fate/Another 01
+720985	 Taiwan ESM Eastern THDOTA 01
+720986	 Taiwan ESM Dota Orochi 02
+720987	 Taiwan ESM Dota Orochi 01
+720988	 Taiwan ESM Blue-Green 01
+720989	 Taiwan ESM Battle Island 01
+720990	 Taiwan Emergency Room 02
+720991	 Taiwan Emergency Room 01
+786442	 Philippines Shop to Shop DotA ROOM 01 (v1.26a)
+786443	 Philippines Shop to Shop DotA ROOM 02 (v1.26a)
+786444	 Philippines Shop to Shop DotA ROOM 03 (v1.26a)
+786445	 Philippines Shop to Shop DotA ROOM 04 (v1.26a)
+786446	 Philippines Shop to Shop DotA ROOM 05 (v1.26a)
+786447	 Philippines Shop to Shop DotA ROOM 06 (v1.26a)
+786448	 Philippines Shop to Shop DotA ROOM 07 (v1.26a)
+786449	 Philippines Shop to Shop DotA ROOM 08 (v1.26a)
+786450	 Philippines Shop to Shop DotA ROOM 09 (v1.26a)
+786451	 Philippines Shop to Shop DotA ROOM 10 (v1.26a)
+786452	 Philippines Shop to Shop DotA ROOM 11 (v1.26a)
+786453	 Philippines Shop to Shop DotA ROOM 12 (v1.26a)
+786454	 War3 Custom Map: Castle Fight Room 1
+786455	 War3 Custom Map: Fufu Ninja All-Stars Room 1
+786456	 War3 Custom Map: Fufu Ninja All-Stars Room 2
+786457	 War3 Custom Map: Gold Rush Room 1
+786458	 War3 Custom Map: Gold Rush Room 2
+786459	 War3 Custom Map: RPG Room 01
+786460	 War3 Custom Map: RPG Room 02
+786461	 War3 Custom Map: RPG Room 03
+786464	 War3 Custom Map: Tree Tag Room 01
+786465	 War3 Custom Map: Tree Tag Room 02
+786466	 War3 Custom Map: Tree Tag Room 03
+786467	 War3 Custom Map: War of Philippines Heroes 1
+786468	 War3 Custom Map: War of Philippines Heroes 2
+786469	 Philippines PLDT: DotA ROOM 021 (v1.26a)
+786470	 Philippines PLDT: DotA ROOM 022 (v1.26a)
+786471	 Philippines PLDT: DotA ROOM 023 (v1.26a)
+786472	 Philippines PLDT: DotA ROOM 024 (v1.26a)
+786473	 Philippines PLDT: DotA ROOM 025 (v1.26a)
+786474	 Philippines PLDT: DotA ROOM 026 (v1.26a)
+786475	 Philippines PLDT: DotA ROOM 027 (v1.26a)
+786476	 Philippines PLDT: DotA ROOM 028 (v1.26a)
+786477	 Philippines PLDT: DotA ROOM 029 (v1.26a)
+786478	 Philippines PLDT: DotA ROOM 030 (v1.26a)
+786479	 Philippines PLDT: DotA ROOM 031 (v1.26a)
+786480	 Philippines PLDT: DotA ROOM 032 (v1.26a)
+786481	 Philippines PLDT: DotA ROOM 033 (v1.26a)
+786482	 Philippines PLDT: DotA ROOM 034 (v1.26a)
+786483	 Philippines PLDT: DotA ROOM 035 (v1.26a)
+786484	 Philippines PLDT: DotA ROOM 036 (v1.26a)
+786485	 Philippines PLDT: DotA ROOM 037 (v1.26a)
+786486	 Philippines PLDT: DotA ROOM 038 (v1.26a)
+786487	 Philippines PLDT: DotA ROOM 039 (v1.26a)
+786488	 Philippines PLDT: DotA ROOM 040 (v1.26a)
+786489	 Philippines PLDT: DotA ROOM 041 (v1.24e)
+786490	 Philippines PLDT: DotA ROOM 042 (v1.24e)
+786491	 Philippines PLDT: DotA ROOM 043 (v1.24e)
+786492	 Philippines PLDT: DotA ROOM 044 (v1.24e)
+786493	 Philippines PLDT: DotA ROOM 045 (v1.24e)
+786494	 Philippines PLDT: DotA ROOM 046 (v1.24e)
+786495	 Philippines PLDT: DotA ROOM 047 (v1.24e)
+786496	 Philippines PLDT: DotA ROOM 048 (v1.24e)
+786497	 Philippines PLDT: DotA ROOM 049 (v1.24e)
+786498	 Philippines PLDT: DotA ROOM 050 (v1.24e)
+786499	 Philippines PLDT: DotA ROOM 051 (v1.24e)
+786500	 Philippines PLDT: DotA ROOM 052 (v1.24e)
+786501	 Philippines PLDT: DotA ROOM 053 (v1.24e)
+786502	 Philippines PLDT: DotA ROOM 053 (v1.24e)
+786503	 Philippines PLDT: DotA ROOM 055 (v1.24e)
+786504	 Philippines PLDT: DotA ROOM 056 (v1.24e)
+786505	 Philippines PLDT: DotA ROOM 057 (v1.24e)
+786506	 Philippines PLDT: DotA ROOM 058 (v1.24e)
+786507	 Philippines PLDT: DotA ROOM 059 (v1.24e)
+786508	 Philippines BayanTel: DotA ROOM 06 (v1.26a)
+786509	 Philippines BayanTel: DotA ROOM 07 (v1.26a)
+786510	 Philippines BayanTel: DotA ROOM 08 (v1.26a)
+786511	 Philippines BayanTel: DotA ROOM 09 (v1.26a)
+786512	 Philippines BayanTel: DotA ROOM 10 (v1.26a)
+786513	 Philippines BayanTel: DotA ROOM 11 (v1.26a)
+786514	 Philippines BayanTel: DotA ROOM 12 (v1.26a)
+786515	 Philippines BayanTel: DotA ROOM 13 (v1.26a)
+786516	 Philippines BayanTel: DotA ROOM 14 (v1.26a)
+786517	 Philippines BayanTel: DotA ROOM 15 (v1.26a)
+786518	 Philippines BayanTel: DotA ROOM 16 (v1.24e)
+786519	 Philippines BayanTel: DotA ROOM 17 (v1.24e)
+786520	 Philippines BayanTel: DotA ROOM 18 (v1.24e)
+786521	 Philippines BayanTel: DotA ROOM 19 (v1.24e)
+786522	 Philippines BayanTel: DotA ROOM 20 (v1.24e)
+786523	 Philippines BayanTel: DotA ROOM 21 (v1.24e)
+786524	 Philippines BayanTel: DotA ROOM 22 (v1.24e)
+786525	 Philippines BayanTel: DotA ROOM 23 (v1.24e)
+786526	 Philippines BayanTel: DotA ROOM 24 (v1.24e)
+786527	 Philippines BayanTel: DotA ROOM 25 (v1.24e)
+786533	 War3 Custom Map: BayanTel Fufu All Stars Room 01
+786534	 War3 Custom Map: BayanTel RPG Room 01
+786535	 War3 Custom Map: BayanTel RPG Room 02
+786536	 Philippines BayanTel: Shop to Shop DotA Room 01
+786537	 Philippines BayanTel: Shop to Shop DotA Room 02
+786538	 War3 Custom Map: BayanTel Tree Tag Room 01
+786539	 Philippines Globe: DotA High Level ROOM 01 (v1.26a)
+786540	 Philippines Globe: DotA High Level ROOM 02 (v1.26a)
+786541	 Philippines Globe: DotA High Level ROOM 03 (v1.26a)
+786542	 Philippines Globe: DotA ROOM 01 (v1.26a)
+786543	 Philippines Globe: DotA ROOM 02 (v1.26a)
+786544	 Philippines Globe: DotA ROOM 03 (v1.26a)
+786545	 Philippines Globe: DotA ROOM 04 (v1.26a)
+786546	 Philippines Globe: DotA ROOM 05 (v1.26a)
+786547	 Philippines Globe: DotA ROOM 06 (v1.26a)
+786548	 Philippines Globe: DotA ROOM 07 (v1.26a)
+786549	 Philippines Globe: DotA ROOM 08 (v1.26a)
+786550	 Philippines Globe: DotA ROOM 09 (v1.26a)
+786551	 Philippines Globe: DotA ROOM 10 (v1.26a)
+786552	 Philippines Globe: DotA ROOM 11 (v1.26a)
+786553	 Local Tambayan: Dagupan ROOM (v1.24e)
+786554	 [del] Local Tambayan: DotA Regional War ROOM (v1.24e)
+786555	 [del] Local Tambayan: Greater Mindanao Gaming ROOM (v1.24e)
+786556	 Local Tambayan: Iloilo ROOM (v1.24e)
+786557	 Local Tambayan: Laguna ROOM (v1.24e)
+786558	 Local Tambayan: Metro Manila ROOM (v1.24e)
+786559	 Local Tambayan: Pampanga ROOM (v1.24e)
+786560	 Local Tambayan: Tarlac ROOM (v1.24e)
+786561	 Local Tambayan: Zamboanga ROOM (v1.24e)
+786562	 Partners: DotA Strategy Community Room
+786563	 Partners: DotAPH.com DotA Room
+786564	 Partners: Mineski Battlegrounds ROOM (v1.26a)
+786565	 Partners: Mineski Grounds ROOM (v1.26a)
+786566	 Partners: Mineski Infinity ROOM (v1.26a)
+786567	 Partners: Mineski League ROOM (v1.26a)
+786568	 Partners: PinoyGG DotA Carnage Room
+786569	 Partners: PinoyGG Clan War Room
+786570	 Philippines BayanTel: DotA High Level ROOM 01 (v1.26a)
+786571	 Philippines BayanTel: DotA ROOM 01 (v1.26a)
+786572	 Philippines BayanTel: DotA ROOM 02 (v1.26a)
+786573	 Philippines BayanTel: DotA ROOM 03 (v1.26a)
+786574	 Philippines BayanTel: DotA ROOM 04 (v1.26a)
+786575	 Philippines BayanTel: DotA ROOM 05 (v1.26a)
+851970	 Philippines PLDT: DotA ROOM 060 (v1.24e)
+851971	 Philippines PLDT: DotA ROOM 061 (v1.24e)
+851972	 Philippines PLDT: DotA ROOM 062 (v1.24e)
+851973	 Philippines PLDT: DotA ROOM 063 (v1.24e)
+851974	 Philippines PLDT: DotA ROOM 064 (v1.24e)
+851975	 Philippines PLDT: DotA ROOM 065 (v1.24e)
+851976	 Philippines PLDT: DotA ROOM 066 (v1.24e)
+851977	 Philippines PLDT: DotA ROOM 067 (v1.24e)
+851978	 Philippines PLDT: DotA ROOM 068 (v1.24e)
+851979	 Philippines PLDT: DotA ROOM 069 (v1.24e)
+851980	 Philippines PLDT: DotA ROOM 070 (v1.24e)
+851981	 Philippines PLDT: DotA ROOM 071 (v1.24e)
+851982	 Philippines PLDT: DotA ROOM 072 (v1.24e)
+851983	 Philippines PLDT: DotA ROOM 073 (v1.24e)
+851984	 Philippines PLDT: DotA ROOM 074 (v1.24e)
+851985	 Philippines PLDT: DotA ROOM 075 (v1.24e)
+851986	 Philippines PLDT: DotA ROOM 076 (v1.24e)
+851987	 Philippines PLDT: DotA ROOM 077 (v1.24e)
+851988	 Philippines PLDT: DotA ROOM 078 (v1.24e)
+851989	 Philippines PLDT: DotA ROOM 079 (v1.24e)
+851990	 Philippines PLDT: DotA ROOM 080 (v1.24e)
+851991	 Philippines PLDT: DotA ROOM 081 (v1.24e)
+851992	 Philippines PLDT: DotA ROOM 082 (v1.24e)
+851993	 Philippines PLDT: DotA ROOM 083 (v1.24e)
+851994	 Philippines PLDT: DotA ROOM 084 (v1.24e)
+851995	 Philippines PLDT: DotA ROOM 085 (v1.24e)
+851996	 Philippines PLDT: DotA ROOM 086 (v1.24e)
+851997	 Philippines PLDT: DotA ROOM 087 (v1.24e)
+851998	 Philippines PLDT: DotA ROOM 088 (v1.24e)
+851999	 Philippines PLDT: DotA ROOM 089 (v1.24e)
+852000	 Philippines Globe: DotA ROOM 12 (v1.26a)
+852001	 Philippines Globe: DotA ROOM 13 (v1.26a)
+852002	 Philippines Globe: DotA ROOM 14 (v1.26a)
+852003	 Philippines Globe: DotA ROOM 15 (v1.26a)
+852004	 Philippines Globe: DotA ROOM 16 (v1.26a)
+852005	 Philippines Globe: DotA ROOM 17 (v1.26a)
+852006	 Philippines Globe: DotA ROOM 18 (v1.26a)
+852007	 Philippines Globe: DotA ROOM 19 (v1.26a)
+852008	 Philippines Globe: DotA ROOM 20 (v1.26a)
+852009	 Partners: RektaDotA Community ROOM (v1.26a)
+852010	 Philippines PLDT: DotA High Level ROOM 01 (v1.26a)
+852011	 Philippines PLDT: DotA High Level ROOM 02 (v1.26a)
+852012	 Philippines PLDT: DotA High Level ROOM 03 (v1.26a)
+852013	 Philippines PLDT: DotA High Level ROOM 04 (v1.26a)
+852014	 Philippines PLDT: DotA High Level ROOM 05 (v1.26a)
+852015	 Philippines PLDT: DotA High Level ROOM 06 (v1.26a)
+852016	 Philippines PLDT: DotA High Level ROOM 07 (v1.26a)
+852017	 Philippines PLDT: DotA High Level ROOM 08 (v1.26a)
+852018	 Philippines PLDT: DotA High Level ROOM 09 (v1.26a)
+852019	 Philippines PLDT: DotA High Level ROOM 10 (v1.26a)
+852020	 Philippines PLDT: DotA ROOM 001 (v1.26a)
+852021	 Philippines PLDT: DotA ROOM 002 (v1.26a)
+852022	 Philippines PLDT: DotA ROOM 003 (v1.26a)
+852023	 Philippines PLDT: DotA ROOM 004 (v1.26a)
+852024	 Philippines PLDT: DotA ROOM 005 (v1.26a)
+852025	 Philippines PLDT: DotA ROOM 006 (v1.26a)
+852026	 Philippines PLDT: DotA ROOM 007 (v1.26a)
+852027	 Philippines PLDT: DotA ROOM 008 (v1.26a)
+852028	 Philippines PLDT: DotA ROOM 009 (v1.26a)
+852029	 Philippines PLDT: DotA ROOM 010 (v1.26a)
+852030	 Philippines PLDT: DotA ROOM 011 (v1.26a)
+852031	 Philippines PLDT: DotA ROOM 012 (v1.26a)
+852032	 Philippines PLDT: DotA ROOM 013 (v1.26a)
+852033	 Philippines PLDT: DotA ROOM 014 (v1.26a)
+852034	 Philippines PLDT: DotA ROOM 015 (v1.26a)
+852035	 Philippines PLDT: DotA ROOM 016 (v1.26a)
+852036	 Philippines PLDT: DotA ROOM 017 (v1.26a)
+852037	 Philippines PLDT: DotA ROOM 018 (v1.26a)
+852038	 Philippines PLDT: DotA ROOM 019 (v1.26a)
+852039	 Philippines PLDT: DotA ROOM 020 (v1.26a)
+852040	 [del] ALL-STARS Sweetopia E-walker High Level ROOM 01
+852041	 A* Sweetopia Malolos Cybercafe (www.sweetopia.ph)
+852042	 A* Sweetopia Manila Cybercafe (www.sweetopia.ph)
+852043	 Partners: Drop Dead Gorgeous (DDG) VIP Lounge
+852044	 Event Room: DotA Tournament Room 1
+852045	 Partners: DriveN eSports DotA ROOM
+852046	 Event Room: DotA Tournament Room 3
+852047	 Event Room: GCA Tournament
+852048	 Event Room: Playdota Philippines
+852049	 Event Room: Philippines Online Staff Room
+852050	 GCA: AKOCDEX-AKOCJUAN DotA Room
+852051	 GCA: Bits&Chips DotA Room
+852052	 GCA: G-Master DotA Room
+852053	 GCA: HOOKED 168 DotA Room
+852055	 GCA: Maimai Computers
+852056	 GCA: Mudhouse Internet Cafe
+852057	 GCA: Netopia DotA Room
+852058	 GCA: TheNet.Com Room
+852059	 GCA: TK Zone - La Union DotA Room 01
+852060	 GCA: Web iCafe Room
+852061	 Local Tambayan: Visayas ROOM (v1.24e)
+852062	 Local Tambayan: Luzon ROOM (v1.24e)
+852063	 Local Tambayan: Mindanao ROOM (v1.24e)
+852064	 Local Tambayan: Cagayan Valley ROOM (v1.24e)
+852065	 Local Tambayan: Cavite ROOM (v1.24e)
+852066	 Russia Imba DotA Room 01 (1.26a)
+131067	 Iran Room
+131068	 Brazil DotA BYS Room 02
+327672	 EAL Tournament Room
+131066	 CS 1.6 FragFest Room
+131057	 AOE: The Rise of Rome Europe 1v1 Room 06
+131058	 AOE: The Rise of Rome Europe 1v1 Room 05
+131059	 AOE: The Rise of Rome Europe 1v1 Room 04
+131060	 AOE: The Rise of Rome Europe 1v1 Room 02
+131061	 Europe DDay Room
+131053	 Philippines Globe: Shop to Shop DotA Room 03
+131054	 Philippines Globe: Shop to Shop DotA Room 02
+131056	 Philippines Globe: Shop to Shop DotA Room 01
+458750	 Taiwan ESM Nobu -high room 10
+458751	 Taiwan ESM Nobu -high room 09
+131045	 Philippines Digitel: DotA ROOM 03 (v1.24e)
+131046	 Philippines Digitel: DotA ROOM 02 (v1.24e)
+131052	 Philippines Digitel: DotA ROOM 01 (v1.24e)
+131042	 [del]Greece GNet Tournament Dota Room
+131044	 Georgia DotA Room 04
+1048577	 Vietnam DotA ROOM 061 v1.24e
+1114113	 Vietnam DotA ROOM 062 v1.24e
+196609	 Russia DotA Room 017 (1.26a)
+196610	 Russia DotA Room 016 (1.26a)
+196611	 Russia DotA Room 015 (1.26a)
+196612	 Russia DotA Room 014 (1.26a)
+196613	 Russia DotA Room 013 (1.26a)
+196669	 [del]ProDota.ru Inhouse Room
+196670	 Russia LoD DotA Room 04 (1.26a)
+196694	 Russia DotA Room 040 (1.26a)
+196695	 Russia DotA Room 039 (1.26a)
+196696	 Russia DotA Room 038 (1.26a)
+196697	 Russia DotA Room 037 (1.26a)
+196698	 Russia DotA Room 036 (1.26a)
+196699	 Russia DotA Room 035 (1.26a)
+196700	 Russia DotA Room 034 (1.26a)
+196701	 Russia DotA Room 033 (1.26a)
+196702	 Russia DotA Room 032 (1.26a)
+196703	 Russia DotA Room 031 (1.26a)
+196704	 Russia DotA Room 030 (1.26a)
+196705	 Russia DotA Room 029 (1.26a)
+196706	 Russia DotA Room 028 (1.26a)
+196707	 Russia DotA Room 027 (1.26a)
+196708	 Russia DotA Room 026 (1.26a)
+196709	 Russia DotA Room 025 (1.26a)
+196710	 Russia DotA Room 024 (1.26a)
+196711	 Russia DotA Room 023 (1.26a)
+196712	 Russia DotA Room 022 (1.26a)
+196713	 Russia DotA Room 021 (1.26a)
+196714	 Russia DotA Room 020 (1.26a)
+196715	 Russia DotA Room 019 (1.26a)
+196716	 Russia DotA Room 018 (1.26a)
+196717	 Russia DotA Room 099 (1.26a)
+196718	 Russia DotA Room 098 (1.26a)
+196719	 Russia DotA Room 097 (1.26a)
+196720	 Russia DotA Room 096 (1.26a)
+196721	 Russia DotA Room 095 (1.26a)
+196722	 Russia DotA Room 094 (1.26a)
+196723	 Russia DotA Room 091 (1.26a)
+196724	 Russia DotA Room 090 (1.26a)
+196725	 Russia DotA Room 089 (1.26a)
+196726	 Russia DotA Room 088 (1.26a)
+196727	 Russia DotA Room 087 (1.26a)
+196728	 Russia DotA Room 086 (1.26a)
+196729	 Russia DotA Room 085 (1.26a)
+196730	 Russia DotA Room 084 (1.26a)
+196731	 Russia DotA Room 083 (1.26a)
+196732	 Russia DotA Room 082 (1.26a)
+196733	 Russia DotA Room 081 (1.26a)
+196734	 Russia DotA Room 080 (1.26a)
+196735	 Russia DotA Room 078 (1.26a)
+196736	 Russia DotA Room 065 (1.26a)
+196737	 Russia DotA Room 063 (1.26a)
+196738	 Russia DotA Room 062 (1.26a)
+196739	 Russia DotA Room 061 (1.26a)
+196740	 Russia DotA Room 060 (1.26a)
+196741	 Russia DotA Room 059 (1.26a)
+196742	 Russia DotA Room 058 (1.26a)
+196743	 Russia DotA Room 057 (1.26a)
+196744	 Russia DotA Room 056 (1.26a)
+196745	 Russia DotA Room 055 (1.26a)
+196746	 Russia DotA Room 053 (1.26a)
+196747	 Russia DotA Room 050 (1.26a)
+196748	 Russia FarEast RPG Room 01 (1.26a)
+196749	 Russia FarEast DotA Room 04 (1.26a)
+196750	 Russia FarEast DotA Room 03 (1.26a)
+196751	 Russia FarEast DotA Room 02 (1.26a)
+196752	 [del]Russia FarEast DotA Room 01 (1.26a) [moderated]
+196753	 [del]Russia FarEast DotA High Level Room (1.26a)
+196754	 Russia DotA Tournaments Room (1.26a)
+196755	 Russia DotA Room 130 (1.26a)
+196756	 Russia DotA Room 129 (1.26a)
+196757	 Russia DotA Room 125 (1.26a)
+196758	 Russia DotA Room 124 (1.26a)
+196759	 Russia DotA Room 120 (1.26a)
+196760	 Russia DotA Room 119 (1.26a)
+196761	 Russia DotA Room 118 (1.26a)
+196762	 Russia DotA Room 117 (1.26a)
+196763	 Russia DotA Room 116 (1.26a)
+196769	 Russia DotA Room 112 (1.26a)
+196773	 Russia DotA Room 111 (1.26a)
+196774	 Russia DotA Room 110 (1.26a)
+196775	 Russia DotA Room 109 (1.26a)
+196776	 Russia DotA Room 108 (1.26a)
+196777	 Russia DotA Room 107 (1.26a)
+196781	 Russia DotA Room 104 (1.26a)
+196782	 Russia DotA Room 103 (1.26a)
+196783	 Russia DotA Room 102 (1.26a)
+196784	 [del]sP DotA League Room
+196785	 [del]sP DotA League - Testgames Room
+196786	 [del]SMS DotA League Room
+196787	 Russian DotA League Room
+196798	 Russia TD Room 06 (1.26a)
+196799	 Russia TD Room 05 (1.26a)
+196800	 Russia TD Room 03 (1.26a)
+196801	 Russia TD Room 02 (1.26a)
+196802	 Russia TD Room 01 (1.26a)
+196803	 Russia RPG Room 18 (Dday) (1.26a)
+196804	 Russia RPG Room 17 (Dday) (1.26a)
+196805	 Russia RPG Room 15 (Castle Fight) (1.26a)
+196806	 Russia RPG Room 12 (Naruto) (1.26a)
+196807	 Russia RPG Room 10 (1.26a)
+196808	 Russia RPG Room 09 (1.26a)
+196809	 Russia RPG Room 08 (1.26a)
+196810	 Russia RPG Room 07 (1.26a)
+196811	 Russia RPG Room 06 (1.26a)
+196818	 Russia RPG Room 19 (Blood Way) (1.26a)
+196819	 Russia RPG Room 21 (Pudge Wars) (1.26a)
+196820	 Russia Petrosanshina Room 04 (1.26a)
+196821	 Russia Petrosanshina Room 03 (1.26a)
+196828	 Russia Petrosanshina Room 02 (1.26a)
+196829	 Russia Petrosanshina Room 01 (1.26a)
+196830	 Russia Imba DotA Room 03 (1.26a)
+196831	 Russia Imba DotA Room 02 (1.26a)
+262149	 Singapore DotA Room 21
+262150	 Singapore DotA Room 20
+262151	 Singapore DotA Room 19
+262152	 Singapore DotA Room 18
+262153	 Singapore DotA Room 17
+262154	 Singapore DotA Room 16
+262155	 Singapore DotA Room 15
+262156	 Singapore DotA Room 14
+262168	 Singapore DotA Room 13
+262169	 Singapore DotA Room 12
+262170	 Singapore DotA Room 11
+262171	 Singapore DotA Room 10
+262172	 Singapore DotA Room 09
+262176	 Singapore DotA Room 08
+262198	 Singapore DotA Room 02
+262199	 Singapore DotA Room 01
+262200	 [del]Singapore DotA Inhouse League Room
+262201	 [del]Singapore DotA Clan War Room 02
+262218	 Singapore DotA Clan War Room
+262291	 GameWorksSG DotA Room
+262292	 [del]Events Room 01
+262303	 DotASG â€“ ProPowerPlay Room
+262304	 CHAMBERS CYRUS CROSSFIRE
+262305	 XtC Room
+262307	 Tower Defense Room 10
+262309	 Tower Defense Room 09
+262310	 Tower Defense Room 08
+262311	 Tower Defense Room 07
+262312	 Tower Defense Room 06
+262323	 Tower Defense Room 05
+262324	 Tower Defense Room 04
+262326	 Tower Defense Room 03
+262329	 Tower Defense Room 02
+262330	 Tower Defense Room 01
+262331	 Singapore Vampire Room 05
+262336	 Singapore Vampire Room
+262338	 Singapore SCOGA DotA Room
+262340	 Singapore RPG Room 02
+262342	 Singapore RPG Room 01
+262343	 Singapore Night of the Dead: Aftermath Room
+262344	 Singapore Island Defense Room
+262345	 [del]Singapore DotA Room 67 (1.26a)
+262346	 [del]Singapore DotA Room 66 (1.26a)
+262347	 [del]Singapore DotA Room 65 (1.26a)
+262349	 [del]Singapore DotA Room 64 (1.26a)
+262351	 [del]Singapore DotA Room 63 (1.26a)
+262352	 [del]Singapore DotA Room 62 (1.26a)
+262353	 Malaysia DotA ROOM 55 (v1.24e)
+262354	 Malaysia DotA ROOM 54 (v1.24e)
+262359	 Malaysia DotA ROOM 53 (v1.24e)
+262360	 Malaysia DotA ROOM 52 (v1.24e)
+262362	 Malaysia DotA ROOM 51 (v1.24e)
+262363	 Malaysia DotA ROOM 50 (v1.24e)
+262364	 Malaysia DotA ROOM 49 (v1.24e)
+262370	 Malaysia DotA ROOM 48 (v1.24e)
+262374	 Malaysia DotA ROOM 47 (v1.24e)
+262375	 Malaysia DotA ROOM 46 (v1.24e)
+262376	 Malaysia DotA ROOM 45 (v1.24e)
+262377	 Malaysia DotA ROOM 44 (v1.24e)
+262378	 Malaysia DotA ROOM 43 (v1.24e)
+262379	 Malaysia DotA ROOM 42 (v1.24e)
+262380	 Malaysia DotA ROOM 41 (v1.24e)
+262381	 Malaysia DotA ROOM 40 (v1.24e)
+262382	 Malaysia DotA ROOM 39 (v1.24e)
+262383	 Malaysia DotA ROOM 38 (v1.24e)
+262384	 Malaysia DotA ROOM 37 (v1.24e)
+262385	 Malaysia DotA ROOM 36 (v1.24e)
+262386	 Malaysia DotA ROOM 35 (v1.24e)
+262387	 Malaysia DotA ROOM 34 (v1.24e)
+262388	 Malaysia DotA ROOM 33 (v1.24e)
+262390	 Malaysia DotA ROOM 32 (v1.24e)
+262391	 Malaysia DotA ROOM 31 (v1.24e)
+262392	 Malaysia DotA ROOM 30 (v1.24e)
+262396	 Malaysia DotA ROOM 29 (v1.24e)
+262397	 Malaysia DotA ROOM 28 (v1.24e)
+262398	 Malaysia DotA ROOM 27 (v1.24e)
+262399	 Malaysia DotA ROOM 26 (v1.24e)
+262401	 War 3 Custom Map : Tower Defense ROOM 3 (v1.24e)
+262404	 War 3 Custom Map : Pudge War ROOM 1 (v1.24e)
+262405	 War 3 Custom Map : Hero Defense ROOM 2 (v1.24e)
+262406	 War 3 Custom Map : Hero Defense ROOM 1 (v1.24e)
+262407	 War 3 Custom Map : Fufu United Ninja ROOM 8 (v1.24e)
+327711	 Singapore DotA Room 38
+327712	 Singapore DotA Room 37
+327713	 Singapore DotA Room 36
+327714	 Singapore DotA Room 35
+327715	 Singapore DotA Room 34
+327716	 Singapore DotA Room 33
+327717	 Singapore DotA Room 32
+327718	 Singapore DotA Room 31
+327719	 Malaysia DotA ROOM 25 (v1.24e)
+327720	 Malaysia DotA ROOM 24 (v1.24e)
+327721	 Malaysia DotA ROOM 23 (v1.24e)
+327722	 Malaysia DotA ROOM 22 (v1.24e)
+327723	 Malaysia DotA ROOM 21 (v1.24e)
+327724	 Malaysia DotA ROOM 20 (v1.24e)
+327725	 Malaysia DotA ROOM 19 (v1.24e)
+327726	 Malaysia DotA ROOM 18 (v1.24e)
+327727	 Malaysia DotA ROOM 17 (v1.24e)
+327728	 Malaysia DotA ROOM 16 (v1.24e)
+327729	 Malaysia DotA ROOM 09 (v1.24e)
+327730	 Malaysia DotA ROOM 08 (v1.24e)
+327731	 Malaysia DotA ROOM 07 (v1.24e) [Moderated]
+327732	 Malaysia DotA ROOM 06 (v1.24e) [Moderated]
+327733	 Malaysia DotA ROOM 05 (v1.24e) [Moderated]
+327734	 Malaysia DotA ROOM 04 (v1.24e)
+327735	 Malaysia DotA ROOM 03 (v1.24e)
+327736	 Malaysia DotA ROOM 02 (v1.24e) â€“ gokart.garena.com
+327737	 Malaysia DotA ROOM 01 (v1.24e) â€“ gokart.garena.com
+327738	 Malaysia DotA High Level Room 01 (v1.24e)
+327739	 Malaysia DotA Clan War Room 04 (v1.24e)
+327740	 Malaysia DotA Clan War Room 03 (v1.24e)
+327741	 Malaysia DotA Clan War Room 02 (v1.24e)
+327742	 Malaysia DotA Clan War Room 01 (v1.24e)
+327743	 Kingsurf Room
+327744	 DotA Room 03 (MyGarena.com)
+327745	 War 3 Custom Map : Fufu United Ninja ROOM 5 (v1.24e)
+327746	 War 3 Custom Map : Fufu United Ninja ROOM 4 (v1.24e)
+327747	 War 3 Custom Map : Fufu United Ninja ROOM 3 (v1.24e)
+327748	 War 3 Custom Map : Fufu United Ninja ROOM 2 (v1.24e)
+327749	 War 3 Custom Map : Fufu United Ninja ROOM 1 (v1.24e)
+327750	 War 3 Custom Map : FSN ROOM 1 (v1.24e)
+327751	 OceanNet-Blue Dolphine Room
+327752	 Malaysia RPG Room 02
+327753	 Malaysia RPG ROOM 01 (v1.24b)
+327754	 Malaysia Events Room
+327755	 Malaysia DotA Room 75
+327756	 Malaysia DotA Room 74
+327757	 Malaysia DotA Room 73
+327758	 Malaysia DotA Room 72
+327759	 Malaysia DotA Room 71
+327760	 Malaysia DotA ROOM 70
+327761	 Malaysia DotA ROOM 69
+327762	 Malaysia DotA ROOM 68
+327763	 Malaysia DotA ROOM 67
+327764	 Malaysia DotA ROOM 66
+327765	 Malaysia DotA ROOM 65
+327766	 Malaysia DotA ROOM 64
+327767	 Malaysia DotA ROOM 63
+327768	 Malaysia DotA ROOM 62
+327769	 Malaysia DotA ROOM 61
+327770	 Malaysia DotA ROOM 60 (v1.24e)
+327771	 Malaysia DotA ROOM 59 (v1.24e)
+327772	 Malaysia DotA ROOM 58 (v1.24e)
+327773	 Malaysia DotA ROOM 57 (v1.24e)
+327774	 Malaysia DotA ROOM 56 (v1.24e)
+1048578	 Vietnam Thien Kiem ROOM 06 v1.24e
+1048579	 Vietnam Thien Kiem ROOM 05 v1.24e
+1048580	 Vietnam Thien Kiem ROOM 04 v1.24e
+1048581	 Vietnam Thien Kiem ROOM 03 v1.24e
+1048582	 Vietnam Thien Kiem ROOM 02 v1.24e
+1048583	 Vietnam Thien Kiem ROOM 01 v1.24e
+1048584	 Custom Map Island Troll Tribes Room
+1048585	 Custom Map Hero Defense Room 05
+1048586	 Custom Map Hero Defense Room 04
+1048587	 Custom Map Hero Defense Room 03
+1048588	 Custom Map Hero Defense Room 02
+1048589	 Custom Map Hero Defense Room 01
+1048590	 Custom Map Green TD ROOM 01
+1048591	 Custom Map Footman ROOM 2
+1048592	 Custom Map Footman ROOM 1
+1048593	 Custom Map Element TD ROOM 01
+1048594	 Vietnam VOZ Inhouse Room
+1048595	 Custom Map Castle Fight ROOM 02
+1048596	 Custom Map Castle Fight ROOM 01
+1048597	 Custom Map BattleShip ROOM 1
+1048598	 Custom Maps Room 08
+1048599	 Custom Maps Room 07
+1048600	 Custom Maps Room 06
+1048601	 Custom Maps Room 05
+1048602	 Custom Maps Room 04
+1048603	 Custom Maps Room 03
+1048604	 Custom Maps Room 02
+1048605	 Custom Maps Room 01
+1048606	 Custom Map X Hero Siege ROOM 01
+1048607	 Custom Map Hero Defense Room 10
+1048608	 Custom Map Tong Hop Room 09
+1048609	 Custom Map Tong Hop Room 08
+1048610	 Custom Map Tong Hop Room 07
+1048611	 Custom Map Tong Hop Room 06
+1048612	 Custom Map Tong Hop Room 05
+1048613	 Custom Map Tong Hop Room 04
+1048614	 Custom Map Tong Hop Room 03
+1048615	 Custom Map Tong Hop Room 02
+1048616	 Vietnam DotA ROOM 142 v1.24e
+1048617	 Custom Map Tong Hop Room 01
+1048618	 Vietnam DDay ROOM 01 v1.24e
+1048619	 Custom Map Tong Hop Room 11
+1048620	 Custom Map Tong Hop Room 12
+1048621	 Custom Map Tong Hop Room 13
+1048622	 Custom Maps Room 20
+1048623	 Custom Maps Room 19
+1048624	 Vietnam DDay 19.9b ROOM 25 v1.23
+1048625	 Vietnam DDay 19.9b ROOM 24 v1.23
+1048626	 Vietnam DDay 19.9b ROOM 23 v1.23
+1048627	 Vietnam DDay 19.9b ROOM 22 v1.23
+1048628	 Vietnam DDay 19.9b ROOM 21 v1.23
+1048629	 Vietnam DDay 19.9b ROOM 20 v1.23
+1048630	 Vietnam DDay 19.9b ROOM 19 v1.23
+1048631	 Vietnam DDay 19.9b ROOM 18 v1.23
+1048632	 Vietnam DDay 19.9b ROOM 17 v1.23
+1048633	 Vietnam DDay 20.0fe ROOM 01 v1.23
+1048634	 Vietnam DDay 19.9b ROOM 15 v1.23
+1048635	 Vietnam DDay 19.9b ROOM 14 v1.23
+1048636	 Vietnam DDay 19.9b ROOM 13 v1.23
+1048637	 Vietnam DDay 19.9b ROOM 12 v1.23
+1048638	 Vietnam DDay 19.9b ROOM 11 v1.23
+1048639	 Vietnam DDay 19.9b ROOM 10 v1.23
+1048640	 Vietnam DDay 19.9b ROOM 09 v1.23
+1048641	 Vietnam DDay 19.9b ROOM 08 v1.23
+1048642	 Vietnam DDay 19.9b ROOM 07 v1.23
+1048643	 Vietnam DDay 19.9b ROOM 06 v1.23
+1048644	 Vietnam DDay 19.9b ROOM 05 v1.23
+1048645	 Vietnam DDay 19.9b ROOM 04 v1.23
+1048646	 Vietnam DDay 19.9b ROOM 03 v1.23
+1048647	 Vietnam DDay 19.9b ROOM 02 v1.23
+1048650	 Vietnam DotA ROOM 037 v1.24e
+1048651	 Vietnam DotA ROOM 036 v1.24e
+1048652	 Vietnam DotA ROOM 035 v1.24e
+1048653	 Vietnam DotA ROOM 034 v1.24e
+1048654	 Vietnam DotA ROOM 032 v1.24e
+1048655	 Vietnam DotA ROOM 031 v1.24e
+1048656	 Vietnam DotA ROOM 030 v1.24e
+1048657	 Vietnam DotA ROOM 029 v1.24e
+1048659	 Vietnam DotA ROOM 026 v1.24e
+1048661	 Vietnam DotA ROOM 024 v1.24e
+1048662	 Vietnam DotA ROOM 023 v1.24e
+1048663	 Vietnam DotA ROOM 022 v1.24e
+1048664	 Vietnam DotA ROOM 021 v1.24e
+1048665	 Vietnam DotA ROOM 020 v1.24e
+1048666	 Vietnam DotA ROOM 019 v1.24e
+1048667	 Vietnam DotA ROOM 018 v1.24e
+1048668	 Vietnam DotA ROOM 017 v1.24e
+1048669	 Vietnam DotA ROOM 016 v1.24e
+1048670	 Vietnam DotA ROOM 015 v1.24e
+1048671	 Vietnam DotA ROOM 014 v1.24e
+1048672	 Vietnam DotA ROOM 013 v1.24e
+1048673	 Vietnam DotA ROOM 012 v1.24e
+1048674	 Vietnam DotA ROOM 011 v1.24e
+1048675	 Vietnam DotA ROOM 010 v1.24e
+1048676	 Vietnam DotA ROOM 009 v1.24e
+1048677	 Vietnam DotA ROOM 008 v1.24e
+1048678	 Vietnam DotA ROOM 103 v1.24e
+1048679	 Vietnam DotA ROOM 102 v1.24e
+1048680	 Vietnam DotA ROOM 101 v1.24e
+1048681	 Vietnam DotA ROOM 100 v1.24e
+1048682	 Vietnam DotA ROOM 099 v1.24e
+1048683	 Vietnam DotA ROOM 098 v1.24e
+1048684	 Vietnam DotA ROOM 097 v1.24e
+1048685	 Vietnam DotA ROOM 096 v1.24e
+1048686	 Vietnam DotA ROOM 095 v1.24e
+1048687	 Vietnam DotA ROOM 094 v1.24e
+1048688	 Vietnam DotA ROOM 093 v1.24e
+1048689	 Vietnam DotA ROOM 092 v1.24e
+1048690	 Vietnam DotA ROOM 091 v1.24e
+1048691	 Vietnam DotA ROOM 090 v1.24e
+1048693	 Vietnam DotA ROOM 088 v1.24e
+1048694	 Vietnam DotA ROOM 086 v1.24e
+1048695	 Vietnam DotA ROOM 085 v1.24e
+1048696	 Vietnam DotA ROOM 084 v1.24e
+1048697	 Vietnam DotA ROOM 083 v1.24e
+1048698	 Vietnam DotA ROOM 082 v1.24e
+1048699	 Vietnam DotA ROOM 081 v1.24e
+1048700	 Vietnam DotA ROOM 080 v1.24e
+1048701	 Vietnam DotA ROOM 079 v1.24e
+1048702	 Vietnam DotA ROOM 078 v1.24e
+1048703	 Vietnam DotA ROOM 077 v1.24e
+1048704	 Vietnam DotA ROOM 076 v1.24e
+1048706	 Vietnam DotA ROOM 074 v1.24e
+1048707	 Vietnam DotA ROOM 073 v1.24e
+1048708	 AOE I : Hai Duong Room 02
+1048709	 AOE I : Hai Duong Room 01
+1048710	 AOE I : Hai Duong Pro Room 02
+1048711	 AOE I : Hai Duong Pro Room 01
+1048712	 AOE I : Ha Noi Room 08
+1048713	 AOE I : Ha Noi Room 07
+1048714	 AOE I : Ha Noi Room 06
+1048715	 AOE I : Ha Noi Room 05
+1048716	 AOE I : Ha Noi Room 04
+1048717	 AOE I : Ha Noi Room 03
+1048718	 AOE I : Ha Noi Room 02
+1048719	 AOE I : Ha Noi Room 01
+1048720	 AOE I : Ha Noi Pro ROOM 04
+1048721	 AOE I : Ha Noi Pro ROOM 03
+1048722	 AOE I : Ha Noi Pro ROOM 02
+1048723	 AOE I : Ha Noi Pro ROOM 01
+1048724	 AOE I : Online Tournament Room 02
+1048725	 AOE I : Online Tournament Room 01
+1048726	 AOE I : Bac Giang Room 02
+1048727	 AOE I : Bac Giang Room 01
+1048728	 AOE I : Lao Cai Room 02
+1048729	 AOE I : Lao Cai Room 01
+1048730	 AOE I : Hung Yen Room 02
+1048731	 AOE I : Hung Yen Room 01
+1048732	 AOE I : Hung Yen Pro Room 02
+1048733	 AOE I : Hung Yen Pro Room 01
+1048734	 AOE I : Hai Phong Room 02
+1048735	 AOE I : Hai Phong Room 01
+1048736	 AOE I : Hai Phong Pro ROOM 02
+1048737	 AOE I : Hai Phong Pro ROOM 01
+1048738	 Vietnam Scenario - Other Maps
+1048739	" Vietnam Scenario - KA , Zoka Room 02"
+1048740	" Vietnam Scenario - KA , Zoka Room 01"
+1048741	 Vietnam Random Map Room 05
+1048742	 Vietnam Random Map Room 04
+1048743	 Vietnam Random Map Room 03
+1048744	 Vietnam Random Map Room 02
+1048745	 Vietnam Random Map Room 01
+1048746	 Vietnam Custom Map Room 04
+1114114	 Custom Map TOWER Defense ROOM 04
+1114115	 Custom Map TOWER Defense ROOM 03
+1114116	 Custom Map TOWER Defense ROOM 02
+1114117	 Custom Map TOWER Defense ROOM 01
+1114118	 Custom Map Pudge Wars Reloaded ROOM 1
+1114119	 Custom Pokemon Defense
+1114120	 Custom Map Naruto Room 01
+1114121	 Vietnam Thien Kiem ROOM 18 v1.24e
+1114122	 Vietnam Thien Kiem ROOM 17 v1.24e
+1114123	 Vietnam Thien Kiem ROOM 16 v1.24e
+1114124	 Vietnam Thien Kiem ROOM 15 v1.24e
+1114125	 Vietnam Thien Kiem ROOM 14 v1.24e
+1114126	 Vietnam Thien Kiem ROOM 19 v1.24e
+1114127	 Vietnam Thien Kiem ROOM 13 v1.24e
+1114128	 Vietnam Thien Kiem ROOM 12 v1.24e
+1114129	 Vietnam Thien Kiem ROOM 11 v1.24e
+1114130	 Vietnam Thien Kiem ROOM 10 v1.24e
+1114131	 Vietnam Thien Kiem ROOM 09 v1.24e
+1114132	 Vietnam Thien Kiem ROOM 08 v1.24e
+1114133	 Vietnam Thien Kiem ROOM 07 v1.24e
+1114134	 Vietnam DDay ROOM 03 v1.24e
+1114135	 Custom Map Hero Defense Room 09
+1114136	 Custom Map Tong Hop Room 10
+1114137	 Custom Map Hero Defense Room 08
+1114138	 Custom Map Castle Fight ROOM 03
+1114139	 Vietnam DDay 18.6b ROOM v1.23
+1114140	 Garena Online Tournament ROOM 1 v1.24e
+1114141	 Vietnam DotA IMBA ROOM 13 v1.24e
+1114142	 Custom Map Green TD ROOM 05
+1114143	 Custom Map Green TD ROOM 04
+1114144	 Custom Maps Room 18
+1114145	 Custom Maps Room 17
+1114146	 Custom Maps Room 16
+1114147	 Custom Maps Room 15
+1114148	 Custom Maps Room 14
+1114149	 Custom Maps Room 13
+1114150	 Custom Maps Room 12
+1114151	 Custom Maps Room 11
+1114152	 Custom Maps Room 10
+1114153	 Custom Maps Room 09
+1114154	 Vietnam DotA ROOM 007 v1.24e
+1114155	 Vietnam DotA ROOM 006 v1.24e
+1114156	 Vietnam DotA ROOM 005 v1.24e
+1114157	 Vietnam DotA IMBA ROOM 12 v1.24e
+1114158	 Vietnam DotA ROOM 003 v1.24e
+1114159	 Vietnam DotA ROOM 002 v1.24e
+1114160	 Vietnam DotA IMBA ROOM 11 v1.24e
+1114161	 Vietnam DotA OMG ROOM 05 v1.24e
+1114162	 Vietnam DotA OMG ROOM 04 v1.24e
+1114163	 Vietnam DotA OMG ROOM 03 v1.24e
+1114164	 Vietnam DotA OMG ROOM 02 v1.24e
+1114165	 Vietnam DotA OMG ROOM 01 v1.24e
+1114166	 Vietnam DotA Clan War ROOM 07 v1.24e
+1114167	 Vietnam DotA Clan War ROOM 06 v1.24e
+1114168	 Vietnam DotA Clan War ROOM 05 v1.24e
+1114169	 Vietnam DotA Clan War ROOM 04 v1.24e
+1114170	 Vietnam DotA Clan War ROOM 03 v1.24e
+1114171	 Vietnam DotA Clan War ROOM 02 v1.24e
+1114172	 Vietnam DotA Clan War ROOM 01 v1.24e
+1114173	 Garena Esports Sunday ROOM v1.24e
+1114174	 Garena Esports Sunday ROOM v1.23
+1114175	 Vietnam DDay 20.0fe ROOM 04 v1.23
+1114176	 Vietnam DDay 20.0fe ROOM 05 v1.23
+1114177	 Vietnam DDay 20.0fe ROOM 03 v1.23
+1114178	 Vietnam DDay 20.0fe ROOM 02 v1.23
+1114179	 Vietnam DotA LoD ROOM 15 v1.24e
+1114180	 Vietnam DDay ROOM 05 v1.24e
+1114181	 Vietnam DDay ROOM 04 v1.24e
+1114182	 Vietnam DDay 19.9b ROOM 01 v1.23
+1114183	 Vietnam DDay ROOM 02 v1.24e
+1114185	 Vietnam DotA ROOM 071 v1.24e
+1114186	 Vietnam DotA ROOM 070 v1.24e
+1114187	 Vietnam DotA ROOM 069 v1.24e
+1114188	 Vietnam DotA ROOM 068 v1.24e
+1114189	 Vietnam DotA ROOM 067 v1.24e
+1114190	 Vietnam DotA ROOM 065 v1.24e
+1114191	 Vietnam DotA ROOM 064 v1.24e
+1114192	 Vietnam DotA ROOM 063 v1.24e
+1114193	 Vietnam DotA ROOM 060 v1.24e
+1114194	 Vietnam DotA ROOM 059 v1.24e
+1114195	 Vietnam DotA ROOM 058 v1.24e
+1114196	 Vietnam DotA ROOM 057 v1.24e
+1114199	 Vietnam DotA ROOM 054 v1.24e
+1114203	 Vietnam DotA ROOM 050 v1.24e
+1114205	 Vietnam DotA ROOM 048 v1.24e
+1114206	 Vietnam DotA ROOM 047 v1.24e
+1114211	 Vietnam DotA ROOM 042 v1.24e
+1114213	 Vietnam DotA ROOM 040 v1.24e
+1114214	 VnSharing Inhouse Room
+1114215	 Vietnam VnB Inhouse ROOM v1.24e
+1114216	 Vietnam SCVG Clan ROOM v1.24e
+1114217	 Vietnam MST DotA Clan War Room
+1114218	 Vietnam GameVN Inhouse ROOM v1.24e
+1114219	 Vietnam DotA Tournament ROOM 02 v1.24e
+1114220	 Vietnam DotA Tournament ROOM 01 v1.24e
+1114221	 Vietnam DotA ROOM 125 v1.24e
+1114222	 Vietnam DotA ROOM 124 v1.24e
+1114223	 Vietnam DotA ROOM 123 v1.24e
+1114224	 Vietnam DotA ROOM 122 v1.24e
+1114225	 Vietnam DotA ROOM 121 v1.24e
+1114226	 Vietnam DotA ROOM 120 v1.24e
+1114227	 Vietnam DotA ROOM 119 v1.24e
+1114228	 Vietnam DotA ROOM 118 v1.24e
+1114229	 Vietnam DotA ROOM 117 v1.24e
+1114230	 Vietnam DotA ROOM 116 v1.24e
+1114231	 Vietnam DotA ROOM 115 v1.24e
+1114232	 Vietnam DotA ROOM 114 v1.24e
+1114233	 Vietnam DotA ROOM 113 v1.24e
+1114234	 Vietnam DotA ROOM 112 v1.24e
+1114235	 Vietnam DotA ROOM 111 v1.24e
+1114236	 Vietnam DotA ROOM 110 v1.24e
+1114237	 Vietnam DotA ROOM 109 v1.24e
+1114238	 Vietnam DotA ROOM 108 v1.24e
+1114239	 Vietnam DotA ROOM 107 v1.24e
+1114240	 Vietnam DotA ROOM 106 v1.24e
+1114241	 Vietnam DotA ROOM 105 v1.24e
+1114242	 Vietnam DotA ROOM 104 v1.24e
+1114243	 AOE I : Vinh Phuc Room 02
+1114244	 AOE I : Vinh Phuc Room 01
+1114245	 AOE I : Vietnam ROOM 17
+1114246	 AOE I : Solo Random Room 02
+1114247	 AOE I : Vietnam ROOM 16
+1114248	 AOE I : Vietnam ROOM 15
+1114249	 AOE I : Vietnam ROOM 14
+1114250	 AOE I : Vietnam ROOM 13
+1114251	 AOE I : Vietnam ROOM 12
+1114252	 AOE I : Vietnam ROOM 11
+1114253	 AOE I : Vietnam ROOM 10
+1114254	 AOE I : Vietnam ROOM 09
+1114255	 AOE I : Vietnam ROOM 08
+1114256	 AOE I : Vietnam ROOM 07
+1114257	 AOE I : Vietnam ROOM 06
+1114258	 AOE I : Vietnam ROOM 05
+1114259	 AOE I : Vietnam ROOM 04
+1114260	 AOE I : Vietnam ROOM 03
+1114261	 AOE I : Vietnam ROOM 02
+1114262	 AOE I : Vietnam ROOM 01
+1114263	 AOE I : Thanh Hoa Room 02
+1114264	 AOE I : Thanh Hoa Room 01
+1114265	 AOE I : Thanh Hoa Pro Room 02
+1114266	 AOE I : Thanh Hoa Pro Room 01
+1114267	 AOE I : Thai Nguyen Room 02
+1114268	 AOE I : Thai Nguyen Room 01
+1114269	 AOE I : Thai Nguyen Pro Room 02
+1114270	 AOE I : Thai Nguyen Pro Room 01
+1114271	 AOE I : Thai Binh ROOM 02
+1114272	 AOE I : Thai Binh ROOM 01
+1114273	 AOE I : Cung R Room 02
+1114274	 AOE I : Cung R Room 01
+1114275	 AOE I : Nha Trang Room 02
+1114276	 AOE I : Nha Trang Room 01
+1114277	 AOE I : Nghe An Room 02
+1114278	 AOE I : Nghe An Room 01
+1114279	 AOE I : Nam Dinh ROOM 02
+1114280	 AOE I : Nam Dinh ROOM 01
+1114281	 AOE I : Nam Dinh Pro ROOM 02
+1114282	 AOE I : Nam Dinh Pro ROOM 01
+131035	 International Gaming Dota League Room
+458749	 Taiwan ESM SanGuo XD 6.x 85
+458734	 Taiwan ESM Nobu -high room 30
+458735	 Taiwan ESM Nobu -high room 29
+458736	 Taiwan ESM Nobu -high room 28
+458737	 Taiwan ESM Nobu -high room 27
+458738	 Taiwan ESM Nobu -high room 26
+458739	 Taiwan ESM Nobu -high room 25
+458740	 Taiwan ESM Nobu -high room 24
+458741	 Taiwan ESM Nobu -high room 23
+458742	 Taiwan ESM Nobu -high room 22
+458743	 Taiwan ESM Nobu -high room 21
+458723	 Taiwan ESM SanGuo XD 6.x 90
+458724	 Taiwan ESM SanGuo XD 6.x 89
+458712	 Final Fantasy DISSIDIA
+458744	 Taiwan ESM Nobu -high room 15
+458745	 Taiwan ESM Nobu -high room 14
+458746	 Taiwan ESM Nobu -high room 13
+458747	 Taiwan ESM Nobu -high room 12
+458748	 Taiwan ESM Nobu -high room 11
+1114111	 Vietnam DotA ROOM 041 v1.24e
+1114098	 Vietnam DotA ROOM 056 v1.24e
+1114099	 Vietnam DotA ROOM 055 v1.24e
+1114100	 Vietnam DotA ROOM 053 v1.24e
+1114101	 Vietnam DotA ROOM 052 v1.24e
+1114102	 Vietnam DotA ROOM 051 v1.24e
+1114103	 Vietnam DotA ROOM 049 v1.24e
+1114104	 Vietnam DotA ROOM 046 v1.24e
+1114105	 Vietnam DotA ROOM 045 v1.24e
+1114106	 Vietnam DotA ROOM 044 v1.24e
+1114110	 Vietnam DotA ROOM 043 v1.24e
+1114095	 Vietnam DotA ROOM 072 v1.24e
+1114096	 Vietnam DotA ROOM 089 v1.24e
+1114097	 Vietnam DotA ROOM 087 v1.24e
+1114107	 Vietnam DotA ROOM 028 v1.24e
+1114108	 Vietnam DotA ROOM 027 v1.24e
+1114109	 Vietnam DotA ROOM 025 v1.24e
+851948	 Philippines Shop to Shop DotA ROOM 18 (v1.24e)
+851949	 Philippines Shop to Shop DotA ROOM 17 (v1.24e)
+851950	 Philippines Shop to Shop DotA ROOM 16 (v1.24e)
+851951	 Philippines Shop to Shop DotA ROOM 15 (v1.26a)
+851952	 Philippines Shop to Shop DotA ROOM 14 (v1.26a)
+851953	 Philippines Shop to Shop DotA ROOM 13 (v1.26a)
+851960	 Philippines Globe: DotA ROOM 28 (v1.24e)
+851961	 Philippines Globe: DotA ROOM 27 (v1.24e)
+851962	 Philippines Globe: DotA ROOM 26 (v1.24e)
+851963	 Philippines Globe: DotA ROOM 25 (v1.24e)
+851964	 Philippines Globe: DotA ROOM 24 (v1.24e)
+851965	 Philippines Globe: DotA ROOM 23 (v1.24e)
+851966	 Philippines Globe: DotA ROOM 22 (v1.24e)
+851967	 Philippines Globe: DotA ROOM 21 (v1.24e)
+851936	 Philippines Globe: DotA ROOM 36 (v1.24e)
+851937	 Philippines Globe: DotA ROOM 35 (v1.24e)
+851938	 Philippines Globe: DotA ROOM 34 (v1.24e)
+851939	 Philippines Globe: DotA ROOM 33 (v1.24e)
+851940	 Philippines Globe: DotA ROOM 32 (v1.24e)
+851941	 Philippines Globe: DotA ROOM 31 (v1.24e)
+851942	 Philippines Globe: DotA ROOM 30 (v1.24e)
+851943	 Philippines Globe: DotA ROOM 29 (v1.24e)
+851944	 Philippines Shop to Shop DotA ROOM 22 (v1.24e)
+851945	 Philippines Shop to Shop DotA ROOM 21 (v1.24e)
+851946	 Philippines Shop to Shop DotA ROOM 20 (v1.24e)
+851947	 Philippines Shop to Shop DotA ROOM 19 (v1.24e)
+262181	 [del]GIGABYTE StarsWar6 Qualifier Room
+262182	 [del]GIGABYTE StarsWar6 Qualifier Room
+327653	 Bosnia and Herzegovina DotA Room 02 [Moderated]
+327647	 GCA: Shiawase Internet Cafe
+327652	 GCA: MFF Computer Shop
+851920	 Philippines BayanTel: DotA ROOM 31 (v1.24e)
+851921	 Philippines BayanTel: DotA ROOM 30 (v1.24e)
+851922	 Philippines BayanTel: DotA ROOM 29 (v1.24e)
+851923	 Philippines BayanTel: DotA ROOM 28 (v1.24e)
+851924	 Philippines BayanTel: DotA ROOM 27 (v1.24e)
+851925	 Philippines BayanTel: DotA ROOM 26 (v1.24e)
+196601	 UAE DotA Room 02 [Moderated]
+196602	 Bulgaria RPG Room 03
+262119	 Serbian League Room
+458711	 SoftArea Gaming Room
+458648	 RDL - Romania Dota League
+262080	 Kazakhstan DotA High Level Room 05 (1.26a)
+262093	 Russia DotA Room 140 (1.26a)
+262094	 Russia DotA Room 139 (1.26a)
+262095	 Russia DotA Room 138 (1.26a)
+262096	 Russia DotA Room 137 (1.26a)
+262098	 Russia DotA Room 152 (1.26a)
+262109	 Russia TD Room 11 (1.26a)
+262113	 Russia LoD DotA Room 08 (1.26a)
+262114	 Russia LoD DotA Room 07 (1.26a)
+262116	 [del]Russia FarEast DotA Room 08 (1.26a)
+262117	 Russia FarEast DotA Room 07 (1.26a)
+262128	 Russia RPG Room 13 (Castle Fight) (1.26a)
+262129	 Russia Imba DotA Room 06 (1.26a)
+262130	 Russia FarEast DotA Room 06 (1.26a)
+262132	 Russia DotA Room 136 (1.26a)
+262136	 Russia DotA Room 135 (1.26a)
+327663	 Russia DotA Room 134 (1.26a)
+327664	 Russia DotA Room 133 (1.26a)
+327670	 Russia DotA Room 132 (1.26a)
+327675	 Russia DotA Room 131 (1.26a)
+983035	 Russia DotA Clanwar Room 04 (1.26a)
+983037	 Russia LoD DotA Room 06 (1.26a)
+983038	 Russia DotA Clanwar Room 03 (1.26a)
+983039	 Russia LoD DotA Room 05 (1.26a)
+1245183	 Kazakhstan DotA High Level Room 04 (1.26a)
+917503	 GCA: I.T. Log Park Summer Open Tournament - MAY 15
+917502	 Partners: Drop Dead Gorgeous (DDG) VIP Lounge
+917501	 Partners: PinoyGG DotA Havoc Room
+917500	 Partners: Mindanao Gaming ROOM (v1.24e)
+917499	 Partners: Mindanao DotA League ROOM (v1.24e)
+131034	 Blizzplanet.ru Room
+196593	 Brazil DotA Room 47
+196594	 Brazil DotA Room 46
+196599	 Brazil DotA Room 45
+196600	 Brazil DotA Room 44
+262081	 [del]Belarus DotA Room 03 (1.26a)
+458664	 Taiwan ESM Nobu Zero 01
+524267	 Bolivia DotA Room 01
+524268	 Belarus DotA Room 03 (1.26a)
+524269	 Australia DotA Room 16
+524278	 [del]Australia DotA Room 13
+524281	 Australia DotA Room 10 [Moderated]
+524282	 Australia DotA Room 07
+983032	 0SPL-Allstars Slaves Room
+983033	 0SPL-Allstars Mortals Room
+983034	 0SPL-Allstars Gods Room
+130958	 sP DotA League Room
+130959	 sP DotA League - Testgames Room
+130960	 Vietnam Room 02
+130961	 Thailand Room
+130962	 CybSport League Room
+130963	 [del]RoX.KIS Female League
+130964	 Rainforest Cyber CafÃ© Brunei
+130965	 ProDota.ru Inhouse Room
+130966	 Oversea Chinese Star League
+130967	 MCC League Room (Testing)
+130969	 Iran DotA Ladder
+130970	 Goodgame.ru Tournaments Room
+130990	 [del]Intel Challenge Amateur League Dota Room 9
+130994	 [del]Intel Challenge Amateur League Dota Room 8
+130995	 [del]Intel Challenge Amateur League Dota Room 7
+131000	 [del]Intel Challenge Amateur League Dota Room 6
+131003	 RDT - Romania DotA Tournament
+131006	 [del]Intel Challenge Amateur League Dota Room 4
+131008	 [del]Intel Challenge Amateur League Dota Room 3
+131009	 [del]Intel Challenge Amateur League Dota Room 2
+131012	 Russia RPG Room 22 (Vampirism Frozen World) (1.26a)
+131014	 GuerillaMethod DotA VIP Room
+131024	 [del]Dota Friends League Room
+131026	 GCA: Netvolution I-cafe
+131030	 FEARZ eSports Gamers Room
+131031	 Europe Room 05
+131032	 Europe Room 05
+131033	 Europe Room 04
+196465	 USA DotA Room 30
+196466	 USA DotA Room 29
+196467	 USA DotA Room 28
+196468	 USA DotA Room 27
+196469	 USA DotA Room 26
+196470	 USA DotA Room 25
+196471	 USA DotA Room 24
+196472	 USA DotA Room 23
+196473	 USA DotA Room 22
+196474	 Pakistan DotA Room 04
+196475	 Montenegro DotA Room
+196476	 Mongolia DotA Room 17
+196477	 Mongolia DotA Room 15
+196478	 Mongolia DotA Room 11
+196479	 Mini Wars Room
+196480	 Mexico DotA Room 06
+196481	 Mexico DotA Clan War Room 01
+196485	 [del]India DotA High Level Room
+196486	 Ecuador DotA High Level Room 01
+196487	 EEDL Room
+196488	 DotA.by Tournaments Room
+196489	 DotA Tournaments Room
+196490	 Colombia DotA Clan War Room 01
+196491	 CS1.6 Balkan Room
+196495	 CS 1.6 Ukraine Room 02
+196496	 CS 1.6 Ukraine Room 01
+196503	 CS 1.6 Tournament Room
+196505	 CS 1.6 Russia High Level Room 01
+196507	 CS 1.6 Macedonia Room
+196508	 CS 1.6 Kazakhstan High Level Room 01
+196509	 CS 1.6 Indian Room 2
+196510	 Bulgaria RPG Room 02
+196511	 Bulgaria DotA Room 18
+196576	 Brazil DotA Room 68
+196582	 Brazil DotA Room 67
+196583	 Brazil DotA Room 61
+196584	 Brazil DotA Room 60
+196585	 Brazil DotA Room 59
+196586	 Brazil DotA Room 57
+196587	 Brazil DotA Room 54
+196588	 Brazil DotA Room 53
+196589	 Brazil DotA Room 50
+196590	 Brazil DotA Room 49
+196592	 Brazil DotA Room 48
+196605	 Kazakhstan DotA Clan War Room 02 (1.26a)
+196606	 Brazil DotA High Level League Room
+196607	 Iran DotA Fairplay League Room
+262044	 [del]Intel Challenge Amateur League Dota Room 9
+262045	 [del]Intel Challenge Amateur League Dota Room 8
+262046	 [del]Intel Challenge Amateur League Dota Room 7
+262047	 [del]Intel Challenge Amateur League Dota Room 6
+262048	 [del]Intel Challenge Amateur League Dota Room 5
+262049	 [del]Intel Challenge Amateur League Dota Room 4
+262050	 [del]Intel Challenge Amateur League Dota Room 3
+262051	 [del]Intel Challenge Amateur League Dota Room 2
+262052	 [del]Intel Challenge Amateur League Dota Room 1
+262071	 [del]Rainforest Cyber CafÃ© Brunei
+262072	 [del]USA DotA Room 30
+262073	 [del]USA DotA Room 29
+262074	 [del]USA DotA Room 28
+262118	 GCA: Netvolution I-cafe
+524227	 Sweden DotA Room 04
+524230	 Sweden DotA Room 03
+524236	 DRL - Dota Ranked Limitless
+524237	 Romania IHL League Room
+524238	 Romania DotA Room 32
+524239	 Romania DotA Room 31
+524240	 Romania DotA Room 28
+524242	 Romania DotA Room 27
+524244	 Poland DotA Room 02 [Moderated]
+524246	 Poland DotA Room 01 [Moderated]
+524247	 Honduras DotA Room 01
+524248	 Guatemala DotA Room
+524252	 Europe DotA Room 50
+524253	 Europe DotA Room 43
+524254	 Europe DotA Room 35
+524255	 Europe DotA Room 34
+524256	 Europe DotA Room 25
+524257	 Europe DotA Room 22
+524258	 Europe DotA Room 21
+524259	 Europe DotA Room 19
+524260	 Europe DotA Room 18
+524261	 Europe DotA Room 17
+524265	 Europe DotA Room 16
+524266	 Brunei DotA Room
+655353	 Peru DotA Room 22
+655354	 Peru DotA Room 21
+655355	 Peru DotA Room 20
+655356	 Peru DotA Room 19
+655357	 Peru DotA Room 16
+655358	 Peru DotA Room 10
+655359	 Peru DotA Clan War Room 01
+982958	 Ukraine DotA Room 01 (1.26a)
+982959	 Ukraine DotA Room 02 (1.26a)
+982960	 Ukraine DotA Room 03 (1.26a)
+982961	 Ukraine DotA Room 04 (1.26a)
+982962	 Ukraine DotA Room 05 (1.26a)
+982963	 Ukraine DotA Room 06 (1.26a)
+982964	 Ukraine DotA Room 07 (1.26a)
+982965	 Ukraine DotA Room 08 (1.26a)
+982966	 Ukraine DotA Room 09 (1.26a)
+982967	 Ukraine DotA Room 10 (1.26a)
+982968	 Ukraine DotA Room 11 (1.26a)
+982969	 Ukraine DotA Room 12 (1.26a)
+982970	 Ukraine DotA Room 13 (1.26a)
+982971	 Ukraine DotA Room 14 (1.26a)
+982972	 Ukraine DotA Room 15 (1.26a)
+982973	 Ukraine DotA Room 16 (1.26a)
+982974	 Ukraine DotA Room 17 (1.26a)
+982975	 Ukraine DotA Room 18 (1.26a)
+982976	 Ukraine DotA Room 19 (1.26a)
+982977	 Ukraine DotA Room 20 (1.26a)
+982978	 Ukraine DotA Room 21 (1.26a)
+982979	 Ukraine DotA Room 22 (1.26a)
+982980	 Ukraine DotA Room 23 (1.26a)
+982981	 Ukraine DotA Room 24 (1.26a)
+982982	 Ukraine DotA Room 25 (1.26a)
+982983	 Ukraine DotA Room 26 (1.26a)
+982984	 Ukraine DotA Room 27 (1.26a)
+982985	 Ukraine DotA Room 28 (1.26a)
+982986	 Ukraine DotA Room 29 (1.26a)
+982987	 Ukraine DotA Room 30 (1.26a)
+982988	 Ukraine DotA Room 31 (1.26a)
+982989	 Ukraine DotA Room 32 (1.26a)
+982990	 Ukraine DotA Room 33 (1.26a)
+982991	 Ukraine DotA Room 34 (1.26a)
+982992	 [del]Ukraine DotA Room 35 (1.26a)
+982993	 [del]Ukraine DotA Room 36 (1.26a)
+982994	 [del]Ukraine DotA Room 37 (1.26a)
+982995	 [del]Ukraine DotA Room 38 (1.26a)
+982996	 [del]Ukraine DotA Room 39 (1.26a)
+982997	 [del]Ukraine DotA Room 40 (1.26a)
+982998	 Kazakhstan DotA Clan War Room 01 (1.26a)
+982999	 Kazakhstan DotA Clan War Room 02 (1.26a)
+983000	 Kazakhstan DotA Room 01 (1.26a)
+983001	 Kazakhstan DotA Room 02 (1.26a)
+983002	 Kazakhstan DotA Room 03 (1.26a)
+983003	 Kazakhstan DotA Room 04 (1.26a)
+983004	 Kazakhstan DotA Room 05 (1.26a)
+983005	 Kazakhstan DotA Room 06 (1.26a)
+983006	 Kazakhstan DotA Room 07 (1.26a)
+983007	 Kazakhstan DotA Room 08 (1.26a)
+983008	 Kazakhstan DotA Room 09 (1.26a)
+983009	 Kazakhstan DotA Room 10 (1.26a)
+983010	 Kazakhstan DotA Room 11 (1.26a)
+983011	 Kazakhstan DotA Room 12 (1.26a)
+983012	 Kazakhstan DotA Room 13 (1.26a)
+983013	 Kazakhstan DotA Room 14 (1.26a)
+983014	 Kazakhstan DotA Room 15 (1.26a)
+983015	 Kazakhstan DotA Room 16 (1.26a)
+983016	 Kazakhstan DotA Room 17 (1.26a)
+983017	 Kazakhstan DotA Room 18 (1.26a)
+983018	 Kazakhstan DotA Room 19 (1.26a)
+983019	 Kazakhstan DotA Room 20 (1.26a)
+983020	 Kazakhstan DotA Room 21 (1.26a)
+983021	 Kazakhstan DotA Room 22 (1.26a)
+983022	 Kazakhstan DotA Room 23 (1.26a)
+983023	 Kazakhstan DotA Room 24 (1.26a)
+983024	 Kazakhstan DotA Room 25 (1.26a)
+983025	 Kazakhstan DotA Room 26 (1.26a)
+983026	 Kazakhstan DotA Room 27 (1.26a)
+983027	 Kazakhstan DotA Room 28 (1.26a)
+983028	 Kazakhstan DotA Room 29 (1.26a)
+983029	 Kazakhstan DotA Room 30 (1.26a)
+983030	 Kazakhstan DotA Room 31 (1.26a)
+983031	 Kazakhstan DotA Room 32 (1.26a)
+524251	 Greece DotA Room 09
+851926	 Philippines PLDT: DotA ROOM 105 (v1.24e)
+851927	 Philippines PLDT: DotA ROOM 103 (v1.24e)
+851928	 Philippines PLDT: DotA ROOM 104 (v1.24e)
+851929	 Philippines PLDT: DotA ROOM 102 (v1.24e)
+851930	 Philippines PLDT: DotA ROOM 101 (v1.24e)
+851931	 Philippines PLDT: DotA ROOM 100 (v1.24e)
+851932	 Philippines PLDT: DotA ROOM 099 (v1.24e)
+851933	 Philippines PLDT: DotA ROOM 098 (v1.24e)
+851934	 Philippines PLDT: DotA ROOM 097 (v1.24e)
+851935	 Philippines PLDT: DotA ROOM 096 (v1.24e)
+851954	 Philippines PLDT: DotA ROOM 095 (v1.24e)
+851955	 Philippines PLDT: DotA ROOM 094 (v1.24e)
+851956	 Philippines PLDT: DotA ROOM 093 (v1.24e)
+851957	 Philippines PLDT: DotA ROOM 092 (v1.24e)
+851958	 Philippines PLDT: DotA ROOM 091 (v1.24e)
+851959	 Philippines PLDT: DotA ROOM 090 (v1.24e)
+917498	 Greece DotA Tournaments Room
+131015	 [deleted] GodLikeroom.com Public
+131023	 [deleted] GodLikeroom.com League
+458622	 [del]Alliance Cyber DotA
+458623	 Alliance UniversoDotA
+458624	 [del]Alliance In-House
+458646	 Greece DotA Room 06
+458617	 Turkey DotA Clanwar Room
+458619	 Venezuela RPG Room 01
+458620	 WTFGamers.com DotA RoomÂ 01
+458621	 VipAqui DotA Room
+851918	 [del]Turkey DotA Rooms League
+851919	 Turkey JFA Room
+458618	 Argentina DotA Clan War Room 01
+524222	 Turkey DotA Room 04 [Moderated]
+524223	 Turkey DotA Room 03 [Moderated]
+524224	 Turkey DotA Room 02
+851917	 [del]Turkey DotA Room 01
+130956	 Ukraine Room 1
+130957	 COD4 1.7 Ukraine Room 1
+196462	 UAE DotA Room 03 [Moderated]
+196463	 Iran DotA Room 06
+196464	 Ukraine Room 1
+196604	 [del]Europe DotA High Level Room 3
+262120	 [del]Kazakhstan DotA Room 30 (1.26a)
+262121	 [del]Kazakhstan DotA Room 29 (1.26a)
+262122	 [del]Kazakhstan DotA Room 28 (1.26a)
+262125	 [del]Ukraine DotA Room 37 (1.26a)
+262127	 [del]Ukraine DotA Room 36 (1.26a)
+327642	 Ukraine DotA High Level Room 03 (1.26a)
+327643	 [del]Ukraine DotA Room 40 (1.26a)
+327654	 [del]Kazakhstan DotA Room 27 (1.26a)
+327657	 [del]Kazakhstan DotA Room 26 (1.26a)
+327658	 [del]Ukraine DotA Room 35 (1.26a)
+327659	 [del]Ukraine DotA Room 34 (1.26a)
+393215	 [del]Ukraine DotA Clan War Room 02 (1.26a)
+524283	 [del]Ukraine DotA Room 39 (1.26a)
+524286	 [del]Ukraine DotA Room 38 (1.26a)
+983036	 [del]Ukraine OMG DotA Room 03 (1.26a)
+1245179	 Japan DotA Room 02
+1245180	 Arabian DotA Room 04
+196461	 [del]Europe DotA High Level Room 6
+262043	 Russia TD Room 13 (1.26a)
+262097	 [del]Russia DotA High Level Room 08 (1.26a)
+262115	 [del]Russia DotA High Level Room 07 (1.26a)
+458616	 Taiwan ESM Fight of Characters FOCS 01
+458604	 Taiwan ESM Fight of Characters FOCS 02
+458599	 Taiwan ESM Nobu -high room 20
+458600	 Taiwan ESM Nobu -high room 19
+458601	 Taiwan ESM Nobu -high room 18
+458602	 Taiwan ESM Nobu -high room 17
+458603	 Taiwan ESM Nobu -high room 16
+196460	 Cambodia DotA Room 03
+458596	 Taiwan ESM Fight of Characters 02
+458597	 Taiwan ESM Fight of Characters 01
+458598	 Taiwan ESM Fight of Characters FOCS 03
+196457	 Slovenia DotA Room
+196458	 [del]Serbian DotA High Level Room
+196459	 Macedonia DotA Room 02 [Moderated]
+196456	 Thailand DotA High Level Room
+458592	 Taiwan ESM RPG Nobu of fight
+458591	 Taiwan ESM NoBu ReBoRn 01
+1114094	 Custom Map Divide and Fight ROOM 03
+1179647	 Custom Map Divide and Fight ROOM 04
+1048648	 Vietnam Room 06
+1048649	 Vietnam Room 05
+1048658	 Vietnam Room 04
+1048660	 Vietnam VN-Zoom ROOM v1.24e
+1048692	 Vietnam Room 07
+1048705	 Vietnam Room 01
+1048747	 Vietnam Room 03
+1048748	 Vietnam Room 02
+1048749	 Vietnam DotA LoD ROOM 04 v1.24e
+1048750	 Vietnam DotA LoD ROOM 05 v1.24e
+1048751	 Vietnam DotA ROOM 143 v1.24e
+1048752	 Vietnam DotA ROOM 144 v1.24e
+1048753	 Vietnam DotA ROOM 145 v1.24e
+1048754	 Vietnam DotA ROOM 146 v1.24e
+1048755	 Vietnam DotA ROOM 147 v1.24e
+1048756	 Vietnam DotA ROOM 148 v1.24e
+1048757	 Vietnam DotA ROOM 149 v1.24e
+1048758	 Vietnam DotA ROOM 150 v1.24e
+1048759	 Vietnam DotA Clan war ROOM 08 v1.24e
+1048760	 Vietnam DotA IMBA ROOM 06 v1.24e
+1048761	 Vietnam DotA IMBA ROOM 07 v1.24e
+1048762	 Vietnam DotA IMBA ROOM 08 v1.24e
+1114184	 Garena Online Tournament ROOM
+1114197	 AOE I : Ha Noi Pro ROOM 05
+1114198	 AOE I : Ha Noi Pro ROOM 06
+1114200	 AOE I : Ha Noi Pro ROOM 07
+1114201	 AOE I : Ha Noi Pro ROOM 08
+1114202	 AOE I : Ha Noi Pro ROOM 09
+1114204	 AOE I : Ha Noi Room 09
+1114207	 AOE I : Ha Noi Room 10
+1114208	 AOE I : Ha Noi Room 11
+1114209	 AOE I : Ha Noi Room 12
+1114210	 AOE I : Bac Ninh Room 01
+1114212	 AOE I : Bac Ninh Room 02
+1114283	 AOE I : Ninh Binh Room 01
+1114284	 AOE I : Ninh Binh Room 02
+1114285	 AOE I : Ha Tinh Room 01
+1114286	 AOE I : Ha Tinh Room 02
+1114287	 AOE I : Vietnam ROOM 18
+1114288	 AOE I : Ha Noi Room 13
+1114289	 AOE I : Ha Noi Room 14
+1114290	 AOE I : Ha Noi Room 15
+1114291	 AOE I : Solo Random Room 01
+1114292	 Vietnam DotA ROOM 001 v1.24e
+1114293	 Vietnam DotA ROOM 004 v1.24e
+1114294	 Vietnam Thien Kiem Invite ROOM v1.24e
+1114295	 Vietnam DotA ROOM 033 v1.24e
+1114296	 Vietnam DotA ROOM 038 v1.24e
+1114297	 Vietnam DotA ROOM 039 v1.24e
+1114298	 Vietnam DotA ROOM 066 v1.24e
+1114299	 Garena Online Tournament ROOM 2 v1.24e
+1114300	 Garena Online Tournament ROOM 3 v1.24e
+1114301	 Garena Online Tournament ROOM 4 v1.24e
+1114302	 Garena Online Tournament ROOM 5 v1.23
+1114303	 Vietnam DDay 19.9b ROOM 16 v1.23
+1114304	 Vietnam Thien Kiem ROOM 20 v1.24e
+1114305	 Vietnam Thien Kiem ROOM 21 v1.24e
+1114306	 Vietnam Thien Kiem ROOM 22 v1.24e
+1114307	 Vietnam DotA IMBA ROOM 09 v1.24e
+1114308	 Vietnam DotA IMBA ROOM 10 v1.24e
+1114309	 Vietnam DotA LoD ROOM 11 v1.24e
+1114310	 Vietnam DotA LoD ROOM 12 v1.24e
+1114311	 Vietnam DotA LoD ROOM 13 v1.24e
+1114312	 Vietnam DotA LoD ROOM 14 v1.24e
+1114313	 Custom Map Divide and Fight ROOM 01
+1114314	 Custom Map Divide and Fight ROOM 02
+1114315	 VietNam Glory of the Heroes ROOM v1.24e
+1114316	 Vietnam DotA ROOM 135 v1.24e
+1114317	 Vietnam DotA LoD ROOM 09 v1.24e
+1114318	 Vietnam DotA LoD ROOM 10 v1.24e
+1114319	 Vietnam DotA IMBA ROOM 04 v1.24e
+1114320	 Vietnam DotA IMBA ROOM 05 v1.24e
+1114321	 Vietnam DotA ROOM 136 v1.24e
+1114322	 Vietnam DotA ROOM 137 v1.24e
+1114323	 Vietnam DotA ROOM 138 v1.24e
+1114324	 Vietnam DotA ROOM 139 v1.24e
+1114325	 Vietnam DotA ROOM 140 v1.24e
+1114326	 Vietnam DotA ROOM 141 v1.24e
+1114327	 Vietnam DotA LoD ROOM 01 v1.24e
+1114328	 Vietnam DotA LoD ROOM 02 v1.24e
+1114329	 Vietnam DotA LoD ROOM 03 v1.24e
+1114330	 Vietnam Thien Kiem ROOM 23 v1.24e
+1114331	 Vietnam Thien Kiem ROOM 24 v1.24e
+1114332	 Vietnam Thien Kiem ROOM 25 v1.24e
+1114333	 Custom Map Green TD ROOM 02
+1114334	 Custom Map Green TD ROOM 03
+1114335	 Custom Map Hero Defense Room 06
+1114336	 Custom Map Hero Defense Room 07
+1114337	 Vietnam DotA LoD ROOM 06 v1.24
+1114338	 Vietnam DotA LoD ROOM 07 v1.24e
+1114339	 Vietnam DotA LoD ROOM 08 v1.24e
+1114340	 Vietnam DotA IMBA ROOM 01 v1.24e
+1114341	 Vietnam DotA IMBA ROOM 02 v1.24e
+1114342	 Vietnam DotA IMBA ROOM 03 v1.24e
+1114343	 Vietnam DotA ROOM 126 v1.24e
+1114344	 Vietnam DotA ROOM 127 v1.24e
+1114345	 Vietnam DotA ROOM 128 v1.24e
+1114346	 Vietnam DotA ROOM 129 v1.24e
+1114347	 Vietnam DotA ROOM 130 v1.24e
+1114348	 Vietnam DotA ROOM 131 v1.24e
+1114349	 Vietnam DotA ROOM 132 v1.24e
+1114350	 Vietnam DotA ROOM 133 v1.24e
+1114351	 Vietnam DotA ROOM 134 v1.24e
+130955	 Events Room 01
+917496	 GCA: BoYzTrEk DotA Tournament Oct-15-2011 @ Jacinto
+917497	 GCA: War of Warlords Internet Cafe
+917495	 GCA: Netquarters DotA Room 01
+262033	 Russia DotA Room 150 (1.26a)
+262034	 Russia DotA Room 149 (1.26a)
+262035	 Russia DotA Room 148 (1.26a)
+262036	 Russia DotA Room 147 (1.26a)
+262037	 Russia DotA Room 146 (1.26a)
+262038	 Russia DotA Room 145 (1.26a)
+262039	 Russia DotA Room 144 (1.26a)
+262040	 Russia DotA Room 143 (1.26a)
+262041	 Russia DotA Room 142 (1.26a)
+262042	 Russia DotA Room 141 (1.26a)
+1114092	 Vietnam DotA OMG ROOM 07 v1.24e
+1114093	 Vietnam DotA IMBA ROOM 15 v1.24e
+1179643	 Vietnam DotA OMG ROOM 08 v1.24e
+1179644	 Vietnam DotA OMG ROOM 06 v1.24e
+1179645	 Vietnam DotA IMBA ROOM 14 v1.24e
+1179646	 Custom Map Divide and Fight ROOM 05
+262022	 [del]Russia DotA High Level Room 08 (1.26a)
+262023	 [del]Russia DotA High Level Room 07 (1.26a)
+262024	 [del]Russia DotA High Level Room 06 (1.26a)
+262025	 [del]Russia DotA High Level Room 05 (1.26a)
+262026	 [del]Russia DotA High Level Room 04 (1.26a)
+262027	 [del]Russia DotA High Level Room 03 (1.26a)
+262031	 [del]Russia DotA High Level Room 02 (1.26a)
+262032	 [del]Russia DotA High Level Room 01 (1.26a)
+917494	 GCA: Cyber Fiesta Internet Cafe
+1114087	 Vietnam DotA ROOM 160 v1.24e
+1114088	 Vietnam DotA ROOM 159 v1.24e
+1114089	 Vietnam DotA ROOM 158 v1.24e
+1114090	 Vietnam DotA ROOM 153 v1.24e
+1114091	 Vietnam DotA ROOM 151 v1.24e
+1179638	 Vietnam DotA ROOM 157 v1.24e
+1179639	 Vietnam DotA ROOM 156 v1.24e
+1179640	 Vietnam DotA ROOM 155 v1.24e
+1179641	 Vietnam DotA ROOM 154 v1.24e
+1179642	 Vietnam DotA ROOM 152 v1.24e
+1114072	 Custom Map Divide and Fight ROOM 06
+1114073	 Custom Map Divide and Fight ROOM 07
+1114074	 Custom Map Divide and Fight ROOM 08
+1114075	 Custom Map Divide and Fight ROOM 10
+1114076	 Custom Map Divide and Fight ROOM 09
+1114077	 Vietnam DotA LoD ROOM 18 v1.24e
+1114078	 Vietnam DotA LoD ROOM 19 v1.24e
+1114079	 Vietnam DotA LoD ROOM 20 v1.24e
+1114080	 Vietnam DotA IMBA ROOM 20 v1.24e
+1114081	 Vietnam DotA IMBA ROOM 19 v1.24e
+1114082	 Vietnam DotA ROOM 165 v1.24e
+1114083	 Vietnam DotA ROOM 164 v1.24e
+1114084	 Vietnam DotA ROOM 163 v1.24e
+1114085	 Vietnam DotA ROOM 162 v1.24e
+1114086	 Vietnam DotA ROOM 161 v1.24e
+1179628	 Vietnam DotA LoD ROOM 16 v1.24e
+1179629	 Vietnam DotA LoD ROOM 17 v1.24e
+1179630	 Vietnam DotA IMBA ROOM 18 v1.24e
+1179631	 Vietnam DotA IMBA ROOM 17 v1.24e
+1179632	 Vietnam DotA IMBA ROOM 16 v1.24e
+1179633	 Vietnam DotA ROOM 170 v1.24e
+1179634	 Vietnam DotA ROOM 169 v1.24e
+1179635	 Vietnam DotA ROOM 168 v1.24e
+1179636	 Vietnam DotA ROOM 167 v1.24e
+1179637	 Vietnam DotA ROOM 166 v1.24e
+851916	 del ALL-STARS Sweetopia E-walker High Level ROOM 01 (v1.26a
+196454	 Bulgaria LoD DotA Room 02
+851915	 GCA: CXG1-CXG2-CXG3-CXG Legarda Dota Room
+1114043	 Vietnam DotA IMBA ROOM 25 v1.24e
+1114044	 Vietnam DotA IMBA ROOM 24 v1.24e
+1114045	 Vietnam DotA IMBA ROOM 23 v1.24e
+1114046	 Vietnam DotA IMBA ROOM 22 v1.24e
+1114047	 Vietnam DotA IMBA ROOM 21 v1.24e
+1114048	 Vietnam DotA LoD ROOM 25 v1.24e
+1114049	 Vietnam DotA LoD ROOM 24 v1.24e
+1114050	 Vietnam DotA LoD ROOM 23 v1.24e
+1114051	 Vietnam DotA LoD ROOM 22 v1.24e
+1114052	 Vietnam DotA LoD ROOM 21 v1.24e
+1114053	 Vietnam DotA ROOM 173 v1.24e
+1114054	 Vietnam DotA ROOM 172 v1.24e
+1114055	 Vietnam DotA ROOM 171 v1.24e
+1114056	 Custom Map Green TD ROOM 08
+1114057	 Custom Map Green TD ROOM 07
+1114058	 Custom Map Green TD ROOM 06
+1114059	 Custom Map Divide and Fight ROOM 15
+1114060	 Custom Map Divide and Fight ROOM 14
+1114061	 Custom Map Castle Fight ROOM 04
+1114069	 AOE I : Ha Noi Room 18
+1114070	 AOE I : Ha Noi Room 17
+1114071	 AOE I : Ha Noi Room 16
+1179614	 Vietnam DotA ROOM 175 v1.24e
+1179615	 Vietnam DotA ROOM 174 v1.24e
+1179616	 Custom Map Divide and Fight ROOM 13
+1179617	 Custom Map Divide and Fight ROOM 12
+1179618	 Custom Map Divide and Fight ROOM 11
+1179619	 Custom Map Castle Fight ROOM 05
+1179626	 AOE I : Ha Noi Room 20
+1179627	 AOE I : Ha Noi Room 19
+1114062	 AOE I : Vietnam ROOM 25
+1114063	 AOE I : Vietnam ROOM 24
+1114064	 AOE I : Vietnam ROOM 23
+1114065	 AOE I : Vietnam ROOM 22
+1114066	 AOE I : Solo Random Room 04
+1114067	 AOE I : Solo Random Room 03
+1114068	 AOE I : Cung R Room 05
+1179620	 AOE I : Vietnam ROOM 21
+1179621	 AOE I : Vietnam ROOM 20
+1179622	 AOE I : Vietnam ROOM 19
+1179623	 AOE I : Solo Random Room 05
+1179624	 AOE I : Cung R Room 04
+1179625	 AOE I : Cung R Room 03
+851914	 A* Sweetopia Dota Rage -cm (www.sweetopia.ph)
+1114040	 AOE I : Clan 1st Room 01
+1114041	 Vietnam DotA CMC ADSL ROOM 02 v.124e
+1114042	 Vietnam DotA CMC ADSL ROOM 01 v.124e
+1179611	 AOE I : ÄH ThÆ°Æ¡ng Máº¡i Room 01
+1179612	 AOE I : Clan 1st Room 02
+1179613	 AOE I : Cao Bang Room 01
+851913	 GCA: Manjo Republic
+851912	 GCA: Battle Station Internet Cafe
+130953	 Brazil DotA High Level Room 05
+130954	 Europe DotA Fairplay League + HostBot
+196450	 Iran DotA Tournaments Room
+196453	 Pakistan DotA Room 05
+851910	 Pacific eSports - Ichill Room
+851911	 Pacific eSports - LiveandWired Room
+262021	 Ownedby.pro League Room
+1179606	 Custom Map Divide and Fight ROOM 20
+1179607	 Custom Map Divide and Fight ROOM 19
+1179608	 Custom Map Divide and Fight ROOM 18
+1179609	 Custom Map Divide and Fight ROOM 17
+1179610	 Custom Map Divide and Fight ROOM 16
+1179604	 Clan Arigato ROOM v1.24e
+1179605	 Clan Ex ROOM v1.24e
+262020	 Croatia DotA Room 03
+524212	 Ecuador DotA Room 07
+524214	 Peru DotA Room 25
+196444	 Taiwan DotA Allstars 04  -apsp Room
+786427	 Taiwan ESM SanGuo 3.7 XD 10
+786428	 Taiwan ESM SanGuo 3.7 XD 09
+786429	 Taiwan ESM SanGuo 3.7 XD 08
+786430	 Taiwan ESM SanGuo 3.7 XD 07
+786431	 Taiwan ESM SanGuo 3.7 XD 06
+458680	 Taiwan ESM Nobu 201 (new version)
+458681	 Taiwan ESM Nobu  200 (new version)
+458682	 Taiwan ESM Nobu  199 (new version)
+458683	 Taiwan ESM Nobu  198 (new version)
+458684	 Taiwan ESM Nobu  197 (new version)
+458685	 Taiwan ESM Nobu  196 (new version)
+458686	 Taiwan ESM Nobu  195 (new version)
+458687	 Taiwan ESM Nobu  194 (new version)
+458688	 Taiwan ESM Nobu  193 (new version)
+458689	 Taiwan ESM Nobu  192 (new version)
+458690	 Taiwan ESM Nobu  191 (new version)
+458691	 Taiwan ESM Nobu  190 (new version)
+458692	 Taiwan ESM Nobu  189 (new version)
+458693	 Taiwan ESM Nobu  188 (new version)
+458694	 Taiwan ESM Nobu  187 (new version)
+458695	 Taiwan ESM Nobu  186 (new version)
+458696	 Taiwan ESM Nobu  185 (new version)
+458697	 Taiwan ESM Nobu  184 (new version)
+458698	 Taiwan ESM Nobu  183 (new version)
+458699	 Taiwan ESM Nobu  182 (new version)
+458700	 Taiwan ESM Nobu  181 (new version)
+458701	 Taiwan ESM Nobu  180 (new version)
+458702	 Taiwan ESM Nobu  179 (new version)
+458703	 Taiwan ESM Nobu  178 (new version)
+458704	 Taiwan ESM Nobu  177 (new version)
+458705	 Taiwan ESM Nobu  176 (new version)
+458706	 Taiwan ESM Nobu  175 (new version)
+458707	 Taiwan ESM Nobu  174 (new version)
+458708	 Taiwan ESM Nobu  173 (new version)
+458709	 Taiwan ESM Nobu  172 (new version)
+458710	 Taiwan ESM Nobu  171 (new version)
+458713	 Taiwan ESM Nobu  170 (new version)
+458714	 Taiwan ESM Nobu  169 (new version)
+458715	 Taiwan ESM Nobu  168 (new version)
+458716	 Taiwan ESM Nobu  167 (new version)
+458717	 Taiwan ESM Nobu  166 (new version)
+458718	 Taiwan ESM Nobu  165 (new version)
+458719	 Taiwan ESM Nobu  164 (new version)
+458720	 Taiwan ESM Nobu  163 (new version)
+458721	 Taiwan ESM Nobu  162 (new version)
+458722	 Taiwan ESM Nobu  161 (new version)
+458725	 Taiwan ESM Nobu  160 (new version)
+458726	 Taiwan ESM Nobu  159 (new version)
+458727	 Taiwan ESM Nobu  158 (new version)
+458728	 Taiwan ESM Nobu  157 (new version)
+458729	 Taiwan ESM Nobu  156 (new version)
+458730	 Taiwan ESM Nobu  155 (new version)
+458731	 Taiwan ESM Nobu  154 (new version)
+458732	 Taiwan ESM Nobu  153 (new version)
+458733	 Taiwan ESM Nobu  152 (new version)
+458670	 Taiwan ESM Nobu -high room 40
+458671	 Taiwan ESM Nobu -high room 39
+458672	 Taiwan ESM Nobu -high room 38
+458673	 Taiwan ESM Nobu -high room 37
+458674	 Taiwan ESM Nobu -high room 36
+458675	 Taiwan ESM Nobu -high room 35
+458676	 Taiwan ESM Nobu -high room 34
+458677	 Taiwan ESM Nobu -high room 33
+458678	 Taiwan ESM Nobu -high room 32
+458679	 Taiwan ESM Nobu -high room 31
+327640	 Macedonia Dota Room 03
+327641	 Bosnia and Herzegovina DotA Room 03
+327639	 USA DotA Tournaments Room
+458665	 Taiwan ESM SanGuo XD 15
+458666	 Taiwan ESM SanGuo XD 14
+458667	 Taiwan ESM SanGuo XD 13
+458668	 Taiwan ESM SanGuo XD 12
+458669	 Taiwan ESM SanGuo XD 11
+786422	 Taiwan ESM SanGuo 3.7 10
+786423	 Taiwan ESM SanGuo 3.7 09
+786424	 Taiwan ESM SanGuo 3.7 08
+786425	 Taiwan ESM SanGuo 3.7 07
+786426	 Taiwan ESM SanGuo 3.7 06
+196436	 Albania DotA Room 02
+196441	 Czech and Slovakia DotA Tournaments Room
+196442	 UAE DotA Room 05
+196443	 UAE DotA Room 04
+1245178	 CS 1.6 Peru Room
+262019	 [del]Russia DotA High Level Room 08 (1.26a)
+917492	 2012 Garena Tournament Room 01
+917493	 2012 Garena Tournament Room 02
+655351	 BoaCompra DotA BYS 3
+655352	 BoaCompra DotA BYS 2
+655350	 Europe DotA High Level Room 3
+1310715	 [dell]Russia DotA Room 005 (1.26a)
+1310716	 [dell]Russia DotA Room 004 (1.26a)
+1310717	 [dell]Russia DotA Room 003 (1.26a)
+1310718	 [dell]Russia DotA Room 002 (1.26a)
+1310719	 [dell]Russia DotA Room 001 (1.26a)
+1310714	 Russia DotA Room 101 (1.26a)
+327637	 [del]Croatia DotA Tournaments Room
+262018	 Croatia DotA Tournaments Room
+130952	 Ecuador RPG Room 01
+130951	 Russia FarEast DotA Room 01 (1.26a)
+262012	 Russia DotA High Level Room 06 (1.26a)
+262013	 Russia DotA High Level Room 05 (1.26a)
+262014	 Russia DotA High Level Room 04 (1.26a)
+262015	 Russia DotA High Level Room 03 (1.26a)
+262016	 Russia DotA High Level Room 02 (1.26a)
+262017	 Russia DotA High Level Room 01 (1.26a)
+1310707	 [del]Russia DotA High Level Room 07 (1.26a)
+1310708	 [del]Russia DotA High Level Room 06 (1.26a)
+1310709	 [del]Russia DotA High Level Room 05 (1.26a)
+1310710	 [del]Russia DotA High Level Room 04 (1.26a)
+1310711	 [del]Russia DotA High Level Room 03 (1.26a)
+1310712	 [del]Russia DotA High Level Room 02 (1.26a)
+1310713	 [del]Russia DotA High Level Room 01 (1.26a)
+262011	 [del]Russia DotA High Level Room 07 (1.26a)
+262009	 [del]Russia DotA High Level Room 07 (1.26a)
+262010	 Russia DotA High Level Room 07 (1.26a)
+655349	 Europe DotA High Level Room League
+393214	 [del]Singapore DotA Room 22
+327625	 Singapore DotA Room 22
+196434	 Internaional PwM Stars Gaming League Room
+196435	 Iran Tournament
