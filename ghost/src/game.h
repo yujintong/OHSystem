@@ -82,8 +82,8 @@ public:
     virtual ~CGame( );
 
     virtual bool Update( void *fd, void *send_fd );
-    virtual void EventPlayerDeleted( CGamePlayer *player );
-    virtual bool EventPlayerAction( CGamePlayer *player, CIncomingAction *action );
+    virtual void EventPlayerDeleted( CGamePlayer *player, bool executeTwice = true);
+    virtual bool EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool executeTwice = true );
     virtual bool EventPlayerBotCommand( CGamePlayer *player, string command, string payload );
     virtual void EventGameStarted( );
     virtual bool IsGameDataSaved( );
@@ -92,6 +92,9 @@ public:
     virtual string GetRule( string tag );
     virtual string GetRuleTags( );
     virtual void PlayerUsed( string thething, uint32_t thetype, string playername );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

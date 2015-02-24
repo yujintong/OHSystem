@@ -353,5 +353,8 @@ struct permission {
 struct cachedPlayer {
     string name;
     uint32_t time;
+
+public:
+	static void RegisterPythonClass( );
 };
 #endif

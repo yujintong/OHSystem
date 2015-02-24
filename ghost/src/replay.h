@@ -144,6 +144,9 @@ public:
     void BuildReplay( string gameName, string statString, uint32_t war3Version, uint16_t buildNumber );
 
     void ParseReplay( bool parseBlocks );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

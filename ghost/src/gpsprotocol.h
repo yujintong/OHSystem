@@ -63,6 +63,10 @@ public:
 private:
     bool AssignLength( BYTEARRAY &content );
     bool ValidateLength( BYTEARRAY &content );
+
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

@@ -193,6 +193,9 @@ public:
 private:
     bool AssignLength( BYTEARRAY &content );
     bool ValidateLength( BYTEARRAY &content );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -224,6 +227,9 @@ public:
     BYTEARRAY GetHostCounter( )	{
         return m_HostCounter;
     }
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -254,6 +260,9 @@ public:
     string GetMessage( )								{
         return m_Message;
     }
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -290,6 +299,9 @@ private:
     string ExtractStatus( unsigned char status );
     string ExtractArea( unsigned char area );
     string ExtractLocation( string location );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -313,6 +325,9 @@ public:
     string GetRank( );
     string GetStatus( );
     string GetDescription( );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

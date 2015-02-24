@@ -71,6 +71,9 @@ public:
 
     void QueueWardenSeed( uint32_t seed );
     void QueueWardenRaw( BYTEARRAY wardenRaw );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

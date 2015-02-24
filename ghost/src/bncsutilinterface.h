@@ -85,6 +85,8 @@ public:
 
 private:
     BYTEARRAY CreateKeyInfo( string key, uint32_t clientToken, uint32_t serverToken );
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

@@ -187,3 +187,30 @@ void CBNLSClient :: QueueWardenRaw( BYTEARRAY wardenRaw )
     m_OutPackets.push( m_Protocol->SEND_BNLS_WARDEN_RAW( m_WardenCookie, wardenRaw ) );
     ++m_TotalWardenIn;
 }
+
+#include <boost/python.hpp>
+
+void CBNLSClient :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+	
+	class_<CBNLSClient>("BNLSClient", no_init)
+		.def("getWardenResponse", &CBNLSClient::GetWardenResponse)
+		.def("getTotalWardenIn", &CBNLSClient::GetTotalWardenIn)
+		.def("getTotalWardenOut", &CBNLSClient::GetTotalWardenOut)
+		.def("queueWardenSeed", &CBNLSClient::QueueWardenSeed)
+		.def("queueWardenRaw", &CBNLSClient::QueueWardenRaw)
+		.def_readonly("socket", &CBNLSClient::m_Socket)
+		.def_readonly("protocol", &CBNLSClient::m_Protocol)
+		.def_readonly("packets", &CBNLSClient::m_Packets)
+		.def_readonly("wasConnected", &CBNLSClient::m_WasConnected)
+		.def_readonly("server", &CBNLSClient::m_Server)
+		.def_readonly("port", &CBNLSClient::m_Port)
+		.def_readonly("lastNullTime", &CBNLSClient::m_LastNullTime)
+		.def_readonly("wardenCookie", &CBNLSClient::m_WardenCookie)
+		.def_readonly("outPackets", &CBNLSClient::m_OutPackets)
+		.def_readonly("wardenResponse", &CBNLSClient::m_WardenResponses)
+		.def_readonly("totalWardenIn", &CBNLSClient::m_TotalWardenIn)
+		.def_readonly("totalWardenOut", &CBNLSClient::m_TotalWardenOut)
+	;
+}

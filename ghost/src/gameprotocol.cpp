@@ -1033,3 +1033,122 @@ CIncomingMapSize :: ~CIncomingMapSize( )
 {
 
 }
+
+
+#include <boost/python.hpp>
+
+void CGameProtocol :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CGameProtocol>("gameProtocol", no_init)
+		.def_readonly("GHost", &CGameProtocol::m_GHost)
+
+		.def("RECEIVE_W3GS_REQJOIN", &CGameProtocol::RECEIVE_W3GS_REQJOIN, return_internal_reference<>())
+		.def("RECEIVE_W3GS_LEAVEGAME", &CGameProtocol::RECEIVE_W3GS_LEAVEGAME)
+		.def("RECEIVE_W3GS_GAMELOADED_SELF", &CGameProtocol::RECEIVE_W3GS_GAMELOADED_SELF)
+		//.def("RECEIVE_W3GS_OUTGOING_ACTION", &CGameProtocol::RECEIVE_W3GS_OUTGOING_ACTION, return_internal_reference<>())
+		.def("RECEIVE_W3GS_OUTGOING_KEEPALIVE", &CGameProtocol::RECEIVE_W3GS_OUTGOING_KEEPALIVE)
+		.def("RECEIVE_W3GS_CHAT_TO_HOST", &CGameProtocol::RECEIVE_W3GS_CHAT_TO_HOST, return_internal_reference<>())
+		.def("RECEIVE_W3GS_SEARCHGAME", &CGameProtocol::RECEIVE_W3GS_SEARCHGAME)
+		.def("RECEIVE_W3GS_MAPSIZE", &CGameProtocol::RECEIVE_W3GS_MAPSIZE, return_internal_reference<>())
+		.def("RECEIVE_W3GS_MAPPARTOK", &CGameProtocol::RECEIVE_W3GS_MAPPARTOK)
+		.def("RECEIVE_W3GS_PONG_TO_HOST", &CGameProtocol::RECEIVE_W3GS_PONG_TO_HOST)
+
+		.def("SEND_W3GS_PING_FROM_HOST", &CGameProtocol::SEND_W3GS_PING_FROM_HOST)
+		//.def("SEND_W3GS_SLOTINFOJOIN", &CGameProtocol::SEND_W3GS_SLOTINFOJOIN)
+		.def("SEND_W3GS_REJECTJOIN", &CGameProtocol::SEND_W3GS_REJECTJOIN)
+		.def("SEND_W3GS_PLAYERINFO", &CGameProtocol::SEND_W3GS_PLAYERINFO)
+		.def("SEND_W3GS_PLAYERLEAVE_OTHERS", &CGameProtocol::SEND_W3GS_PLAYERLEAVE_OTHERS)
+		.def("SEND_W3GS_GAMELOADED_OTHERS", &CGameProtocol::SEND_W3GS_GAMELOADED_OTHERS)
+		.def("SEND_W3GS_SLOTINFO", &CGameProtocol::SEND_W3GS_SLOTINFO)
+		.def("SEND_W3GS_COUNTDOWN_START", &CGameProtocol::SEND_W3GS_COUNTDOWN_START)
+		.def("SEND_W3GS_COUNTDOWN_END", &CGameProtocol::SEND_W3GS_COUNTDOWN_END)
+		.def("SEND_W3GS_INCOMING_ACTION", &CGameProtocol::SEND_W3GS_INCOMING_ACTION)
+		.def("SEND_W3GS_CHAT_FROM_HOST", &CGameProtocol::SEND_W3GS_CHAT_FROM_HOST)
+		.def("SEND_W3GS_START_LAG", &CGameProtocol::SEND_W3GS_START_LAG)
+		.def("SEND_W3GS_STOP_LAG", &CGameProtocol::SEND_W3GS_STOP_LAG)
+		.def("SEND_W3GS_SEARCHGAME", &CGameProtocol::SEND_W3GS_SEARCHGAME)
+		//.def("SEND_W3GS_GAMEINFO", &CGameProtocol::SEND_W3GS_GAMEINFO)
+		.def("SEND_W3GS_CREATEGAME", &CGameProtocol::SEND_W3GS_CREATEGAME)
+		.def("SEND_W3GS_REFRESHGAME", &CGameProtocol::SEND_W3GS_REFRESHGAME)
+		.def("SEND_W3GS_DECREATEGAME", &CGameProtocol::SEND_W3GS_DECREATEGAME)
+		.def("SEND_W3GS_MAPCHECK", &CGameProtocol::SEND_W3GS_MAPCHECK)
+		.def("SEND_W3GS_STARTDOWNLOAD", &CGameProtocol::SEND_W3GS_STARTDOWNLOAD)
+		.def("SEND_W3GS_MAPPART", &CGameProtocol::SEND_W3GS_MAPPART)
+		.def("SEND_W3GS_INCOMING_ACTION2", &CGameProtocol::SEND_W3GS_INCOMING_ACTION2)
+
+		.def("assignLength", &CGameProtocol::AssignLength)
+		.def("validateLength", &CGameProtocol::ValidateLength)
+		.def("encodeSlotInfo", &CGameProtocol::EncodeSlotInfo)
+	;
+}
+
+void CIncomingJoinPlayer :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CIncomingJoinPlayer>("incomingJoinPlayer", no_init)
+		.def_readonly("hostCounter", &CIncomingJoinPlayer::m_HostCounter)
+		.def_readonly("entryKey", &CIncomingJoinPlayer::m_EntryKey)
+		.def_readonly("name", &CIncomingJoinPlayer::m_Name)
+		.def_readonly("internalIP", &CIncomingJoinPlayer::m_InternalIP)
+
+		.def("getHostCounter", &CIncomingJoinPlayer::GetHostCounter)
+		.def("getEntryKey", &CIncomingJoinPlayer::GetEntryKey)
+		.def("getName", &CIncomingJoinPlayer::GetName)
+		.def("getInternalIP", &CIncomingJoinPlayer::GetInternalIP)
+	;
+}
+
+void CIncomingAction :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CIncomingAction>("incomingAction", no_init)
+		.def_readonly("PID", &CIncomingAction::m_PID)
+		.def_readonly("CRC", &CIncomingAction::m_CRC)
+		.def_readonly("action", &CIncomingAction::m_Action)
+		
+		.def("getPID", &CIncomingAction::GetPID)
+		.def("getCRC", &CIncomingAction::GetCRC)
+		.def("getAction", &CIncomingAction::GetAction, return_internal_reference<>())
+		.def("getLength", &CIncomingAction::GetLength)
+	;
+}
+
+void CIncomingChatPlayer :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CIncomingChatPlayer>("incomingChatPlayer", no_init)
+		.def_readonly("type", &CIncomingChatPlayer::m_Type)
+		.def_readonly("fromPID", &CIncomingChatPlayer::m_FromPID)
+		.def_readonly("ToPIDs", &CIncomingChatPlayer::m_ToPIDs)
+		.def_readonly("flag", &CIncomingChatPlayer::m_Flag)
+		.def_readonly("message", &CIncomingChatPlayer::m_Message)
+		.def_readonly("byte", &CIncomingChatPlayer::m_Byte)
+		.def_readonly("extraFlags", &CIncomingChatPlayer::m_ExtraFlags)
+
+		.def("getType", &CIncomingChatPlayer::GetType)
+		.def("getFromPID", &CIncomingChatPlayer::GetFromPID)
+		.def("getToPIDs", &CIncomingChatPlayer::GetToPIDs)
+		.def("getFlag", &CIncomingChatPlayer::GetFlag)
+		.def("getMessage", &CIncomingChatPlayer::GetMessage)
+		.def("getByte", &CIncomingChatPlayer::GetByte)
+		.def("getExtraFlags", &CIncomingChatPlayer::GetExtraFlags)
+	;
+}
+
+void CIncomingMapSize :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CIncomingMapSize>("incomingMapSize", no_init)
+		.def_readonly("sizeFlag", &CIncomingMapSize::m_SizeFlag)
+		.def_readonly("mapSize", &CIncomingMapSize::m_MapSize)
+
+		.def("getSizeFlag", &CIncomingMapSize::GetSizeFlag)
+		.def("getMapSize", &CIncomingMapSize::GetMapSize)
+	;
+}

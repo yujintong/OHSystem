@@ -282,6 +282,8 @@ public:
     void HoldClan( CBaseGame *game );
     void CD_Print( string message );
     void Hack_Print( string message );
+
+	static void RegisterPythonClass( );
 };
 
 #endif

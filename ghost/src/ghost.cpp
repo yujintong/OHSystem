@@ -32,6 +32,7 @@
 #include "bnet.h"
 #include "map.h"
 #include "packed.h"
+#include "replay.h"
 #include "savegame.h"
 #include "gameplayer.h"
 #include "gameprotocol.h"
@@ -40,9 +41,14 @@
 #include "gcbiprotocol.h"
 #include "game_base.h"
 #include "game.h"
+#include "bnlsprotocol.h"
+#include "bnlsclient.h"
+#include "bnetprotocol.h"
+#include "bncsutilinterface.h"
 
 #include <signal.h>
 #include <stdlib.h>
+#include <boost/python.hpp>
 
 #ifdef WIN32
 #include <ws2tcpip.h>		// for WSAIoctl
@@ -195,6 +201,345 @@ void DEBUG_Print( BYTEARRAY b )
     cout << "}" << endl;
 }
 
+
+ //
+// host module 
+//
+
+map< string, vector<boost::python::object> > gHandlersFirst;
+map< string, vector<boost::python::object> > gHandlersSecond;
+
+void RegisterHandler( string HandlerName, boost::python::object nFunction, bool nBool = false )
+{
+	using namespace boost::python;
+
+	if( !PyFunction_Check( nFunction.ptr() ) )
+	{
+		string Error = "argument 1 must be function, not ";
+		Error = nFunction.ptr()->ob_type->tp_name;
+		PyErr_SetString( PyExc_TypeError, Error.c_str() );
+
+		throw_error_already_set();
+	}
+
+	if( nBool )
+		gHandlersFirst[HandlerName].push_back( nFunction );
+	else
+		gHandlersSecond[HandlerName].push_back( nFunction );
+}
+
+void UnregisterHandler( string HandlerName, boost::python::object nFunction, bool nBool = false )
+{
+	using namespace boost::python;
+
+	if( !PyFunction_Check( nFunction.ptr() ) )
+	{
+		string Error = "argument 1 must be function, not ";
+		Error = nFunction.ptr()->ob_type->tp_name;
+		PyErr_SetString( PyExc_TypeError, Error.c_str() );
+
+		throw_error_already_set();
+	}
+
+	vector<object>* Functions = nBool ? &gHandlersFirst[HandlerName] : &gHandlersSecond[HandlerName];
+	for( vector<object>::iterator i = Functions->begin(); i != Functions->end(); )
+	{
+		if( *i == nFunction )
+			i = Functions->erase(i);
+		else
+			i;
+	}
+}
+
+BOOST_PYTHON_FUNCTION_OVERLOADS(RegisterHandler_Overloads, RegisterHandler, 2, 3);
+BOOST_PYTHON_FUNCTION_OVERLOADS(UnregisterHandler_Overloads, UnregisterHandler, 2, 3);
+
+BOOST_PYTHON_MODULE(host)
+{
+	using namespace boost::python;
+
+	def( "registerHandler", RegisterHandler, RegisterHandler_Overloads() );
+	def( "unregisterHandler", UnregisterHandler, UnregisterHandler_Overloads() );
+	def( "log", CONSOLE_Print );
+}
+
+BOOST_PYTHON_MODULE(replay)
+{
+	using namespace boost::python;
+
+	enum_<CReplay::BlockID>("blockID")
+		.value("REPLAY_LEAVEGAME", CReplay::REPLAY_LEAVEGAME)
+		.value("REPLAY_FIRSTSTARTBLOCK", CReplay::REPLAY_FIRSTSTARTBLOCK)
+		.value("REPLAY_SECONDSTARTBLOCK", CReplay::REPLAY_SECONDSTARTBLOCK)
+		.value("REPLAY_THIRDSTARTBLOCK", CReplay::REPLAY_THIRDSTARTBLOCK)
+		.value("REPLAY_TIMESLOT2", CReplay::REPLAY_TIMESLOT2)
+		.value("REPLAY_TIMESLOT", CReplay::REPLAY_TIMESLOT)
+		.value("REPLAY_CHATMESSAGE", CReplay::REPLAY_CHATMESSAGE)
+		.value("REPLAY_CHECKSUM", CReplay::REPLAY_CHECKSUM)
+		.value("REPLAY_DESYNC", CReplay::REPLAY_DESYNC)
+	;
+}
+
+BOOST_PYTHON_MODULE(map)
+{
+	using namespace boost::python;
+
+	scope().attr("MAPSPEED_SLOW") = MAPSPEED_SLOW;
+	scope().attr("MAPSPEED_NORMAL") = MAPSPEED_NORMAL;
+	scope().attr("MAPSPEED_FAST") = MAPSPEED_FAST;
+	scope().attr("MAPVIS_HIDETERRAIN") = MAPVIS_HIDETERRAIN;
+	scope().attr("MAPVIS_EXPLORED") = MAPVIS_EXPLORED;
+	scope().attr("MAPVIS_ALWAYSVISIBLE") = MAPVIS_ALWAYSVISIBLE;
+	scope().attr("MAPVIS_DEFAULT") = MAPVIS_DEFAULT;
+	scope().attr("MAPOBS_NONE") = MAPOBS_NONE;
+	scope().attr("MAPOBS_ONDEFEAT") = MAPOBS_ONDEFEAT;
+	scope().attr("MAPOBS_ALLOWED") = MAPOBS_ALLOWED;
+	scope().attr("MAPOBS_REFEREES") = MAPOBS_REFEREES;
+	scope().attr("MAPFLAG_TEAMSTOGETHER") = MAPFLAG_TEAMSTOGETHER;
+	scope().attr("MAPFLAG_FIXEDTEAMS") = MAPFLAG_FIXEDTEAMS;
+	scope().attr("MAPFLAG_UNITSHARE") = MAPFLAG_UNITSHARE;
+	scope().attr("MAPFLAG_RANDOMHERO") = MAPFLAG_RANDOMHERO;
+	scope().attr("MAPFLAG_RANDOMRACES") = MAPFLAG_RANDOMRACES;
+	scope().attr("MAPOPT_HIDEMINIMAP") = MAPOPT_HIDEMINIMAP;
+	scope().attr("MAPOPT_MODIFYALLYPRIORITIES") = MAPOPT_MODIFYALLYPRIORITIES;
+	scope().attr("MAPOPT_MELEE") = MAPOPT_MELEE;
+	scope().attr("MAPOPT_REVEALTERRAIN") = MAPOPT_REVEALTERRAIN;
+	scope().attr("MAPOPT_FIXEDPLAYERSETTINGS") = MAPOPT_FIXEDPLAYERSETTINGS;
+	scope().attr("MAPOPT_CUSTOMFORCES") = MAPOPT_CUSTOMFORCES;
+	scope().attr("MAPOPT_CUSTOMTECHTREE") = MAPOPT_CUSTOMTECHTREE;
+	scope().attr("MAPOPT_CUSTOMABILITIES") = MAPOPT_CUSTOMABILITIES;
+	scope().attr("MAPOPT_CUSTOMUPGRADES") = MAPOPT_CUSTOMUPGRADES;
+	scope().attr("MAPOPT_WATERWAVESONCLIFFSHORES") = MAPOPT_WATERWAVESONCLIFFSHORES;
+	scope().attr("MAPOPT_WATERWAVESONSLOPESHORES") = MAPOPT_WATERWAVESONSLOPESHORES;
+	scope().attr("MAPFILTER_MAKER_USER") = MAPFILTER_MAKER_USER;
+	scope().attr("MAPFILTER_MAKER_BLIZZARD") = MAPFILTER_MAKER_BLIZZARD;
+	scope().attr("MAPFILTER_TYPE_MELEE") = MAPFILTER_TYPE_MELEE;
+	scope().attr("MAPFILTER_TYPE_SCENARIO") = MAPFILTER_TYPE_SCENARIO;
+	scope().attr("MAPFILTER_SIZE_SMALL") = MAPFILTER_SIZE_SMALL;
+	scope().attr("MAPFILTER_SIZE_MEDIUM") = MAPFILTER_SIZE_MEDIUM;
+	scope().attr("MAPFILTER_SIZE_LARGE") = MAPFILTER_SIZE_LARGE;
+	scope().attr("MAPFILTER_OBS_FULL") = MAPFILTER_OBS_FULL;
+	scope().attr("MAPFILTER_OBS_ONDEATH") = MAPFILTER_OBS_ONDEATH;
+	scope().attr("MAPFILTER_OBS_NONE") = MAPFILTER_OBS_NONE;
+	scope().attr("MAPGAMETYPE_UNKNOWN0") = MAPGAMETYPE_UNKNOWN0;
+	scope().attr("MAPGAMETYPE_PRIVATEGAME") = MAPGAMETYPE_PRIVATEGAME;
+	scope().attr("MAPGAMETYPE_MAKERUSER") = MAPGAMETYPE_MAKERUSER;
+	scope().attr("MAPGAMETYPE_MAKERBLIZZARD") = MAPGAMETYPE_MAKERBLIZZARD;
+	scope().attr("MAPGAMETYPE_TYPEMELEE") = MAPGAMETYPE_TYPEMELEE;
+	scope().attr("MAPGAMETYPE_TYPESCENARIO") = MAPGAMETYPE_TYPESCENARIO;
+	scope().attr("MAPGAMETYPE_SIZESMALL") = MAPGAMETYPE_SIZESMALL;
+	scope().attr("MAPGAMETYPE_SIZEMEDIUM") = MAPGAMETYPE_SIZEMEDIUM;
+	scope().attr("MAPGAMETYPE_SIZELARGE") = MAPGAMETYPE_SIZELARGE;
+	scope().attr("MAPGAMETYPE_OBSFULL") = MAPGAMETYPE_OBSFULL;
+	scope().attr("MAPGAMETYPE_OBSONDEATH") = MAPGAMETYPE_OBSONDEATH;
+	scope().attr("MAPGAMETYPE_OBSNONE") = MAPGAMETYPE_OBSNONE;
+}
+
+BOOST_PYTHON_MODULE(GPSProtocol)
+{
+	using namespace boost::python;
+
+	enum_<CGPSProtocol::Protocol>("protocol")
+		.value("GPS_INIT", CGPSProtocol::GPS_INIT)
+		.value("GPS_RECONNECT", CGPSProtocol::GPS_RECONNECT)
+		.value("GPS_ACK", CGPSProtocol::GPS_ACK)
+		.value("GPS_REJECT", CGPSProtocol::GPS_REJECT)
+	;
+
+	scope().attr("GPS_HEADER_CONSTANT") = GPS_HEADER_CONSTANT;
+
+	scope().attr("REJECTGPS_INVALID") = REJECTGPS_INVALID;
+	scope().attr("REJECTGPS_NOTFOUND") = REJECTGPS_NOTFOUND;
+}
+
+BOOST_PYTHON_MODULE(gameslot)
+{
+	using namespace boost::python;
+
+	scope().attr("SLOTSTATUS_OPEN") = SLOTSTATUS_OPEN;
+	scope().attr("SLOTSTATUS_CLOSED") = SLOTSTATUS_CLOSED;
+	scope().attr("SLOTSTATUS_OCCUPIED") = SLOTSTATUS_OCCUPIED;
+	scope().attr("SLOTRACE_HUMAN") = SLOTRACE_HUMAN;
+	scope().attr("SLOTRACE_ORC") = SLOTRACE_ORC;
+	scope().attr("SLOTRACE_NIGHTELF") = SLOTRACE_NIGHTELF;
+	scope().attr("SLOTRACE_UNDEAD") = SLOTRACE_UNDEAD;
+	scope().attr("SLOTRACE_RANDOM") = SLOTRACE_RANDOM;
+	scope().attr("SLOTRACE_SELECTABLE") = SLOTRACE_SELECTABLE;
+	scope().attr("SLOTCOMP_EASY") = SLOTCOMP_EASY;
+	scope().attr("SLOTCOMP_NORMAL") = SLOTCOMP_NORMAL;
+	scope().attr("SLOTCOMP_HARD") = SLOTCOMP_HARD;
+}
+
+BOOST_PYTHON_MODULE(gameProtocol)
+{
+	using namespace boost::python;
+
+	enum_<CGameProtocol::Protocol>("protocol")
+		.value("W3GS_PING_FROM_HOST", CGameProtocol::W3GS_PING_FROM_HOST)
+		.value("W3GS_SLOTINFOJOIN", CGameProtocol::W3GS_SLOTINFOJOIN)
+		.value("W3GS_REJECTJOIN", CGameProtocol::W3GS_REJECTJOIN)
+		.value("W3GS_PLAYERINFO", CGameProtocol::W3GS_PLAYERINFO)
+		.value("W3GS_PLAYERLEAVE_OTHERS", CGameProtocol::W3GS_PLAYERLEAVE_OTHERS)
+		.value("W3GS_GAMELOADED_OTHERS", CGameProtocol::W3GS_GAMELOADED_OTHERS)
+		.value("W3GS_SLOTINFO", CGameProtocol::W3GS_SLOTINFO)
+		.value("W3GS_COUNTDOWN_START", CGameProtocol::W3GS_COUNTDOWN_START)
+		.value("W3GS_COUNTDOWN_END", CGameProtocol::W3GS_COUNTDOWN_END)
+		.value("W3GS_INCOMING_ACTION", CGameProtocol::W3GS_INCOMING_ACTION)
+		.value("W3GS_CHAT_FROM_HOST", CGameProtocol::W3GS_CHAT_FROM_HOST)
+		.value("W3GS_START_LAG", CGameProtocol::W3GS_START_LAG)
+		.value("W3GS_STOP_LAG", CGameProtocol::W3GS_STOP_LAG)
+		.value("W3GS_HOST_KICK_PLAYER", CGameProtocol::W3GS_HOST_KICK_PLAYER)
+		.value("W3GS_REQJOIN", CGameProtocol::W3GS_REQJOIN)
+		.value("W3GS_LEAVEGAME", CGameProtocol::W3GS_LEAVEGAME)
+		.value("W3GS_GAMELOADED_SELF", CGameProtocol::W3GS_GAMELOADED_SELF)
+		.value("W3GS_OUTGOING_ACTION", CGameProtocol::W3GS_OUTGOING_ACTION)
+		.value("W3GS_OUTGOING_KEEPALIVE", CGameProtocol::W3GS_OUTGOING_KEEPALIVE)
+		.value("W3GS_CHAT_TO_HOST", CGameProtocol::W3GS_CHAT_TO_HOST)
+		.value("W3GS_DROPREQ", CGameProtocol::W3GS_DROPREQ)
+		.value("W3GS_SEARCHGAME", CGameProtocol::W3GS_SEARCHGAME)
+		.value("W3GS_GAMEINFO", CGameProtocol::W3GS_GAMEINFO)
+		.value("W3GS_CREATEGAME", CGameProtocol::W3GS_CREATEGAME)
+		.value("W3GS_REFRESHGAME", CGameProtocol::W3GS_REFRESHGAME)
+		.value("W3GS_DECREATEGAME", CGameProtocol::W3GS_DECREATEGAME)
+		.value("W3GS_CHAT_OTHERS", CGameProtocol::W3GS_CHAT_OTHERS)
+		.value("W3GS_PING_FROM_OTHERS", CGameProtocol::W3GS_PING_FROM_OTHERS)
+		.value("W3GS_PONG_TO_OTHERS", CGameProtocol::W3GS_PONG_TO_OTHERS)
+		.value("W3GS_MAPCHECK", CGameProtocol::W3GS_MAPCHECK)
+		.value("W3GS_STARTDOWNLOAD", CGameProtocol::W3GS_STARTDOWNLOAD)
+		.value("W3GS_MAPSIZE", CGameProtocol::W3GS_MAPSIZE)
+		.value("W3GS_MAPPART", CGameProtocol::W3GS_MAPPART)
+		.value("W3GS_MAPPARTOK", CGameProtocol::W3GS_MAPPARTOK)
+		.value("W3GS_MAPPARTNOTOK", CGameProtocol::W3GS_MAPPARTNOTOK)
+		.value("W3GS_PONG_TO_HOST", CGameProtocol::W3GS_PONG_TO_HOST)
+		.value("W3GS_INCOMING_ACTION2", CGameProtocol::W3GS_INCOMING_ACTION2)
+	;
+
+	scope().attr("W3GS_HEADER_CONSTANT") = W3GS_HEADER_CONSTANT;
+	scope().attr("GAME_NONE") = GAME_NONE;
+	scope().attr("GAME_FULL") = GAME_FULL;
+	scope().attr("GAME_PUBLIC") = GAME_PUBLIC;
+	scope().attr("GAME_PRIVATE") = GAME_PRIVATE;
+	scope().attr("GAMETYPE_CUSTOM") = GAMETYPE_CUSTOM;
+	scope().attr("GAMETYPE_BLIZZARD") = GAMETYPE_BLIZZARD;
+	scope().attr("PLAYERLEAVE_DISCONNECT") = PLAYERLEAVE_DISCONNECT;
+	scope().attr("PLAYERLEAVE_LOST") = PLAYERLEAVE_LOST;
+	scope().attr("PLAYERLEAVE_LOSTBUILDINGS") = PLAYERLEAVE_LOSTBUILDINGS;
+	scope().attr("PLAYERLEAVE_WON") = PLAYERLEAVE_WON;
+	scope().attr("PLAYERLEAVE_DRAW") = PLAYERLEAVE_DRAW;
+	scope().attr("PLAYERLEAVE_OBSERVER") = PLAYERLEAVE_OBSERVER;
+	scope().attr("PLAYERLEAVE_LOBBY") = PLAYERLEAVE_LOBBY;
+	scope().attr("PLAYERLEAVE_GPROXY") = PLAYERLEAVE_GPROXY;
+	scope().attr("REJECTJOIN_FULL") = REJECTJOIN_FULL;
+	scope().attr("REJECTJOIN_STARTED") = REJECTJOIN_STARTED;
+	scope().attr("REJECTJOIN_WRONGPASSWORD") = REJECTJOIN_WRONGPASSWORD;
+}
+
+BOOST_PYTHON_MODULE(BNLSProtocol)
+{
+	using namespace boost::python;
+	enum_<CBNLSProtocol::Protocol>("protocol")
+		.value("BNLS_NULL", CBNLSProtocol::BNLS_NULL)
+		.value("BNLS_CDKEY", CBNLSProtocol::BNLS_CDKEY)
+		.value("BNLS_LOGONCHALLENGE", CBNLSProtocol::BNLS_LOGONCHALLENGE)
+		.value("BNLS_LOGONPROOF", CBNLSProtocol::BNLS_LOGONPROOF)
+		.value("BNLS_CREATEACCOUNT", CBNLSProtocol::BNLS_CREATEACCOUNT)
+		.value("BNLS_CHANGECHALLENGE", CBNLSProtocol::BNLS_CHANGECHALLENGE)
+		.value("BNLS_CHANGEPROOF", CBNLSProtocol::BNLS_CHANGEPROOF)
+		.value("BNLS_UPGRADECHALLENGE", CBNLSProtocol::BNLS_UPGRADECHALLENGE)
+		.value("BNLS_UPGRADEPROOF", CBNLSProtocol::BNLS_UPGRADEPROOF)
+		.value("BNLS_VERSIONCHECK", CBNLSProtocol::BNLS_VERSIONCHECK)
+		.value("BNLS_CONFIRMLOGON", CBNLSProtocol::BNLS_CONFIRMLOGON)
+		.value("BNLS_HASHDATA", CBNLSProtocol::BNLS_HASHDATA)
+		.value("BNLS_CDKEY_EX", CBNLSProtocol::BNLS_CDKEY_EX)
+		.value("BNLS_CHOOSENLSREVISION", CBNLSProtocol::BNLS_CHOOSENLSREVISION)
+		.value("BNLS_AUTHORIZE", CBNLSProtocol::BNLS_AUTHORIZE)
+		.value("BNLS_AUTHORIZEPROOF", CBNLSProtocol::BNLS_AUTHORIZEPROOF)
+		.value("BNLS_REQUESTVERSIONBYTE", CBNLSProtocol::BNLS_REQUESTVERSIONBYTE)
+		.value("BNLS_VERIFYSERVER", CBNLSProtocol::BNLS_VERIFYSERVER)
+		.value("BNLS_RESERVESERVERSLOTS", CBNLSProtocol::BNLS_RESERVESERVERSLOTS)
+		.value("BNLS_SERVERLOGONCHALLENGE", CBNLSProtocol::BNLS_SERVERLOGONCHALLENGE)
+		.value("BNLS_SERVERLOGONPROOF", CBNLSProtocol::BNLS_SERVERLOGONPROOF)
+		.value("BNLS_RESERVED0", CBNLSProtocol::BNLS_RESERVED0)
+		.value("BNLS_RESERVED1", CBNLSProtocol::BNLS_RESERVED1)
+		.value("BNLS_RESERVED2", CBNLSProtocol::BNLS_RESERVED2)
+		.value("BNLS_VERSIONCHECKEX", CBNLSProtocol::BNLS_VERSIONCHECKEX)
+		.value("BNLS_RESERVED3", CBNLSProtocol::BNLS_RESERVED3)
+		.value("BNLS_VERSIONCHECKEX2", CBNLSProtocol::BNLS_VERSIONCHECKEX2)
+		.value("BNLS_WARDEN", CBNLSProtocol::BNLS_WARDEN)
+	;
+}
+
+BOOST_PYTHON_MODULE(BNETProtocol)
+{
+	using namespace boost::python;
+
+	enum_<CBNETProtocol::Protocol>("protocol")
+		.value("SID_NULL", CBNETProtocol::SID_NULL)
+		.value("SID_STOPADV", CBNETProtocol::SID_STOPADV)
+		.value("SID_GETADVLISTEX", CBNETProtocol::SID_GETADVLISTEX)
+		.value("SID_ENTERCHAT", CBNETProtocol::SID_ENTERCHAT)
+		.value("SID_JOINCHANNEL", CBNETProtocol::SID_JOINCHANNEL)
+		.value("SID_CHATCOMMAND", CBNETProtocol::SID_CHATCOMMAND)
+		.value("SID_CHATEVENT", CBNETProtocol::SID_CHATEVENT)
+		.value("SID_CHECKAD", CBNETProtocol::SID_CHECKAD)
+		.value("SID_STARTADVEX3", CBNETProtocol::SID_STARTADVEX3)
+		.value("SID_DISPLAYAD", CBNETProtocol::SID_DISPLAYAD)
+		.value("SID_NOTIFYJOIN", CBNETProtocol::SID_NOTIFYJOIN)
+		.value("SID_PING", CBNETProtocol::SID_PING)
+		.value("SID_LOGONRESPONSE", CBNETProtocol::SID_LOGONRESPONSE)
+		.value("SID_NETGAMEPORT", CBNETProtocol::SID_NETGAMEPORT)
+		.value("SID_AUTH_INFO", CBNETProtocol::SID_AUTH_INFO)
+		.value("SID_AUTH_CHECK", CBNETProtocol::SID_AUTH_CHECK)
+		.value("SID_AUTH_ACCOUNTLOGON", CBNETProtocol::SID_AUTH_ACCOUNTLOGON)
+		.value("SID_AUTH_ACCOUNTLOGONPROOF", CBNETProtocol::SID_AUTH_ACCOUNTLOGONPROOF)
+		.value("SID_WARDEN", CBNETProtocol::SID_WARDEN)
+		.value("SID_FRIENDSLIST", CBNETProtocol::SID_FRIENDSLIST)
+		.value("SID_FRIENDSUPDATE", CBNETProtocol::SID_FRIENDSUPDATE)
+		.value("SID_CLANMEMBERLIST", CBNETProtocol::SID_CLANMEMBERLIST)
+		.value("SID_CLANMEMBERSTATUSCHANGE", CBNETProtocol::SID_CLANMEMBERSTATUSCHANGE)
+	;
+
+	enum_<CBNETProtocol::KeyResult>("keyResult")
+		.value("KR_GOOD", CBNETProtocol::KR_GOOD)
+		.value("KR_OLD_GAME_VERSION", CBNETProtocol::KR_OLD_GAME_VERSION)
+		.value("KR_INVALID_VERSION", CBNETProtocol::KR_INVALID_VERSION)
+		.value("KR_ROC_KEY_IN_USE", CBNETProtocol::KR_ROC_KEY_IN_USE)
+		.value("KR_TFT_KEY_IN_USE", CBNETProtocol::KR_TFT_KEY_IN_USE)
+	;
+
+	enum_<CBNETProtocol::IncomingChatEvent>("incomingChatEvent")
+		.value("EID_SHOWUSER", CBNETProtocol::EID_SHOWUSER)
+		.value("EID_JOIN", CBNETProtocol::EID_JOIN)
+		.value("EID_LEAVE", CBNETProtocol::EID_LEAVE)
+		.value("EID_WHISPER", CBNETProtocol::EID_WHISPER)
+		.value("EID_TALK", CBNETProtocol::EID_TALK)
+		.value("EID_BROADCAST", CBNETProtocol::EID_BROADCAST)
+		.value("EID_CHANNEL", CBNETProtocol::EID_CHANNEL)
+		.value("EID_USERFLAGS", CBNETProtocol::EID_USERFLAGS)
+		.value("EID_WHISPERSENT", CBNETProtocol::EID_WHISPERSENT)
+		.value("EID_CHANNELFULL", CBNETProtocol::EID_CHANNELFULL)
+		.value("EID_CHANNELDOESNOTEXIST", CBNETProtocol::EID_CHANNELDOESNOTEXIST)
+		.value("EID_CHANNELRESTRICTED", CBNETProtocol::EID_CHANNELRESTRICTED)
+		.value("EID_INFO", CBNETProtocol::EID_INFO)
+		.value("EID_ERROR", CBNETProtocol::EID_ERROR)
+		.value("EID_EMOTE", CBNETProtocol::EID_EMOTE)
+	;
+}
+
+BOOST_PYTHON_MODULE(incomingChatPlayer)
+{
+	using namespace boost::python;
+
+	enum_<CIncomingChatPlayer::ChatToHostType>("chatToHostType")
+		.value("CTH_MESSAGE", CIncomingChatPlayer::CTH_MESSAGE)
+		.value("CTH_MESSAGEEXTRA", CIncomingChatPlayer::CTH_MESSAGEEXTRA)
+		.value("CTH_TEAMCHANGE", CIncomingChatPlayer::CTH_TEAMCHANGE)
+		.value("CTH_COLOURCHANGE", CIncomingChatPlayer::CTH_COLOURCHANGE)
+		.value("CTH_RACECHANGE", CIncomingChatPlayer::CTH_RACECHANGE)
+		.value("CTH_HANDICAPCHANGE", CIncomingChatPlayer::CTH_HANDICAPCHANGE)
+	;
+}
+
 //
 // main
 //
@@ -328,9 +673,120 @@ int main( int argc, char **argv )
     SetPriorityClass( GetCurrentProcess( ), ABOVE_NORMAL_PRIORITY_CLASS );
 #endif
 
+ 
+	// register the builtin modules
+
+	if( PyImport_AppendInittab("host", inithost) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("replay", initreplay) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("map", initmap) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("GPSProtocol", initGPSProtocol) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("gameslot", initgameslot) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("gameProtocol", initgameProtocol) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("BNLSProtocol", initBNLSProtocol) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("BNETProtocol", initBNETProtocol) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+	if( PyImport_AppendInittab("incomingChatPlayer", initincomingChatPlayer) == -1 )
+		throw std::runtime_error( "Failed to add host to the interpreter's builtin modules" );
+
+#ifdef WIN32
+	Py_SetPythonHome(".\\python\\");
+#endif
+
+	Py_Initialize( );
+
+	boost::python::object global( boost::python::import("__main__").attr("__dict__") );
+	boost::python::exec("import sys, host												\n"
+						"																\n"
+						"class Logger:													\n"	
+						"	def __init__(self, name):									\n"
+						"		self.name = name										\n"
+						"		self.buffer = ''										\n"
+						"																\n"
+						"	def write(self, string):									\n"
+						"		if len(string) == 0: return								\n"
+						"		self.buffer = string									\n"
+						"																\n"
+						"		if string[-1] == '\\n':									\n"
+						"			host.log('[PYTHON] '  self.buffer[:-1])			\n"
+						"			self.buffer = ''									\n"
+						"																\n"
+						"	def flush(self): pass										\n"
+						"	def close(self): pass										\n"
+						"																\n"
+						"#forwarding all python 'prints' to the c log ( host.log )	\n"
+						"sys.stdout = Logger('stdout')									\n"
+						"sys.stderr = Logger('stderr')									\n",
+						global, global);
+
+	CSocket::RegisterPythonClass( );
+	CTCPSocket::RegisterPythonClass( );
+	CTCPClient::RegisterPythonClass( );
+	CTCPServer::RegisterPythonClass( );
+	CUDPSocket::RegisterPythonClass( );
+	CUDPServer::RegisterPythonClass( );
+	CPacked::RegisterPythonClass( );
+	CSaveGame::RegisterPythonClass( );
+	CReplay::RegisterPythonClass( );
+	CMap::RegisterPythonClass( );
+	CLanguage::RegisterPythonClass( );
+	CGPSProtocol::RegisterPythonClass( );
+	CGHost::RegisterPythonClass( );
+	CGameSlot::RegisterPythonClass( );
+	CIncomingMapSize::RegisterPythonClass( );
+	CIncomingChatPlayer::RegisterPythonClass( );
+	CIncomingAction::RegisterPythonClass( );
+	CIncomingJoinPlayer::RegisterPythonClass( );
+	CGameProtocol::RegisterPythonClass( );
+	CPotentialPlayer::RegisterPythonClass( );
+	CGamePlayer::RegisterPythonClass( );
+	CBaseGame::RegisterPythonClass( );
+	CAdminGame::RegisterPythonClass( );
+	CGame::RegisterPythonClass( );
+	CBNLSProtocol::RegisterPythonClass( );
+	CBNLSClient::RegisterPythonClass( );
+	CIncomingClanList::RegisterPythonClass( );
+	CIncomingFriendList::RegisterPythonClass( );
+	CIncomingChatEvent::RegisterPythonClass( );
+	CIncomingGameHost::RegisterPythonClass( );
+	CBNETProtocol::RegisterPythonClass( );
+	CBNET::RegisterPythonClass( );
+	CBNCSUtilInterface::RegisterPythonClass( );
+	CConfig::RegisterPythonClass( );
+
+	try
+	{
+		boost::python::object module = boost::python::import("plugins.python");
+	}
+	catch(...)
+	{
+		PyErr_Print( );
+		throw;
+	}
+
+	EXECUTE_HANDLER("StartUp", false, boost::ref(CFG))
+	EXECUTE_HANDLER("StartUp", true, boost::ref(CFG))
+
     // initialize ghost
 
     gGHost = new CGHost( &CFG );
+
+
+	EXECUTE_HANDLER("GHostStarted", false, boost::ref(gGHost))
+	try	
+	{ 
+		EXECUTE_HANDLER("GHostStarted", true, boost::ref(gGHost)) 
+	}
+	catch(...) 
+	{ 
+
+	}
 
     while( 1 )
     {
@@ -346,6 +802,16 @@ int main( int argc, char **argv )
     CONSOLE_Print( "[GHOST] shutting down" );
     delete gGHost;
     gGHost = NULL;
+
+	EXECUTE_HANDLER("ShutDown", false)
+	try	
+	{ 
+		EXECUTE_HANDLER("ShutDown", true) 
+	}
+	catch(...) 
+	{ 
+
+	}
 
 #ifdef WIN32
     // shutdown winsock
@@ -2208,4 +2674,105 @@ void CGHost :: LoadLanguages( ) {
         CONSOLE_Print( "[ERROR] error listing language files - caught exception " + *ex.what( ) );
     }
     */
+}
+
+
+void CGHost :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CGHost>("GHost", no_init)
+		.def_readwrite("UDPSocket", &CGHost::m_UDPSocket)
+		.def_readwrite("reconnectSocket", &CGHost::m_ReconnectSocket)
+		.def_readwrite("reconnectSockets", &CGHost::m_ReconnectSockets)
+		.def_readwrite("GPSProtocol", &CGHost::m_GPSProtocol)
+		.def_readwrite("CRC", &CGHost::m_CRC)
+		.def_readwrite("SHA", &CGHost::m_SHA)
+		.def_readwrite("BNETs", &CGHost::m_BNETs)
+		.def_readwrite("currentGame", &CGHost::m_CurrentGame)
+		.def_readwrite("adminGame", &CGHost::m_AdminGame)
+		.def_readwrite("games", &CGHost::m_Games)
+		.def_readwrite("DB", &CGHost::m_DB)
+		.def_readwrite("DBLocal", &CGHost::m_DBLocal)
+		.def_readwrite("callables", &CGHost::m_Callables)
+		.def_readwrite("localAddresses", &CGHost::m_LocalAddresses)
+		.def_readwrite("language", &CGHost::m_Language)
+		.def_readwrite("Map", &CGHost::m_Map)
+		.def_readwrite("adminMap", &CGHost::m_AdminMap)
+		.def_readwrite("autoHostMap", &CGHost::m_AutoHostMap)
+		.def_readwrite("saveGame", &CGHost::m_SaveGame)
+		.def_readwrite("enforcePlayers", &CGHost::m_EnforcePlayers)
+		.def_readwrite("exiting", &CGHost::m_Exiting)
+		.def_readwrite("exitingNice", &CGHost::m_ExitingNice)
+		.def_readwrite("enabled", &CGHost::m_Enabled)
+		.def_readwrite("version", &CGHost::m_Version)
+		.def_readwrite("hostCounter", &CGHost::m_HostCounter)
+		.def_readwrite("autoHostGameName", &CGHost::m_AutoHostGameName)
+		.def_readwrite("autoHostOwner", &CGHost::m_AutoHostOwner)
+		.def_readwrite("autoHostServer", &CGHost::m_AutoHostServer)
+		.def_readwrite("autoHostMaximumGames", &CGHost::m_AutoHostMaximumGames)
+		.def_readwrite("autoHostAutoStartPlayers", &CGHost::m_AutoHostAutoStartPlayers)
+		.def_readwrite("lastAutoHostTime", &CGHost::m_LastAutoHostTime)
+		.def_readwrite("autoHostMatchMaking", &CGHost::m_AutoHostMatchMaking)
+		.def_readwrite("autoHostMinimumScore", &CGHost::m_AutoHostMinimumScore)
+		.def_readwrite("autoHostMaximumScore", &CGHost::m_AutoHostMaximumScore)
+		.def_readwrite("allGamesFinished", &CGHost::m_AllGamesFinished)
+		.def_readwrite("allGamesFinishedTime", &CGHost::m_AllGamesFinishedTime)
+		.def_readwrite("languageFile", &CGHost::m_LanguageFile)
+		.def_readwrite("warcraft3Path", &CGHost::m_Warcraft3Path)
+		.def_readwrite("TFT", &CGHost::m_TFT)
+		.def_readwrite("bindAddress", &CGHost::m_BindAddress)
+		.def_readwrite("hostPort", &CGHost::m_HostPort)
+		.def_readwrite("reconnect", &CGHost::m_Reconnect)
+		.def_readwrite("reconnectPort", &CGHost::m_ReconnectPort)
+		.def_readwrite("reconnectWaitTime", &CGHost::m_ReconnectWaitTime)
+		.def_readwrite("maxGames", &CGHost::m_MaxGames)
+		.def_readwrite("commandTrigger", &CGHost::m_CommandTrigger)
+		.def_readwrite("mapCFGPath", &CGHost::m_MapCFGPath)
+		.def_readwrite("saveGamePath", &CGHost::m_SaveGamePath)
+		.def_readwrite("mapPath", &CGHost::m_MapPath)
+		.def_readwrite("saveReplays", &CGHost::m_SaveReplays)
+		.def_readwrite("replayPath", &CGHost::m_ReplayPath)
+		.def_readwrite("virtualHostName", &CGHost::m_VirtualHostName)
+		.def_readwrite("hideIPAddresses", &CGHost::m_HideIPAddresses)
+		.def_readwrite("checkMultipleIPUsage", &CGHost::m_CheckMultipleIPUsage)
+		.def_readwrite("spoofChecks", &CGHost::m_SpoofChecks)
+		.def_readwrite("requireSpoofChecks", &CGHost::m_RequireSpoofChecks)
+		.def_readwrite("reserveAdmins", &CGHost::m_ReserveAdmins)
+		.def_readwrite("refreshMessages", &CGHost::m_RefreshMessages)
+		.def_readwrite("autoLock", &CGHost::m_AutoLock)
+		.def_readwrite("autoSave", &CGHost::m_AutoSave)
+		.def_readwrite("allowDownloads", &CGHost::m_AllowDownloads)
+		.def_readwrite("pingDuringDownloads", &CGHost::m_PingDuringDownloads)
+		.def_readwrite("maxDownloaders", &CGHost::m_MaxDownloaders)
+		.def_readwrite("maxDownloadSpeed", &CGHost::m_MaxDownloadSpeed)
+		.def_readwrite("LCPings", &CGHost::m_LCPings)
+		.def_readwrite("autoKickPing", &CGHost::m_AutoKickPing)
+		.def_readwrite("banMethod", &CGHost::m_BanMethod)
+		.def_readwrite("IPBlackListFile", &CGHost::m_IPBlackListFile)
+		.def_readwrite("lobbyTimeLimit", &CGHost::m_LobbyTimeLimit)
+		.def_readwrite("latency", &CGHost::m_Latency)
+		.def_readwrite("syncLimit", &CGHost::m_SyncLimit)
+		.def_readwrite("voteKickAllowed", &CGHost::m_VoteKickAllowed)
+		.def_readwrite("voteKickPercentage", &CGHost::m_VoteKickPercentage)
+		.def_readwrite("defaultMap", &CGHost::m_DefaultMap)
+		.def_readwrite("MOTDFile", &CGHost::m_MOTDFile)
+		.def_readwrite("gameLoadedFile", &CGHost::m_GameLoadedFile)
+		.def_readwrite("gameOverFile", &CGHost::m_GameOverFile)
+		.def_readwrite("localAdminMessages", &CGHost::m_LocalAdminMessages)
+		.def_readwrite("adminGameCreate", &CGHost::m_AdminGameCreate)
+		.def_readwrite("adminGamePort", &CGHost::m_AdminGamePort)
+		.def_readwrite("adminGamePassword", &CGHost::m_AdminGamePassword)
+		.def_readwrite("adminGameMap", &CGHost::m_AdminGameMap)
+		.def_readwrite("m_ReplayWar3Version", &CGHost::m_ReplayWar3Version)
+		.def_readwrite("m_ReplayBuildNumber", &CGHost::m_ReplayBuildNumber)
+		.def_readwrite("TCPNoDelay", &CGHost::m_TCPNoDelay)
+		.def_readwrite("matchMakingMethod", &CGHost::m_MatchMakingMethod)
+
+		.def("reloadConfigs", &CGHost::ReloadConfigs)
+		.def("setConfigs", &CGHost::SetConfigs)
+		.def("extractScripts", &CGHost::ExtractScripts)
+		.def("loadIPToCountryData", &CGHost::LoadIPToCountryData)
+		.def("createGame", &CGHost::CreateGame)
+	;
 }

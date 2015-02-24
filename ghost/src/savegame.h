@@ -77,6 +77,8 @@ public:
     }
 
     void ParseSaveGame( );
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

@@ -149,6 +149,8 @@ private:
     bool AssignLength( BYTEARRAY &content );
     bool ValidateLength( BYTEARRAY &content );
     BYTEARRAY EncodeSlotInfo( vector<CGameSlot> &slots, uint32_t randomSeed, unsigned char layoutStyle, unsigned char playerSlots );
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -208,6 +210,8 @@ public:
     void SetCLetter( string nCC )           {
         m_CC = nCC;
     }
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -237,6 +241,8 @@ public:
     uint32_t GetLength( )	{
         return m_Action.size( ) + 3;
     }
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -292,6 +298,8 @@ public:
     BYTEARRAY GetExtraFlags( )		{
         return m_ExtraFlags;
     }
+public:
+	static void RegisterPythonClass( );
 };
 
 class CIncomingMapSize
@@ -310,6 +318,8 @@ public:
     uint32_t GetMapSize( )			{
         return m_MapSize;
     }
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

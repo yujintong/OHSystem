@@ -576,3 +576,59 @@ void CReplay :: ParseReplay( bool parseBlocks )
 
     m_Valid = true;
 }
+
+#include <boost/python.hpp>
+
+void CReplay :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_< CReplay, bases<CPacked> >("replay")
+		.def_readonly("hostPID", &CReplay::m_HostPID)
+		.def_readonly("hostName", &CReplay::m_HostName)
+		.def_readonly("gameName", &CReplay::m_GameName)
+		.def_readonly("statString", &CReplay::m_StatString)
+		.def_readonly("playerCount", &CReplay::m_PlayerCount)
+		.def_readonly("mapGameType", &CReplay::m_MapGameType)
+		.def_readonly("players", &CReplay::m_Players)
+		.def_readonly("slots", &CReplay::m_Slots)
+		.def_readonly("randomSeed", &CReplay::m_RandomSeed)
+		.def_readonly("selectMode", &CReplay::m_SelectMode)
+		.def_readonly("startSpotCount", &CReplay::m_StartSpotCount)
+		.def_readonly("loadingBlocks", &CReplay::m_LoadingBlocks)
+		.def_readonly("blocks", &CReplay::m_Blocks)
+		.def_readonly("checkSums", &CReplay::m_CheckSums)
+		.def_readonly("compiledBlocks", &CReplay::m_CompiledBlocks)
+
+		.def("getHostPID", &CReplay::GetHostPID)
+		.def("getHostName", &CReplay::GetHostName)
+		.def("getGameName", &CReplay::GetGameName)
+		.def("getStatString", &CReplay::GetStatString)
+		.def("getPlayerCount", &CReplay::GetPlayerCount)
+		.def("getMapGameType", &CReplay::GetMapGameType)
+		.def("getPlayers", &CReplay::GetPlayers)
+		.def("getSlots", &CReplay::GetSlots)
+		.def("getRandomSeed", &CReplay::GetRandomSeed)
+		.def("getSelectMode", &CReplay::GetSelectMode)
+		.def("getStartSpotCount", &CReplay::GetStartSpotCount)
+		.def("getLoadingBlocks", &CReplay::GetLoadingBlocks, return_internal_reference<>())
+		.def("getBlocks", &CReplay::GetBlocks, return_internal_reference<>())
+		.def("getCheckSums", &CReplay::GetCheckSums, return_internal_reference<>())
+		.def("addPlayer", &CReplay::AddPlayer)
+		.def("setSlots", &CReplay::SetSlots)
+		.def("setRandomSeed", &CReplay::SetRandomSeed)
+		.def("setSelectMode", &CReplay::SetSelectMode)
+		.def("setStartSpotCount", &CReplay::SetStartSpotCount)
+		.def("setMapGameType", &CReplay::SetMapGameType)
+		.def("setHostPID", &CReplay::SetHostPID)
+		.def("setHostName", &CReplay::SetHostName)
+		.def("addLeaveGame", &CReplay::AddLeaveGame)
+		.def("addLeaveGameDuringLoading", &CReplay::AddLeaveGameDuringLoading)
+		.def("addTimeSlot2", &CReplay::AddTimeSlot2)
+		.def("addTimeSlot", &CReplay::AddTimeSlot)
+		.def("addChatMessage", &CReplay::AddChatMessage)
+		.def("addLoadingBlock", &CReplay::AddLoadingBlock)
+		.def("buildReplay", &CReplay::BuildReplay)
+		.def("parseReplay", &CReplay::ParseReplay)
+	;
+}

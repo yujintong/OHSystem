@@ -130,6 +130,9 @@ public:
     virtual void Allocate( int type );
     virtual void Reset( );
     virtual string GetHostName( );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -183,6 +186,9 @@ public:
     virtual void SetLogFile( string nLogFile )	{
         m_LogFile = nLogFile;
     }
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -205,6 +211,9 @@ public:
     }
     virtual void Connect( string localaddress, string address, uint16_t port );
     virtual bool CheckConnect( );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -219,6 +228,9 @@ public:
 
     virtual bool Listen( string address, uint16_t port );
     virtual CTCPSocket *Accept( fd_set *fd );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -238,6 +250,9 @@ public:
     virtual bool Broadcast( uint16_t port, BYTEARRAY message );
     virtual void SetBroadcastTarget( string subnet );
     virtual void SetDontRoute( bool dontRoute );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -253,6 +268,9 @@ public:
     virtual bool Bind( struct sockaddr_in sin );
     virtual bool Bind( string address, uint16_t port );
     virtual void RecvFrom( fd_set *fd, struct sockaddr_in *sin, string *message );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif
