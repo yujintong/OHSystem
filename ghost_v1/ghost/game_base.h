@@ -210,15 +210,23 @@ protected:
     uint32_t m_PartTime;
     string m_LobbyLanguage;
     uint32_t m_LastGameUpdateTime;					// last time game update database callable
-	bool m_ForcedMode;
-	uint32_t m_ForcedGameMode;
-
+    bool m_ForcedMode;
+    uint32_t m_ForcedGameMode;
     uint32_t m_ObservingPlayers;
+    int m_DoDelete;									// notifies thread to exit
+    uint32_t m_LastReconnectHandleTime;				// last time we tried to handle GProxy reconnects
+
+public:
+    vector<string> m_DoSayGames;					// vector of strings we should announce to the current game
+    boost::mutex m_SayGamesMutex;					// mutex for the above vector
 
 public:
     CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
     virtual ~CBaseGame( );
 
+    virtual void loop( );
+    virtual void doDelete( );
+    virtual bool readyDelete( );
     uint32_t m_DatabaseID;                          // the ID number from the database, which we'll use to save replay
     vector<string> m_ModesToVote;                                           // modes which are possible to vote in the current game
     CMap *m_Map;

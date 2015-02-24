@@ -1455,6 +1455,8 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         // this case covers whispers - we assume that anyone who sends a whisper to the bot with message "spoofcheck" should be considered spoof checked
         // note that this means you can whisper "spoofcheck" even in a public game to manually spoofcheck if the /whois fails
 
+	boost::mutex::scoped_lock lock( m_GHost->m_GamesMutex );
+
         if( Event == CBNETProtocol :: EID_WHISPER && m_GHost->m_CurrentGame )
         {
             if( Message == "s" || Message == "sc" || Message == "spoof" || Message == "check" || Message == "spoofcheck" )
@@ -1478,6 +1480,8 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
                     m_GHost->m_CurrentGame->AddToSpoofed( m_Server, User, false );
             }
         }
+
+	lock.unlock( );
 
         // handle bot commands
 
@@ -1516,6 +1520,8 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         // this case covers whois results which are used when hosting a public game (we send out a "/whois [player]" for each player)
         // at all times you can still /w the bot with "spoofcheck" to manually spoof check
 
+	boost::mutex::scoped_lock lock( m_GHost->m_GamesMutex );	
+
         if( m_GHost->m_CurrentGame && m_GHost->m_CurrentGame->GetPlayerFromName( UserName, true ) )
         {
             if( Message.find( "is away" ) != string :: npos )
@@ -1547,6 +1553,8 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
                     m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInAnotherGame( UserName ) );
             }
         }
+	
+	lock.unlock( );
     }
 
     else if( Event == CBNETProtocol :: EID_JOIN ) {
@@ -1596,10 +1604,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //save admin log
         m_AdminLog.push_back( User + " cl" + "\t" + UTIL_ToString( IsLevel( User ) ) + "\t" + Command + "\t" + Payload );
 
+
         /**************************************
         * GRIEF-CODE COMMANDS | RCON COMMANDS *
         **************************************/
-
+/*
         //
         // !RCON
         //
@@ -1702,12 +1711,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         }
                     }
                 }
-                /*
-                                                                if( Success )
-                                                                        QueueChatCommand( "Successfully muted [" + Name + "]" );
-                                                                else
-                                                                        QueueChatCommand( "Could not find [" + Name + "] in any hosted game" );
-                */
             }
 
             //
@@ -1765,12 +1768,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         }
                     }
                 }
-                /*
-                                                                if( Success )
-                                                                        QueueChatCommand( "Successfully unmuted [" + Name + "]" );
-                                                                else
-                                                                        QueueChatCommand( "Could not find [" + Name + "] in any hosted game" );
-                */
             }
 
             //
@@ -1833,12 +1830,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         }
                     }
                 }
-                /*
-                                                                if( Success )
-                                                                        QueueChatCommand( "Successfully kicked [" + Name + "]" );
-                                                                else
-                                                                        QueueChatCommand( "Could not find [" + Name + "] in any hosted game" );
-                */
             }
 
             //
@@ -1874,11 +1865,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         Success = true;
                     }
                 }
-                /*
-                                                                        QueueChatCommand( "Successfully send the message );
-                                                                else
-                                                                        QueueChatCommand( "There is no game currently at the lobby" );
-                */
             }
 
             //
@@ -2075,7 +2061,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
             }
         }
-
+*/
         //
         // !VOUCH
         //
@@ -2456,7 +2442,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
             }
         }
-
+/*
         //
         // !ANNOUNCE
         //
@@ -2499,7 +2485,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
             }
         }
-
+*/
         //
         // !AUTOHOST
         //
@@ -2686,7 +2672,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             else
                 QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
-
+/*
         //
         // !AUTOSTART
         //
@@ -2709,7 +2695,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
             }
         }
-
+*/
         //
         // !CHANNEL (change channel)
         //
@@ -2763,7 +2749,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 m_PairedBanCheck2s.push_back( PairedBanCheck2( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanCheck2( m_Server, Payload, "check" ) ) );
             }
         }
-
+/*
         //
         // !CLOSE (close slot)
         //
@@ -2806,7 +2792,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             else
                 QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
         }
-
+*/
         //
         // !COUNTBANS
         //
@@ -2940,31 +2926,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         }
 
         //
-        // !EXIT
-        // !QUIT
-        //
-
-        else if( Command == "exit" || Command == "quit" )
-        {
-            if( IsLevel( User ) >= 9 || ForceRoot )
-            {
-                if( Payload == "nice" )
-                    m_GHost->m_ExitingNice = true;
-                else if( Payload == "force" )
-                    m_Exiting = true;
-                else
-                {
-                    if( m_GHost->m_CurrentGame || !m_GHost->m_Games.empty( ) )
-                        QueueChatCommand( m_GHost->m_Language->AtLeastOneGameActiveUseForceToShutdown( ), User, Whisper );
-                    else
-                        m_Exiting = true;
-                }
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
-        }
-
-        //
         // !GETCLAN
         //
 
@@ -2997,54 +2958,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             else
                 QueueChatCommand( m_GHost->m_Language->GameNumberDoesntExist( Payload ), User, Whisper );
         }
-
-        //
-        // !GETGAMES
-        //
-
-        else if( Command == "getgames" && IsLevel( User ) >= 9 )
-        {
-            if( m_GHost->m_CurrentGame )
-                QueueChatCommand( m_GHost->m_Language->GameIsInTheLobby( m_GHost->m_CurrentGame->GetDescription( ), UTIL_ToString( m_GHost->m_Games.size( ) ), UTIL_ToString( m_GHost->m_MaxGames ) ), User, Whisper );
-            else
-                QueueChatCommand( m_GHost->m_Language->ThereIsNoGameInTheLobby( UTIL_ToString( m_GHost->m_Games.size( ) ), UTIL_ToString( m_GHost->m_MaxGames ) ), User, Whisper );
-        }
-
-        //
-        // !HOLD (hold a slot for someone)
-        //
-
-        else if( Command == "hold" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 8 )
-        {
-            // hold as many players as specified, e.g. "Varlock Kilranin" holds players "Varlock" and "Kilranin"
-
-            stringstream SS;
-            SS << Payload;
-
-            while( !SS.eof( ) )
-            {
-                string HoldName;
-                SS >> HoldName;
-
-                if( SS.fail( ) )
-                {
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input to the hold command" );
-                    break;
-                }
-                else
-                {
-                    QueueChatCommand( m_GHost->m_Language->AddedPlayerToTheHoldList( HoldName ), User, Whisper );
-                    m_GHost->m_CurrentGame->AddToReserved( HoldName, 255, 1 );
-                }
-            }
-        }
-
-        //
-        // !HOSTSG
-        //
-
-        else if( Command == "hostsg" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-            m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, true, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
 
         //
         // !LOAD (load config file)
@@ -3122,39 +3035,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] error listing map configs - caught exception [" + ex.what( ) + "]" );
                     QueueChatCommand( m_GHost->m_Language->ErrorListingMapConfigs( ), User, Whisper );
                 }
-            }
-        }
-
-        //
-        // !LOADSG
-        //
-
-        else if( Command == "loadsg" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-        {
-            // only load files in the current directory just to be safe
-
-            if( Payload.find( "/" ) != string :: npos || Payload.find( "\\" ) != string :: npos )
-                QueueChatCommand( m_GHost->m_Language->UnableToLoadSaveGamesOutside( ), User, Whisper );
-            else
-            {
-                string File = m_GHost->m_SaveGamePath + Payload + ".w3z";
-                string FileNoPath = Payload + ".w3z";
-
-                if( UTIL_FileExists( File ) )
-                {
-                    if( m_GHost->m_CurrentGame )
-                        QueueChatCommand( m_GHost->m_Language->UnableToLoadSaveGameGameInLobby( ), User, Whisper );
-                    else
-                    {
-                        QueueChatCommand( m_GHost->m_Language->LoadingSaveGame( File ), User, Whisper );
-                        m_GHost->m_SaveGame->Load( File, false );
-                        m_GHost->m_SaveGame->ParseSaveGame( );
-                        m_GHost->m_SaveGame->SetFileName( File );
-                        m_GHost->m_SaveGame->SetFileNameNoPath( FileNoPath );
-                    }
-                }
-                else
-                    QueueChatCommand( m_GHost->m_Language->UnableToLoadSaveGameDoesntExist( File ), User, Whisper );
             }
         }
 
@@ -3241,62 +3121,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         }
 
         //
-        // !OPEN (open slot)
-        //
-
-        else if( Command == "open" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 7 )
-        {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
-            {
-                // open as many slots as specified, e.g. "5 10" opens slots 5 and 10
-
-                stringstream SS;
-                SS << Payload;
-
-                while( !SS.eof( ) )
-                {
-                    uint32_t SID;
-                    SS >> SID;
-
-                    if( SS.fail( ) )
-                    {
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input to open command" );
-                        break;
-                    }
-                    else
-                        m_GHost->m_CurrentGame->OpenSlot( (unsigned char)( SID - 1 ), true );
-                }
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
-        }
-
-        //
-        // !OPENALL
-        //
-
-        else if( Command == "openall" && m_GHost->m_CurrentGame && IsLevel( User ) >= 9 )
-        {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
-                m_GHost->m_CurrentGame->OpenAllSlots( );
-            else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
-        }
-
-        //
-        // !PRIV (host private game)
-        //
-
-        else if( Command == "priv" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-            m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, Payload, User, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
-
-        //
-        // !VIP (host vip games)
-        //
-        else if( Command == "vip" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-            m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, "[VIP] "+Payload, User, User, m_Server, 4, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
-
-        //
         // !VIP Reg Needed
         //
         else if( Command == "vipreg" && IsLevel( User ) >= 8 )
@@ -3346,95 +3170,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             {
                 m_GHost->m_MinLimit = UTIL_ToUInt32( Payload );
                 QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
-            }
-        }
-
-        //
-        // !RESERVED (host reserved only game)
-        //
-        else if( Command == "reserved" && !Payload.empty( ) && IsLevel( User ) >= 8 )
-            m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, "[R] "+Payload, User, User, m_Server, 5, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
-
-        //
-        // !PRIVBY (host private game by other player)
-        //
-
-        else if( Command == "privby" && !Payload.empty( ) && IsLevel( User ) >= 8 )
-        {
-            // extract the owner and the game name
-            // e.g. "Varlock dota 6.54b arem ~~~" -> owner: "Varlock", game name: "dota 6.54b arem ~~~"
-
-            string Owner;
-            string GameName;
-            string :: size_type GameNameStart = Payload.find( " " );
-
-            if( GameNameStart != string :: npos )
-            {
-                Owner = Payload.substr( 0, GameNameStart );
-                GameName = Payload.substr( GameNameStart + 1 );
-                m_GHost->CreateGame( m_GHost->m_Map, GAME_PRIVATE, false, GameName, Owner, User, m_Server, 1, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
-            }
-        }
-
-        //
-        // !PUB (host public game)
-        //
-
-        else if( Command == "pub" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly)
-            m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, Payload, User, User, m_Server, 2, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
-
-        //
-        // !PUBMM
-        //
-        else if( Command == "pubmm" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly ) {
-            string gamename;
-            uint32_t minscore;
-            uint32_t maxscore;
-            stringstream SS;
-            SS << Payload;
-
-            SS >> minscore;
-
-            if( SS.fail( ) || minscore <= 0 || minscore > 100000 )
-                CONSOLE_Print( "[PUBMM] bad input #1 to !PUBMM command." );
-            else {
-                SS >> maxscore;
-                if( SS.fail( ) || maxscore <= 0 || maxscore > 100000)
-                    CONSOLE_Print( "[PUBMM] bad input #2 to !PUBMM command." );
-                else {
-                    if( !SS.eof( ) )
-                    {
-                        getline( SS, gamename );
-                        string :: size_type Start = gamename.find_first_not_of( " " );
-
-                        if( Start != string :: npos )
-                            gamename = gamename.substr( Start );
-                    }
-                    m_GHost->m_MinScoreLimit = minscore;
-                    m_GHost->m_MaxScoreLimit = maxscore;
-                    m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, gamename, User, User, m_Server, 3, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
-		}
-            }
-        }
-
-        //
-        // !PUBBY (host public game by other player)
-        //
-
-        else if( Command == "pubby" && !Payload.empty( ) && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
-        {
-            // extract the owner and the game name
-            // e.g. "Varlock dota 6.54b arem ~~~" -> owner: "Varlock", game name: "dota 6.54b arem ~~~"
-
-            string Owner;
-            string GameName;
-            string :: size_type GameNameStart = Payload.find( " " );
-
-            if( GameNameStart != string :: npos )
-            {
-                Owner = Payload.substr( 0, GameNameStart );
-                GameName = Payload.substr( GameNameStart + 1 );
-                m_GHost->CreateGame( m_GHost->m_Map, GAME_PUBLIC, false, GameName, Owner, User, m_Server, 2, Whisper, m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->GetHostCounter( ) : 0 );
             }
         }
 
@@ -3506,176 +3241,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             }
             else
                 QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
-        }
-
-        //
-        // !SAYGAMES
-        //
-
-        else if( Command == "saygames" && !Payload.empty( ) )
-        {
-            if( IsLevel( User ) == 10 || ForceRoot )
-            {
-                if( m_GHost->m_CurrentGame )
-                    m_GHost->m_CurrentGame->SendAllChat( Payload );
-
-                for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                    (*i)->SendAllChat( "ADMIN: " + Payload );
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
-        }
-
-        //
-        // !SAYPLAYER
-        //
-        else if( Command == "sayplayer" && !Payload.empty( ) )
-        {
-            if( IsLevel( User ) == 10 || ForceRoot )
-            {
-                string UserTo;
-                string Message;
-                stringstream SS;
-                SS << Payload;
-                SS >> UserTo;
-                if( !SS.eof( ) )
-                {
-                    getline( SS, Message );
-                    string :: size_type Start = Message.find_first_not_of( " " );
-
-                    if( Start != string :: npos )
-                        Message = Message.substr( Start );
-                }
-                else
-                {
-                    QueueChatCommand( m_GHost->m_Language->ErrorWrongInputForSayPlayer( ), User, true );
-                    return;
-                }
-
-                if( m_GHost->m_CurrentGame )
-                {
-                    for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
-                    {
-                        CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
-                        if( Player )
-                        {
-                            if( Player->GetName() == UserTo )
-                                m_GHost->m_CurrentGame->SendChat( Player, "[" + User + "] " + Message );
-                        }
-                    }
-                }
-
-                for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                {
-                    for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
-                    {
-                        CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
-                        if( Player )
-                        {
-                            if( Player->GetName() == UserTo )
-                                (*i)->SendChat( Player, "[" + User + "] " + Message );
-                        }
-                    }
-                }
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
-        }
-
-        //
-        // !SP
-        //
-
-        else if( Command == "sp" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && IsLevel( User ) >= 8 )
-        {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
-            {
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->ShufflingPlayers( ) );
-                m_GHost->m_CurrentGame->ShuffleSlots( );
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
-        }
-
-        //
-        // !START
-        //
-
-        else if( Command == "start" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && m_GHost->m_CurrentGame->GetNumHumanPlayers( ) > 0 && ( IsLevel( User ) >= 8  || ForceRoot ) )
-        {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
-            {
-                // if the player sent "!start force" skip the checks and start the countdown
-                // otherwise check that the game is ready to start
-
-                if( Payload == "force" )
-                    m_GHost->m_CurrentGame->StartCountDown( true );
-                else
-                    m_GHost->m_CurrentGame->StartCountDown( false );
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
-        }
-
-        //
-        // !SWAP (swap slots)
-        //
-
-        else if( Command == "swap" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 8 )
-        {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
-            {
-                uint32_t SID1;
-                uint32_t SID2;
-                stringstream SS;
-                SS << Payload;
-                SS >> SID1;
-
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the swap command" );
-                else
-                {
-                    if( SS.eof( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] missing input #2 to the swap command" );
-                    else
-                    {
-                        SS >> SID2;
-
-                        if( SS.fail( ) )
-                            CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the swap command" );
-                        else
-                            m_GHost->m_CurrentGame->SwapSlots( (unsigned char)( SID1 - 1 ), (unsigned char)( SID2 - 1 ) );
-                    }
-                }
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
-        }
-
-        //
-        // !UNHOST
-        //
-
-        else if( Command == "unhost" && IsLevel( User ) >= 8 && ForceRoot && ! m_GHost->m_ChannelBotOnly)
-        {
-            if( m_GHost->m_CurrentGame )
-            {
-                if( m_GHost->m_CurrentGame->GetCountDownStarted( ) )
-                    QueueChatCommand( m_GHost->m_Language->UnableToUnhostGameCountdownStarted( m_GHost->m_CurrentGame->GetDescription( ) ), User, Whisper );
-
-                // if the game owner is still in the game only allow the root admin to unhost the game
-
-                else if( m_GHost->m_CurrentGame->GetPlayerFromName( m_GHost->m_CurrentGame->GetOwnerName( ), false ) && IsLevel( User ) != 10 )
-                    QueueChatCommand( m_GHost->m_Language->CantUnhostGameOwnerIsPresent( m_GHost->m_CurrentGame->GetOwnerName( ) ), User, Whisper );
-                else
-                {
-                    QueueChatCommand( m_GHost->m_Language->UnhostingGame( m_GHost->m_CurrentGame->GetDescription( ) ), User, Whisper );
-                    m_GHost->m_CurrentGame->SetExiting( true );
-                    m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_GHost->m_CurrentGame->m_ChatID, string(), 3, uint32_t(), m_GHost->m_CurrentGame->m_GameAlias ) );
-                }
-            }
-            else
-                QueueChatCommand( m_GHost->m_Language->UnableToUnhostGameNoGameInLobby( ), User, Whisper );
         }
 
         //
@@ -3806,7 +3371,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
 
             if( m_StatsAlias == 0 )
-                m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+		return;
 
             string StatsUser = User;
             string Month = "";
@@ -3840,7 +3405,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
 
             if( m_StatsAlias == 0 )
-                m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+		return;	
 
             string StatsUser = User;
             string Month = "";
@@ -3875,7 +3440,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
 
             if( m_StatsAlias == 0 )
-                m_StatsAlias = m_GHost->m_CurrentGame ? m_GHost->m_CurrentGame->m_GameAlias : 0;
+		return;
 
             string StatsUser = User;
 
@@ -4461,7 +4026,6 @@ void CBNET :: PVPGNCommand( string Command )
 
     if(cmd=="host" || cmd=="chost") {}
     else if(cmd=="unhost") {
-	if(m_GHost->m_CurrentGame){}
     }
     else if(cmd=="ping") {}
     else if(cmd=="swap") {}

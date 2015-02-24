@@ -647,10 +647,11 @@ CGHost :: ~CGHost( )
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         delete *i;
 
-    delete m_CurrentGame;
+    if( m_CurrentGame )
+	m_CurrentGame->doDelete();
 
     for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
-        delete *i;
+	(*i)->doDelete();
     }
 
     delete m_DB;
@@ -681,6 +682,35 @@ bool CGHost :: Update( long usecBlock )
         return true;
     }
 
+	boost::mutex::scoped_lock gamesLock( m_GamesMutex );
+	
+	// get rid of any deleted games
+	for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); )
+	{
+		if( (*i)->readyDelete( ) )
+		{
+			delete *i;
+			m_Games.erase( i );
+		} else {
+			++i;
+		}
+	}
+
+	if( m_CurrentGame && m_CurrentGame->readyDelete( ) )
+	{
+	        for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+        	{
+            		(*i)->QueueGameUncreate( );
+            		(*i)->QueueEnterChat( );
+        	}
+
+		delete m_CurrentGame;
+		m_CurrentGame = NULL;
+	}
+	
+	gamesLock.unlock( );
+
+
     // try to exit nicely if requested to do so
 
     if( m_ExitingNice )
@@ -698,7 +728,7 @@ bool CGHost :: Update( long usecBlock )
         if( m_CurrentGame )
         {
             CONSOLE_Print( "[GHOST] deleting current game in preparation for exiting nicely" );
-            delete m_CurrentGame;
+            m_CurrentGame->doDelete( );
             m_CurrentGame = NULL;
         }
 
@@ -730,6 +760,8 @@ bool CGHost :: Update( long usecBlock )
 
     // update callables
 
+    boost::mutex::scoped_lock callablesLock( m_CallablesMutex );
+
     for( vector<CBaseCallable *> :: iterator i = m_Callables.begin( ); i != m_Callables.end( ); )
     {
         if( (*i)->GetReady( ) )
@@ -741,6 +773,8 @@ bool CGHost :: Update( long usecBlock )
         else
             ++i;
     }
+
+    callablesLock.unlock( );
 
     // create the GProxy++ reconnect listener
 
@@ -788,18 +822,7 @@ bool CGHost :: Update( long usecBlock )
     if(m_OHC && m_OHConnect)
         NumFDs += m_OHC->SetFD( &fd, &send_fd, &nfds );
 
-    // 2. the current game's server and player sockets
-
-    if( m_CurrentGame ) {
-        NumFDs += m_CurrentGame->SetFD( &fd, &send_fd, &nfds );
-    }
-    // 3. all running games' player sockets
-
-    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
-        NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
-    }
-
-    // 4. the GProxy++ reconnect socket(s)
+    // 2. the GProxy++ reconnect socket(s)
 
     if( m_Reconnect && m_ReconnectSocket )
     {
@@ -859,46 +882,6 @@ bool CGHost :: Update( long usecBlock )
     bool AdminExit = false;
     bool BNETExit = false;
 
-    // update current game
-
-    if( m_CurrentGame )
-    {
-        if( m_CurrentGame->Update( &fd, &send_fd ) )
-        {
-            CONSOLE_Print( "[GHOST] deleting current game [" + m_CurrentGame->GetGameName( ) + "]" );
-            m_FinishedGames += 1;
-            m_CheckForFinishedGames = GetTime();
-            delete m_CurrentGame;
-            m_CurrentGame = NULL;
-
-            for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
-            {
-                (*i)->QueueGameUncreate( );
-                (*i)->QueueEnterChat( );
-            }
-        }
-        else if( m_CurrentGame )
-            m_CurrentGame->UpdatePost( &send_fd );
-    }
-
-    // update running games
-
-    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); )
-    {
-        if( (*i)->Update( &fd, &send_fd ) )
-        {
-            CONSOLE_Print( "[GHOST] deleting game [" + (*i)->GetGameName( ) + "]" );
-            EventGameDeleted( *i );
-            delete *i;
-            i = m_Games.erase( i );
-        }
-        else
-        {
-            (*i)->UpdatePost( &send_fd );
-            ++i;
-        }
-    }
-
     // update battle.net connections
 
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
@@ -950,45 +933,21 @@ bool CGHost :: Update( long usecBlock )
                     {
                         if( Bytes[1] == CGPSProtocol :: GPS_RECONNECT && Length == 13 )
                         {
-                            unsigned char PID = Bytes[4];
-                            uint32_t ReconnectKey = UTIL_ByteArrayToUInt32( Bytes, false, 5 );
-                            uint32_t LastPacket = UTIL_ByteArrayToUInt32( Bytes, false, 9 );
-
-                            // look for a matching player in a running game
-
-                            CGamePlayer *Match = NULL;
-
-                            for( vector<CBaseGame *> :: iterator j = m_Games.begin( ); j != m_Games.end( ); ++j )
-                            {
-                                if( (*j)->GetGameLoaded( ) )
-                                {
-                                    CGamePlayer *Player = (*j)->GetPlayerFromPID( PID );
-
-                                    if( Player && Player->GetGProxy( ) && Player->GetGProxyReconnectKey( ) == ReconnectKey )
-                                    {
-                                        Match = Player;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if( Match )
-                            {
-                                // reconnect successful!
-
-                                *RecvBuffer = RecvBuffer->substr( Length );
-                                Match->EventGProxyReconnect( *i, LastPacket );
-                                i = m_ReconnectSockets.erase( i );
-                                continue;
-                            }
-                            else
-                            {
-                                (*i)->PutBytes( m_GPSProtocol->SEND_GPSS_REJECT( REJECTGPS_NOTFOUND ) );
-                                (*i)->DoSend( &send_fd );
-                                delete *i;
-                                i = m_ReconnectSockets.erase( i );
-                                continue;
-                            }
+				GProxyReconnector *Reconnector = new GProxyReconnector;
+				Reconnector->PID = Bytes[4];
+				Reconnector->ReconnectKey = UTIL_ByteArrayToUInt32( Bytes, false, 5 );
+				Reconnector->LastPacket = UTIL_ByteArrayToUInt32( Bytes, false, 9 );
+				Reconnector->PostedTime = GetTicks( );
+				Reconnector->socket = (*i);
+							
+				// update the receive buffer
+				*RecvBuffer = RecvBuffer->substr( Length );
+				i = m_ReconnectSockets.erase( i );
+				// post in the reconnects buffer and wait to see if a game thread will pick it up
+				boost::mutex::scoped_lock lock( m_ReconnectMutex );
+				m_PendingReconnects.push_back( Reconnector );
+				lock.unlock();
+				continue;
                         }
                         else
                         {
@@ -1022,6 +981,28 @@ bool CGHost :: Update( long usecBlock )
         (*i)->DoSend( &send_fd );
         ++i;
     }
+
+	// delete any old pending reconnects that have not been handled by games
+	if( !m_PendingReconnects.empty( ) ) {
+		boost::mutex::scoped_lock lock( m_ReconnectMutex );
+	
+		for( vector<GProxyReconnector *> :: iterator i = m_PendingReconnects.begin( ); i != m_PendingReconnects.end( ); )
+		{
+			if( GetTicks( ) - (*i)->PostedTime > 1500 )
+			{
+				(*i)->socket->PutBytes( m_GPSProtocol->SEND_GPSS_REJECT( REJECTGPS_NOTFOUND ) );
+				(*i)->socket->DoSend( &send_fd );
+				delete (*i)->socket;
+				delete (*i);
+				i = m_PendingReconnects.erase( i );
+				continue;
+			}
+			
+			i++;
+		}
+	
+		lock.unlock();
+	}
 
     // autohost
 
@@ -1281,10 +1262,18 @@ void CGHost :: EventBNETLoggedIn( CBNET *bnet )
 
 void CGHost :: EventBNETGameRefreshed( CBNET *bnet )
 {
+	boost::mutex::scoped_lock lock( m_GamesMutex );
+
+ 	if( m_CurrentGame )
+ 		m_CurrentGame->EventGameRefreshed( bnet->GetServer( ));
+
+	lock.unlock( );
 }
 
 void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
 {
+    boost::mutex::scoped_lock lock( m_GamesMutex );
+
     if( m_CurrentGame )
     {
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
@@ -1306,6 +1295,8 @@ void CGHost :: EventBNETGameRefreshFailed( CBNET *bnet )
 
         m_CurrentGame->SetRefreshError( true );
     }
+
+    lock.unlock( );
 }
 
 void CGHost :: EventBNETConnectTimedOut( CBNET *bnet )
@@ -1660,6 +1651,8 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         }
     }
 
+    boost::mutex::scoped_lock lock( m_GamesMutex );
+
     if( m_CurrentGame )
     {
         for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
@@ -1681,6 +1674,8 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
 
         return;
     }
+
+    lock.unlock( );
 
     CONSOLE_Print( "[GHOST] creating game [" + gameName + "]" );
     if( m_HostCounter == 0 )
@@ -1756,6 +1751,9 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         if( (*i)->GetHoldClan( ) )
             (*i)->HoldClan( m_CurrentGame );
     }
+
+    boost::thread(&CBaseGame::loop, m_CurrentGame);
+    CONSOLE_Print("[GameThread] Made new game thread");
 }
 
 bool CGHost :: FlameCheck( string message )

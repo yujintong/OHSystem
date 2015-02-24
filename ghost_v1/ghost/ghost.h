@@ -39,7 +39,6 @@ class CCRC32;
 class CSHA1;
 class CBNET;
 class CBaseGame;
-class CAdminGame;
 class CGHostDB;
 class CBaseCallable;
 class CLanguage;
@@ -58,6 +57,13 @@ class OHConnect;
 struct translationTree;
 struct permission;
 struct cachedPlayer;
+struct GProxyReconnector {
+	CTCPSocket *socket;
+	unsigned char PID;
+	uint32_t ReconnectKey;
+	uint32_t LastPacket;
+	uint32_t PostedTime;
+};
 
 class CGHost
 {
@@ -72,11 +78,13 @@ public:
     CSHA1 *m_SHA;							// for calculating SHA1's
     vector<CBNET *> m_BNETs;				// all our battle.net connections (there can be more than one)
     CBaseGame *m_CurrentGame;				// this game is still in the lobby state
-    CAdminGame *m_AdminGame;				// this "fake game" allows an admin who knows the password to control the bot from the local network
     vector<CBaseGame *> m_Games;			// these games are in progress
+    boost::thread_group m_GameThreads;		// the threads for games in progress and stuff
+    boost::mutex m_GamesMutex;
     CGHostDB *m_DB;							// database
     CGHostDB *m_DBLocal;					// local database (for temporary data)
     vector<CBaseCallable *> m_Callables;	// vector of orphaned callables waiting to die
+    boost::mutex m_CallablesMutex;
     vector<BYTEARRAY> m_LocalAddresses;		// vector of local IP addresses
     CLanguage *m_Language;					// language
     vector<translationTree> m_LanguageBundle;
@@ -287,6 +295,8 @@ public:
     uint32_t m_AutoRehostTime;
     uint32_t m_DenyLimit;
     uint32_t m_SwapLimit;
+    vector<GProxyReconnector *> m_PendingReconnects;
+    boost::mutex m_ReconnectMutex;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

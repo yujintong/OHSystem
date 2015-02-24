@@ -6,14 +6,14 @@ branches:
  - master
  
 before_script: 
- - sudo apt-get install -qq libboost-all-dev build-essential gcc-4.7 g++-4.7 libmysql++-dev libbz2-dev libgmp3-dev
+ - sudo apt-get install -qq libboost-all-dev build-essential gcc g++ libmysql++-dev libbz2-dev libgmp3-dev
  - cd ghost_v1/bncsutil/src/bncsutil 
  - make 
  - sudo make install 
  - cd ../../../StormLib/stormlib 
  - make 
  - sudo make install 
- - cd ../../../ghost_v2/src/ 
+ - cd ../../../ghost_v1/ghost/
  
 # Change this to your needs
 script: 
