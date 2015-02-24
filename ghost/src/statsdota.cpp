@@ -826,7 +826,6 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] detected winner: Scourge" );
                                 else
                                     CONSOLE_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] detected winner: " + UTIL_ToString( ValueInt ) );
-				m_Game->m_GHost->CallGameEnd( m_Game->m_GameName, m_Game->m_CreationTime, m_Winner );
                             }
                             else if( KeyString == "m" )
                                 m_Min = ValueInt;

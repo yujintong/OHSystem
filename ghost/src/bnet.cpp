@@ -107,10 +107,10 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
     transform( m_CDKeyROC.begin( ), m_CDKeyROC.end( ), m_CDKeyROC.begin( ), (int(*)(int))toupper );
     transform( m_CDKeyTFT.begin( ), m_CDKeyTFT.end( ), m_CDKeyTFT.begin( ), (int(*)(int))toupper );
 
-    if( m_CDKeyROC.size( ) != 26 )
+    if( m_CDKeyROC.size( ) != 26 && ! m_FakeRealm )
       CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your ROC CD key is not 26 characters long and is probably invalid" );
 
-    if( m_GHost->m_TFT && m_CDKeyTFT.size( ) != 26 )
+    if( m_GHost->m_TFT && m_CDKeyTFT.size( ) != 26 && ! m_FakeRealm )
       CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your TFT CD key is not 26 characters long and is probably invalid" );
 
     m_CountryAbbrev = nCountryAbbrev;

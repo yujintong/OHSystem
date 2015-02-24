@@ -116,10 +116,6 @@ string CGHostDBMySQL :: GetStatus( )
 {
     //DEBUG OPTION
     //return "DB STATUS --- Connections: " + UTIL_ToString( m_IdleConnections.size( ) ) + "/" + UTIL_ToString( m_NumConnections ) + " idle. Outstanding callables: " + UTIL_ToString( m_OutstandingCallables ) + ".";
-    for( vector<string> :: iterator i = m_Name.begin( ); i != m_Name.end( ); ++i )
-    {
-        CONSOLE_Print( *i );
-    }
     m_Name.clear( );
     return "DB STATUS --- Connections: " + UTIL_ToString( m_IdleConnections.size( ) ) + "/" + UTIL_ToString( m_NumConnections ) + " idle. Outstanding callables: " + UTIL_ToString( m_OutstandingCallables ) + ".";
 }

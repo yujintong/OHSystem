@@ -61,7 +61,6 @@ class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
 class CCallableGameUpdate;
-class OHConnect;
 struct DeniedPlayer;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
@@ -77,7 +76,6 @@ typedef pair<string,CCallableGamePlayerAdd *> PairedGPAdd;
 class CBaseGame
 {
 public:
-    OHConnect *m_OHC;
     CGHost *m_GHost;
     vector<ReservedPlayer> m_ReservedPlayers;
 

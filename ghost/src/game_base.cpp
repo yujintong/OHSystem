@@ -35,7 +35,6 @@
 #include "gameprotocol.h"
 #include "game_base.h"
 #include "gcbiprotocol.h"
-#include "ohconnect.h"
 
 #include <cmath>
 #include <string.h>
@@ -95,12 +94,8 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_PartTime = 7;
     m_GameBalance = m_GHost->m_OHBalance;
     m_LobbyLanguage  = "en";
-	m_ForcedMode = false;
-	m_ForcedGameMode = 0;
-    if(m_GHost->m_GameOHConnect){
-      m_OHC = new OHConnect(m_GHost, this, m_GHost->m_OHCIP, m_GHost->m_OHCPort );
-      m_OHC->joinRoom(UTIL_ToString(m_HostCounter), m_GameName);
-    }
+    m_ForcedMode = false;
+    m_ForcedGameMode = 0;
 
     if( m_GHost->m_SaveReplays && !m_SaveGame )
         m_Replay = new CReplay( );
@@ -489,9 +484,6 @@ unsigned int CBaseGame :: SetFD( void *fd, void *send_fd, int *nfds )
         ++NumFDs;
     }
 
-    if(m_OHC && m_GHost->m_GameOHConnect)
-        NumFDs += m_OHC->SetFD( (fd_set *)fd, (fd_set *)send_fd, nfds );
-
     for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); ++i )
     {
         if( (*i)->GetSocket( ) )
@@ -879,9 +871,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         else
             ++i;
     }
-
-    if(m_OHC && m_GHost->m_GameOHConnect)
-        m_OHC->Update( fd, (fd_set *)send_fd );
 
     for( map<uint32_t, CPotentialPlayer *> :: iterator i = m_BannedPlayers.begin( ); i != m_BannedPlayers.end( ); )
     {
@@ -6545,10 +6534,6 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
     }
     else
         CONSOLE_Print( "Invalid gameprint packet sent: "+UTIL_ToString(type)+": "+message );
-
-    if(m_OHC && m_GHost->m_GameOHConnect) {
-      m_OHC->sendData(OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(sendPack));
-    }
 }
 
 void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )

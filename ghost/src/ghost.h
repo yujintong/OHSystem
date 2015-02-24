@@ -53,7 +53,6 @@ class CCallableDCountryList;
 class CCallableGameDBInit;
 class CCallableDeniedNamesList;
 class CCallableAliasList;
-class OHConnect;
 struct translationTree;
 struct permission;
 struct cachedPlayer;
@@ -68,7 +67,6 @@ struct GProxyReconnector {
 class CGHost
 {
 public:
-    OHConnect *m_OHC;
     CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
     CTCPServer *m_ReconnectSocket;			// listening socket for GProxy++ reliable reconnects
     vector<CTCPSocket *> m_ReconnectSockets;// vector of sockets attempting to reconnect (connected but not identified yet)
@@ -281,14 +279,9 @@ public:
     uint32_t m_TicksCollectionTimer;
     uint32_t m_Sampler;
     string m_SpoofPattern;
-    string m_OHCIP;
-    uint32_t m_OHCPort;
-    string m_OHCPass;
     uint32_t m_DelayGameLoaded;
     bool m_FountainFarmDetection;
     bool m_AutokickSpoofer;
-    bool m_OHConnect;
-    bool m_GameOHConnect;
     bool m_ReadGlobalMySQL;
     string m_GlobalMySQLPath;
     bool m_PVPGNMode;
@@ -344,7 +337,6 @@ public:
     bool PlayerCached( string playername );
     void LoadLanguages( );
     bool CanAccessCommand( string name, string command );
-    virtual void CallGameEnd( string gamename, uint32_t creationtime, uint32_t winner );
 };
 
 struct translationTree {

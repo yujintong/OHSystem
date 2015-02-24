@@ -23,13 +23,16 @@ DFLAGS += -D__SOLARIS__
 LFLAGS += -lresolv -lsocket -lnsl
 endif
 
-CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I./bncsutil/src/ -I./StormLib/
+CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I./bncsutil/src/ -I./StormLib/ -I./modules/
 
 ifeq ($(SYSTEM),Darwin)
 CFLAGS += -I../mysql/include/
 endif
 
-OBJS = bncsutilinterface.o bnet.o bnetprotocol.o bnlsclient.o bnlsprotocol.o commandpacket.o config.o crc32.o game.o game_base.o gameplayer.o gameprotocol.o gameslot.o gcbiprotocol.o ghost.o ghostdb.o ghostdbmysql.o gpsprotocol.o language.o map.o ohconnect.o packed.o replay.o savegame.o sha1.o socket.o stats.o statsdota.o statsw3mmd.o util.o
+OOBJS = bncsutilinterface.o bnet.o bnetprotocol.o bnlsclient.o bnlsprotocol.o commandpacket.o config.o crc32.o game.o game_base.o gameplayer.o gameprotocol.o gameslot.o gcbiprotocol.o ghost.o ghostdb.o ghostdbmysql.o gpsprotocol.o language.o map.o packed.o replay.o savegame.o sha1.o socket.o stats.o statsdota.o statsw3mmd.o util.o
+OBJS = $(OOBJS)
+rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
+OBJS += $(call rwildcard,modules/,*.o)
 COBJS =
 PROGS = ./ghost++
 
@@ -39,7 +42,7 @@ all: $(OBJS) $(COBJS) $(PROGS)
 	$(C++) -o ./ghost++ $(OBJS) $(COBJS) $(LFLAGS)
 
 clean:
-	rm -f $(OBJS) $(COBJS) $(PROGS)
+	rm -f $(OOBJS) $(COBJS) $(PROGS)
 
 $(OBJS): %.o: %.cpp
 	$(C++) -o $@ $(CFLAGS) -c $<
@@ -65,13 +68,12 @@ gameplayer.o: ghost.h includes.h util.h language.h socket.h commandpacket.h bnet
 gameprotocol.o: ghost.h includes.h util.h crc32.h gameplayer.h gameprotocol.h game_base.h
 gameslot.o: ghost.h includes.h gameslot.h
 gcbiprotocol.o: gcbiprotocol.h ghost.h util.h
-ghost.o: ghost.h includes.h util.h crc32.h sha1.h config.h language.h socket.h ghostdb.h ghostdbmysql.h bnet.h map.h packed.h savegame.h gameplayer.h gameprotocol.h gpsprotocol.h game_base.h game.h gcbiprotocol.h ohconnect.h
+ghost.o: ghost.h includes.h util.h crc32.h sha1.h config.h language.h socket.h ghostdb.h ghostdbmysql.h bnet.h map.h packed.h savegame.h gameplayer.h gameprotocol.h gpsprotocol.h game_base.h game.h gcbiprotocol.h
 ghostdb.o: ghost.h includes.h util.h config.h ghostdb.h
 ghostdbmysql.o: ghost.h includes.h util.h config.h ghostdb.h ghostdbmysql.h
 gpsprotocol.o: ghost.h util.h gpsprotocol.h
 language.o: ghost.h includes.h config.h language.h
 map.o: ghost.h includes.h util.h crc32.h sha1.h config.h map.h
-ohconnect.o: ghost.h socket.h ohconnect.h
 packed.o: ghost.h includes.h util.h crc32.h packed.h
 replay.o: ghost.h includes.h util.h packed.h replay.h gameprotocol.h
 savegame.o: ghost.h includes.h util.h packed.h savegame.h

@@ -40,7 +40,6 @@
 #include "gcbiprotocol.h"
 #include "game_base.h"
 #include "game.h"
-#include "ohconnect.h"
 
 #include <signal.h>
 #include <stdlib.h>
@@ -204,6 +203,19 @@ int main( int argc, char **argv )
 {
     srand( time( NULL ) );
 
+    CONSOLE_Print("***************************************************************************************");
+    CONSOLE_Print("**                      WELCOME TO THE OHSYSTEM BOT V2                               **");
+    CONSOLE_Print("**       PLEASE DO NOT REMOVE ANY COPYRIGHT NOTICE TO RESPECT THE PROJECT            **");
+    CONSOLE_Print("**       ----------------------------------------------------------------            **");
+    CONSOLE_Print("**        For any questions and required support use our git repository              **");
+    CONSOLE_Print("**                    https://github.com/OHSystem/OHSystem                           **");
+    CONSOLE_Print("***************************************************************************************");
+    CONSOLE_Print("");
+    CONSOLE_Print("***************************************************************************************");
+    CONSOLE_Print("**                             INITIALIZE GHOST MODULE                               **");
+    CONSOLE_Print("***************************************************************************************");
+    CONSOLE_Print("");
+
     gCFGFile = "ghost.cfg";
 
     if( argc > 1 && argv[1] )
@@ -213,7 +225,6 @@ int main( int argc, char **argv )
 
     CConfig CFG;
     CFG.Read( "default.cfg" );
-    CFG.Read( gCFGFile );
     gLogFile = CFG.GetString( "bot_log", string( ) );
     gLogMethod = CFG.GetInt( "bot_logmethod", 1 );
 
@@ -596,9 +607,6 @@ CGHost :: CGHost( CConfig *CFG )
     m_BNETs.push_back( new CBNET( this, "Garena", "Garena", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+1, 0 ) );
     m_BNETs.push_back( new CBNET( this, m_WC3ConnectAlias, "WC3Connect", string( ), 0, 0, string( ), string( ), string( ), string( ), 1033, string( ), string( ), string( ), m_CommandTrigger, 0, 0, 1, 26, UTIL_ExtractNumbers( string( ), 4 ), UTIL_ExtractNumbers( string( ), 4 ), string( ), string( ), 200, counter+2, 0 ) );
 
-    if(m_OHConnect)
-      m_OHC = new OHConnect(this, NULL, m_OHCIP, m_OHCPort );
-
     if( m_BNETs.size( ) == 2 ) {
         CONSOLE_Print( "[GHOST] warning - no battle.net connections found in config file. Only the hardcoded" );
     }
@@ -819,9 +827,6 @@ bool CGHost :: Update( long usecBlock )
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
         NumFDs += (*i)->SetFD( &fd, &send_fd, &nfds );
 
-    if(m_OHC && m_OHConnect)
-        NumFDs += m_OHC->SetFD( &fd, &send_fd, &nfds );
-
     // 2. the GProxy++ reconnect socket(s)
 
     if( m_Reconnect && m_ReconnectSocket )
@@ -889,10 +894,6 @@ bool CGHost :: Update( long usecBlock )
         if( (*i)->Update( &fd, &send_fd ) )
             BNETExit = true;
     }
-
-    if(m_OHC && m_OHConnect)
-        m_OHC->Update( &fd, &send_fd );
-
 
     // update GProxy++ reliable reconnect sockets
 
@@ -1429,7 +1430,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_MinPlayerAutoEnd = CFG->GetInt( "autoend_minplayer", 2 );
     m_MaxAllowedSpread = CFG->GetInt( "autoend_maxspread", 2 );
     m_EarlyEnd = CFG->GetInt( "autoend_earlyend", 1 ) == 0 ? false : true;
-    m_StatsUpdate = CFG->GetInt( "oh_general_updatestats", 1 ) == 0 ? false : true;
+    m_StatsUpdate = CFG->GetInt( "oh_general_updatestats", 0 ) == 0 ? false : true;
     m_MessageSystem = CFG->GetInt("oh_general_messagesystem", 1 ) == 0 ? false : true;
     m_FunCommands = CFG->GetInt("oh_general_funcommands", 1 ) == 0 ? false : true;
     m_BetSystem = CFG->GetInt("oh_general_betsystem", 1 ) == 0 ? false : true;
@@ -1478,11 +1479,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
     m_BroadCastPort = CFG->GetInt("oh_broadcastport", 6112 );
     m_SpoofPattern = CFG->GetString("oh_spoofpattern", string());
-    m_OHCIP = CFG->GetString("ohc_ip", string());
-    m_OHCPort = CFG->GetInt("ohc_port", 0);
-    m_OHCPass = CFG->GetString("ohc_pass", string());
-    m_OHConnect = CFG->GetInt("ohc_connect", 0 ) == 0 ? false : true;
-    m_GameOHConnect = false;
     m_DelayGameLoaded = CFG->GetInt("oh_delaygameloaded", 300);
     m_FountainFarmDetection = CFG->GetInt("oh_fountainfarmdetection", 1) == 0 ? false : true;
     m_AutokickSpoofer = CFG->GetInt("oh_autokickspoofer", 1) == 0 ? false : true;
@@ -1695,13 +1691,6 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
         m_EnforcePlayers.clear( );
     }
 
-    if(m_OHConnect && m_OHC ) {
-      if( gameState == GAME_PRIVATE )
-        m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPrivateGame( gameName, ownerName ) ));
-      else if( gameState == GAME_PUBLIC )
-        m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(m_Language->CreatingPublicGame( gameName, ownerName ) ) );
-    }
-
     for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
     {
         if( whisper && (*i)->GetServer( ) == creatorServer )
@@ -1851,14 +1840,12 @@ uint32_t CGHost :: GetNewHostCounter( )
 }
 void CGHost :: LoadRanks( )
 {
-    //TODO Fix if the file is empty, dont check levels else there is a crash
     string File = m_SharedFilesPath + "ranks.txt";
     ifstream in;
     in.open( File.c_str() );
     m_Ranks.clear();
     if( !in.fail( ) )
     {
-        // don't print more than 8 lines
         uint32_t Count = 0;
         string Line;
         while( !in.eof( ) && Count < 11 )
@@ -1877,18 +1864,20 @@ void CGHost :: LoadRanks( )
     }
     else
     {
-        CONSOLE_Print("Error. Unable to read file [ranks.txt]. User levels will not work for this session.");
+        CONSOLE_Print("[GHOST] warning - unable to read file [ranks.txt]");
         m_RanksLoaded = false;
     }
-    if(m_Ranks.size() < 10) {
-        CONSOLE_Print("Error. ranks.txt doesn't contain enough levelnames. You require at least 11(Level 0 - Level 10, with 0).");
+
+    if(m_Ranks.size() < 10 && m_RanksLoaded) {
+        CONSOLE_Print("[CONFIG] warning - ranks.txt doesn't contain enough levelnames. You require at least 11 rank names (Level 0 - Level 10, with 0).");
         m_RanksLoaded = false;
+    } else if(m_RanksLoaded) {
+	CONSOLE_Print("[GHOST] loading file [ranks.txt]");
     }
 }
 
 void CGHost :: LoadInsult()
 {
-    //TODO Fix if the file is empty, dont check levels else there is a crash
     string File = m_SharedFilesPath + "insult.txt";
     ifstream in;
     in.open( File.c_str() );
@@ -1901,10 +1890,11 @@ void CGHost :: LoadInsult()
             getline( in, Line );
             m_Insults.push_back(Line);
         }
+	CONSOLE_Print("[GHOST] loading file [insult.txt]");
         in.close( );
     }
     else
-        CONSOLE_Print("Error. Unable to read file [insult.txt].");
+        CONSOLE_Print("[GHOST] warning - unable to read file [insult.txt].");
 }
 
 string CGHost :: GetTimeFunction( uint32_t type )
@@ -2219,16 +2209,3 @@ void CGHost :: LoadLanguages( ) {
     }
     */
 }
-
-void CGHost :: CallGameEnd( string gamename, uint32_t creationtime, uint32_t winner ) {
-        if(!m_OHConnect ) { return; }
-	if(!m_OHC->getConnected( )) { return; }
-	uint32_t GameTime = GetTime( ) - creationtime;
-	uint32_t GameMin = GameTime / 60;
-	uint32_t GameSec = GameTime % 60;
-
-	string Winner = winner == 1 ? "Sentinel" : ( winner == 2 ? "Scourge" : "unknown" );
-	string message = "["+gamename+"] Game finished. Game Length: "+UTIL_ToString(GameMin)+"m "+UTIL_ToString(GameSec)+"s. Winner: "+Winner+".";
-	m_OHC->sendData( OHCHeader::TEXT_FRAME, m_OHC->wrapMessage(message));
-}
-
