@@ -1,11 +1,20 @@
 
-![Logo](http://ohsystem.net/storage/img/new_logo.jpg)
+![Logo](http://ohconnect.info/themes/global/img/ohs_logo.png)
+
 #OpenHosting
 
 OpenHosting is a major modification of the official GHost++ source.
 I recently starting remake the bot on a new base. Follow and track the bot here:
 https://github.com/Grief-Code/ohbot_v2
 Official releases will be still made on this repository, however there is still a main support for the current ghost. But it will become from time to time outdated.
+
+---
+#####Update:
+I have decided to continue working on bot1, i have listed once down how many changes are required for having a normal bot moved to the OHSystem working field, and this is probably takin too much time.
+However, I will create a module system for personal and closed source patches.
+The bot will be still available and will be still maintained for public usages.
+
+There will be also an update to make the installation process for newcomers a lot easier.
 
 ---
 
