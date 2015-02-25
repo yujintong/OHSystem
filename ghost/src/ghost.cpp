@@ -747,7 +747,6 @@ int main( int argc, char **argv )
 	CPotentialPlayer::RegisterPythonClass( );
 	CGamePlayer::RegisterPythonClass( );
 	CBaseGame::RegisterPythonClass( );
-	CAdminGame::RegisterPythonClass( );
 	CGame::RegisterPythonClass( );
 	CBNLSProtocol::RegisterPythonClass( );
 	CBNLSClient::RegisterPythonClass( );
@@ -2681,7 +2680,8 @@ void CGHost :: RegisterPythonClass( )
 {
 	using namespace boost::python;
 
-	class_<CGHost>("GHost", no_init)
+	class_<CGHost,boost::noncopyable>("GHost", no_init)
+
 		.def_readwrite("UDPSocket", &CGHost::m_UDPSocket)
 		.def_readwrite("reconnectSocket", &CGHost::m_ReconnectSocket)
 		.def_readwrite("reconnectSockets", &CGHost::m_ReconnectSockets)
@@ -2690,7 +2690,6 @@ void CGHost :: RegisterPythonClass( )
 		.def_readwrite("SHA", &CGHost::m_SHA)
 		.def_readwrite("BNETs", &CGHost::m_BNETs)
 		.def_readwrite("currentGame", &CGHost::m_CurrentGame)
-		.def_readwrite("adminGame", &CGHost::m_AdminGame)
 		.def_readwrite("games", &CGHost::m_Games)
 		.def_readwrite("DB", &CGHost::m_DB)
 		.def_readwrite("DBLocal", &CGHost::m_DBLocal)
@@ -2772,7 +2771,6 @@ void CGHost :: RegisterPythonClass( )
 		.def("reloadConfigs", &CGHost::ReloadConfigs)
 		.def("setConfigs", &CGHost::SetConfigs)
 		.def("extractScripts", &CGHost::ExtractScripts)
-		.def("loadIPToCountryData", &CGHost::LoadIPToCountryData)
 		.def("createGame", &CGHost::CreateGame)
 	;
 }

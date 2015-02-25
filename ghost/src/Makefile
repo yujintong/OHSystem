@@ -4,7 +4,7 @@ C++ = g++
 CC = gcc
 DFLAGS = -DGHOST_MYSQL
 OFLAGS = -O3 -g
-LFLAGS = -L. -L./bncsutil/src/bncsutil/ -L./StormLib/stormlib/  -lbncsutil -lpthread -ldl -lz -lgmp -lStorm -lmysqlclient_r -lboost_date_time -lboost_thread -lboost_system -lboost_filesystem
+LFLAGS = -L. -L./bncsutil/src/bncsutil/ -L./StormLib/stormlib/  -lbncsutil -lpthread -ldl -lz -lgmp -lStorm -lmysqlclient_r -lboost_date_time -lboost_thread -lboost_system -lboost_filesystem -lboost_python-py27
 CFLAGS =
 
 ifeq ($(SYSTEM),Darwin)
@@ -23,16 +23,13 @@ DFLAGS += -D__SOLARIS__
 LFLAGS += -lresolv -lsocket -lnsl
 endif
 
-CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I./bncsutil/src/ -I./StormLib/ -I./modules/ -I /usr/include/python2.7/
+CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I./bncsutil/src/ -I./StormLib/ -I./modules/
 
 ifeq ($(SYSTEM),Darwin)
 CFLAGS += -I../mysql/include/
 endif
 
-OOBJS = bncsutilinterface.o bnet.o bnetprotocol.o bnlsclient.o bnlsprotocol.o commandpacket.o config.o crc32.o game.o game_base.o gameplayer.o gameprotocol.o gameslot.o gcbiprotocol.o ghost.o ghostdb.o ghostdbmysql.o gpsprotocol.o language.o map.o packed.o replay.o savegame.o sha1.o socket.o stats.o statsdota.o statsw3mmd.o util.o
-OBJS = $(OOBJS)
-rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
-OBJS += $(call rwildcard,modules/,*.o)
+OBJS = bncsutilinterface.o bnet.o bnetprotocol.o bnlsclient.o bnlsprotocol.o commandpacket.o config.o crc32.o game.o game_base.o gameplayer.o gameprotocol.o gameslot.o gcbiprotocol.o ghost.o ghostdb.o ghostdbmysql.o gpsprotocol.o language.o map.o packed.o replay.o savegame.o sha1.o socket.o stats.o statsdota.o statsw3mmd.o util.o
 COBJS =
 PROGS = ./ghost++
 
@@ -42,7 +39,7 @@ all: $(OBJS) $(COBJS) $(PROGS)
 	$(C++) -o ./ghost++ $(OBJS) $(COBJS) $(LFLAGS)
 
 clean:
-	rm -f $(OOBJS) $(COBJS) $(PROGS)
+	rm -f $(OBJS) $(COBJS) $(PROGS)
 
 $(OBJS): %.o: %.cpp
 	$(C++) -o $@ $(CFLAGS) -c $<

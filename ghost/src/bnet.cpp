@@ -4046,7 +4046,7 @@ void CBNET :: RegisterPythonClass( )
 	void (CBNET::*QueueChatCommand1)(string)				= &CBNET::QueueChatCommand;
 	void (CBNET::*QueueChatCommand2)(string, string, bool)  = &CBNET::QueueChatCommand;
 
-	class_<CBNET>("BNET", no_init)
+	class_<CBNET, boost::noncopyable>("BNET", no_init)
 		.def_readonly("GHost", &CBNET::m_GHost)
 
 		.def_readonly("socket", &CBNET::m_Socket)

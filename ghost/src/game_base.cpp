@@ -2452,7 +2452,7 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
 
 }
 
-void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
+void CBaseGame :: EventPlayerDeleted( CGamePlayer *player, bool isTwice )
 {
     CONSOLE_Print( "[GAME: " + m_GameName + "] deleting player [" + player->GetName( ) + "]: " + player->GetLeftReason( ) );
 
@@ -3432,7 +3432,7 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
         SendAll( m_Protocol->SEND_W3GS_GAMELOADED_OTHERS( player->GetPID( ) ) );
 }
 
-bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
+bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool isTwice )
 {
 
     if( ( !m_GameLoaded && !m_GameLoading ) || action->GetLength( ) > 1027 )
@@ -6781,7 +6781,7 @@ void CBaseGame :: RegisterPythonClass( )
 
 	using namespace boost::python;
 
-	class_<CBaseGame>("baseGame", no_init)
+	class_<CBaseGame, boost::noncopyable>("baseGame", no_init)
 		.def_readonly("socket", &CBaseGame::m_Socket)
 		.def_readonly("protocol", &CBaseGame::m_Protocol)
 		.def_readonly("slots", &CBaseGame::m_Slots)

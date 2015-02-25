@@ -1151,16 +1151,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player, bool executeTwice)
 
 bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool executeTwice )
 {
-
-    try	
-    { 
- 	EXECUTE_HANDLER("PlayerAction", true, boost::ref(this), boost::ref(player), boost::ref(action)) 
-    }
-    catch(...) 
-    { 
-	return;
-    }
-
     CBaseGame :: EventPlayerAction( player, action, false );
 
     bool success = CBaseGame :: EventPlayerAction( player, action );
@@ -1173,8 +1163,6 @@ bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, b
         SendEndMessage( );
         m_GameOverTime = GetTime( );
     }
-
-    EXECUTE_HANDLER("PlayerAction", false, boost::ref(this), boost::ref(player), boost::ref(action))
 
     return success;
 }
@@ -5189,7 +5177,7 @@ void CGame :: RegisterPythonClass( )
 {
 	using namespace boost::python;
 
-	class_< CGame, bases<CBaseGame> >("game", no_init)
+	class_< CGame, bases<CBaseGame>, boost::noncopyable >("game", no_init)
 		.def_readonly("DBBanLast", &CGame::m_DBBanLast)
 		.def_readonly("DBBans", &CGame::m_DBBans)
 		.def_readonly("DBGame", &CGame::m_DBGame)
@@ -5198,8 +5186,6 @@ void CGame :: RegisterPythonClass( )
 		.def_readonly("callableGameAdd", &CGame::m_CallableGameAdd)
 		.def_readonly("pairedBanChecks", &CGame::m_PairedBanChecks)
 		.def_readonly("pairedBanAdds", &CGame::m_PairedBanAdds)
-		.def_readonly("pairedGPSChecks", &CGame::m_PairedGPSChecks)
-		.def_readonly("pairedDPSChecks", &CGame::m_PairedDPSChecks)
 
 		.def("isGameDataSaved", &CGame::IsGameDataSaved)
 		.def("saveGameData", &CGame::SaveGameData)

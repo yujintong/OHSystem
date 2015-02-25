@@ -337,6 +337,9 @@ public:
     bool PlayerCached( string playername );
     void LoadLanguages( );
     bool CanAccessCommand( string name, string command );
+
+public:
+        static void RegisterPythonClass( );
 };
 
 struct translationTree {
@@ -353,8 +356,5 @@ struct permission {
 struct cachedPlayer {
     string name;
     uint32_t time;
-
-public:
-	static void RegisterPythonClass( );
 };
 #endif
