@@ -4,7 +4,7 @@ C++ = g++
 CC = gcc
 DFLAGS = -DGHOST_MYSQL
 OFLAGS = -O3 -g
-LFLAGS = -L. -L./bncsutil/src/bncsutil/ -L./StormLib/stormlib/  -lbncsutil -lpthread -ldl -lz -lgmp -lStorm -lmysqlclient_r -lboost_date_time -lboost_thread -lboost_system -lboost_filesystem -lboost_python-py27
+LFLAGS = -L. -L./bncsutil/src/bncsutil/ -L./StormLib/stormlib/  -lbncsutil -lpthread -ldl -lz -lgmp -lStorm -lmysqlclient_r -lboost_date_time -lboost_thread -lboost_system -lboost_filesystem -lpython2.7 -lboost_python
 CFLAGS =
 
 ifeq ($(SYSTEM),Darwin)
@@ -23,7 +23,7 @@ DFLAGS += -D__SOLARIS__
 LFLAGS += -lresolv -lsocket -lnsl
 endif
 
-CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I./bncsutil/src/ -I./StormLib/ -I./modules/
+CFLAGS += $(OFLAGS) $(DFLAGS) -I. -I./bncsutil/src/ -I./StormLib/ -I./modules/ -I /usr/include/python2.7/
 
 ifeq ($(SYSTEM),Darwin)
 CFLAGS += -I../mysql/include/

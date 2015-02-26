@@ -699,6 +699,7 @@ int main( int argc, char **argv )
 	Py_SetPythonHome(".\\python\\");
 #endif
 
+try {
 	Py_Initialize( );
 
 	boost::python::object global( boost::python::import("__main__").attr("__dict__") );
@@ -761,13 +762,16 @@ int main( int argc, char **argv )
 
 	try
 	{
-		boost::python::object module = boost::python::import("plugins.python");
+		boost::python::exec("import sys\nsys.path.append('plugins')", global, global);
 	}
 	catch(...)
 	{
 		PyErr_Print( );
 		throw;
 	}
+
+        } catch(boost::python::error_already_set const &) {
+        }
 
 	EXECUTE_HANDLER("StartUp", false, boost::ref(CFG))
 	EXECUTE_HANDLER("StartUp", true, boost::ref(CFG))
