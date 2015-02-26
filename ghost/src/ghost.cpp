@@ -570,7 +570,7 @@ int main( int argc, char **argv )
 
     CConfig CFG;
     CFG.Read( "default.cfg" );
-    gLogFile = CFG.GetString( "bot_log", string( ) );
+    gLogFile = CFG.GetString( "bot_log", "ghost.log" );
     gLogMethod = CFG.GetInt( "bot_logmethod", 1 );
 
     if( !gLogFile.empty( ) )
@@ -698,10 +698,9 @@ int main( int argc, char **argv )
 #ifdef WIN32
 	Py_SetPythonHome(".\\python\\");
 #endif
-
-try {
 	Py_Initialize( );
 
+try {
 	boost::python::object global( boost::python::import("__main__").attr("__dict__") );
 	boost::python::exec("import sys, host												\n"
 						"																\n"
@@ -712,10 +711,10 @@ try {
 						"																\n"
 						"	def write(self, string):									\n"
 						"		if len(string) == 0: return								\n"
-						"		self.buffer = string									\n"
+						"		self.buffer += string									\n"
 						"																\n"
 						"		if string[-1] == '\\n':									\n"
-						"			host.log('[PYTHON] '  self.buffer[:-1])			\n"
+						"			host.log('[PLUGIN] ' + self.buffer[:-1])			\n"
 						"			self.buffer = ''									\n"
 						"																\n"
 						"	def flush(self): pass										\n"
@@ -725,6 +724,18 @@ try {
 						"sys.stdout = Logger('stdout')									\n"
 						"sys.stderr = Logger('stderr')									\n",
 						global, global);
+
+        string AppendCode = "import sys\nsys.path.append('.')";
+
+        try
+        {
+                boost::python::exec(AppendCode.c_str(), global, global);
+        }
+        catch(...)
+        {
+                PyErr_Print();
+                throw;
+        }
 
 	CSocket::RegisterPythonClass( );
 	CTCPSocket::RegisterPythonClass( );
@@ -762,17 +773,17 @@ try {
 
 	try
 	{
-		boost::python::exec("import sys\nsys.path.append('plugins')", global, global);
+		boost::python::object module = boost::python::import("plugins");
 	}
 	catch(...)
 	{
 		PyErr_Print( );
 		throw;
 	}
-
-        } catch(boost::python::error_already_set const &) {
-        }
-
+}catch(boost::python::error_already_set const &) {
+PyErr_Print();
+throw;
+}
 	EXECUTE_HANDLER("StartUp", false, boost::ref(CFG))
 	EXECUTE_HANDLER("StartUp", true, boost::ref(CFG))
 
