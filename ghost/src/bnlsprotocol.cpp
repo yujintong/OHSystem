@@ -158,3 +158,18 @@ bool CBNLSProtocol :: ValidateLength( BYTEARRAY &content )
 
     return false;
 }
+
+#include <boost/python.hpp>
+
+void CBNLSProtocol :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+	
+	class_<CBNLSProtocol>("BNLSProtocol", no_init)
+		.def("RECEIVE_BNLS_WARDEN", &CBNLSProtocol::RECEIVE_BNLS_WARDEN)
+		.def("SEND_BNLS_NULL", &CBNLSProtocol::SEND_BNLS_NULL)
+		.def("SEND_BNLS_WARDEN_SEED", &CBNLSProtocol::SEND_BNLS_WARDEN_SEED)
+		.def("SEND_BNLS_WARDEN_RAW", &CBNLSProtocol::SEND_BNLS_WARDEN_RAW)
+		.def("SEND_BNLS_WARDEN_RUNMODULE", &CBNLSProtocol::SEND_BNLS_WARDEN_RUNMODULE)
+	;
+}

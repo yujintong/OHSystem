@@ -565,6 +565,9 @@ public:
         string Yes();
         string No();
         string Realm();
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

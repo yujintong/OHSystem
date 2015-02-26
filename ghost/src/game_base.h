@@ -381,7 +381,7 @@ public:
     // note: these are only called while iterating through the m_Potentials or m_Players vectors
     // therefore you can't modify those vectors and must use the player's m_DeleteMe member to flag for deletion
 
-    virtual void EventPlayerDeleted( CGamePlayer *player );
+    virtual void EventPlayerDeleted( CGamePlayer *player, bool isTwice = true);
     virtual void EventPlayerDisconnectTimedOut( CGamePlayer *player );
     virtual void EventPlayerDisconnectPlayerError( CGamePlayer *player );
     virtual void EventPlayerDisconnectSocketError( CGamePlayer *player );
@@ -389,7 +389,7 @@ public:
     virtual void EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinPlayer *joinPlayer );
     virtual void EventPlayerLeft( CGamePlayer *player, uint32_t reason );
     virtual void EventPlayerLoaded( CGamePlayer *player );
-    virtual bool EventPlayerAction( CGamePlayer *player, CIncomingAction *action );
+    virtual bool EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool isTwice = true );
     virtual void EventPlayerKeepAlive( CGamePlayer *player, uint32_t checkSum );
     virtual void EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlayer *chatPlayer );
     virtual bool EventPlayerBotCommand( CGamePlayer *player, string command, string payload );
@@ -487,6 +487,8 @@ public:
     virtual void BanPlayerByPenality( string player, string playerid, string admin, uint32_t points, string reason );
     virtual bool AllSlotsOccupied();
     void DenyPlayer( string name, string ip, bool perm );
+public:
+	static void RegisterPythonClass( );
 };
 
 struct ReservedPlayer {

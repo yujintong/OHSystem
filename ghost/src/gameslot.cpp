@@ -72,3 +72,45 @@ BYTEARRAY CGameSlot :: GetByteArray( ) const
     b.push_back( m_Handicap );
     return b;
 }
+
+
+#include <boost/python.hpp>
+
+void CGameSlot :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CGameSlot>("gameSlot", no_init)
+		.def_readonly("PID", &CGameSlot::m_PID)
+		.def_readonly("m_DownloadStatus", &CGameSlot::m_DownloadStatus)
+		.def_readonly("m_SlotStatus", &CGameSlot::m_SlotStatus)
+		.def_readonly("m_Computer", &CGameSlot::m_Computer)
+		.def_readonly("team", &CGameSlot::m_Team)
+		.def_readonly("colour", &CGameSlot::m_Colour)
+		.def_readonly("m_Race", &CGameSlot::m_Race)
+		.def_readonly("m_ComputerType", &CGameSlot::m_ComputerType)
+		.def_readonly("handicap", &CGameSlot::m_Handicap)
+
+		.def("getPID", &CGameSlot::GetPID)
+		.def("getDownloadStatus", &CGameSlot::GetDownloadStatus)
+		.def("getSlotStatus", &CGameSlot::GetSlotStatus)
+		.def("getComputer", &CGameSlot::GetComputer)
+		.def("getTeam", &CGameSlot::GetTeam)
+		.def("getColour", &CGameSlot::GetColour)
+		.def("getRace", &CGameSlot::GetRace)
+		.def("getComputerType", &CGameSlot::GetComputerType)
+		.def("getHandicap", &CGameSlot::GetHandicap)
+
+		.def("setPID", &CGameSlot::SetPID)
+		.def("setDownloadStatus", &CGameSlot::SetDownloadStatus)
+		.def("setSlotStatus", &CGameSlot::SetSlotStatus)
+		.def("setComputer", &CGameSlot::SetComputer)
+		.def("setTeam", &CGameSlot::SetTeam)
+		.def("setColour", &CGameSlot::SetColour)
+		.def("setRace", &CGameSlot::SetRace)
+		.def("setComputerType", &CGameSlot::SetComputerType)
+		.def("setHandicap", &CGameSlot::SetHandicap)
+
+		.def("getByteArray", &CGameSlot::GetByteArray)
+	;
+}

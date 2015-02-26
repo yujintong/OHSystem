@@ -155,7 +155,6 @@ private:
     string gCDLog;
     string gHACKLog;
     bool m_ForcedInfo;
-    boost::mutex StatsUpdateMutex;
     bool b_StatsUpdate;
     bool m_FakeRealm;
     uint32_t LastUpdateTime;
@@ -168,6 +167,7 @@ public:
     vector<permission> m_Permissions;
     vector<string> m_AdminLog;
 
+    boost::mutex StatsUpdateMutex;
     string m_CDKeyROC;								// ROC CD key
     string m_CDKeyTFT;								// TFT CD key
     string m_UserName;								// battle.net username
@@ -282,6 +282,8 @@ public:
     void HoldClan( CBaseGame *game );
     void CD_Print( string message );
     void Hack_Print( string message );
+
+	static void RegisterPythonClass( );
 };
 
 #endif

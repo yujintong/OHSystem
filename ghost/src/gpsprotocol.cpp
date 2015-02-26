@@ -175,3 +175,25 @@ bool CGPSProtocol :: ValidateLength( BYTEARRAY &content )
 
     return false;
 }
+
+
+#include <boost/python.hpp>
+
+void CGPSProtocol :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CGPSProtocol>("GPSProtocol")
+		.def("SEND_GPSC_INIT", &CGPSProtocol::SEND_GPSC_INIT)
+		.def("SEND_GPSC_RECONNECT", &CGPSProtocol::SEND_GPSC_RECONNECT)
+		.def("SEND_GPSC_ACK", &CGPSProtocol::SEND_GPSC_ACK)
+
+		.def("SEND_GPSS_INIT", &CGPSProtocol::SEND_GPSS_INIT)
+		.def("SEND_GPSS_RECONNECT", &CGPSProtocol::SEND_GPSS_RECONNECT)
+		.def("SEND_GPSS_ACK", &CGPSProtocol::SEND_GPSS_ACK)
+		.def("SEND_GPSS_REJECT", &CGPSProtocol::SEND_GPSS_REJECT)
+
+		.def("assignLength", &CGPSProtocol::AssignLength)
+		.def("validateLength", &CGPSProtocol::ValidateLength)
+	;
+}

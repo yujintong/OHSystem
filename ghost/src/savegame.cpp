@@ -117,3 +117,35 @@ void CSaveGame :: ParseSaveGame( )
     m_MagicNumber = UTIL_CreateByteArray( MagicNumber, false );
     m_Valid = true;
 }
+
+
+
+#include <boost/python.hpp>
+
+void CSaveGame :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_< CSaveGame, bases<CPacked> >("saveGame")
+		.def_readonly("fileName", &CSaveGame::m_FileName)
+		.def_readonly("fileNameNoPath", &CSaveGame::m_FileNameNoPath)
+		.def_readonly("mapPath", &CSaveGame::m_MapPath)
+		.def_readonly("gameName", &CSaveGame::m_GameName)
+		.def_readonly("numSlots", &CSaveGame::m_NumSlots)
+		.def_readonly("slots", &CSaveGame::m_Slots)
+		.def_readonly("randomSeed", &CSaveGame::m_RandomSeed)
+		.def_readonly("magicNumber", &CSaveGame::m_MagicNumber)
+
+		.def("getFileName", &CSaveGame::GetFileName)
+		.def("getFileNameNoPath", &CSaveGame::GetFileNameNoPath)
+		.def("getMapPath", &CSaveGame::GetMapPath)
+		.def("getGameName", &CSaveGame::GetGameName)
+		.def("getNumSlots", &CSaveGame::GetNumSlots)
+		.def("getSlots", &CSaveGame::GetSlots)
+		.def("getRandomSeed", &CSaveGame::GetRandomSeed)
+		.def("getMagicNumber", &CSaveGame::GetMagicNumber)
+		.def("setFileName", &CSaveGame::SetFileName)
+		.def("setFileNameNoPath", &CSaveGame::SetFileNameNoPath)
+		.def("parseSaveGame", &CSaveGame::ParseSaveGame)
+	;
+}

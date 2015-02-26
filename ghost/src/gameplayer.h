@@ -109,6 +109,9 @@ public:
     // other functions
 
     virtual void Send( BYTEARRAY data );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 //
@@ -812,6 +815,10 @@ public:
 
     virtual void Send( BYTEARRAY data );
     virtual void EventGProxyReconnect( CTCPSocket *NewSocket, uint32_t LastPacket );
+
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

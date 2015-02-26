@@ -106,6 +106,9 @@ public:
     virtual bool Pack( bool TFT, string inFileName, string outFileName );
     virtual void Decompress( bool allBlocks );
     virtual void Compress( bool TFT );
+
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif

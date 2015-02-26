@@ -394,3 +394,49 @@ void CPacked :: Compress( bool TFT )
         m_Compressed += *i;
     }
 }
+
+#include <boost/python.hpp>
+
+void CPacked :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_<CPacked>("packed")
+		.def_readonly("CRC", &CPacked::m_CRC)
+		.def_readonly("valid", &CPacked::m_Valid)
+		.def_readonly("compressed", &CPacked::m_Compressed)
+		.def_readonly("decompressed", &CPacked::m_Decompressed)
+		.def_readonly("headerSize", &CPacked::m_HeaderSize)
+		.def_readonly("compressedSize", &CPacked::m_CompressedSize)
+		.def_readonly("headerVersion", &CPacked::m_HeaderVersion)
+		.def_readonly("decompressedSize", &CPacked::m_DecompressedSize)
+		.def_readonly("numBlocks", &CPacked::m_NumBlocks)
+		.def_readonly("war3Identifier", &CPacked::m_War3Identifier)
+		.def_readonly("war3Version", &CPacked::m_War3Version)
+		.def_readonly("buildNumber", &CPacked::m_BuildNumber)
+		.def_readonly("flags", &CPacked::m_Flags)
+		.def_readonly("replayLength", &CPacked::m_ReplayLength)
+
+		.def("getValid", &CPacked::GetValid)
+		.def("getHeaderSize", &CPacked::GetHeaderSize)
+		.def("getCompressedSize", &CPacked::GetCompressedSize)
+		.def("getHeaderVersion", &CPacked::GetHeaderVersion)
+		.def("getDecompressedSize", &CPacked::GetDecompressedSize)
+		.def("getNumBlocks", &CPacked::GetNumBlocks)
+		.def("getWar3Identifier", &CPacked::GetWar3Identifier)
+		.def("getWar3Version", &CPacked::GetWar3Version)
+		.def("getBuildNumber", &CPacked::GetBuildNumber)
+		.def("getFlags", &CPacked::GetFlags)
+		.def("getReplayLength", &CPacked::GetReplayLength)
+		.def("setWar3Version", &CPacked::SetWar3Version)
+		.def("setBuildNumber", &CPacked::SetBuildNumber)
+		.def("setFlags", &CPacked::SetFlags)
+		.def("setReplayLength", &CPacked::SetReplayLength)
+		.def("load", &CPacked::Load)
+		.def("save", &CPacked::Save)
+		.def("extract", &CPacked::Extract)
+		.def("pack", &CPacked::Pack)
+		.def("decompress", &CPacked::Decompress)
+		.def("compress", &CPacked::Compress)
+	;
+}

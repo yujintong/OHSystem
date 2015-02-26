@@ -972,10 +972,18 @@ bool CGame :: Update( void *fd, void *send_fd )
     return CBaseGame :: Update( fd, send_fd );
 }
 
-void CGame :: EventPlayerDeleted( CGamePlayer *player )
+void CGame :: EventPlayerDeleted( CGamePlayer *player, bool executeTwice)
 {
-
-    CBaseGame :: EventPlayerDeleted( player );
+    try	
+    { 
+ 	EXECUTE_HANDLER("PlayerDeleted", true, boost::ref(this), boost::ref(player)) 
+    }
+    catch(...) 
+    { 
+ 	return;
+    }
+ 
+    CBaseGame :: EventPlayerDeleted( player, false );
 
     // record everything we need to know about the player for storing in the database later
     // since we haven't stored the game yet (it's not over yet!) we can't link the gameplayer to the game
@@ -1137,10 +1145,14 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
         }
         m_LastLeaverTime = GetTime( );
     }
+
+    EXECUTE_HANDLER("PlayerDeleted", false, boost::ref(this), boost::ref(player))
 }
 
-bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
+bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool executeTwice )
 {
+    CBaseGame :: EventPlayerAction( player, action, false );
+
     bool success = CBaseGame :: EventPlayerAction( player, action );
 
     // give the stats class a chance to process the action
@@ -1151,6 +1163,7 @@ bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
         SendEndMessage( );
         m_GameOverTime = GetTime( );
     }
+
     return success;
 }
 bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload )
@@ -5156,4 +5169,25 @@ void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
             SendAllChat(m_GHost->m_Language->UserUsed6( playername, thething ) );
         break;
     }
+}
+
+#include <boost/python.hpp>
+
+void CGame :: RegisterPythonClass( )
+{
+	using namespace boost::python;
+
+	class_< CGame, bases<CBaseGame>, boost::noncopyable >("game", no_init)
+		.def_readonly("DBBanLast", &CGame::m_DBBanLast)
+		.def_readonly("DBBans", &CGame::m_DBBans)
+		.def_readonly("DBGame", &CGame::m_DBGame)
+		.def_readonly("DBGamePlayers", &CGame::m_DBGamePlayers)
+		.def_readonly("stats", &CGame::m_Stats)
+		.def_readonly("callableGameAdd", &CGame::m_CallableGameAdd)
+		.def_readonly("pairedBanChecks", &CGame::m_PairedBanChecks)
+		.def_readonly("pairedBanAdds", &CGame::m_PairedBanAdds)
+
+		.def("isGameDataSaved", &CGame::IsGameDataSaved)
+		.def("saveGameData", &CGame::SaveGameData)
+	;
 }

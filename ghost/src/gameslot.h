@@ -117,6 +117,8 @@ public:
     }
 
     BYTEARRAY GetByteArray( ) const;
+public:
+	static void RegisterPythonClass( );
 };
 
 #endif
