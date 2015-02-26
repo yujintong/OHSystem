@@ -11,3 +11,4 @@ cd ../
 mkdir bot
 cp src/ghost++ bot/
 cp config/* bot -R
+cp plugins bot/ -R 

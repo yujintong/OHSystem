@@ -771,9 +771,11 @@ try {
 	CBNCSUtilInterface::RegisterPythonClass( );
 	CConfig::RegisterPythonClass( );
 
+	string m_PluginsPath = "plugins";
+
 	try
 	{
-		boost::python::object module = boost::python::import("plugins");
+		boost::python::object module = boost::python::import(m_PluginsPath.c_str());
 	}
 	catch(...)
 	{
