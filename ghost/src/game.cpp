@@ -1151,8 +1151,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player, bool executeTwice)
 
 bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool executeTwice )
 {
-    CBaseGame :: EventPlayerAction( player, action, false );
-
     bool success = CBaseGame :: EventPlayerAction( player, action );
 
     // give the stats class a chance to process the action

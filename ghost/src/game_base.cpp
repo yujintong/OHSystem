@@ -2567,7 +2567,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player, bool isTwice )
     if( !m_GameLoading && !m_GameLoaded )
     {
 
-        if( m_Slots[GetSIDFromPID( player->GetPID() )].GetTeam() == 12 )
+        if( m_Slots[GetSIDFromPID( player->GetPID() ) != 255 ? GetSIDFromPID( player->GetPID() ) : 0].GetTeam() == 12 )
         {
             m_ObservingPlayers -= 1;
             CloseSlot( 11, true );
