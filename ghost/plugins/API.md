@@ -57,6 +57,7 @@
   - cBaseGame
 - ```GameEnded``` (is executed when a game ends)
   - cGame
+
 ---
 
 - ```DotAData``` (is executed when the dota map sends data to the bot)
