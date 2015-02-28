@@ -1680,12 +1680,11 @@ bool CGHost :: Update( long usecBlock )
 
         for( vector<string> :: iterator i = commands.begin( ); i != commands.end( ); ++i )
         {
-            if( !m_BNETs.empty( ) ) {
-                CONSOLE_Print("[GHOST] Executing command from MYSQL: " + *i);
-                m_BNETs[0]->BotCommand(*i, m_BNETs[0]->GetUserName(), true, true );
-            } else {
-                CONSOLE_Print("[GHOST] Couldn't execute commands from MYSQL, no battle net connection found.");
-            }
+	    try {
+        	EXECUTE_HANDLER("RCONCommand", true, boost::ref(this), *i, m_BNETs.empty( ));
+	    } catch(...) { }
+	    EXECUTE_HANDLER("RCONCommand", false, boost::ref(this), *i, m_BNETs.empty( ));
+
         }
 
         m_DB->RecoverCallable( m_CallableCommandList );
@@ -2225,7 +2224,7 @@ void CGHost :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
     }
 
     boost::thread(&CBaseGame::loop, m_CurrentGame);
-    CONSOLE_Print("[GameThread] Made new game thread");
+    CONSOLE_Print("[GHOST] Created a new Game Thread.");
 }
 
 bool CGHost :: FlameCheck( string message )

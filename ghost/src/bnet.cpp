@@ -913,8 +913,13 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] disconnected from battle.net due to socket error" );
 
-        if( m_Socket->GetError( ) == ECONNRESET && GetTime( ) - m_LastConnectionAttemptTime <= 15 )
-            CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - you are probably using an IP temporarilythe  banned from battle.net" );
+        if( m_Socket->GetError( ) == ECONNRESET && GetTime( ) - m_LastConnectionAttemptTime <= 15 ) {
+            CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - you are probably using an IP temporarily banned from battle.net" );
+	    try {
+        	EXECUTE_HANDLER("BNetIPBanned", true, boost::ref(this))
+	    } catch(...) { }
+	    EXECUTE_HANDLER("BNetIPBanned", false, boost::ref(this))
+	}
 
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
         m_GHost->EventBNETDisconnected( this );
@@ -1061,6 +1066,11 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] connect timed out" );
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
+	    try {
+       		EXECUTE_HANDLER("BNetTimeout", true, boost::ref(this))
+	    } catch(...) { }
+	    EXECUTE_HANDLER("BNetTimeout", false, boost::ref(this))
+
             m_GHost->EventBNETConnectTimedOut( this );
             m_Socket->Reset( );
             m_LastDisconnectedTime = GetTime( );
@@ -1358,6 +1368,11 @@ void CBNET :: ProcessPackets( )
                     // logon successful
 
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon successful" );
+		    try {
+		        EXECUTE_HANDLER("BNetLogged", true, boost::ref(this))
+		    } catch(...) { return; }
+		    EXECUTE_HANDLER("BNetLogged", false, boost::ref(this))
+
                     m_LoggedIn = true;
                     m_GHost->EventBNETLoggedIn( this );
                     m_Socket->PutBytes( m_Protocol->SEND_SID_NETGAMEPORT( m_GHost->m_HostPort ) );
@@ -1584,6 +1599,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
       CONSOLE_Print("[PVPGN-Mode] User used command but bot is running in pvpgn-mode.");
       return;
     }
+
+    try {
+        EXECUTE_HANDLER("BNetCommand", true, boost::ref(this), User, Command, Payload)
+    } catch(...) { return; }
+    EXECUTE_HANDLER("BNetCommand", false, boost::ref(this), User, Command, Payload)
 
     if( ( IsLevel( User ) >= 5 || ForceRoot ) && m_GHost->m_RanksLoaded )
     {

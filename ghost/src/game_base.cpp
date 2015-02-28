@@ -2452,7 +2452,7 @@ void CBaseGame :: SendVirtualLobbyInfo( CPotentialPlayer *player, CDBBan *Ban, u
 
 }
 
-void CBaseGame :: EventPlayerDeleted( CGamePlayer *player, bool isTwice )
+void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
 {
     CONSOLE_Print( "[GAME: " + m_GameName + "] deleting player [" + player->GetName( ) + "]: " + player->GetLeftReason( ) );
 
@@ -3344,6 +3344,17 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         m_VotedTimeStart = 0;
         m_Voted = false;
     }
+
+    try
+    {
+        EXECUTE_HANDLER("PlayerJoined", true, boost::ref(this), Player->GetName())
+    }
+    catch(...)
+    {
+        return;
+    }
+
+    EXECUTE_HANDLER("PlayerJoined", false, boost::ref(this), Player->GetName())
 }
 
 void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
@@ -3430,9 +3441,20 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
     }
     else
         SendAll( m_Protocol->SEND_W3GS_GAMELOADED_OTHERS( player->GetPID( ) ) );
+
+    try
+    {
+        EXECUTE_HANDLER("PlayerLoaded", true, boost::ref(this), player->GetName(), (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000 )
+    }
+    catch(...)
+    {
+        return;
+    }
+
+    EXECUTE_HANDLER("PlayerLoaded", false, boost::ref(this), player->GetName(), (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000 )
 }
 
-bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool isTwice )
+bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
 {
 
     if( ( !m_GameLoaded && !m_GameLoading ) || action->GetLength( ) > 1027 )
@@ -3951,6 +3973,11 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
 
             string Message = chatPlayer->GetMessage( );
 
+	    try {
+        	EXECUTE_HANDLER("PlayerChat", true, boost::ref(this), player->GetName(), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
+    	    } catch(...) { return; }
+	    EXECUTE_HANDLER("PlayerChat", false, boost::ref(this), player->GetName(), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
+
             if( Message == "?trigger" )
                 SendChat( player, m_GHost->m_Language->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
             else if( !Message.empty( ) && Message[0] == m_GHost->m_CommandTrigger )
@@ -4308,6 +4335,11 @@ void CBaseGame :: EventGameStarted( )
     GAME_Print( 10, "", "", "System", "", "started loading with " + UTIL_ToString( GetNumHumanPlayers( ) ) + " players." );
     CONSOLE_Print( "[GAME: " + m_GameName + "] started loading with " + UTIL_ToString( GetNumHumanPlayers( ) ) + " players" );
 
+    try {
+	EXECUTE_HANDLER("GameStarted", true, boost::ref(this))
+    } catch(...) { return; }
+    EXECUTE_HANDLER("GameStarted", false, boost::ref(this))
+
     // encode the HCL command string in the slot handicaps
     // here's how it works:
     //  the user inputs a command string to be sent to the map
@@ -4527,6 +4559,11 @@ void CBaseGame :: EventGameLoaded( )
     m_GHost->m_Callables.push_back( m_GHost->m_DB->Threadedgs( m_HostCounter, string(),  2, uint32_t(), m_GameAlias ) );
 
     CONSOLE_Print( "[GAME: " + m_GameName + "] finished loading with " + UTIL_ToString( GetNumHumanPlayers( ) ) + " players" );
+
+    try {
+        EXECUTE_HANDLER("GameLoaded", true, boost::ref(this))
+    } catch(...) { return; }
+    EXECUTE_HANDLER("GameLoaded", false, boost::ref(this))
 
     // send shortest, longest, and personal load times to each player
 

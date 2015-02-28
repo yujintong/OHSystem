@@ -972,7 +972,7 @@ bool CGame :: Update( void *fd, void *send_fd )
     return CBaseGame :: Update( fd, send_fd );
 }
 
-void CGame :: EventPlayerDeleted( CGamePlayer *player, bool executeTwice)
+void CGame :: EventPlayerDeleted( CGamePlayer *player )
 {
     try	
     { 
@@ -983,7 +983,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player, bool executeTwice)
  	return;
     }
  
-    CBaseGame :: EventPlayerDeleted( player, false );
+    CBaseGame :: EventPlayerDeleted( player );
 
     // record everything we need to know about the player for storing in the database later
     // since we haven't stored the game yet (it's not over yet!) we can't link the gameplayer to the game
@@ -1183,6 +1183,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         LevelName = m_GHost->m_Language->Unknown();
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
+
+    try {
+        EXECUTE_HANDLER("GameCommand", true, boost::ref(this), player, Command, Payload)
+    } catch(...) { }
+    EXECUTE_HANDLER("GameCommand", false, boost::ref(this), player, Command, Payload)
 
     bool hasAccess = m_GHost->CanAccessCommand(player->GetName(), Command );
 
@@ -5060,6 +5065,11 @@ void CGame :: SaveGameData( )
     m_GHost->m_FinishedGames++;
     m_GHost->m_CheckForFinishedGames = GetTime();
     DoGameUpdate(true);
+    try {
+        EXECUTE_HANDLER("GameEnded", true, boost::ref(this))
+    } catch(...) { return; }
+    EXECUTE_HANDLER("GameEnded", false, boost::ref(this))
+
 }
 
 bool CGame :: IsAutoBanned( string name )

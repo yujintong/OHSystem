@@ -132,6 +132,11 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                             // you could use these to calculate killing sprees and double or triple kills (you'd have to make up your own time restrictions though)
                             // you could also build a table of "who killed who" data
 
+		            try {
+                		EXECUTE_HANDLER("DotAData", true, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+		            } catch(...) { }
+		            EXECUTE_HANDLER("DotAData", false, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+
                             if( KeyString.size( ) >= 5 && KeyString.substr( 0, 4 ) == "Hero" )
                             {
                                 // a hero died
@@ -812,6 +817,11 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                         else if( DataString == "Global" )
                         {
                             // these are only received at the end of the game
+
+                            try {
+                                EXECUTE_HANDLER("DotAGlobal", true, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+                            } catch(...) { }
+                            EXECUTE_HANDLER("DotAGlobal", false, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
 
                             if( KeyString == "Winner" && m_Winner != 1 && m_Winner != 2 )
                             {
