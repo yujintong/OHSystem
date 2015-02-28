@@ -92,6 +92,13 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
     m_GameLog.clear();
     m_ObservingPlayers = 0;
     m_LastLeaverTime = GetTime();
+
+
+    try {
+	EXECUTE_HANDLER("GameCreated", true, boost::ref(this));
+    } catch(...) { }
+        EXECUTE_HANDLER("GameCreated", false, boost::ref(this));
+
 }
 
 CGame :: ~CGame( )
