@@ -14,6 +14,9 @@
 - ```RCONCommand``` (is executed when the bot recieves a rcon command)
   - Command + Payload
   - hasActiveBNetRealm
+- ```Update``` (is executed when the bot turns an update cycle)
+  - cGHost
+- ```ShutDown``` (is executed when the bot is shut down)
 
 ---
 

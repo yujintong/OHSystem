@@ -1162,6 +1162,9 @@ CGHost :: ~CGHost( )
 
 bool CGHost :: Update( long usecBlock )
 {
+
+    EXECUTE_HANDLER("Update", false, boost::ref(this))
+
     m_StartTicks = GetTicks();
 
     // todotodo: do we really want to shutdown if there's a database error? is there any way to recover from this?
