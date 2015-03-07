@@ -64,6 +64,8 @@ struct GProxyReconnector {
 	uint32_t PostedTime;
 };
 
+CConfig GetCFG( );
+
 class CGHost
 {
 public:
@@ -290,6 +292,8 @@ public:
     uint32_t m_SwapLimit;
     vector<GProxyReconnector *> m_PendingReconnects;
     boost::mutex m_ReconnectMutex;
+    bool m_SendAutoStartInfo;
+    bool m_FountainFarmBan;
 
     CGHost( CConfig *CFG );
     ~CGHost( );

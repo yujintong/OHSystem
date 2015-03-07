@@ -550,9 +550,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     string ip = (*j)->GetExternalIPString( );
                     if(StatsPlayerSummary->GetID ()==0) {
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->WelcomeUserCreateUniqueId( name));
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->DomainOnJoinNotify( ));
-                        SendChat((*j)->GetPID( ), " ");
                         m_PairedGPAdds.push_back( PairedGPAdd( string(), m_GHost->m_DB->ThreadedGamePlayerAdd(0, name, ip, 0, (*j)->GetSpoofedRealm( ), 0, 0, 0, string(), 0, 0, 0 ) ) );
                     } else {
                         uint32_t wins = StatsPlayerSummary->GetWins( );
@@ -575,69 +572,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                         (*j)->SetReputation (StatsPlayerSummary->GetReputation ());
                         (*j)->SetPlayerLanguage(StatsPlayerSummary->GetLanguageSuffix ());
                         (*j)->SetPenalityLevel(StatsPlayerSummary->GetLeaverLevel());
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language-> WelcomeBackUser( name ) );
-                        SendChat((*j)->GetPID( ), " ");
-                        
-                        uint32_t Level = (*j)->GetLevel( );
-                        bool kick = false;
-                        string reason = "";
-                        if(Level < 1 ) {
-                            if( m_GameType == 3 )
-                            {
-                                if( games < m_GHost->m_MinLimit )
-                                {
-                                    kick = true;
-                                    reason = "was kicked for having to less games.";
-                                }
-                                else if( m_GHost->m_MinScoreLimit != 0 && score < m_GHost->m_MinScoreLimit )
-                                {
-                                    kick = true;
-                                    reason = "was kicked for having a to low score.";
-                                }
-                                else if( m_GHost->m_MaxScoreLimit != 0 && score > m_GHost->m_MaxScoreLimit )
-                                {
-                                    kick = true;
-                                    reason = "was kicked for having a to high score.";
-                                }
-                            }
-                            if( m_GameType == 4 )
-                            {
-                                if( games < m_GHost->m_MinVIPGames  )
-                                {
-                                    kick = true;
-                                    reason = "was kicked for having to less games.";
-                                }
-                            }
-                            if( m_GameType == 5 && Level < 2 )
-                            {
-                                kick = true;
-                                reason = "was kicked for joining without being reserved.";
-                            }
-                            
-                            transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
-                            if( m_GHost->m_DenieProxy && !(*j)->GetGProxy( ) )
-                            {
-                                if( CC == "a1" || CC == "a2")
-                                {
-                                    kick = true;
-                                    reason = "was kicked for joining without gproxy and a proxy.";
-                                }
-                            }
-                            if( !(*j)->GetGProxy( ) && ( m_GHost->IsForcedGProxy(name) || m_GHost->IsForcedGProxy(ip) ) )
-                            {
-                                kick = true;
-                                reason = "was kicked for being forced to use gproxy, but doesnt use it.";
-                                
-                            }
-                            if(kick) {
-                                if(m_GHost->m_AutoDenyUsers)
-                                    DenyPlayer( name,ip,false );
-                                (*j)->SetDeleteMe( true );
-                                (*j)->SetLeftReason( reason );
-                                (*j)->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                OpenSlot( GetSIDFromPID( (*j)->GetPID( ) ), false );
-                            }
-                        }
                     }
                 }
             }
@@ -660,7 +594,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     if( (*j)->GetName( ) == i->second->GetName( ) )
                     {
-                        SendChat((*j)->GetPID( ), m_GHost->m_Language->CreatedUniqueIdForNewUser( UTIL_ToString(Result ) ) );
                         (*j)->SetID(Result);
                     }
                 }
@@ -2332,15 +2265,8 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
 
         in.close( );
     }
-    if( m_GameBalance)
-        SendChat(player, m_GHost->m_Language->EnabledBalanceForThisGame ());
-    if( m_GHost->m_VoteMode ) {
-        SendChat( player, m_GHost->m_Language->VoteHasBeenEnabledNotify( ) );
-    }
-    if( m_GHost->m_AllowVoteStart ) {
-        SendChat( player, m_GHost->m_Language->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
-    }
-
+    if( m_GameBalance || m_GHost->m_VoteMode || m_GHost->m_AllowVoteStart)
+        SendChat(player, "Use '!info' to get more game details for the current lobby.");
 }
 
 void CBaseGame :: SendEndMessage( )
@@ -2745,8 +2671,9 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         if( (*i)->GetServer( ) == JoinedRealm || JoinedRealm.empty() )
         {
             Level = (*i)->IsLevel( joinPlayer->GetName( ) );
-            if( Level != 0 && m_GHost->m_RanksLoaded )
+            if( Level != 0 && m_GHost->m_RanksLoaded ) {
                 LevelName = m_GHost->m_Ranks[Level];
+	    }
             else if( Level != 0)
                 CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded ());
             break;
@@ -3138,6 +3065,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         }
     }
     Player->SetPlayerLanguage (m_LobbyLanguage);
+
     // check if this is a protected account
     if( m_GHost->m_AccountProtection )
         m_PairedPWChecks.push_back( PairedPWCheck( joinPlayer->GetName( ), m_GHost->m_DB->ThreadedPWCheck( joinPlayer->GetName( ) ) ) );
@@ -3172,6 +3100,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
     }
 
     GAME_Print( 4, "", "", joinPlayer->GetName(), "", "@"+JoinedRealm+ " "+( (JoinedRealm == "Garena" &&! potential->GetRoomName().empty() ) ? "from ["+potential->GetRoomName()+"] " : "" )+"joined the game." );
+
     if( JoinedRealm == "Garena" &&! potential->GetRoomName().empty())
         SendAllChat( m_GHost->m_Language->UserJoinedFromGarena (LevelName, joinPlayer->GetName(), JoinedRealm, potential->GetRoomName() ) );
     else
@@ -3329,7 +3258,7 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
         SendAllChat( m_GHost->m_Language->UserJoinedWithHighLeaveRate( Player->GetName( ), UTIL_ToString( Player->GetLeavePerc( ), 2 ) ) );
 
     // single announce event on +3, +2, +1
-    if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 )
+    if( m_AutoStartPlayers - GetNumHumanPlayers( ) <= 3 && m_AutoStartPlayers - GetNumHumanPlayers( ) != 0 && m_GHost->m_SendAutoStartInfo )
     {
         SendAllChat( m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
     }
@@ -3347,14 +3276,14 @@ void CBaseGame :: EventPlayerJoined( CPotentialPlayer *potential, CIncomingJoinP
 
     try
     {
-        EXECUTE_HANDLER("PlayerJoined", true, boost::ref(this), Player->GetName())
+        EXECUTE_HANDLER("PlayerJoined", true, boost::ref(this), boost::ref(Player))
     }
     catch(...)
     {
         return;
     }
 
-    EXECUTE_HANDLER("PlayerJoined", false, boost::ref(this), Player->GetName())
+    EXECUTE_HANDLER("PlayerJoined", false, boost::ref(this), boost::ref(Player))
 }
 
 void CBaseGame :: EventPlayerLeft( CGamePlayer *player, uint32_t reason )
@@ -3444,14 +3373,14 @@ void CBaseGame :: EventPlayerLoaded( CGamePlayer *player )
 
     try
     {
-        EXECUTE_HANDLER("PlayerLoaded", true, boost::ref(this), player->GetName(), (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000 )
+        EXECUTE_HANDLER("PlayerLoaded", true, boost::ref(this), boost::ref(player), (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000 )
     }
     catch(...)
     {
         return;
     }
 
-    EXECUTE_HANDLER("PlayerLoaded", false, boost::ref(this), player->GetName(), (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000 )
+    EXECUTE_HANDLER("PlayerLoaded", false, boost::ref(this), boost::ref(player), (float)( player->GetFinishedLoadingTicks( ) - m_StartedLoadingTicks ) / 1000 )
 }
 
 bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
@@ -3484,7 +3413,7 @@ bool CBaseGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *actio
 
             bool Failed = false;
 
-            if(m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) {
+            if( ( m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) && m_GHost->m_FountainFarmBan ) {
 
                 if((packet[0] == 18 || packet[0] == 17 ) && packet.size() > 21) {
                     unsigned char bufx[4]={packet[15],packet[16],packet[17],packet[18]};
@@ -3974,9 +3903,9 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
             string Message = chatPlayer->GetMessage( );
 
 	    try {
-        	EXECUTE_HANDLER("PlayerChat", true, boost::ref(this), player->GetName(), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
+        	EXECUTE_HANDLER("PlayerChat", true, boost::ref(this), boost::ref(player), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
     	    } catch(...) { return; }
-	    EXECUTE_HANDLER("PlayerChat", false, boost::ref(this), player->GetName(), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
+	    EXECUTE_HANDLER("PlayerChat", false, boost::ref(this), boost::ref(player), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
 
             if( Message == "?trigger" )
                 SendChat( player, m_GHost->m_Language->CommandTrigger( string( 1, m_GHost->m_CommandTrigger ) ) );
@@ -6556,6 +6485,8 @@ void CBaseGame :: GAME_Print( uint32_t type, string MinString, string SecString,
                 Rune = "Illusion";
             else if( message == "5" )
                 Rune = "Invisible";
+	    else if( message == "6" )
+		Rune = "Booster";
             else
                 CONSOLE_Print( "Bad Input for RuneType: "+message );
 

@@ -1193,7 +1193,7 @@ vector<permission> MySQLPList( void *conn, string *error, uint32_t botid, string
     string EscServer = MySQLEscapeString( conn, server );
 
     vector<permission> PList;
-    string Query = "SELECT `bnet_username`, `user_level`, `user_custom_permission` FROM oh_users WHERE `user_bnet` >= '1' AND ( user_level_expire > NOW( ) OR user_level_expire = '0000-00-00 00:00:00' OR user_level_expire = '' ) AND `admin_realm` = '" + EscServer + "'";
+    string Query = "SELECT `bnet_username`, `user_level`, `user_custom_permission` FROM oh_users WHERE `user_bnet` >= '1' AND ( user_level_expire > NOW( ) OR user_level_expire = '0000-00-00 00:00:00' OR user_level_expire = '' ) AND `admin_realm` = '" + EscServer + "' AND `user_level` > 0";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -2355,7 +2355,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
     if( alias != 0 ) {
         StatsQueryCondition += "`alias_id` = '"+UTIL_ToString(alias)+"' AND ";
     }
-
+/*
     if( !EscMonth.empty() && EscMonth != "0" && !EscYear.empty() && EscYear != "0" )
         StatsQueryCondition += "month='"+EscMonth+"' AND year='"+EscYear+"' AND";
     else if( !EscMonth.empty() && EscMonth != "0" && EscYear.empty())
@@ -2437,7 +2437,7 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
             *error = mysql_error( (MYSQL *)conn );
     }
 
-    string ReputationQuery = "SELECT SUM(rate)/COUNT(*) as reputation FROM oh_gameplayers_rating WHERE player='"+EscLowerName+"';";
+    string ReputationQuery = "SELECT SUM(rate), COUNT(*) as reputation FROM oh_gameplayers_rating WHERE player='"+EscLowerName+"';";
     if( mysql_real_query( (MYSQL *)conn, ReputationQuery.c_str( ), ReputationQuery.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
     else
@@ -2448,13 +2448,13 @@ CDBStatsPlayerSummary *MySQLStatsPlayerSummaryCheck( void *conn, string *error, 
         {
             vector<string> Row = MySQLFetchRow( Result );
 
-            if(! Row[0].empty()  )
+            if(! Row[0].empty() && ! Row[1].empty())
             {
-                reputation =  UTIL_ToDouble(Row[0]);
+                reputation =  UTIL_ToDouble(Row[0]) / UTIL_ToDouble(Row[1]);
             }
         }
     }
-
+*/
     StatsPlayerSummary = new CDBStatsPlayerSummary( id, EscName, EscLowerName, score, games, wins, losses, draw, kills, deaths, assists, creeps, denies, neutrals, towers, rax, streak, maxstreak, losingstreak, maxlosingstreak, zerodeaths, realm, leaves, allcount, rankcount, hiddenacc, country, countryCode, exp, reputation, languageSuffix, leaver_level );
 
     return StatsPlayerSummary;
@@ -2534,6 +2534,7 @@ uint32_t MySQLDotAPlayerAdd( void *conn, string *error, uint32_t botid, uint32_t
     string EscSpell4 = MySQLEscapeString( conn, spell4 );
     string EscSpell5 = MySQLEscapeString( conn, spell5 );
     string EscSpell6 = MySQLEscapeString( conn, spell6 );
+
     string EscHero = MySQLEscapeString( conn, hero );
     string Query = "INSERT INTO oh_dotaplayers ( botid, gameid, colour, kills, deaths, creepkills, creepdenies, assists, gold, neutralkills, item1, item2, item3, item4, item5, item6, spell1, spell2, spell3, spell4, spell5, spell6, hero, newcolour, towerkills, raxkills, courierkills, level ) VALUES ( " + UTIL_ToString( botid ) + ", " + UTIL_ToString( gameid ) + ", " + UTIL_ToString( colour ) + ", " + UTIL_ToString( kills ) + ", " + UTIL_ToString( deaths ) + ", " + UTIL_ToString( creepkills ) + ", " + UTIL_ToString( creepdenies ) + ", " + UTIL_ToString( assists ) + ", " + UTIL_ToString( gold ) + ", " + UTIL_ToString( neutralkills ) + ", '" + EscItem1 + "', '" + EscItem2 + "', '" + EscItem3 + "', '" + EscItem4 + "', '" + EscItem5 + "', '" + EscItem6 + "', '" + EscSpell1 + "', '" + EscSpell2 + "', '" + EscSpell3 + "', '" + EscSpell4 + "', '" + EscSpell5 + "', '" + EscSpell6 + "', '" + EscHero + "', " + UTIL_ToString( newcolour ) + ", " + UTIL_ToString( towerkills ) + ", " + UTIL_ToString( raxkills ) + ", " + UTIL_ToString( courierkills ) + ", " + UTIL_ToString( level ) + " )";
 

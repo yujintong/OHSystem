@@ -888,7 +888,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
     if( m_CallableBanList && m_CallableBanList->GetReady( ) && m_CallableTBRemove && m_CallableTBRemove->GetReady( ) )
     {
-        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] refreshed ban list (" + UTIL_ToString( m_Bans.size( ) ) + " -> " + UTIL_ToString( m_CallableBanList->GetResult( ).size( ) ) + " bans)" );
+        DEBUG_Print( "[BNET: " + m_ServerAlias + "] refreshed ban list (" + UTIL_ToString( m_Bans.size( ) ) + " -> " + UTIL_ToString( m_CallableBanList->GetResult( ).size( ) ) + " bans)" );
 
         for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
             delete *i;

@@ -715,7 +715,6 @@ bool CGame :: Update( void *fd, void *send_fd )
                 } else {
                     Summary="Found ["+UTIL_ToString( StatsPlayerSummary->GetGames( ) )+"] games, which can not be detailed parsed.";
                 }
-
                 if(! StatsPlayerSummary->GetHidden() )
                 {
                     if( i->first.empty( ) ) {
@@ -1156,7 +1155,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player )
     EXECUTE_HANDLER("PlayerDeleted", false, boost::ref(this), boost::ref(player))
 }
 
-bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action, bool executeTwice )
+bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
 {
     bool success = CBaseGame :: EventPlayerAction( player, action );
 
@@ -1184,17 +1183,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     uint32_t Level = player->GetLevel();
     string LevelName;
     // do this for the public commands
-    if(m_GHost->m_RanksLoaded)
+    if(m_GHost->m_RanksLoaded) {
         LevelName = player->GetLevelName();
+    }
     else {
         LevelName = m_GHost->m_Language->Unknown();
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
 
     try {
-        EXECUTE_HANDLER("GameCommand", true, boost::ref(this), player, Command, Payload)
+        EXECUTE_HANDLER("GameCommand", true, boost::ref(this), boost::ref(player), Command, Payload)
     } catch(...) { }
-    EXECUTE_HANDLER("GameCommand", false, boost::ref(this), player, Command, Payload)
+    EXECUTE_HANDLER("GameCommand", false, boost::ref(this), boost::ref(player), Command, Payload)
 
     bool hasAccess = m_GHost->CanAccessCommand(player->GetName(), Command );
 
@@ -3497,6 +3497,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             string StatsUser = User;
             string Month = "";
             string Year = "";
+
             if( !Payload.empty( ) ) {
                 stringstream SS;
                 SS << Payload;
@@ -3504,8 +3505,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SS >> Month;
                 SS >> Year;
             }
+
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( StatsUser, &LastMatch );
+
             if( Matches == 0 )
             {
                 if( player->GetSpoofed( ) && Level >= 8 )
@@ -4745,8 +4748,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( mode4 != 0 ) {
             Return += "["+m_ModesToVote[3]+": "+UTIL_ToString(mode4)+"] ";
         }
-        SendChat(player, Return );
-        Return.clear();
+	if(Return.size() != 0) {
+         SendChat(player, Return );
+         Return = "";
+	}
         if( mode5 != 0 ) {
             Return += "["+m_ModesToVote[4]+": "+UTIL_ToString(mode5)+"] ";
         }
@@ -4756,7 +4761,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( mode7 != 0 ) {
             Return += "["+m_ModesToVote[6]+": "+UTIL_ToString(mode7)+"] ";
         }
-        SendChat( player, Return );
+	if(Return.size() != 0) {
+        	SendChat( player, Return );
+	}
         if( notvoted != 0 ) {
             SendChat( player, m_GHost->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ) ;
         }
@@ -5038,6 +5045,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
       }
       player->SetCookie( player->GetCookies()-1);
       SendAllChat("[INFO] Player "+player->GetName()+" ate a cookie. He has now "+UTIL_ToString(player->GetCookies())+" cookies left in his jar.");
+    }
+
+    else if( Command == "info" ) {
+   	if( m_GameBalance)
+        	SendChat(player, m_GHost->m_Language->EnabledBalanceForThisGame ());
+   	if( m_GHost->m_VoteMode ) {
+        	SendChat( player, m_GHost->m_Language->VoteHasBeenEnabledNotify( ) );
+    	}
+    	if( m_GHost->m_AllowVoteStart ) {
+        	SendChat( player, m_GHost->m_Language->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
+    	}
+
+	SendChat( player, m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+
     }
     return HideCommand;
 }

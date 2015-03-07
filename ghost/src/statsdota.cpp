@@ -133,9 +133,9 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                             // you could also build a table of "who killed who" data
 
 		            try {
-                		EXECUTE_HANDLER("DotAData", true, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+                		EXECUTE_HANDLER("DotAData", true, boost::ref(this), boost::ref(m_Game), DataString, KeyString, ValueInt);
 		            } catch(...) { }
-		            EXECUTE_HANDLER("DotAData", false, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+		            EXECUTE_HANDLER("DotAData", false, boost::ref(this), boost::ref(m_Game), DataString, KeyString, ValueInt);
 
                             if( KeyString.size( ) >= 5 && KeyString.substr( 0, 4 ) == "Hero" )
                             {
@@ -819,9 +819,9 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                             // these are only received at the end of the game
 
                             try {
-                                EXECUTE_HANDLER("DotAGlobal", true, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+                                EXECUTE_HANDLER("DotAGlobal", true, boost::ref(this), boost::ref(m_Game), DataString, KeyString, ValueInt);
                             } catch(...) { }
-                            EXECUTE_HANDLER("DotAGlobal", false, boost::ref(this), m_Game, DataString, KeyString, ValueInt);
+                            EXECUTE_HANDLER("DotAGlobal", false, boost::ref(this), boost::ref(m_Game), DataString, KeyString, ValueInt);
 
                             if( KeyString == "Winner" && m_Winner != 1 && m_Winner != 2 )
                             {

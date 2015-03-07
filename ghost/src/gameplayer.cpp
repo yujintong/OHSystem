@@ -296,8 +296,11 @@ uint32_t CGamePlayer :: GetPing( bool LCPing )
 
     AvgPing /= m_Pings.size( );
 
-    if( LCPing )
+    if( LCPing ) {
+	if(GetSpoofedRealm( ) ==  m_Game->m_GHost->m_WC3ConnectAlias)
+		return AvgPing / 4;
         return AvgPing / 2;
+    }
     else
         return AvgPing;
 }

@@ -81,6 +81,7 @@ string gLogFile;
 uint32_t gLogMethod;
 ofstream *gLog = NULL;
 CGHost *gGHost = NULL;
+CConfig CFG;
 
 uint32_t GetTime( )
 {
@@ -140,6 +141,11 @@ void SignalCatcher( int s )
         gGHost->m_ExitingNice = true;
     else
         exit( 1 );
+}
+
+CConfig GetCFG( )
+{
+        return CFG;
 }
 
 void CONSOLE_Print( string message )
@@ -261,6 +267,8 @@ BOOST_PYTHON_MODULE(host)
 	def( "registerHandler", RegisterHandler, RegisterHandler_Overloads() );
 	def( "unregisterHandler", UnregisterHandler, UnregisterHandler_Overloads() );
 	def( "log", CONSOLE_Print );
+        def( "GetTicks", GetTicks );
+        def( "config", GetCFG );
 }
 
 BOOST_PYTHON_MODULE(replay)
@@ -568,9 +576,8 @@ int main( int argc, char **argv )
 
     // read config file
 
-    CConfig CFG;
     CFG.Read( "default.cfg" );
-    gLogFile = CFG.GetString( "bot_log", "ghost.log" );
+    gLogFile = CFG.GetString( "bot_log", "ghost_" + UTIL_ToString( GetTime( ) ) + ".log" );
     gLogMethod = CFG.GetInt( "bot_logmethod", 1 );
 
     if( !gLogFile.empty( ) )
@@ -700,9 +707,9 @@ int main( int argc, char **argv )
 #endif
 	Py_Initialize( );
 
-try {
-	boost::python::object global( boost::python::import("__main__").attr("__dict__") );
-	boost::python::exec("import sys, host												\n"
+	try {
+		boost::python::object global( boost::python::import("__main__").attr("__dict__") );
+		boost::python::exec("import sys, host												\n"
 						"																\n"
 						"class Logger:													\n"	
 						"	def __init__(self, name):									\n"
@@ -725,67 +732,69 @@ try {
 						"sys.stderr = Logger('stderr')									\n",
 						global, global);
 
-        string AppendCode = "import sys\nsys.path.append('.')";
+        	string AppendCode = "import sys\nsys.path.append('.')";
 
-        try
-        {
-                boost::python::exec(AppendCode.c_str(), global, global);
-        }
-        catch(...)
-        {
-                PyErr_Print();
-                throw;
-        }
+	        try
+	        {
+	                boost::python::exec(AppendCode.c_str(), global, global);
+	        }
+	        catch(...)
+	        {
+	                PyErr_Print();
+	                throw;
+	        }
 
-	CSocket::RegisterPythonClass( );
-	CTCPSocket::RegisterPythonClass( );
-	CTCPClient::RegisterPythonClass( );
-	CTCPServer::RegisterPythonClass( );
-	CUDPSocket::RegisterPythonClass( );
-	CUDPServer::RegisterPythonClass( );
-	CPacked::RegisterPythonClass( );
-	CSaveGame::RegisterPythonClass( );
-	CReplay::RegisterPythonClass( );
-	CMap::RegisterPythonClass( );
-	CLanguage::RegisterPythonClass( );
-	CGPSProtocol::RegisterPythonClass( );
-	CGHost::RegisterPythonClass( );
-	CGameSlot::RegisterPythonClass( );
-	CIncomingMapSize::RegisterPythonClass( );
-	CIncomingChatPlayer::RegisterPythonClass( );
-	CIncomingAction::RegisterPythonClass( );
-	CIncomingJoinPlayer::RegisterPythonClass( );
-	CGameProtocol::RegisterPythonClass( );
-	CPotentialPlayer::RegisterPythonClass( );
-	CGamePlayer::RegisterPythonClass( );
-	CBaseGame::RegisterPythonClass( );
-	CGame::RegisterPythonClass( );
-	CBNLSProtocol::RegisterPythonClass( );
-	CBNLSClient::RegisterPythonClass( );
-	CIncomingClanList::RegisterPythonClass( );
-	CIncomingFriendList::RegisterPythonClass( );
-	CIncomingChatEvent::RegisterPythonClass( );
-	CIncomingGameHost::RegisterPythonClass( );
-	CBNETProtocol::RegisterPythonClass( );
-	CBNET::RegisterPythonClass( );
-	CBNCSUtilInterface::RegisterPythonClass( );
-	CConfig::RegisterPythonClass( );
+		CSocket::RegisterPythonClass( );
+		CTCPSocket::RegisterPythonClass( );
+		CTCPClient::RegisterPythonClass( );
+		CTCPServer::RegisterPythonClass( );
+		CUDPSocket::RegisterPythonClass( );
+		CUDPServer::RegisterPythonClass( );
+		CPacked::RegisterPythonClass( );
+		CSaveGame::RegisterPythonClass( );
+		CReplay::RegisterPythonClass( );
+		CMap::RegisterPythonClass( );
+		CLanguage::RegisterPythonClass( );
+		CGPSProtocol::RegisterPythonClass( );
+		CGHost::RegisterPythonClass( );
+		CGameSlot::RegisterPythonClass( );
+		CIncomingMapSize::RegisterPythonClass( );
+		CIncomingChatPlayer::RegisterPythonClass( );
+		CIncomingAction::RegisterPythonClass( );
+		CIncomingJoinPlayer::RegisterPythonClass( );
+		CGameProtocol::RegisterPythonClass( );
+		CPotentialPlayer::RegisterPythonClass( );
+		CGamePlayer::RegisterPythonClass( );
+		CBaseGame::RegisterPythonClass( );
+		CGame::RegisterPythonClass( );
+		CBNLSProtocol::RegisterPythonClass( );
+		CBNLSClient::RegisterPythonClass( );
+		CIncomingClanList::RegisterPythonClass( );
+		CIncomingFriendList::RegisterPythonClass( );
+		CIncomingChatEvent::RegisterPythonClass( );
+		CIncomingGameHost::RegisterPythonClass( );
+		CBNETProtocol::RegisterPythonClass( );
+		CBNET::RegisterPythonClass( );
+		CBNCSUtilInterface::RegisterPythonClass( );
+		CConfig::RegisterPythonClass( );
 
-	string m_PluginsPath = "plugins";
+		string m_PluginsPath = "plugins";
 
-	try
-	{
-		boost::python::object module = boost::python::import(m_PluginsPath.c_str());
-	}
-	catch(...)
-	{
-		PyErr_Print( );
+		try
+		{
+			boost::python::object module = boost::python::import(m_PluginsPath.c_str());
+		}
+		catch(...)
+		{
+			PyErr_Print( );
+			throw;
+		}
+
+	} catch(boost::python::error_already_set const &) {
+		PyErr_Print();
 		throw;
 	}
-}catch(boost::python::error_already_set const &) {
-PyErr_Print();
-throw;
-}
+
 	EXECUTE_HANDLER("StartUp", false, boost::ref(CFG))
 	EXECUTE_HANDLER("StartUp", true, boost::ref(CFG))
 
@@ -1975,6 +1984,8 @@ void CGHost :: SetConfigs( CConfig *CFG )
     }
     m_DenyLimit = CFG->GetInt("oh_cc_deny_limit", 2);
     m_SwapLimit = CFG->GetInt("oh_cc_swap_limit", 2);
+    m_SendAutoStartInfo = CFG->GetInt("oh_sendautostartalert", 0) == 0 ? false : true;
+    m_FountainFarmBan = CFG->GetInt("oh_fountainfarmban", 0) == 0 ? false : true;
  
     LoadDatas();
     LoadRules();
@@ -1983,7 +1994,6 @@ void CGHost :: SetConfigs( CConfig *CFG )
     if( m_FunCommands )
         LoadInsult( );
 
-    //now update the bot settings and info
 }
 
 void CGHost :: ExtractScripts( )
