@@ -341,7 +341,7 @@ public:
     bool PlayerCached( string playername );
     void LoadLanguages( );
     bool CanAccessCommand( string name, string command );
-
+    void HandleRCONCommand( string command );
 public:
         static void RegisterPythonClass( );
 };

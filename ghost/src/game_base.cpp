@@ -3965,7 +3965,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
     }
 }
 
-bool CBaseGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload )
+bool CBaseGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload, bool force)
 {
     // return true if the command itself should be hidden from other players
 

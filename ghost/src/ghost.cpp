@@ -1690,13 +1690,11 @@ bool CGHost :: Update( long usecBlock )
     {
         vector<string> commands = m_CallableCommandList->GetResult( );
 
+	string command;
+
         for( vector<string> :: iterator i = commands.begin( ); i != commands.end( ); ++i )
         {
-	    try {
-        	EXECUTE_HANDLER("RCONCommand", true, boost::ref(this), *i, m_BNETs.empty( ));
-	    } catch(...) { }
-	    EXECUTE_HANDLER("RCONCommand", false, boost::ref(this), *i, m_BNETs.empty( ));
-
+		HandleRCONCommand(*i);
         }
 
         m_DB->RecoverCallable( m_CallableCommandList );
@@ -2660,6 +2658,80 @@ bool CGHost :: CanAccessCommand( string name, string command ) {
     }
     return false;
 }
+
+void CGHost :: HandleRCONCommand( string incommingcommand ) {
+	string waste;
+	uint32_t gameid;
+	string command;
+	stringstream SS;
+
+	SS << incommingcommand;
+	SS >> waste;
+
+	if( SS.fail( ) || waste.empty() )
+		DEBUG_Print("Bad input for RCON command #1");
+	else {
+		SS >> gameid;
+		if( SS.fail( ) )
+			DEBUG_Print("Bad input for RCON command #2");
+		else {
+			SS >> command;
+	                string Command;
+        	        string Payload;
+                	string :: size_type PayloadStart = command.find( " " );
+
+	                if( PayloadStart != string :: npos )
+        	        {
+                	    Command = command.substr( 1, PayloadStart - 1 );
+                	    Payload = command.substr( PayloadStart + 1 );
+	                }
+	                else
+	                    Command = command.substr( 1 );
+
+	                transform( Command.begin( ), Command.end( ), Command.begin( ), ::tolower );
+
+			if( SS.fail( ) || command.empty() )
+				DEBUG_Print("Bad input for RCON command #3");
+			else {
+				// Test for announcer
+				bool announce = Command == "botannounce";
+				bool saygame = Command == "saygame";
+				bool wasCurrentGame = false;
+				if( m_CurrentGame ) {
+					if( m_CurrentGame->GetHostCounter( ) == gameid ) {
+						if(!saygame) {
+							m_CurrentGame->EventPlayerBotCommand( NULL, Command, Payload, true);
+						} else {
+							m_CurrentGame->SendAllChat("[WEB]" + Payload);
+						}
+					}
+					else if(announce) {
+						m_CurrentGame->SendAllChat("[ANNOUNCE] " + Payload);
+					}
+				}
+				for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
+					if( (*i)->GetHostCounter( ) == gameid ) {
+						if(!saygame) {
+	                                                (*i)->EventPlayerBotCommand( NULL, Command, Payload, true);
+						} else {
+							(*i)->SendAllChat("[WEB]" + Payload);
+						}	
+                                        }
+                                        else if(announce) {
+                                                (*i)->SendAllChat("[ANNOUNCE] " + Payload);
+                                        }
+
+
+
+				}
+		
+
+			}
+		}
+	}
+	
+}
+
 void CGHost :: LoadLanguages( ) {
     /*
     try
