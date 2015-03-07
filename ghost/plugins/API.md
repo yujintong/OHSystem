@@ -12,6 +12,7 @@
 - ```GHostStarted``` (is executed when the bot has been started)
   - cGHost
 - ```RCONCommand``` (is executed when the bot recieves a rcon command)
+  - cGHost
   - Command + Payload
   - hasActiveBNetRealm
 - ```Update``` (is executed when the bot turns an update cycle)
