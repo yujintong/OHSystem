@@ -1,4 +1,3 @@
-import test_module
 print("")
 print("***************************************************************************************")
 print("**                          INITIALIZE PYTHON PLUGIN MODULE                          **")
