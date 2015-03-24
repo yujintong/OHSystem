@@ -866,6 +866,7 @@ int main( int argc, char **argv )
 
 CGHost :: CGHost( CConfig *CFG )
 {
+    SetConfigs( CFG );
     m_UDPSocket = new CUDPSocket( );
     m_UDPSocket->SetBroadcastTarget( CFG->GetString( "udp_broadcasttarget", string( ) ) );
     m_UDPSocket->SetDontRoute( CFG->GetInt( "udp_dontroute", 0 ) == 0 ? false : true );
@@ -995,7 +996,6 @@ CGHost :: CGHost( CConfig *CFG )
     m_ReplayBuildNumber = CFG->GetInt( "replay_buildnumber", 6059 );
     m_GameIDReplays = CFG->GetInt( "bot_gameidreplays", 1 ) == 0 ? false : true;
     m_BotID = CFG->GetInt( "db_mysql_botid", 0 );
-    SetConfigs( CFG );
 
     // load the battle.net connections
     // we're just loading the config data and creating the CBNET classes here, the connections are established later (in the Update function)
