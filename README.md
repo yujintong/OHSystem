@@ -1,4 +1,3 @@
-
 ![Logo](http://ohconnect.info/themes/global/img/ohs_logo.png)
 
 #OpenHosting
