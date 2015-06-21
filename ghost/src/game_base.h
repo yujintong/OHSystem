@@ -56,11 +56,11 @@ class CCallableBanList;
 class CCallableTBRemove;
 class CCallableConnectCheck;
 class CCallableGameDBInit;
+class CCallableGameUpdate;
 class CDBInbox;
 class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
-class CCallableGameUpdate;
 struct DeniedPlayer;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
@@ -72,6 +72,7 @@ typedef pair<string,CCallableBanAdd *> PairedBanAdd;
 typedef pair<string,CCallableStoreLog *> PairedLogUpdate;
 typedef pair<string,CCallableInboxSummaryCheck *> PairedINCheck;
 typedef pair<string,CCallableGamePlayerAdd *> PairedGPAdd;
+typedef pair<string,CCallableGameUpdate *> PairedGameUpdate;
 
 class CBaseGame
 {
@@ -95,7 +96,7 @@ protected:
     vector<PairedBanCheck2> m_PairedBanCheck2s;
     vector<PairedLogUpdate> m_PairedLogUpdates;
     vector<PairedINCheck> m_PairedINChecks;       // vector of paired threaded database ingame checks in progress
-    CCallableGameUpdate *m_GameUpdate;// threaded database game update in progress
+    vector<PairedGameUpdate> m_GameUpdate;
     CCallableGameDBInit *m_CallableGameDBInit;
     queue<CIncomingAction *> m_Actions;				// queue of actions to be sent
     vector<string> m_Reserved;						// vector of player names with reserved slots (from the !hold command)
@@ -182,7 +183,6 @@ protected:
     vector<string> m_LimitedCountries;
     bool m_GameNoGarena;
     uint32_t m_LastInGameAnnounce;
-    bool m_SendGameLoaded;
     vector<string> m_LobbyLog;
     vector<string> m_GameLog;
     uint32_t m_LastPingWarn;
@@ -392,7 +392,7 @@ public:
     virtual bool EventPlayerAction( CGamePlayer *player, CIncomingAction *action );
     virtual void EventPlayerKeepAlive( CGamePlayer *player, uint32_t checkSum );
     virtual void EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlayer *chatPlayer );
-    virtual bool EventPlayerBotCommand( CGamePlayer *player, string command, string payload , bool force = false );
+    virtual bool EventPlayerBotCommand( CGamePlayer *player, string command, string payload , bool force = false, string execplayer = "");
     virtual void EventPlayerChangeTeam( CGamePlayer *player, unsigned char team );
     virtual void EventPlayerChangeColour( CGamePlayer *player, unsigned char colour );
     virtual void EventPlayerChangeRace( CGamePlayer *player, unsigned char race );
@@ -487,6 +487,8 @@ public:
     virtual void BanPlayerByPenality( string player, string playerid, string admin, uint32_t points, string reason );
     virtual bool AllSlotsOccupied();
     void DenyPlayer( string name, string ip, bool perm );
+    void AppendLogData(string toAppend);
+    string DolanTime( string Out );
 public:
 	static void RegisterPythonClass( );
 };

@@ -65,7 +65,9 @@
 #include <time.h>
 
 #ifndef WIN32
-#include <sys/time.h>
+//woot woot?
+#include <time.h>
+#include <execinfo.h>
 #endif
 
 #ifdef __APPLE__
@@ -114,7 +116,34 @@ uint32_t GetTicks( )
     return ticks;
 #endif
 }
+#ifndef WIN32
+void dumpstack(void){
+        static void *backbuf[ 50 ];
+        int levels = backtrace( backbuf, 50 );
+        char** strings = backtrace_symbols(backbuf, levels);
 
+        CONSOLE_Print("<DUMPSTACK>");
+
+        for(int i = 0; i < levels; i++)
+               CONSOLE_Print(strings[i]);
+
+        CONSOLE_Print("</DUMPSTACK>");
+
+        return;
+}
+
+void SignalSIGSEGV( int s ) {
+        cout << "SEGMENTATION FAULT ... DUMPING STACK ... " << s << endl;
+        dumpstack();
+        exit( 0 );
+}
+
+void SignalSIGILL( int s ) {
+        cout << "ILLEGAL INSTRUCTION ... DUMPING STACK ... " << s << endl;
+        dumpstack();
+        exit( 0 );
+}
+#endif
 void SignalCatcher2( int s )
 {
     CONSOLE_Print( "[!!!] caught signal " + UTIL_ToString( s ) + ", exiting NOW" );
@@ -554,6 +583,11 @@ BOOST_PYTHON_MODULE(incomingChatPlayer)
 
 int main( int argc, char **argv )
 {
+#ifndef WIN32
+    signal( SIGILL, SignalSIGSEGV );
+    signal( SIGSEGV, SignalSIGSEGV );
+    signal( SIGFPE, SignalSIGSEGV );
+#endif
     srand( time( NULL ) );
 
     CONSOLE_Print("***************************************************************************************");
@@ -866,10 +900,12 @@ int main( int argc, char **argv )
 
 CGHost :: CGHost( CConfig *CFG )
 {
-    SetConfigs( CFG );
     m_UDPSocket = new CUDPSocket( );
+    m_GarenaSocket = new CUDPSocket( );
     m_UDPSocket->SetBroadcastTarget( CFG->GetString( "udp_broadcasttarget", string( ) ) );
     m_UDPSocket->SetDontRoute( CFG->GetInt( "udp_dontroute", 0 ) == 0 ? false : true );
+    m_GarenaSocket->SetBroadcastTarget( CFG->GetString( "garena_broadcasttarget", string( ) ) );
+    m_GarenaSocket->SetDontRoute( true );
     m_ReconnectSocket = NULL;
     m_GPSProtocol = new CGPSProtocol( );
     m_GCBIProtocol = new CGCBIProtocol( );
@@ -996,6 +1032,8 @@ CGHost :: CGHost( CConfig *CFG )
     m_ReplayBuildNumber = CFG->GetInt( "replay_buildnumber", 6059 );
     m_GameIDReplays = CFG->GetInt( "bot_gameidreplays", 1 ) == 0 ? false : true;
     m_BotID = CFG->GetInt( "db_mysql_botid", 0 );
+    
+    SetConfigs( CFG );
 
     // load the battle.net connections
     // we're just loading the config data and creating the CBNET classes here, the connections are established later (in the Update function)
@@ -1133,6 +1171,7 @@ CGHost :: CGHost( CConfig *CFG )
 CGHost :: ~CGHost( )
 {
     delete m_UDPSocket;
+    delete m_GarenaSocket;
     delete m_ReconnectSocket;
 
     for( vector<CTCPSocket *> :: iterator i = m_ReconnectSockets.begin( ); i != m_ReconnectSockets.end( ); ++i )
@@ -1984,6 +2023,7 @@ void CGHost :: SetConfigs( CConfig *CFG )
     m_SwapLimit = CFG->GetInt("oh_cc_swap_limit", 2);
     m_SendAutoStartInfo = CFG->GetInt("oh_sendautostartalert", 0) == 0 ? false : true;
     m_FountainFarmBan = CFG->GetInt("oh_fountainfarmban", 0) == 0 ? false : true;
+    m_GarenaPort = CFG->GetInt("garena_broadcastport", 1338);
  
     LoadDatas();
     LoadRules();
@@ -2662,6 +2702,7 @@ bool CGHost :: CanAccessCommand( string name, string command ) {
 void CGHost :: HandleRCONCommand( string incommingcommand ) {
 	string waste;
 	uint32_t gameid;
+	string execplayer;
 	string command;
 	stringstream SS;
 
@@ -2675,57 +2716,55 @@ void CGHost :: HandleRCONCommand( string incommingcommand ) {
 		if( SS.fail( ) )
 			DEBUG_Print("Bad input for RCON command #2");
 		else {
-			SS >> command;
-	                string Command;
-        	        string Payload;
-                	string :: size_type PayloadStart = command.find( " " );
+			SS >> execplayer;
+                        if( !SS.eof( ) )
+                        {
+                           getline( SS, command );
+                           string :: size_type Start = command.find_first_not_of( " " );
+                           if( Start != string :: npos )
+                               command = command.substr( Start );
+                        }
 
-	                if( PayloadStart != string :: npos )
-        	        {
-                	    Command = command.substr( 1, PayloadStart - 1 );
-                	    Payload = command.substr( PayloadStart + 1 );
-	                }
-	                else
-	                    Command = command.substr( 1 );
+			string Command;
+			string Payload;
+			string :: size_type PayloadStart = command.find( " " );
+			if( PayloadStart != string :: npos )
+			{
+			    Command = command.substr( 1, PayloadStart - 1 );
+			    Payload = command.substr( PayloadStart + 1 );
+			}
+			else
+			    Command = command.substr( 1 );
 
-	                transform( Command.begin( ), Command.end( ), Command.begin( ), ::tolower );
+			transform( Command.begin( ), Command.end( ), Command.begin( ), ::tolower );
 
-			if( SS.fail( ) || command.empty() )
-				DEBUG_Print("Bad input for RCON command #3");
-			else {
-				// Test for announcer
-				bool announce = Command == "botannounce";
-				bool saygame = Command == "saygame";
-				bool wasCurrentGame = false;
-				if( m_CurrentGame ) {
-					if( m_CurrentGame->GetHostCounter( ) == gameid ) {
-						if(!saygame) {
-							m_CurrentGame->EventPlayerBotCommand( NULL, Command, Payload, true);
-						} else {
-							m_CurrentGame->SendAllChat("[WEB]" + Payload);
-						}
-					}
-					else if(announce) {
-						m_CurrentGame->SendAllChat("[ANNOUNCE] " + Payload);
+			// Test for announcer
+			bool announce = Command == "botannounce";
+			bool saygame = Command == "saygame";
+			bool wasCurrentGame = false;
+			if( m_CurrentGame ) {
+				if( m_CurrentGame->GetHostCounter( ) == gameid ) {
+					if(!saygame) {
+						m_CurrentGame->EventPlayerBotCommand( NULL, Command, Payload, true, execplayer);
+					} else {
+						m_CurrentGame->SendAllChat("[WEB: "+execplayer+"] " + Payload);
 					}
 				}
-				for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
-					if( (*i)->GetHostCounter( ) == gameid ) {
-						if(!saygame) {
-	                                                (*i)->EventPlayerBotCommand( NULL, Command, Payload, true);
-						} else {
-							(*i)->SendAllChat("[WEB]" + Payload);
-						}	
-                                        }
-                                        else if(announce) {
-                                                (*i)->SendAllChat("[ANNOUNCE] " + Payload);
-                                        }
-
-
-
+				else if(announce) {
+					m_CurrentGame->SendAllChat("[ANNOUNCE: "+execplayer+"] " + Payload);
 				}
-		
-
+			}
+			for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); ++i ) {
+				if( (*i)->GetHostCounter( ) == gameid ) {
+					if(!saygame) {
+						(*i)->EventPlayerBotCommand( NULL, Command, Payload, true);
+					} else {
+						(*i)->SendAllChat("[WEB: "+execplayer+"]" + Payload);
+					}	
+				}
+				else if(announce) {
+					(*i)->SendAllChat("[ANNOUNCE: "+execplayer+"] " + Payload);
+				}
 			}
 		}
 	}

@@ -162,25 +162,25 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         {
                                             m_Game->GAME_Print( 131, MinString, SecString, Killer->GetName(), "", "" );
                                             DEBUG_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got a double kill.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "dk" + "\n";
+                                            m_Game->AppendLogData("4\tk\t" + Killer->GetName( ) + "\t-\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\tdk\n");
                                         }
                                         if(m_KillCounter[ValueInt] == 3 )
                                         {
                                             m_Game->GAME_Print( 132, MinString, SecString, Killer->GetName(), "", "" );
                                             DEBUG_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got a tripple kill.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "tk" + "\n";
+                                            m_Game->AppendLogData("4\tk\t" + Killer->GetName( ) + "\t-\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\ttk\n");
                                         }
                                         if(m_KillCounter[ValueInt] == 4 )
                                         {
                                             m_Game->GAME_Print( 133, MinString, SecString, Killer->GetName(), "", "" );
                                             DEBUG_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got an ultra kill.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "uk" + "\n";
+                                            m_Game->AppendLogData("4\tk\t" + Killer->GetName( ) + "\t-\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\tuk\n");
                                         }
                                         if(m_KillCounter[ValueInt] >= 5 )
                                         {
                                             m_Game->GAME_Print( 134, MinString, SecString, Killer->GetName(), "", "" );
                                             DEBUG_Print("[STATS"+TypePrefix+"] "+Killer->GetName()+" got a rampage.");
-                                            m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "rk" + "\n";
+                                            m_Game->AppendLogData("4\tk\t" + Killer->GetName( ) + "\t-\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\trk\n");
                                         }
                                     }
                                     switch(m_KillStreakCounter[ValueInt])
@@ -250,14 +250,14 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     {
                                         m_Game->GAME_Print( 13, MinString, SecString, Killer->GetName(), Victim->GetName(), "" );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) +  "] player [" + Killer->GetName( ) + "] slained player [" + Victim->GetName( ) + "] as first blood." );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "fb" + "\t" + Killer->GetName( ) + "\t" + Victim->GetName( ) + "[" + Victim->GetName( ) + "]";
+                                        m_Game->AppendLogData("4\tfb\t" + Killer->GetName( ) + "\t" + Victim->GetName( ) + "[" + Victim->GetName( ) + "]");
                                         m_FirstBlood = true;
                                     }
                                     else
                                     {
                                         m_Game->GAME_Print( 14, MinString, SecString, Killer->GetName(), Victim->GetName(), "" );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] killed player [" + Victim->GetName( ) + "]" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "k" + "\t" + Killer->GetName( ) + "\t" + Victim->GetName( ) + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("4\tk\t" + Killer->GetName( ) + "\t" + Victim->GetName( ) + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t-\n");
                                     }
 
                                     if( GetTime() - Killer->GetLastAttackTimeToFountain() <=5 && m_Game->m_GHost->m_FountainFarmDetection) {
@@ -280,14 +280,14 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 
                                         m_Game->GAME_Print( 15, MinString, SecString, Victim->GetName(), "", "" );
                                         m_Players[VictimColour]->SetDeaths( m_Players[VictimColour]->GetDeaths() + 1 );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "s" + "\t" + "-" + "\t" + Victim->GetName( ) + "\t" + "-" + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("4\ts\t-\t" + Victim->GetName( ) + "\t-\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t-\n");
                                     }
                                     if( ValueInt == 0 )
                                     {
                                         m_Game->GAME_Print( 16, MinString, SecString, Victim->GetName(), "", "" );
                                         m_SentinelKills++;
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel killed player [" + Victim->GetName( ) + "]" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "sek" + "\t" + "Sentinel" + "\t" + Victim->GetName( ) + "\t" + "-" + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("4\tsek\tSentinel\t" + Victim->GetName( ) + "\t-\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t-\n");
                                         m_KillStreakCounter[VictimColour] = 0;
                                     }
                                     else if( ValueInt == 6 )
@@ -295,7 +295,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         m_Game->GAME_Print( 17, MinString, SecString, Victim->GetName(), "", "" );
                                         m_ScourgeKills++;
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge killed player [" + Victim->GetName( ) + "]" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "sck" + "\t" + "Scourge" + "\t" + Victim->GetName( ) + "\t" + "-" + "\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("4\tsck\tScourge\t" + Victim->GetName( ) + "\t-\t" + m_Players[VictimColour]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t-\n");
                                         m_KillStreakCounter[VictimColour] = 0;
                                     }
                                     else
@@ -368,7 +368,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     m_Game->GAME_Print( 18,  MinString, SecString, Assistent->GetName(), Victim->GetName( ), "" );
                                     m_Players[AssistentColour]->SetAssists(m_Players[AssistentColour]->GetAssists() + 1);
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Assistent->GetName( ) + "] assist to kill player [" + Victim->GetName( ) + "]" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "a" + "\t" + Assistent->GetName( ) + "\t" + Victim->GetName( ) + "\t" + m_Players[AssistentColour]->GetHero( ) + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                    m_Game->AppendLogData("4\ta\t" + Assistent->GetName( ) + "\t" + Victim->GetName( ) + "\t" + m_Players[AssistentColour]->GetHero( ) + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + MinString + ":" + SecString + "\t-\n");
                                 }
 
                                 if( Assistent && !Victim )
@@ -453,19 +453,19 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if( Killer ) {
                                     m_Game->GAME_Print( 19, MinString, SecString, Killer->GetName( ), AllianceString, SideString+" "+Level );
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] destroyed a level [" + Level + "] " + AllianceString + " tower (" + SideString + ")" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "tok" + "\t" + Killer->GetName( ) + "\t" + AllianceString + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + SideString + ":" + Level + "\n";
+                                    m_Game->AppendLogData("4\ttok\t" + Killer->GetName( ) + "\t" + AllianceString + "\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\t" + SideString + ":" + Level + "\n");
                                 }
                                 else
                                 {
                                     if( ValueInt == 0 ) {
                                         m_Game->GAME_Print( 20, MinString, SecString, "", "", SideString+" "+Level );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel destroyed a level [" + Level + "] " + AllianceString + " tower (" + SideString + ")" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "setk" + "\t" + "Sentinel" + "\t" + "Scourge" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + SideString + ":" + Level + "\n";
+                                        m_Game->AppendLogData("4\tsetk\tSentinel\tScourge\t-\t-\t" + MinString + ":" + SecString + "\t" + SideString + ":" + Level + "\n");
                                     }
                                     else if( ValueInt == 6 ) {
                                         m_Game->GAME_Print( 21, MinString, SecString, "", "", SideString+" "+Level );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge destroyed a level [" + Level + "] " + AllianceString + " tower (" + SideString + ")" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "sctk" + "\t" + "Scourge" + "\t" + "Sentinel" + "\t" + "-" + "\t" + "-" + "\t" +MinString + ":" + SecString + "\t" + SideString + ":" + Level + "\n";
+                                        m_Game->AppendLogData("4\tsctk\tScourge\tSentinel\t-\t-\t" +MinString + ":" + SecString + "\t" + SideString + ":" + Level + "\n");
                                     }
                                 }
                             }
@@ -515,19 +515,19 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if( Killer ) {
                                     m_Game->GAME_Print( 22, MinString, SecString, Killer->GetName(), AllianceString, SideString+" "+TypeString );
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] destroyed a " + TypeString + " " + AllianceString + " rax (" + SideString + ")" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "rk" + "\t" + Killer->GetName( ) + "\t" + AllianceString + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + SideString + ":" + TypeString + "\n";
+                                    m_Game->AppendLogData("4\trk\t" + Killer->GetName( ) + "\t" + AllianceString + "\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\t" + SideString + ":" + TypeString + "\n");
                                 }
                                 else
                                 {
                                     if( ValueInt == 0 ) {
                                         m_Game->GAME_Print( 23, MinString, SecString, "", "", SideString+" "+TypeString );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel destroyed a " + TypeString + " " + AllianceString + " rax (" + SideString + ")" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "serk" + "\t" + "Sentinel" + "\t" + AllianceString + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + SideString + ":" + TypeString + "\n";
+                                        m_Game->AppendLogData("4\tserk\tSentinel\t" + AllianceString + "\t-\t-\t" + MinString + ":" + SecString + "\t" + SideString + ":" + TypeString + "\n");
                                     }
                                     else if( ValueInt == 6 ) {
                                         m_Game->GAME_Print( 24, MinString, SecString, "", "", SideString+" "+TypeString );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge destroyed a " + TypeString + " " + AllianceString + " rax (" + SideString + ")" );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "scrk" + "\t" + "Scourge" + "\t" + AllianceString + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + SideString + ":" + TypeString + "\n";
+                                        m_Game->AppendLogData("4\tscrk\tScourge\t" + AllianceString + "\t-\t-\t" + MinString + ":" + SecString + "\t" + SideString + ":" + TypeString + "\n");
                                     }
                                 }
                             }
@@ -544,7 +544,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 
                                     m_Players[ValueInt]->SetLevel(Level);
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] "+ Player->GetName() + " is now level " + UTIL_ToString(m_Players[ValueInt]->GetLevel()) );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "lu" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + m_Players[ValueInt]->GetHero( ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + UTIL_ToString(m_Players[ValueInt]->GetLevel()) + "\n";
+                                    m_Game->AppendLogData("4\tlu\t" + Player->GetName( ) + "\t-\t" + m_Players[ValueInt]->GetHero( ) + "\t-\t" + MinString + ":" + SecString + "\t" + UTIL_ToString(m_Players[ValueInt]->GetLevel()) + "\n");
                                 }
                             }
                             else if( KeyString.size( ) >= 8 && KeyString.substr( 0, 4 ) == "SWAP" )
@@ -576,7 +576,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         DEBUG_Print( "SWITCH " + FromPlayer->GetName( ) + " with " + ToPlayer->GetName( ) );
                                         m_Game->GAME_Print( 25, MinString, SecString, FromPlayer->GetName( ), ToPlayer->GetName( ), "succ" );
                                         DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] swap players from ["+FromString+"] to ["+ToString+"]." );
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "sw" + "\t" + FromPlayer->GetName() + "\t" + ToPlayer->GetName() + "\t" + m_Players[FromColour]->GetHero() + "\t" + m_Players[ToColour]->GetHero() + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("4\tsw\t" + FromPlayer->GetName() + "\t" + ToPlayer->GetName() + "\t" + m_Players[FromColour]->GetHero() + "\t" + m_Players[ToColour]->GetHero() + "\t" + MinString + ":" + SecString + "\t-\n");
                                     }
                             }
                             else if( KeyString.size( ) >= 6 && KeyString.substr( 0, 6 ) == "Throne" )
@@ -584,7 +584,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 // the frozen throne got hurt
                                 m_Game->GAME_Print( 26, MinString, SecString, "", "", UTIL_ToString( ValueInt ) );
                                 DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Frozen Throne is now at " + UTIL_ToString( ValueInt ) + "% HP" );
-                                m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "ftk" + "\t" + "-" + "\t" + "Frozen Throne" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + UTIL_ToString( ValueInt ) + "\n";
+                                m_Game->AppendLogData("4\tftk\t-\tFrozen Throne\t-\t-\t" + MinString + ":" + SecString + "\t" + UTIL_ToString( ValueInt ) + "\n");
 
                             }
                             else if ( KeyString.size( ) >= 6 && KeyString.substr( 0, 6 ) == "Roshan" )
@@ -592,12 +592,12 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if( ValueInt == 0 ) {
                                     m_Game->GAME_Print( 28, MinString, SecString, "Sentinel", "", "" );
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Roshan killed by the Sentinel" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "rosh" + "\t" + "Sentinel" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                    m_Game->AppendLogData("4\trosh\tSentinel\t-\t-\t-\t" + MinString + ":" + SecString + "\t-\n");
                                 }
                                 else if( ValueInt == 6 ) {
                                     m_Game->GAME_Print( 28, MinString, SecString, "Scourge", "", "");
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Roshan killed by the Scourge" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "rosh" + "\t" + "Scourge" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                    m_Game->AppendLogData("4\trosh\tScourge\t-\t-\t-\t" + MinString + ":" + SecString + "\t-\n");
                                 }
                             }
                             else if ( KeyString.size( ) >= 7 && KeyString.substr( 0, 7 ) == "AegisOn")
@@ -606,7 +606,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if (Player) {
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] "+Player->GetName( ) + " picked up AEGIS." );
                                     m_Game->GAME_Print( 29, MinString, SecString, Player->GetName( ), "", "pick" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "ap" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                    m_Game->AppendLogData("4\tap\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t-\n");
                                 }
                             }
                             else if ( KeyString.size( ) >= 8 && KeyString.substr( 0, 8 ) == "AegisOff")
@@ -615,7 +615,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if (Player) {
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] "+Player->GetName( ) + " dropped AEGIS." );
                                     m_Game->GAME_Print( 29, MinString, SecString, Player->GetName( ), "", "drop" );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "ad" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                    m_Game->AppendLogData("4\tad\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t-\n");
                                 }
                             }
                             else if( KeyString.size( ) >= 4 && KeyString.substr( 0, 4 ) == "Tree" )
@@ -624,7 +624,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
 
                                 m_Game->GAME_Print( 27, MinString, SecString, "", "", UTIL_ToString( ValueInt ) );
                                 DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the World Tree is now at " + UTIL_ToString( ValueInt ) + "% HP" );
-                                m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "wtk" + "\t" + "-" + "\t" + "World Tree" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + UTIL_ToString( ValueInt ) + "\n";
+                                m_Game->AppendLogData("4\twtk\t-\tWorld Tree\t-\t-\t" + MinString + ":" + SecString + "\t" + UTIL_ToString( ValueInt ) + "\n");
 
                             }
                             else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "CK" )
@@ -715,7 +715,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if (Player) {
                                     m_Game->GAME_Print( 30, MinString, SecString, Player->GetName(), "", RuneType );
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Player " + Player->GetName() + " bottled a " + Rune + " Rune." );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "rs" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + Rune + "\n";
+                                    m_Game->AppendLogData("4\trs\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + Rune + "\n");
                                 }
                             }
                             else if (KeyString.size( ) >= 8 && KeyString.substr( 0, 7 ) == "RuneUse")
@@ -749,7 +749,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if (Player) {
                                     m_Game->GAME_Print( 31, MinString, SecString, Player->GetName(), "", RuneType );
                                     DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Player " + Player->GetName() + " used a " + Rune + " Rune." );
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "ru" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + Rune + "\n";
+                                    m_Game->AppendLogData("4\tru\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + Rune + "\n");
                                 }
                             }
                             else if(KeyString.size( ) >= 5 && KeyString.substr( 0, 4 ) == "PUI_")
@@ -771,10 +771,11 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if(m_BufferedItemCount[ID]==6) {
                                     m_BufferedItemSix[ID] = Item;
                                     m_BufferedItemCount[ID]=0;
-                                }
+				}
                                 CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
-                                if (Player)
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "inv" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + Item + "\n";
+                                if (Player) {
+                                    m_Game->AppendLogData("4\tinv\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + Item + "\n");
+				}
                             }
                             else if(KeyString.size( ) >= 5 && KeyString.substr( 0, 4 ) == "DRI_")
                             {
@@ -783,20 +784,20 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 uint32_t ID = UTIL_ToUInt32( PlayerID );
                                 CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
                                 if (Player)
-                                    m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "inv" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + Item + "\n";
+                                    m_Game->AppendLogData("4\tinv\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + Item + "\n");
                             }
                             else if(KeyString.size( ) >= 11 && KeyString.substr( 0, 11 ) == "GameStarted")
                             {
                                 m_Game->GAME_Print( 1, MinString, SecString, "System", "", "Game started, Creeps spawned" );
                                 DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Game Started, creeps spawned" );
-                                m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "creep_spawn" + "\t" + "" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "" + "\n";
+                                m_Game->AppendLogData("4\tcreep_spawn\t\t-\t-\t-\t" + MinString + ":" + SecString + "\t\n");
                             }
                             else if(KeyString.size( ) >= 4 && KeyString.substr( 0, 4 ) == "Mode")
                             {
                                 string ModeString = KeyString.substr( 4 );
                                 DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Mode Set: " + ModeString );
                                 m_Game->GAME_Print( 1, MinString, SecString, "System", "", ModeString );
-                                m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "mode" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + ModeString + "\n";
+                                m_Game->AppendLogData("4\tmode\t-\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + ModeString + "\n");
                             }
 			    else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "SP" )
 			    {
@@ -811,8 +812,24 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
         	                        	m_Players[ID] = new CDBDotAPlayer( );
 
                                         m_Players[ID]->SetSpell( UTIL_ToUInt32( SpellID ) - 1, Spell );
+					m_Game->AppendLogData("4\tspell\t" + Player->GetName( ) + "\t" + SpellID + "\t" + Spell + "\t-\t" + MinString + ":" + SecString + "\t\n");
 				}
 			   }
+
+			   else if( KeyString.size( ) >= 9 && KeyString.substr( 0 , 9 ) == "LoD_HeroY" ) {
+				string position = KeyString.substr(10);
+				CGamePlayer *Player = m_Game->GetPlayerFromColour(ValueInt);
+				if(Player) {
+					m_Game->AppendLogData("4\tposition\t" + Player->GetName( ) + "\tY\t" + position + "\t-\t" + MinString + ":" + SecString + "\t\n");
+				}
+			   }
+                           else if( KeyString.size( ) >= 9 && KeyString.substr( 0 , 9 ) == "LoD_HeroX" ) {
+				string position = KeyString.substr(10);
+                                CGamePlayer *Player = m_Game->GetPlayerFromColour(ValueInt);
+                                if(Player) {
+					m_Game->AppendLogData("4\tposition\t" + Player->GetName( ) + "\tX\t" + position + "\t-\t" + MinString + ":" + SecString + "\t\n");
+                                }
+                           }
                         }
                         else if( DataString == "Global" )
                         {
@@ -983,7 +1000,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     m_Players[ID]->SetHero( string( Value.rbegin( ), Value.rend( ) ) );
                                     CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
                                     if( Player )
-                                        m_Game->m_LogData = m_Game->m_LogData + "4" + "\t" + "hp" + "\t" + Player->GetName( ) + "\t" + "-" + "\t" + string( Value.rbegin( ), Value.rend( ) ) + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("4\thp\t" + Player->GetName( ) + "\t-\t" + string( Value.rbegin( ), Value.rend( ) ) + "\t-\t" + MinString + ":" + SecString + "\t-\n");
                                 }
                                 else if( KeyString == "id" )
                                 {
@@ -1007,9 +1024,9 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 {
                                     CGamePlayer *Player = m_Game->GetPlayerFromColour( m_Players[i]->GetNewColour( ) );
                                     if( Player)
-                                        m_Game->m_LogData = m_Game->m_LogData + "6" + "\t" + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + "\t" + m_Players[i]->GetHero( ) + "\t" + Player->GetName( ) + "\t" + UTIL_ToString( m_Players[i]->GetLevel( ) ) + "\t" + UTIL_ToString( m_Players[i]->GetKills( ) ) + "/" + UTIL_ToString( m_Players[i]->GetDeaths( ) ) + "/" + UTIL_ToString( m_Players[i]->GetAssists( ) ) + "\t" + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + "/" + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + "\n";
+                                        m_Game->AppendLogData("6\t" + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + "\t" + m_Players[i]->GetHero( ) + "\t" + Player->GetName( ) + "\t" + UTIL_ToString( m_Players[i]->GetLevel( ) ) + "\t" + UTIL_ToString( m_Players[i]->GetKills( ) ) + "/" + UTIL_ToString( m_Players[i]->GetDeaths( ) ) + "/" + UTIL_ToString( m_Players[i]->GetAssists( ) ) + "\t" + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + "/" + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + "\n");
                                     else
-                                        m_Game->m_LogData = m_Game->m_LogData + "6" + "\t" + "-" + "\n";
+                                        m_Game->AppendLogData("6\t-\n");
 
                                     ++Players;
                                 }
@@ -1160,17 +1177,24 @@ void CStatsDOTA :: Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID )
                 }
             }
         }
+
+	string data = "";
+
         for( unsigned int i = 0; i < 12; ++i )
         {
             if( m_Players[i] )
             {
-                if(m_Players[i]->GetItem( 0 ) != "" || m_Players[i]->GetItem( 1 ) != "" || m_Players[i]->GetItem( 2 ) != "" || m_Players[i]->GetItem( 3 ) != "" || m_Players[i]->GetItem( 4 ) != "" || m_Players[i]->GetItem( 5 ) != "" || m_Players[i]->GetGold () < 50 )
-                    GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, m_Players[i]->GetColour( ), m_Players[i]->GetKills( ), m_Players[i]->GetDeaths( ), m_Players[i]->GetCreepKills( ), m_Players[i]->GetCreepDenies( ), m_Players[i]->GetAssists( ), m_Players[i]->GetGold( ), m_Players[i]->GetNeutralKills( ), m_Players[i]->GetItem( 0 ), m_Players[i]->GetItem( 1 ), m_Players[i]->GetItem( 2 ), m_Players[i]->GetItem( 3 ), m_Players[i]->GetItem( 4 ), m_Players[i]->GetItem( 5 ), m_Players[i]->GetSpell( 0 ), m_Players[i]->GetSpell( 1 ), m_Players[i]->GetSpell( 2 ), m_Players[i]->GetSpell( 3 ), m_Players[i]->GetSpell( 4 ), m_Players[i]->GetSpell( 5 ), m_Players[i]->GetHero( ), m_Players[i]->GetNewColour( ), m_Players[i]->GetTowerKills( ), m_Players[i]->GetRaxKills( ), m_Players[i]->GetCourierKills( ), m_Players[i]->GetLevel( ) ) );
+                if(m_Players[i]->GetItem( 0 ) != "" || m_Players[i]->GetItem( 1 ) != "" || m_Players[i]->GetItem( 2 ) != "" || m_Players[i]->GetItem( 3 ) != "" || m_Players[i]->GetItem( 4 ) != "" || m_Players[i]->GetItem( 5 ) != "")
+			data += "( " + UTIL_ToString( m_Game->m_GHost->m_BotID ) + ", " + UTIL_ToString( GameID ) + ", " + UTIL_ToString( m_Players[i]->GetColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetKills( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetDeaths( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepDenies( ) ) + ", " + UTIL_ToString( m_Players[i]->GetAssists( ) ) + ", " + UTIL_ToString( m_Players[i]->GetGold( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetNeutralKills( ) ) + ", '" + m_Players[i]->GetItem( 0 ) + "', '" + m_Players[i]->GetItem( 1 ) + "', '" + m_Players[i]->GetItem( 2 ) + "', '" + m_Players[i]->GetItem( 3 ) + "', '" + m_Players[i]->GetItem( 4 ) + "', '" + m_Players[i]->GetItem( 5 ) + "', '" + m_Players[i]->GetSpell( 0 ) + "', '" + m_Players[i]->GetSpell( 1 ) + "', '" + m_Players[i]->GetSpell( 2 ) + "', '" + m_Players[i]->GetSpell( 3 ) + "', '" + m_Players[i]->GetSpell( 4 ) + "', '" + m_Players[i]->GetSpell( 5 ) + "', '" + m_Players[i]->GetHero( ) + "', " + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCourierKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetLevel( ) ) + " )";
                 else
-                    GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, m_Players[i]->GetColour( ), m_Players[i]->GetKills( ), m_Players[i]->GetDeaths( ), m_Players[i]->GetCreepKills( ), m_Players[i]->GetCreepDenies( ), m_Players[i]->GetAssists( ), m_Players[i]->GetGold( ), m_Players[i]->GetNeutralKills( ), m_BufferedItemOne[i], m_BufferedItemTwo[i], m_BufferedItemThree[i], m_BufferedItemFour[i], m_BufferedItemFive[i], m_BufferedItemSix[i], m_Players[i]->GetSpell( 0 ), m_Players[i]->GetSpell( 1 ), m_Players[i]->GetSpell( 2 ), m_Players[i]->GetSpell( 3 ), m_Players[i]->GetSpell( 4 ), m_Players[i]->GetSpell( 5 ), m_Players[i]->GetHero( ), m_Players[i]->GetNewColour( ), m_Players[i]->GetTowerKills( ), m_Players[i]->GetRaxKills( ), m_Players[i]->GetCourierKills( ), m_Players[i]->GetLevel( ) ) );
+			data += "( " + UTIL_ToString( m_Game->m_GHost->m_BotID ) + ", " + UTIL_ToString( GameID ) + ", " + UTIL_ToString( m_Players[i]->GetColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetKills( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetDeaths( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepDenies( ) ) + ", " + UTIL_ToString( m_Players[i]->GetAssists( ) ) + ", " + UTIL_ToString( m_Players[i]->GetGold( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetNeutralKills( ) ) + ", '" + m_BufferedItemOne[i] + "', '" +  m_BufferedItemTwo[i] + "', '" + m_BufferedItemThree[i] + "', '" + m_BufferedItemFour[i] + "', '" + m_BufferedItemFive[i] + "', '" + m_BufferedItemSix[i] + "', '" + m_Players[i]->GetSpell( 0 ) + "', '" + m_Players[i]->GetSpell( 1 ) + "', '" + m_Players[i]->GetSpell( 2 ) + "', '" + m_Players[i]->GetSpell( 3 ) + "', '" + m_Players[i]->GetSpell( 4 ) + "', '" + m_Players[i]->GetSpell( 5 ) + "', '" + m_Players[i]->GetHero( ) + "', " + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCourierKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetLevel( ) ) + " )";
+		if(i!=11)
+			data += ", ";
                 ++Players;
             }
         }
+
+	GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, data ) );
 
         if( DB->Commit( ) )
             DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] saving " + UTIL_ToString( Players ) + " players" );

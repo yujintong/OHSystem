@@ -657,14 +657,14 @@ BYTE * WINAPI pcxGetData(BYTE *pFileBuf, DWORD uFileSize, BYTE uTransColor, WORD
     *uYSize = (pcxHeader.y1 - pcxHeader.y0 + 1);
     
     if ((pcxHeader.version != 2) && (pcxHeader.version != 5)) {
-        cerr << "cannot handle pcx v" << pcxHeader.version << "\n";
+        cerr << "cannot handle pcx v" << pcxHeader.version << "\n");
         return NULL;
     }
     
     // get palette
     palette = new uint8_t[256*4];
     if (pFileBuf[uFileSize - 768 - 1] != 0x0C) {
-        cerr << "palette error at " << uFileSize - 768 - 1 << "\n";
+        cerr << "palette error at " << uFileSize - 768 - 1 << "\n");
         return NULL;
     }
     for (i=0; i<256; i++) {

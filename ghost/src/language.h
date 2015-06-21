@@ -556,15 +556,16 @@ public:
     string Hour();
     string Minute();
     string Announcement();
-	string ErrorModeWasAlreadyForced();
-	string ModeWasForcedTo(string mode);
-	string Ms();
-	string Country();
-        string Status();
-        string SpoofChecked();
-        string Yes();
-        string No();
-        string Realm();
+    string ErrorModeWasAlreadyForced();
+    string ModeWasForcedTo(string mode);
+    string Ms();
+    string Country();
+    string Status();
+    string SpoofChecked();
+    string Yes();
+    string No();
+    string Realm();
+    string WelcomeMessage();
 
 public:
 	static void RegisterPythonClass( );

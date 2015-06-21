@@ -67,7 +67,6 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_LimitedCountries.clear();
     m_LimitCountries = false;
     m_DenieCountries = false;
-    m_SendGameLoaded = false;
     m_LastPingWarn = GetTime();
     m_ModeVoted = false;
     m_Leavers = 0;
@@ -88,7 +87,6 @@ CBaseGame :: CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16
     m_EndTicks = 0;
     m_StartEndTicks = 0;
     m_CallableGameDBInit = NULL;
-    m_GameUpdate = NULL;
     m_VotedTimeStart = 0;
     m_Voted = false;
     m_PartTime = 7;
@@ -271,6 +269,9 @@ CBaseGame :: ~CBaseGame( )
     for( vector<CCallableConnectCheck *> :: iterator i = m_ConnectChecks.begin( ); i != m_ConnectChecks.end( ); ++i )
         m_GHost->m_Callables.push_back( *i );
 
+    for( vector<PairedGameUpdate> :: iterator i = m_GameUpdate.begin( ); i != m_GameUpdate.end( ); ++i )
+        m_GHost->m_Callables.push_back( i->second );
+
     lock.unlock( );
 
     while( !m_Actions.empty( ) )
@@ -357,13 +358,13 @@ void CBaseGame :: loop( )
         {
             // By uakf.b
             if(m_DatabaseID == 0)
-                m_Replay->Save( m_GHost->m_TFT, m_GHost->m_ReplayPath + UTIL_FileSafeName( "GHost++ " + string( Time ) + " " + m_GameName + " (" + MinString + "m" + SecString + "s).w3g" ) );
+                m_Replay->Save( m_GHost->m_TFT, m_GHost->m_ReplayPath + UTIL_FileSafeName( m_GHost->m_Language->ReplayPrefix() + " " + string( Time ) + " " + m_GameName + " (" + MinString + "m" + SecString + "s).w3g" ) );
             else
-                m_Replay->Save( m_GHost->m_TFT, m_GHost->m_ReplayPath + UTIL_FileSafeName( "GHost++ " + UTIL_ToString( m_DatabaseID ) + ".w3g" ) );
+                m_Replay->Save( m_GHost->m_TFT, m_GHost->m_ReplayPath + UTIL_FileSafeName( m_GHost->m_Language->ReplayPrefix() + " " + UTIL_ToString( m_DatabaseID ) + ".w3g" ) );
         }
         else
         {
-            m_Replay->Save( m_GHost->m_TFT, m_GHost->m_ReplayPath + UTIL_FileSafeName( "GHost++ " + string( Time ) + " " + m_GameName + " (" + MinString + "m" + SecString + "s).w3g" ) );
+            m_Replay->Save( m_GHost->m_TFT, m_GHost->m_ReplayPath + UTIL_FileSafeName( m_GHost->m_Language->ReplayPrefix() + " " + string( Time ) + " " + m_GameName + " (" + MinString + "m" + SecString + "s).w3g" ) );
         }
     }
 
@@ -789,6 +790,19 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             ++i;
     }
 
+
+    for( vector<PairedGameUpdate> :: iterator i = m_GameUpdate.begin( ); i != m_GameUpdate.end( ); ++i ) {
+        if( i->second->GetReady( ) )
+        {
+            m_GHost->m_DB->RecoverCallable( i->second );
+            delete i->second;
+            i = m_GameUpdate.erase( i );
+        }
+        else
+            ++i;
+    }
+
+
     for( vector<CPotentialPlayer *> :: iterator i = m_Potentials.begin( ); i != m_Potentials.end( ); )
     {
         if( (*i)->Update( fd ) )
@@ -897,7 +911,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 MapHeight.push_back( 0 );
                 m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
                 m_GHost->m_UDPSocket->Broadcast( 1337, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
-
+		 m_GHost->m_GarenaSocket->Broadcast( m_GHost->m_GarenaPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
             }
             else
             {
@@ -907,7 +921,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
                 m_GHost->m_UDPSocket->Broadcast( m_GHost->m_BroadCastPort, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
                 m_GHost->m_UDPSocket->Broadcast( 1337, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
-
+		m_GHost->m_GarenaSocket->Broadcast( m_GHost->m_GarenaPort,  m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BotManagerName, GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey ) );
               }
         }
 
@@ -1139,33 +1153,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
             }
         }
         m_LastProcessedTicks = GetTicks( );
-    }
-
-    // send gameloaded info
-    if( !m_SendGameLoaded && m_GameLoaded && GetTime() - m_GameLoadedTime >= m_GHost->m_DelayGameLoaded )
-    {
-        ifstream in;
-        in.open( m_GHost->m_GameLoadedFile.c_str( ) );
-        if( !in.fail( ) )
-        {
-            // don't print more than 8 lines
-            uint32_t Count = 0;
-            string Line;
-            while( !in.eof( ) && Count < 8 )
-            {
-                getline( in, Line );
-                if( Line.empty( ) )
-                {
-                    if( !in.eof( ) )
-                        SendAllChat( " " );
-                }
-                else
-                    SendAllChat( Line );
-                ++Count;
-            }
-            in.close( );
-        }
-        m_SendGameLoaded = true;
     }
 
     // set announce
@@ -1772,7 +1759,7 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
         if( m_LogData != "" )
         {
-            m_LogData = m_LogData + "1" + "\t" + "pl";
+            AppendLogData("1\tpl");
             //UPDATE SLOTS
             for( unsigned char i = 0; i < m_Slots.size( ); ++i )
             {
@@ -1780,14 +1767,14 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 {
                     CGamePlayer *player = GetPlayerFromSID( i );
                     if( player )
-                        m_LogData = m_LogData + "\t" + player->GetName( );
+                        AppendLogData("\t" + player->GetName( ));
                     else if( !player && m_GameLoaded )
-                        m_LogData = m_LogData + "\t" + "-";
+                        AppendLogData("\t-");
                 }
                 else if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OPEN )
-                    m_LogData = m_LogData + "\t" + "-";
+                    AppendLogData("\t-");
             }
-            m_LogData = m_LogData + "\n";
+            AppendLogData("\n");
             m_PairedLogUpdates.push_back( PairedLogUpdate( string( ), m_GHost->m_DB->ThreadedStoreLog( m_HostCounter, m_LogData,  m_AdminLog ) ) );
             m_LogData = string();
             m_AdminLog = vector<string>();
@@ -1834,12 +1821,6 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
         m_CallableGameDBInit = NULL;
     }
     
-    if(m_GameUpdate && m_GameUpdate->GetReady( ) ) {
-        m_GHost->m_DB->RecoverCallable(m_GameUpdate);
-        delete m_GameUpdate;
-        m_GameUpdate = NULL;	
-    }
-
     return m_Exiting;
 }
 
@@ -1957,14 +1938,14 @@ void CBaseGame :: SendAllChat( unsigned char fromPID, string message )
 
         if( m_GameLoading || m_GameLoaded )
         {
-            m_LogData = m_LogData + "3" + "\t" +  "bgm" + "\t" +  "Bot" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + message + "\n";
+            AppendLogData("3\tbgm\tBot\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + message + "\n");
             //sort out these message because the left process already display a message which is relating to the player (with player color)
             if(! message.find("left the game")!=string::npos ||! message.find("dropped")!=string::npos||! message.find("disconnected")!=string::npos||! message.find("has lost")!=string::npos )
                 GAME_Print( 1, MinString, SecString, "Bot", "", message );
         }
         else
         {
-            m_LogData = m_LogData + "2" + "\t" +  "blm" + "\t" + "Bot" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + message + "\n";
+            AppendLogData("2\tblm\tBot\t-\t-\t-\t-\t" + message + "\n");
             if( message.find( "@" ) == string::npos )
                 GAME_Print( 0, "", "", "Bot", "", message );
         }
@@ -2266,7 +2247,7 @@ void CBaseGame :: SendWelcomeMessage( CGamePlayer *player )
         in.close( );
     }
     if( m_GameBalance || m_GHost->m_VoteMode || m_GHost->m_AllowVoteStart)
-        SendChat(player, "Use '!info' to get more game details for the current lobby.");
+        SendChat(player, m_GHost->m_Language->WelcomeMessage() );
 }
 
 void CBaseGame :: SendEndMessage( )
@@ -2419,7 +2400,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
         if( SecString.size( ) == 1 )
             SecString.insert( 0, "0" );
 
-        m_LogData = m_LogData + "3" + "\t" + "bgm" + "\t" + player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + player->GetName() + " " + player->GetLeftReason() + "\n";
+        AppendLogData("3\tbgm\t" + player->GetName() + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + player->GetName() + " " + player->GetLeftReason() + "\n");
         SendAllChat( player->GetName( ) + " " + player->GetLeftReason( ) + "." );
         GAME_Print( 2, MinString, SecString, player->GetName(), "", player->GetLeftReason( ) );
         m_Leavers++;
@@ -2501,7 +2482,7 @@ void CBaseGame :: EventPlayerDeleted( CGamePlayer *player )
             SendAllChat( m_GHost->m_Language->UserWillNoLongerObserveGame( player->GetName( ) ) );
             SendAllChat( m_GHost->m_Language->AutoStartEnabled( UTIL_ToString( m_AutoStartPlayers ) ) );
         }
-        m_LogData = m_LogData + "2" + "\t" + "blm" + "\t" + player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + player->GetName() + " " + player->GetLeftReason() + "\n";
+        AppendLogData("2\tblm\t" + player->GetName() + "\t-\t-\t-\t-\t" + player->GetName() + " " + player->GetLeftReason() + "\n");
         GAME_Print( 3, "", "", player->GetName(), "", player->GetLeftReason() );
 
         // abort the countdown if there was one in progress
@@ -3826,6 +3807,11 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
             if( SecString.size( ) == 1 )
                 SecString.insert( 0, "0" );
 
+                string msg = chatPlayer->GetMessage();
+                if(player->GetName() == "Dolan" || player->GetName() == "dolan" ) {
+                        msg = DolanTime(msg);
+                }
+
             if( !ExtraFlags.empty( ) )
             {
                 unsigned char SID = GetSIDFromPID( chatPlayer->GetFromPID() );
@@ -3833,7 +3819,6 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 unsigned char fteam;
                 fteam = m_Slots[SID].GetTeam();
                 unsigned char sid = GetSIDFromPID( chatPlayer->GetFromPID() );
-
                 if( !m_GameLoaded )
                     Relay = false;
                 else if( ExtraFlags[0] != 0 && ExtraFlags[0] != 2 ) {
@@ -3841,19 +3826,19 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                     if( fteam == 0 ) curteam = "Sentinel";
                     else if( fteam == 1 ) curteam = "Scourge";
 
-                    m_LogData = m_LogData + "5" + "\t" + curteam + "\t" + player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + chatPlayer->GetMessage() + "\n";
+                    AppendLogData("5\t" + curteam + "\t" + player->GetName() + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + msg + "\n");
                     if( fteam == 0 )
-                        GAME_Print( 5, MinString, SecString, player->GetName(), "", chatPlayer->GetMessage() );
+                        GAME_Print( 5, MinString, SecString, player->GetName(), "", msg );
                     else
-                        GAME_Print( 6, MinString, SecString, player->GetName(), "", chatPlayer->GetMessage() );
+                        GAME_Print( 6, MinString, SecString, player->GetName(), "", msg );
                 }
                 else if( ExtraFlags[0] == 0 )
                 {
                     // this is an ingame [All] message, print it to the console
 
-                    CONSOLE_Print( "[GAME: " + m_GameName + "] (" + MinString + ":" + SecString + ") [All] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
-                    m_LogData = m_LogData + "5" + "\t" + "all" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + MinString + ":" + SecString + "\t" + chatPlayer->GetMessage() + "\n";
-                    GAME_Print( 7, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] (" + MinString + ":" + SecString + ") [All] [" + player->GetName( ) + "]: " + msg );
+                    AppendLogData("5\tall\t" +  player->GetName() + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + msg + "\n");
+                    GAME_Print( 7, MinString, SecString, player->GetName( ), "", msg );
                     // don't relay ingame messages targeted for all players if we're currently muting all
                     // note that commands will still be processed even when muting all because we only stop relaying the messages, the rest of the function is unaffected
 
@@ -3864,8 +3849,8 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 {
                     // this is an ingame [Obs/Ref] message, print it to the console
 
-                    CONSOLE_Print( "[GAME: " + m_GameName + "] (" + MinString + ":" + SecString + ") [Obs/Ref] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
-                    GAME_Print( 8, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] (" + MinString + ":" + SecString + ") [Obs/Ref] [" + player->GetName( ) + "]: " + msg );
+                    GAME_Print( 8, MinString, SecString, player->GetName( ), "", msg );
                 }
 
                 if( Relay )
@@ -3874,7 +3859,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                     // this includes allied chat and private chat from both teams as long as it was relayed
 
                     if( m_Replay )
-                        m_Replay->AddChatMessage( chatPlayer->GetFromPID( ), chatPlayer->GetFlag( ), UTIL_ByteArrayToUInt32( chatPlayer->GetExtraFlags( ), false ), chatPlayer->GetMessage( ) );
+                        m_Replay->AddChatMessage( chatPlayer->GetFromPID( ), chatPlayer->GetFlag( ), UTIL_ByteArrayToUInt32( chatPlayer->GetExtraFlags( ), false ), msg);
                 }
             }
             else
@@ -3885,13 +3870,13 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 {
                     // this is a lobby message, print it to the console
 
-                    CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + chatPlayer->GetMessage( ) );
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] [Lobby] [" + player->GetName( ) + "]: " + msg );
                     // Hide password protection
-                    string LMessage = chatPlayer->GetMessage( );
+                    string LMessage = msg;
                     if( ( LMessage.substr( 1, 1 ) != "p" && LMessage.substr( 1, 4) != "ping" ) && LMessage.substr( 1, 2 ) != "ac" && LMessage.substr( 1, 3 ) != "reg" && LMessage.substr( 1, 7 ) != "confirm" )
                     {
-                        m_LogData = m_LogData + "1" + "\t" + "l" + "\t" +  player->GetName() + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + "-" + "\t" + chatPlayer->GetMessage() + "\n";
-                        GAME_Print( 9, MinString, SecString, player->GetName( ), "", chatPlayer->GetMessage( ) );
+                        AppendLogData("1\tl\t" +  player->GetName() + "\t-\t-\t-\t-\t" + msg + "\n");
+                        GAME_Print( 9, MinString, SecString, player->GetName( ), "", msg );
                     }
                     if( m_MuteLobby )
                         Relay = false;
@@ -3900,7 +3885,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
 
             // handle bot commands
 
-            string Message = chatPlayer->GetMessage( );
+            string Message = msg;
 
 	    try {
         	EXECUTE_HANDLER("PlayerChat", true, boost::ref(this), boost::ref(player), Message , ExtraFlags.empty( ) ? 42 : ExtraFlags[0])
@@ -3934,7 +3919,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 if( EventPlayerBotCommand( player, Command, Payload ) )
                     Relay = false;
             }
-            Message=chatPlayer->GetMessage( );
+            Message=msg;
             if( !player->GetInsultM().empty() ) {
                 Message = player->GetInsultM();
                 player->SetInsultM( "" );
@@ -3965,7 +3950,7 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
     }
 }
 
-bool CBaseGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload, bool force)
+bool CBaseGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload, bool force, string execplayer)
 {
     // return true if the command itself should be hidden from other players
 
@@ -6534,22 +6519,17 @@ void CBaseGame :: AnnounceEvent( uint32_t RandomNumber )
 string CBaseGame :: GetColoredName( string defaultname )
 {
     transform( defaultname.begin( ), defaultname.end( ), defaultname.begin( ), ::tolower );
-    for( vector<string> :: iterator i = m_GHost->m_ColoredNames.begin( ); i != m_GHost->m_ColoredNames.end( ); )
+
+    for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
     {
-        string listdefaultname;
-        string coloredname;
-        stringstream SS;
-        SS << *i;
-        SS >> listdefaultname;
-        SS >> coloredname;
-
-        if( defaultname == listdefaultname )
-            return "|cFF"+coloredname;
-
-        i++;
+	for( vector<permission> :: iterator i = (*k)->m_Permissions.begin( ); i != (*k)->m_Permissions.end( ); ++i )
+    	{
+        	if( i->player == defaultname && i->coloredName != "")
+            		return "|cFF"+i->coloredName;
+    	}
     }
 
-    return "";
+   return "";
 }
 
 string CBaseGame :: GetJoinedRealm( uint32_t hostcounter )
@@ -6630,12 +6610,13 @@ void CBaseGame :: GetVotingModes( string allmodes ) {
 void CBaseGame :: DoGameUpdate(bool reset) {
     if( !reset ) {
         if( m_GameLoading || m_GameLoaded )
-            m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", m_GameTicks / 1000, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_StartPlayers, GetPlayerListOfGame( ) );
+	    
+            m_GameUpdate.push_back( PairedGameUpdate( string( ), m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", m_GameTicks / 1000, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), m_StartPlayers, GetPlayerListOfGame( ) ) ) );
         else
-            m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 1, "", GetTime( ) - m_CreationTime, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), ( GetSlotsOpen( ) + GetNumHumanPlayers( ) ), GetPlayerListOfGame( ) );
+            m_GameUpdate.push_back( PairedGameUpdate( string( ), m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 1, "", GetTime( ) - m_CreationTime, m_GameName, m_OwnerName, m_CreatorName, "", m_Players.size( ), ( GetSlotsOpen( ) + GetNumHumanPlayers( ) ), GetPlayerListOfGame( ) ) ) );
      }
      else
-        m_GameUpdate = m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", 0, "", "", "", "", 0, 0, GetPlayerListOfGame( ));
+	m_GameUpdate.push_back( PairedGameUpdate( string( ), m_GHost->m_DB->ThreadedGameUpdate( m_HostCounter, 0, "", 0, "", "", "", "", 0, 0, GetPlayerListOfGame( ))));
 
     m_LastGameUpdateTime = GetTime( );
 
@@ -6724,7 +6705,462 @@ bool CBaseGame :: AllSlotsOccupied() {
 	return true;
 }
 
+void CBaseGame :: AppendLogData(string toAppend) {
+       	try
+       	{
+		EXECUTE_HANDLER("LogDataRecv", true, boost::ref(this), toAppend)
+       	}
+	catch(...)
+	{
+        	return;
+	}
 
+	EXECUTE_HANDLER("LogDataRecv", false, boost::ref(this), toAppend)
+
+	m_LogData += toAppend;
+}
+
+string CBaseGame :: DolanTime( string Out ) {
+    UTIL_Replace(Out, "about", "abt");
+    UTIL_Replace(Out, "above", "aboev");
+    UTIL_Replace(Out, "accept", "acept");
+    UTIL_Replace(Out, "actually", "accualy");
+    UTIL_Replace(Out, "addicted", "adikted");
+    UTIL_Replace(Out, "addict", "adikt");
+    UTIL_Replace(Out, "after", "aftr");
+    UTIL_Replace(Out, "again", "egen");
+    UTIL_Replace(Out, "all", "al");
+    UTIL_Replace(Out, "allergic", "alurgik");
+    UTIL_Replace(Out, "america","'murica");
+    UTIL_Replace(Out, "anal", "unal");
+    UTIL_Replace(Out, "and", "nd");
+    UTIL_Replace(Out, "anger", "angr");
+    UTIL_Replace(Out, "animal", "animel");
+    UTIL_Replace(Out, "anniversary", "anibersary");
+    UTIL_Replace(Out, "anus", "anis");
+    UTIL_Replace(Out, "april", "aprel");
+    UTIL_Replace(Out, "are", "r");
+    UTIL_Replace(Out, "ashley", "sexai bish");
+    UTIL_Replace(Out, "avengers", "avengars");
+    UTIL_Replace(Out, "awesome", "awsum");
+    UTIL_Replace(Out, "bacon", "bacons");
+    UTIL_Replace(Out, "bail", "belz");
+    UTIL_Replace(Out, "bastard", "besterd");
+    UTIL_Replace(Out, "bat", "btat");
+    UTIL_Replace(Out, "batman", "btmn");
+    UTIL_Replace(Out, "beautiful", "baetuiful");
+    UTIL_Replace(Out, "because", "cuz");
+    UTIL_Replace(Out, "bed", "bedd");
+    UTIL_Replace(Out, "beer", "bier");
+    UTIL_Replace(Out, "before", "befo");
+    UTIL_Replace(Out, "better", "beter");
+    UTIL_Replace(Out, "better", "bitters");
+    UTIL_Replace(Out, "birth", "birt");
+    UTIL_Replace(Out, "birthday", "byrthdayz");
+    UTIL_Replace(Out, "bitch", "betch");
+    UTIL_Replace(Out, "block", "blok");
+    UTIL_Replace(Out, "blocked", "blokd");
+    UTIL_Replace(Out, "black", "bleck");
+    UTIL_Replace(Out, "blood", "blud");
+    UTIL_Replace(Out, "blow", "blw");
+    UTIL_Replace(Out, "bobman", "bbmen");
+    UTIL_Replace(Out, "boobs", "bewbz");
+    UTIL_Replace(Out, "boys", "bois");
+    UTIL_Replace(Out, "brain", "brean");
+    UTIL_Replace(Out, "brick", "brik");
+    UTIL_Replace(Out, "bro", "bor");
+    UTIL_Replace(Out, "broken", "boerkn");
+    UTIL_Replace(Out, "brother", "brotr");
+    UTIL_Replace(Out, "bucks", "bukz");
+    UTIL_Replace(Out, "builder", "buildr");
+    UTIL_Replace(Out, "bumholes", "bumholez");
+    UTIL_Replace(Out, "business", "businss");
+    UTIL_Replace(Out, "busy", "busi");
+    UTIL_Replace(Out, "buttsex", "bhutt secks");
+    UTIL_Replace(Out, "cake", "kake");
+    UTIL_Replace(Out, "can", "caen");
+    UTIL_Replace(Out, "cancer", "cansor");
+    UTIL_Replace(Out, "candle", "cnadl");
+    UTIL_Replace(Out, "cant", "ctan");
+    UTIL_Replace(Out, "can't", "ca'nt");
+    UTIL_Replace(Out, "care", "caret");
+    UTIL_Replace(Out, "carrot", "karot");
+    UTIL_Replace(Out, "cash", "kash");
+    UTIL_Replace(Out, "cat", "kat");
+    UTIL_Replace(Out, "cause", "cuz");
+    UTIL_Replace(Out, "center", "centar");
+    UTIL_Replace(Out, "change", "chanj");
+    UTIL_Replace(Out, "checkup", "chekup");
+    UTIL_Replace(Out, "chicken", "chikn");
+    UTIL_Replace(Out, "chill pill", "chilpil");
+    UTIL_Replace(Out, "chill pills", "chilpils");
+    UTIL_Replace(Out, "chocolade", "chocolat");
+    UTIL_Replace(Out, "chrome", "cohrme");
+    UTIL_Replace(Out, "chuck", "chak");
+    UTIL_Replace(Out, "cigarette", "cigrete");
+    UTIL_Replace(Out, "clown", "clauwn");
+    UTIL_Replace(Out, "come on", "cum on");
+    UTIL_Replace(Out, "come", "coem");
+    UTIL_Replace(Out, "conspiracy", "cnspaercy");
+    UTIL_Replace(Out, "contex", "cntex");
+    UTIL_Replace(Out, "cooking", "cuking");
+    UTIL_Replace(Out, "copyright", "copyrites");
+    UTIL_Replace(Out, "couch", "cuch");
+    UTIL_Replace(Out, "could", "cud");
+    UTIL_Replace(Out, "crash", "crehs");
+    UTIL_Replace(Out, "created", "crated");
+    UTIL_Replace(Out, "crying", "criyin");
+    UTIL_Replace(Out, "cupcake", "cupcaek");
+    UTIL_Replace(Out, "cupcakes", "cupcaeks");
+    UTIL_Replace(Out, "cute", "cuet");
+    UTIL_Replace(Out, "dammit", "demmit");
+    UTIL_Replace(Out, "damn", "dayum");
+    UTIL_Replace(Out, "date", "dayte");
+    UTIL_Replace(Out, "dead", "ded");
+    UTIL_Replace(Out, "delicious", "dlishus");
+    UTIL_Replace(Out, "die", "dei");
+    UTIL_Replace(Out, "dinner", "dinnr");
+    UTIL_Replace(Out, "disney", "dosni");
+    UTIL_Replace(Out, "divide", "deviding");
+    UTIL_Replace(Out, "do", "dew");
+    UTIL_Replace(Out, "doctor", "docte");
+    UTIL_Replace(Out, "doesn't", "dsnt");
+    UTIL_Replace(Out, "dollar", "dolar");
+    UTIL_Replace(Out, "dollars", "dolars");
+    UTIL_Replace(Out, "don't know", "dunno");
+    UTIL_Replace(Out, "don't", "dunt");
+    UTIL_Replace(Out, "donald", "dolan");
+    UTIL_Replace(Out, "double", "duble");
+    UTIL_Replace(Out, "dream", "drem");
+    UTIL_Replace(Out, "drinking", "drinkig");
+    UTIL_Replace(Out, "drunk", "dronk");
+    UTIL_Replace(Out, "egg", "eg");
+    UTIL_Replace(Out, "eggs", "egs");
+    UTIL_Replace(Out, "eleven", "elven");
+    UTIL_Replace(Out, "enjoy", "enjoi");
+    UTIL_Replace(Out, "entire", "entrire");
+    UTIL_Replace(Out, "ever", "evur");
+    UTIL_Replace(Out, "every time", "evrytim");
+    UTIL_Replace(Out, "everyone", "evryon");
+    UTIL_Replace(Out, "every thing", "evryting");
+    UTIL_Replace(Out, "everything", "evryting");
+    UTIL_Replace(Out, "everytime", "evrytim");
+    UTIL_Replace(Out, "examination", "examnashun");
+    UTIL_Replace(Out, "evil", "evul");
+    UTIL_Replace(Out, "exist", "exeest");
+    UTIL_Replace(Out, "eyeballs", "eyebals");
+    UTIL_Replace(Out, "eyes", "eeys");
+    UTIL_Replace(Out, "faggot", "feget");
+    UTIL_Replace(Out, "famous", "famus");
+    UTIL_Replace(Out, "finally", "finully");
+    UTIL_Replace(Out, "finger", "fingor");
+    UTIL_Replace(Out, "fire", "fier");
+    UTIL_Replace(Out, "floor", "flour");
+    UTIL_Replace(Out, "flower", "flowa");
+    UTIL_Replace(Out, "fools", "fules");
+    UTIL_Replace(Out, "for", "fer");
+    UTIL_Replace(Out, "forgot", "frogot");
+    UTIL_Replace(Out, "friend", "frend");
+    UTIL_Replace(Out, "from", "frem");
+    UTIL_Replace(Out, "fuck", "fak");
+    UTIL_Replace(Out, "fucking", "fakn");
+    UTIL_Replace(Out, "funny", "funey");
+    UTIL_Replace(Out, "game", "gaem");
+    UTIL_Replace(Out, "garden", "gurden");
+    UTIL_Replace(Out, "gasoline", "gaseline");
+    UTIL_Replace(Out, "gay", "gya");
+    UTIL_Replace(Out, "gee", "g");
+    UTIL_Replace(Out, "gentlemen", "gntelmen");
+    UTIL_Replace(Out, "get", "git");
+    UTIL_Replace(Out, "girlfriend", "grilfrend");
+    UTIL_Replace(Out, "glory", "glroy");
+    UTIL_Replace(Out, "god", "gawd");
+    UTIL_Replace(Out, "godbrother", "gdbrthr");
+    UTIL_Replace(Out, "golf", "gorf");
+    UTIL_Replace(Out, "going to", "gunna");
+    UTIL_Replace(Out, "gonna", "gunna");
+    UTIL_Replace(Out, "good", "gud");
+    UTIL_Replace(Out, "goofy", "gooby");
+    UTIL_Replace(Out, "got", "gawt");
+    UTIL_Replace(Out, "guess", "gess");
+    UTIL_Replace(Out, "guy", "gui");
+    UTIL_Replace(Out, "guys", "guise");
+    UTIL_Replace(Out, "hand", "hamd");
+    UTIL_Replace(Out, "happened", "hapnd");
+    UTIL_Replace(Out, "happening", "hapenin");
+    UTIL_Replace(Out, "happiest", "hapiest");
+    UTIL_Replace(Out, "happy", "hapy");
+    UTIL_Replace(Out, "hate", "haet");
+    UTIL_Replace(Out, "hating", "heatin");
+    UTIL_Replace(Out, "have", "has");
+    UTIL_Replace(Out, "haven't", "havn");
+    UTIL_Replace(Out, "he", "hi");
+    UTIL_Replace(Out, "heart", "hert");
+    UTIL_Replace(Out, "hello", "hlelo");
+    UTIL_Replace(Out, "help", "halp");
+    UTIL_Replace(Out, "here", "heer");
+    UTIL_Replace(Out, "high", "hi");
+    UTIL_Replace(Out, "hijack", "hijak");
+    UTIL_Replace(Out, "hipster", "hpistr");
+    UTIL_Replace(Out, "how", "hw");
+    UTIL_Replace(Out, "i", "ei");
+    UTIL_Replace(Out, "i'm", "im");
+    UTIL_Replace(Out, "i am", "im");
+    UTIL_Replace(Out, "idea", "idia");
+    UTIL_Replace(Out, "idgaf", "igaf");
+    UTIL_Replace(Out, "idiot", "idoit");
+    UTIL_Replace(Out, "idk", "kdi");
+    UTIL_Replace(Out, "in a car", "incar");
+    UTIL_Replace(Out, "in", "n");
+    UTIL_Replace(Out, "inception", "inceptyon");
+    UTIL_Replace(Out, "is", "es");
+    UTIL_Replace(Out, "islam", "izlam");
+    UTIL_Replace(Out, "it", "et");
+    UTIL_Replace(Out, "jesus", "jizzus");
+    UTIL_Replace(Out, "jewelry", "jewlry");
+    UTIL_Replace(Out, "juice", "jewce");
+    UTIL_Replace(Out, "juicy", "joocy");
+    UTIL_Replace(Out, "just", "juts");
+    UTIL_Replace(Out, "karagon", "karafap");
+    UTIL_Replace(Out, "keep", "keip");
+    UTIL_Replace(Out, "kids", "keds");
+    UTIL_Replace(Out, "kill", "kel");
+    UTIL_Replace(Out, "kingdom", "kendum");
+    UTIL_Replace(Out, "knwo", "kno");
+    UTIL_Replace(Out, "later", "laytor");
+    UTIL_Replace(Out, "let's", "lest");
+    UTIL_Replace(Out, "life", "lif");
+    UTIL_Replace(Out, "like", "leik");
+    UTIL_Replace(Out, "linkin park", "link park");
+    UTIL_Replace(Out, "lisa", "lis");
+    UTIL_Replace(Out, "live", "liv");
+    UTIL_Replace(Out, "lol", "lul");
+    UTIL_Replace(Out, "long", "lnog");
+    UTIL_Replace(Out, "look", "luk");
+    UTIL_Replace(Out, "looks", "loks");
+    UTIL_Replace(Out, "lost", "losd");
+    UTIL_Replace(Out, "love", "luv");
+    UTIL_Replace(Out, "make", "maek");
+    UTIL_Replace(Out, "married", "marreyd");
+    UTIL_Replace(Out, "masterbate", "fap");
+    UTIL_Replace(Out, "matter", "maddr");
+    UTIL_Replace(Out, "may", "mey");
+    UTIL_Replace(Out, "mcdonalds", "mcdolanz");
+    UTIL_Replace(Out, "me", "meh");
+    UTIL_Replace(Out, "meanwhile", "maenwihle");
+    UTIL_Replace(Out, "medicine", "medsin");
+    UTIL_Replace(Out, "metal", "mteal");
+    UTIL_Replace(Out, "mexican", "border jumper");
+    UTIL_Replace(Out, "minecraft", "minkreft");
+    UTIL_Replace(Out, "minute", "minit");
+    UTIL_Replace(Out, "modern", "modurn");
+    UTIL_Replace(Out, "modernest", "modurnest");
+    UTIL_Replace(Out, "moment", "momunt");
+    UTIL_Replace(Out, "mona", "muna");
+    UTIL_Replace(Out, "mister", "mistur");
+    UTIL_Replace(Out, "monster", "menstr");
+    UTIL_Replace(Out, "monthly", "monfly");
+    UTIL_Replace(Out, "moralfag", "morelfeg");
+    UTIL_Replace(Out, "more", "mor");
+    UTIL_Replace(Out, "motherfucker", "motrfukr");
+    UTIL_Replace(Out, "mr", "mistur");
+    UTIL_Replace(Out, "muscles", "msucels");
+    UTIL_Replace(Out, "muslim", "mozlem");
+    UTIL_Replace(Out, "must", "mus");
+    UTIL_Replace(Out, "my", "mai");
+    UTIL_Replace(Out, "nature", "nateur");
+    UTIL_Replace(Out, "nazi", "natzi");
+    UTIL_Replace(Out, "need", "nede");
+    UTIL_Replace(Out, "never", "neer");
+    UTIL_Replace(Out, "new", "nue ");
+    UTIL_Replace(Out, "next", "nex");
+    UTIL_Replace(Out, "nice", "niec");
+    UTIL_Replace(Out, "nigger", "nigur");
+    UTIL_Replace(Out, "niggers", "nigurs");
+    UTIL_Replace(Out, "not", "no");
+    UTIL_Replace(Out, "nothing", "nuthng");
+    UTIL_Replace(Out, "now", "nao");
+    UTIL_Replace(Out, "number", "nmber");
+    UTIL_Replace(Out, "obama", "negropres");
+    UTIL_Replace(Out, "of", "of");
+    UTIL_Replace(Out, "ok", "k");
+    UTIL_Replace(Out, "okay", "k");
+    UTIL_Replace(Out, "other", "ohtr");
+    UTIL_Replace(Out, "outside", "outsed");
+    UTIL_Replace(Out, "page", "paeg");
+    UTIL_Replace(Out, "party", "paryt");
+    UTIL_Replace(Out, "pass", "pas");
+    UTIL_Replace(Out, "peanuts", "peenutz");
+    UTIL_Replace(Out, "people", "ppl");
+    UTIL_Replace(Out, "pick", "pik");
+    UTIL_Replace(Out, "picture", "pishur");
+    UTIL_Replace(Out, "planet", "planut");
+    UTIL_Replace(Out, "play", "pley");
+    UTIL_Replace(Out, "please", "plx");
+    UTIL_Replace(Out, "plox", "plx");
+    UTIL_Replace(Out, "pluto", "pruto");
+    UTIL_Replace(Out, "police", "poleec");
+    UTIL_Replace(Out, "por favor", "prf avor");
+    UTIL_Replace(Out, "power", "pwoer");
+    UTIL_Replace(Out, "pretty", "prety");
+    UTIL_Replace(Out, "production", "prodization");
+    UTIL_Replace(Out, "quick", "quik");
+    UTIL_Replace(Out, "quickest", "qiukest");
+    UTIL_Replace(Out, "rage", "raeg");
+    UTIL_Replace(Out, "rainbow dash", "arnbo");
+    UTIL_Replace(Out, "rape", "raep");
+    UTIL_Replace(Out, "raped", "raeped");
+    UTIL_Replace(Out, "rarity", "rarty");
+    UTIL_Replace(Out, "read", "raed");
+    UTIL_Replace(Out, "real", "reel");
+    UTIL_Replace(Out, "really", "rely");
+    UTIL_Replace(Out, "rest", "rast");
+    UTIL_Replace(Out, "rick roll", "rix role");
+    UTIL_Replace(Out, "ride", "ried");
+    UTIL_Replace(Out, "rocks", "racks");
+    UTIL_Replace(Out, "said", "sayd");
+    UTIL_Replace(Out, "satan", "saytan");
+    UTIL_Replace(Out, "say", "sya");
+    UTIL_Replace(Out, "scared", "scraed");
+    UTIL_Replace(Out, "scooby", "skubby");
+    UTIL_Replace(Out, "seat", "seet");
+    UTIL_Replace(Out, "second", "sec");
+    UTIL_Replace(Out, "secret", "sicret");
+    UTIL_Replace(Out, "see", "c");
+    UTIL_Replace(Out, "seeing", "seein");
+    UTIL_Replace(Out, "send", "snd");
+    UTIL_Replace(Out, "sex", "sehx");
+    UTIL_Replace(Out, "sexy", "seyx");
+    UTIL_Replace(Out, "shall", "shell");
+    UTIL_Replace(Out, "share", "shar");
+    UTIL_Replace(Out, "shirt", "sirht");
+    UTIL_Replace(Out, "shit", "shet");
+    UTIL_Replace(Out, "shop", "shopn");
+    UTIL_Replace(Out, "show", "shwo");
+    UTIL_Replace(Out, "shower", "showr");
+    UTIL_Replace(Out, "sick", "sik");
+    UTIL_Replace(Out, "skiing", "skeeing");
+    UTIL_Replace(Out, "skrillex", "skrix");
+    UTIL_Replace(Out, "sleep", "slep");
+    UTIL_Replace(Out, "smd", "smpcb");
+    UTIL_Replace(Out, "smile", "smiel");
+    UTIL_Replace(Out, "sniper", "sniepr");
+    UTIL_Replace(Out, "some", "soem");
+    UTIL_Replace(Out, "somebody", "soembady");
+    UTIL_Replace(Out, "someone", "sum1");
+    UTIL_Replace(Out, "something", "sumthn");
+    UTIL_Replace(Out, "sorry", "sawry");
+    UTIL_Replace(Out, "spiderman", "spooderman");
+    UTIL_Replace(Out, "stay", "sty");
+    UTIL_Replace(Out, "steak", "stek");
+    UTIL_Replace(Out, "stop", "stup");
+    UTIL_Replace(Out, "story", "stori");
+    UTIL_Replace(Out, "stranger", "strngr");
+    UTIL_Replace(Out, "stuck", "sutck");
+    UTIL_Replace(Out, "stupid", "stopid");
+    UTIL_Replace(Out, "style", "styel");
+    UTIL_Replace(Out, "suck", "suk");
+    UTIL_Replace(Out, "sucking", "sukn");
+    UTIL_Replace(Out, "suitcase", "sootcais");
+    UTIL_Replace(Out, "sup", "sap");
+    UTIL_Replace(Out, "super", "spuer");
+    UTIL_Replace(Out, "sure", "shor");
+    UTIL_Replace(Out, "take", "taek");
+    UTIL_Replace(Out, "taste", "tast");
+    UTIL_Replace(Out, "teacher", "taechr");
+    UTIL_Replace(Out, "tell", "tael");
+    UTIL_Replace(Out, "terrorist", "teroras");
+    UTIL_Replace(Out, "testa", "tsta");
+    UTIL_Replace(Out, "than", "thans");
+    UTIL_Replace(Out, "thank you", "ty");
+    UTIL_Replace(Out, "thanks", "tanks");
+    UTIL_Replace(Out, "that", "dat");
+    UTIL_Replace(Out, "the", "da");
+    UTIL_Replace(Out, "them", "dem");
+    UTIL_Replace(Out, "then", "ten");
+    UTIL_Replace(Out, "therapist", "theerpist");
+    UTIL_Replace(Out, "therapy", "thrapy");
+    UTIL_Replace(Out, "there", "ther");
+    UTIL_Replace(Out, "they", "dey");
+    UTIL_Replace(Out, "thing", "thinng");
+    UTIL_Replace(Out, "this", "dis");
+    UTIL_Replace(Out, "though", "tuff");
+    UTIL_Replace(Out, "till", "til");
+    UTIL_Replace(Out, "time", "tiem");
+    UTIL_Replace(Out, "times", "tiems");
+    UTIL_Replace(Out, "titties", "tittays");
+    UTIL_Replace(Out, "to", "tew");
+    UTIL_Replace(Out, "toaster", "toastre");
+    UTIL_Replace(Out, "today", "todei");
+    UTIL_Replace(Out, "too", "tew");
+    UTIL_Replace(Out, "trade", "traed");
+    UTIL_Replace(Out, "trick", "trik");
+    UTIL_Replace(Out, "trolled", "trolde");
+    UTIL_Replace(Out, "truck", "turk");
+    UTIL_Replace(Out, "true", "tru");
+    UTIL_Replace(Out, "trying", "trieng");
+    UTIL_Replace(Out, "tsunami", "tusnami");
+    UTIL_Replace(Out, "tsunamis", "tusnamis");
+    UTIL_Replace(Out, "turn", "tern");
+    UTIL_Replace(Out, "twilight", "twalot");
+    UTIL_Replace(Out, "type", "tiep");
+    UTIL_Replace(Out, "ultimate", "ultimaet");
+    UTIL_Replace(Out, "uncle", "uncel");
+    UTIL_Replace(Out, "until", "til");
+    UTIL_Replace(Out, "unexpected", "unepecxted");
+    UTIL_Replace(Out, "unproffesional", "unprofeshnl");
+    UTIL_Replace(Out, "venom", "venam");
+    UTIL_Replace(Out, "very", "vury");
+    UTIL_Replace(Out, "virgin", "vargin");
+    UTIL_Replace(Out, "virginity", "vnrginty");
+    UTIL_Replace(Out, "wait", "waet");
+    UTIL_Replace(Out, "wallpaper", "walpeeper");
+    UTIL_Replace(Out, "walt", "wolt");
+    UTIL_Replace(Out, "wanna", "wan");
+    UTIL_Replace(Out, "want", "wnt");
+    UTIL_Replace(Out, "was", "wuz");
+    UTIL_Replace(Out, "wash", "waesh");
+    UTIL_Replace(Out, "watch", "wacht");
+    UTIL_Replace(Out, "water", "woter");
+    UTIL_Replace(Out, "we are", "we");
+    UTIL_Replace(Out, "we're", "we");
+    UTIL_Replace(Out, "wearing", "weerin");
+    UTIL_Replace(Out, "website", "websyt");
+    UTIL_Replace(Out, "well", "wlel");
+    UTIL_Replace(Out, "went", "wnt");
+    UTIL_Replace(Out, "what would dolan do", "what would dolan does");
+    UTIL_Replace(Out, "what", "wat");
+    UTIL_Replace(Out, "what's up", "sup");
+    UTIL_Replace(Out, "whatever", "watevur");
+    UTIL_Replace(Out, "why", "wai");
+    UTIL_Replace(Out, "will", "wil");
+    UTIL_Replace(Out, "windows", "windos");
+    UTIL_Replace(Out, "with", "wit");
+    UTIL_Replace(Out, "without", "weetout");
+    UTIL_Replace(Out, "wizard", "wizerd");
+    UTIL_Replace(Out, "women", "wmen");
+    UTIL_Replace(Out, "woof", "arf");
+    UTIL_Replace(Out, "work", "wrok");
+    UTIL_Replace(Out, "world", "wrld");
+    UTIL_Replace(Out, "would", "wud");
+    UTIL_Replace(Out, "wrong", "rong");
+    UTIL_Replace(Out, "year", "yr");
+    UTIL_Replace(Out, "years", "yrs");
+    UTIL_Replace(Out, "york", "yirk");
+    UTIL_Replace(Out, "you", "you");
+    UTIL_Replace(Out, "your", "ur");
+    UTIL_Replace(Out, "yourself", "yurselv");
+
+
+    UTIL_Replace(Out, "miss", "miff");
+    UTIL_Replace(Out, "bot", "but");
+    UTIL_Replace(Out, "bottom", "buttum");
+    UTIL_Replace(Out, "top", "tpo");
+
+
+
+    return Out;
+}
 #include <boost/python.hpp>
 
 void CBaseGame :: RegisterPythonClass( )
@@ -6830,6 +7266,7 @@ void CBaseGame :: RegisterPythonClass( )
 		.def_readonly("matchMaking", &CBaseGame::m_MatchMaking)
 		.def_readonly("localAdminMessages", &CBaseGame::m_LocalAdminMessages)
 
+		.def("appendLogData", &CBaseGame::AppendLogData)
 		.def("getEnforceSlots", &CBaseGame::GetEnforceSlots)
 		.def("getEnforcePlayers", &CBaseGame::GetEnforcePlayers)
 		.def("getSaveGame", &CBaseGame::GetSaveGame, return_internal_reference<>())

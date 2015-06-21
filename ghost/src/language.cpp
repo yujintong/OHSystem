@@ -3626,6 +3626,11 @@ string CLanguage :: Realm()
     string Out = m_CFG->GetString( "oh_302", "oh_302" );
     return Out;
 }
+string CLanguage :: WelcomeMessage()
+{
+    string Out = m_CFG->GetString( "oh_303", "oh_303" );
+    return Out;
+}
 
 
 #include <boost/python.hpp>

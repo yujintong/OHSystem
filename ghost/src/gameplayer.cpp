@@ -641,7 +641,7 @@ void CGamePlayer :: ProcessPackets( )
                             }
 
                             //we adding this condition not in the next condition to avoid a jump into ghost.cpp to check if the message was a flame message or not
-                            if(m_Game->m_GHost->m_FlameCheck)
+                            if(m_Game->m_GHost->m_FlameCheck && ( m_Name != "dolan" || m_Name != "Dolan" ) )
                             {
                                 //now check for flamers
                                 if( m_Game->m_GHost->FlameCheck( ChatPlayer->GetMessage( ) ) )

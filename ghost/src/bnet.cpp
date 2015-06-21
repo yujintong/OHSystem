@@ -1611,7 +1611,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         CONSOLE_Print( "[BNET] "+ level +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
 
         //save admin log
-        m_AdminLog.push_back( User + " cl" + "\t" + UTIL_ToString( IsLevel( User ) ) + "\t" + Command + "\t" + Payload );
+        m_AdminLog.push_back( User + " cl\t" + UTIL_ToString( IsLevel( User ) ) + "\t" + Command + "\t" + Payload );
 
 
         /**************************************

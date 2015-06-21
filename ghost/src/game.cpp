@@ -157,7 +157,7 @@ CGame :: ~CGame( )
     /* last update before the game is over */
     if( m_LogData != "" )
     {
-        m_LogData = m_LogData + "1" + "\t" + "pl";
+        AppendLogData("1\tpl");
         //UPDATE SLOTS
         for( unsigned char i = 0; i < m_Slots.size( ); ++i )
         {
@@ -165,14 +165,14 @@ CGame :: ~CGame( )
             {
                 CGamePlayer *player = GetPlayerFromSID( i );
                 if( player )
-                    m_LogData = m_LogData + "\t" + player->GetName( );
+                    AppendLogData("\t" + player->GetName( ));
                 else if( !player && m_GameLoaded )
-                    m_LogData = m_LogData + "\t" + "-";
+                    AppendLogData("\t-");
             }
             else if( m_Slots[i].GetSlotStatus( ) == SLOTSTATUS_OPEN )
-                m_LogData = m_LogData + "\t" + "-";
+                AppendLogData("\t-");
         }
-        m_LogData = m_LogData + "\n";
+        AppendLogData("\n");
         m_PairedLogUpdates.push_back( PairedLogUpdate( string( ), m_GHost->m_DB->ThreadedStoreLog( m_HostCounter, m_LogData,  m_AdminLog ) ) );
         m_LogData = string();
         m_AdminLog = vector<string>();
@@ -1170,17 +1170,16 @@ bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
 
     return success;
 }
-bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload, bool force)
+bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string payload, bool force, string ExecName)
 {
     bool HideCommand = CBaseGame :: EventPlayerBotCommand( player, command, payload );
 
     // todotodo: don't be lazy
 
-    string User = force ? "OHSystem" : player->GetName( );
+    string User = force ? ExecName : player->GetName( );
     bool spoofed = force ? true : player->GetSpoofed( );
     string Command = command;
     string Payload = payload;
-
     uint32_t Level = force ? 10 : player->GetLevel();
     string LevelName;
     // do this for the public commands
@@ -1206,7 +1205,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( ( m_Locked && Level > 8 ) || !m_Locked )
         {
             //save admin log
-            m_AdminLog.push_back( User + " gl" + "\t" + UTIL_ToString( Level ) + "\t" + Command + "\t" + Payload );
+            m_AdminLog.push_back( User + " gl\t" + UTIL_ToString( Level ) + "\t" + Command + "\t" + Payload );
 
             //
             // !ADMINCHAT by Zephyrix improved by Metal_Koola
@@ -3109,7 +3108,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !START
             //
-            else if( Command == "start" && !m_CountDownStarted && Level >= 8 )
+            else if( Command == "start" && !m_CountDownStarted && Level >= 6 )
             {
                 // if the player sent "!start force" skip the checks and start the countdown
                 // otherwise check that the game is ready to start
@@ -3616,6 +3615,36 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SendAllChat( m_GHost->m_Language->VersionNotAdmin( m_GHost->m_Version ) );
     }
 
+    //
+    // !DARLY
+    //
+    else if( Command == "darly" ) {
+	if(player->GetName() != "darly")
+		return false;
+
+
+            CGamePlayer *LastMatch = NULL;
+            uint32_t Matches = GetPlayerFromNamePartial( "juliet", &LastMatch );
+
+            if( Matches == 0 )
+            {
+		SendChat(player, "no juju in game :-(");
+            }
+            else if( Matches == 1 )
+            {
+		if(LastMatch->GetCookies( ) > 0 ) {
+			LastMatch->SetCookie(0);
+			player->SetCookie(3);
+			SendAllChat("Darly has stolen all cookies from Juliet. Juliet is sad and crying now");
+		} else {
+			SendAllChat("Juliet doesnt't have cookies. Darly is sad. Darly slapped Juliet in his face. FALCON PUNCH");
+		}
+            }
+            else if( Matches > 1 )
+                SendChat( player, "too many jujus :-(");
+	
+
+    }
     //
     // !WHOVOTEKICKED
     //
@@ -4652,7 +4681,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 		}
 		if( player->GetVotedMode() != 0 ) {
             SendChat( player, m_GHost->m_Language->ErrorVotedAlreadyForMode( ) );
-        } else if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
+        } else if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( ) ) {
             SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
         } else {
             SendAllChat( m_GHost->m_Language->UserVotedForMode( User, m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
