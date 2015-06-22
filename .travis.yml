@@ -6,18 +6,8 @@ branches:
  - master
  
 before_script: 
- - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
- - sudo apt-get update -qq
- - sudo apt-get install -qq libboost-all-dev build-essential gcc g++-4.9 libmysql++-dev libbz2-dev libgmp3-dev
- - export CXX="g++-4.9"
- - cd ghost/src/bncsutil/src/bncsutil 
- - make 
- - sudo make install 
- - cd ../../../StormLib/stormlib 
- - make 
- - sudo make install 
- - cd ../../
+ - cd ghost
  
 # Change this to your needs
 script: 
- - make
+ - ./easy_install.sh
