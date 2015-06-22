@@ -5,7 +5,7 @@ CC = gcc
 DFLAGS = -DGHOST_MYSQL
 OFLAGS = -O3 -g
 LFLAGS = -L. -L./bncsutil/src/bncsutil/ -L./StormLib/stormlib/  -lbncsutil -lpthread -ldl -lz -lgmp -lStorm -lmysqlclient_r -lboost_date_time -lboost_thread -lboost_system -lboost_filesystem -lpython2.7 -lboost_python
-CFLAGS = -std=c++11
+CFLAGS = -std=c++0x
 
 ifeq ($(SYSTEM),Darwin)
 DFLAGS += -D__APPLE__
