@@ -20,5 +20,4 @@ script:
  - make
  - sudo make install 
  - cd ../../
- - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
  - make
