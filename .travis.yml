@@ -5,9 +5,13 @@ compiler: gcc
 branches:
  - master
  
-before_script: 
+before_script:
+ - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+ - sudo apt-get update -qq
  - cd ghost
  
 # Change this to your needs
 script: 
+ - sudo apt-get install -qq gcc-4.8 g++-4.8 
+ - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
  - ./easy_install.sh
