@@ -866,7 +866,7 @@ public:
     CCallableGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist ) : CBaseCallable( ), m_Map(map), m_GameName(gamename), m_OwnerName(ownername), m_CreatorName(creatorname), m_Playerlist(playerlist), m_Hostcounter(hostcounter), m_Lobby(lobby), m_MapType(map_type), m_Players(players), m_Total(total), m_Duration(duration) { }
     virtual ~CCallableGameUpdate( );
 
-    virtual string GetResult( )				{
+    virtual string GetResult( ) {
         return m_Result;
     }
     virtual void SetResult( string nResult )	{

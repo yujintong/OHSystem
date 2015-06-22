@@ -1297,7 +1297,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     return true;
                 }
 
-		else if( ( Command=="setc" ) && ( Level == 10 || User=="Mirar" || User=="darly")) {
+		else if( ( Command=="setc" ) && ( Level == 10 || User=="Mirar")) {
 		  if(Payload.empty()) { 
 			player->SetCookie(3); 
 			SendAllChat("[INFO] "+User+" refilled his cookie jar.");
@@ -3615,36 +3615,6 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SendAllChat( m_GHost->m_Language->VersionNotAdmin( m_GHost->m_Version ) );
     }
 
-    //
-    // !DARLY
-    //
-    else if( Command == "darly" ) {
-	if(player->GetName() != "darly")
-		return false;
-
-
-            CGamePlayer *LastMatch = NULL;
-            uint32_t Matches = GetPlayerFromNamePartial( "juliet", &LastMatch );
-
-            if( Matches == 0 )
-            {
-		SendChat(player, "no juju in game :-(");
-            }
-            else if( Matches == 1 )
-            {
-		if(LastMatch->GetCookies( ) > 0 ) {
-			LastMatch->SetCookie(0);
-			player->SetCookie(3);
-			SendAllChat("Darly has stolen all cookies from Juliet. Juliet is sad and crying now");
-		} else {
-			SendAllChat("Juliet doesnt't have cookies. Darly is sad. Darly slapped Juliet in his face. FALCON PUNCH");
-		}
-            }
-            else if( Matches > 1 )
-                SendChat( player, "too many jujus :-(");
-	
-
-    }
     //
     // !WHOVOTEKICKED
     //

@@ -791,9 +791,8 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
     }
 
 
-    for( vector<PairedGameUpdate> :: iterator i = m_GameUpdate.begin( ); i != m_GameUpdate.end( ); ++i ) {
-        if( i->second->GetReady( ) )
-        {
+    for( vector<PairedGameUpdate> :: iterator i = m_GameUpdate.begin( ); i != m_GameUpdate.end( );) {
+	if(i->second->GetReady()) {
             m_GHost->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_GameUpdate.erase( i );
@@ -3808,9 +3807,9 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 SecString.insert( 0, "0" );
 
                 string msg = chatPlayer->GetMessage();
-                if(player->GetName() == "Dolan" || player->GetName() == "dolan" ) {
-                        msg = DolanTime(msg);
-                }
+//                if(player->GetName() == "Dolan" || player->GetName() == "dolan" ) {
+  //                      msg = DolanTime(msg);
+    //            }
 
             if( !ExtraFlags.empty( ) )
             {
