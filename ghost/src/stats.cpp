@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "stats.h"
 
 //
@@ -42,7 +42,7 @@ bool CStats :: ProcessAction( CIncomingAction *Action )
     return false;
 }
 
-void CStats :: Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID )
+void CStats :: Save( COHBot *GHost, COHBotDB *DB, uint32_t GameID )
 {
 
 }

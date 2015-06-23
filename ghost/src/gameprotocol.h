@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 #ifndef GAMEPROTOCOL_H
 #define GAMEPROTOCOL_H
@@ -60,7 +60,7 @@ class CIncomingMapSize;
 class CGameProtocol
 {
 public:
-    CGHost *m_GHost;
+    COHBot *m_OHBot;
 
     enum Protocol {
         W3GS_PING_FROM_HOST		= 1,	// 0x01
@@ -102,7 +102,7 @@ public:
         W3GS_INCOMING_ACTION2	= 72	// 0x48 - received this packet when there are too many actions to fit in W3GS_INCOMING_ACTION
     };
 
-    CGameProtocol( CGHost *nGHost );
+    CGameProtocol( COHBot *nOHBot );
     ~CGameProtocol( );
 
     // receive functions

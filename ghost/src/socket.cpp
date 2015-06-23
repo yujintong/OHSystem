@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "socket.h"
 
@@ -906,111 +906,4 @@ void CUDPServer :: RecvFrom( fd_set *fd, struct sockaddr_in *sin, string *messag
             //CONSOLE_Print( "[UDPSERVER] error (recvfrom) - " + GetErrorString( ) );
         }
     }
-}
-
-
-#include <boost/python.hpp>
-
-void CSocket :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_<CSocket>("socket", no_init)
-		.def_readonly("socket", &CSocket::m_Socket)
-		.def_readonly("hasError", &CSocket::m_HasError)
-		.def_readonly("error", &CSocket::m_Error)
-
-		.def("getPort", &CSocket::GetPort)
-		.def("getIP", &CSocket::GetIP)
-		.def("getIPString", &CSocket::GetIPString)
-		.def("hasError", &CSocket::HasError)
-		.def("getError", &CSocket::GetError)
-		.def("getErrorString", &CSocket::GetErrorString)
-
-		.def("allocate", &CSocket::Allocate)
-		.def("reset", &CSocket::Reset)
-	;
-}
-
-void CTCPSocket :: RegisterPythonClass( )
-{
-	void (CTCPSocket::*PutBytes1)(string)		= &CTCPSocket::PutBytes;
-	void (CTCPSocket::*PutBytes2)(BYTEARRAY)	= &CTCPSocket::PutBytes;
-
-	using namespace boost::python;
-
-	class_< CTCPSocket, bases<CSocket> >("TCPSocket", no_init)
-		.def_readonly("connected", &CTCPSocket::m_Connected)
-		.def_readonly("logFile", &CTCPSocket::m_LogFile)
-		.def_readonly("recvBuffer", &CTCPSocket::m_RecvBuffer)
-		.def_readonly("sendBuffer", &CTCPSocket::m_SendBuffer)
-		.def_readonly("lastRecv", &CTCPSocket::m_LastRecv)
-		.def_readonly("lastSend", &CTCPSocket::m_LastSend)
-
-		.def("getConnected", &CTCPSocket::GetConnected)
-		.def("getBytes", &CTCPSocket::GetBytes, return_internal_reference<>())
-		.def("putBytes", PutBytes1)
-		.def("putBytes", PutBytes2)
-		.def("clearRecvBuffer", &CTCPSocket::ClearRecvBuffer)
-		.def("clearSendBuffer", &CTCPSocket::ClearSendBuffer)
-		.def("getLastRecv", &CTCPSocket::GetLastRecv)
-		.def("getLastSend", &CTCPSocket::GetLastSend)
-
-		.def("disconnect", &CTCPSocket::Disconnect)
-		.def("setNoDelay", &CTCPSocket::SetNoDelay)
-		.def("setLogFile", &CTCPSocket::SetLogFile)
-	;
-}
-
-void CTCPClient :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_< CTCPClient, bases<CTCPSocket> >("TCPClient", no_init)
-		.def_readonly("connecting", &CTCPClient::m_Connecting)
-
-		.def("getConnected", &CTCPClient::GetConnected)
-		.def("connect", &CTCPClient::Connect)
-		.def("checkConnect", &CTCPClient::CheckConnect)
-	;
-}
-void CTCPServer :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_< CTCPServer, bases<CTCPSocket> >("TCPServer", no_init)
-		.def("listen", &CTCPServer::Listen)
-		.def("accept", &CTCPServer::Accept, return_internal_reference<>())
-	;
-}
-
-void CUDPSocket :: RegisterPythonClass( )
-{
-	bool (CUDPSocket::*SendTo1)(struct sockaddr_in, BYTEARRAY)	= &CUDPSocket::SendTo;
-	bool (CUDPSocket::*SendTo2)(string, uint16_t, BYTEARRAY)	= &CUDPSocket::SendTo;
-
-	using namespace boost::python;
-
-	class_< CUDPSocket, bases<CSocket> >("UDPSocket", no_init)
-		.def_readonly("broadcastTarget", &CUDPSocket::m_BroadcastTarget)
-
-		.def("sendTo", SendTo1)
-		.def("sendTo", SendTo2)
-
-		.def("broadcast", &CUDPSocket::Broadcast)
-		.def("setBroadcastTarget", &CUDPSocket::SetBroadcastTarget)
-		.def("setDontRoute", &CUDPSocket::SetDontRoute)
-	;
-}
-void CUDPServer :: RegisterPythonClass( )
-{
-	bool (CUDPServer::*Bind1)(struct sockaddr_in)	= &CUDPServer::Bind;
-	bool (CUDPServer::*Bind2)(string, uint16_t)		= &CUDPServer::Bind;
-
-	using namespace boost::python;
-
-	class_< CUDPServer, bases<CUDPSocket> >("UDPServer", no_init)
-		.def("bind", Bind1)
-		.def("bind", Bind2)
-	;
 }

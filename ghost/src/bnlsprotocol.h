@@ -17,8 +17,8 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
-* Official GhostPP-Forum: http://ghostpp.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
+* Official GhostPP-Forum: http://ohbotpp.com/
 */
 
 #ifndef BNLSPROTOCOL_H

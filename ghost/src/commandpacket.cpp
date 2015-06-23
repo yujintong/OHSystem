@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "commandpacket.h"
 
 //

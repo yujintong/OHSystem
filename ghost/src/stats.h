@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef STATS_H
@@ -35,7 +35,7 @@
 // the base class is almost completely empty
 
 class CIncomingAction;
-class CGHostDB;
+class COHBotDB;
 
 class CStats
 {
@@ -48,7 +48,7 @@ public:
     virtual ~CStats( );
 
     virtual bool ProcessAction( CIncomingAction *Action );
-    virtual void Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID );
+    virtual void Save( COHBot *GHost, COHBotDB *DB, uint32_t GameID );
     virtual void SetWinner( uint32_t nWinner ) {}
     inline uint32_t GetWinner( ) {}
     virtual void LockStats( ) {

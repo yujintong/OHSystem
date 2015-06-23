@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ghost.pwner.org/
+   CODE PORTED FROM THE ORIGINAL GHOST PROJECT: http://ohbot.pwner.org/
 
 */
 
@@ -68,38 +68,5 @@ uint32_t GetTicks( );		// milliseconds
 void CONSOLE_Print( string message );
 void DEBUG_Print( string message );
 void DEBUG_Print( BYTEARRAY b );
-
-#include <boost/python.hpp>
-extern map< string, vector<boost::python::object> > gHandlersFirst;
-extern map< string, vector<boost::python::object> > gHandlersSecond;
-
-#define EXECUTE_HANDLER(HandlerName, throw_if_not_all_succeeded, ...)											\
-	{																											\
-		bool AllSucceeded = true;																				\
-		vector<boost::python::object>* Functions = throw_if_not_all_succeeded ?									\
-											&gHandlersFirst[ HandlerName ] : &gHandlersSecond[ HandlerName ];	\
-																												\
-		if( !Functions->empty() )																				\
-		{																										\
-			for( vector<boost::python::object>::iterator i = Functions->begin(); i != Functions->end(); i++ )	\
-			{																									\
-				try																								\
-				{																								\
-					bool Val = boost::python::extract<bool>( (*i)( __VA_ARGS__ ) );								\
-																												\
-					if( Val = false )																			\
-						AllSucceeded = false;																	\
-				}																								\
-				catch(...)																						\
-				{																								\
-					AllSucceeded = false;																		\
-					PyErr_Print( );																				\
-				}																								\
-			}																									\
-																												\
-			if( !AllSucceeded && throw_if_not_all_succeeded )													\
-				throw;																							\
-		}																										\
-	}																											\
 
 #endif

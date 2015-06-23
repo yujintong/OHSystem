@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "config.h"
 #include "language.h"
@@ -70,11 +70,11 @@ public:
 // CGame
 //
 
-CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter ) : CBaseGame( nGHost, nMap, nSaveGame, nHostPort, nGameState, nGameName, nOwnerName, nCreatorName, nCreatorServer, nGameType, nHostCounter ), m_DBBanLast( NULL ), m_Stats( NULL ) ,m_CallableGameAdd( NULL ), m_ForfeitTime( 0 ), m_ForfeitTeam( 0 ), m_EarlyDraw( false ), m_BalanceVotes( 0 )
+CGame :: CGame( COHBot *nOHBot, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter ) : CBaseGame( nOHBot, nMap, nSaveGame, nHostPort, nGameState, nGameName, nOwnerName, nCreatorName, nCreatorServer, nGameType, nHostCounter ), m_DBBanLast( NULL ), m_Stats( NULL ) ,m_CallableGameAdd( NULL ), m_ForfeitTime( 0 ), m_ForfeitTeam( 0 ), m_EarlyDraw( false ), m_BalanceVotes( 0 )
 {
     m_DBGame = new CDBGame( 0, string( ), m_Map->GetMapPath( ), string( ), string( ), string( ), 0 );
     m_GameAlias = m_Map->GetAlias();
-    m_GameAliasName = m_GHost->GetAliasName( m_GameAlias );
+    m_GameAliasName = m_OHBot->GetAliasName( m_GameAlias );
     m_lGameAliasName = m_GameAliasName;
     transform( m_lGameAliasName.begin( ), m_lGameAliasName.end( ), m_lGameAliasName.begin( ), ::tolower );
     if( m_lGameAliasName.find("lod") != string :: npos || m_lGameAliasName.find("dota") != string :: npos || m_lGameAliasName.find("imba") != string :: npos ) {
@@ -82,28 +82,21 @@ CGame :: CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHost
     } else if( m_Map->GetAlias() != 0 ) {
         m_Stats = new CStatsW3MMD( this, m_Map->GetMapStatsW3MMDCategory( ) );
     } else {
-        CONSOLE_Print( m_GHost->m_Language->NoMapAliasRecordFound( ));
+        CONSOLE_Print( m_OHBot->m_Language->NoMapAliasRecordFound( ));
     }
 
-    if( m_GHost->m_VoteMode &&! m_Map->GetPossibleModesToVote( ).empty( ) )
+    if( m_OHBot->m_VoteMode &&! m_Map->GetPossibleModesToVote( ).empty( ) )
         GetVotingModes( m_Map->GetPossibleModesToVote( ) );
 
     m_LobbyLog.clear();
     m_GameLog.clear();
     m_ObservingPlayers = 0;
     m_LastLeaverTime = GetTime();
-
-
-    try {
-	EXECUTE_HANDLER("GameCreated", true, boost::ref(this));
-    } catch(...) { }
-        EXECUTE_HANDLER("GameCreated", false, boost::ref(this));
-
 }
 
 CGame :: ~CGame( )
 {
-    boost::mutex::scoped_lock callablesLock( m_GHost->m_CallablesMutex );
+    boost::mutex::scoped_lock callablesLock( m_OHBot->m_CallablesMutex );
 
     // autoban
     uint32_t EndTime = m_GameTicks / 1000;
@@ -113,9 +106,9 @@ CGame :: ~CGame( )
         if( IsAutoBanned( (*i)->GetName( ) ) )
         {
             uint32_t VictimLevel = 0;
-            for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+            for( vector<CBNET *> :: iterator k = m_OHBot->m_BNETs.begin( ); k != m_OHBot->m_BNETs.end( ); ++k )
             {
-                if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) || (*i)->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias)
+                if( (*k)->GetServer( ) == (*i)->GetSpoofedRealm( ) || (*i)->GetSpoofedRealm( ) == m_OHBot->m_WC3ConnectAlias)
                 {
                     VictimLevel = (*k)->IsLevel( (*i)->GetName( ) );
                     break;
@@ -130,9 +123,9 @@ CGame :: ~CGame( )
                     Counter++;
                 if( Counter <= 2 && VictimLevel <= 2 )
                 {
-                    string Reason = m_GHost->m_Language->DisconnectedAt()+" ";
+                    string Reason = m_OHBot->m_Language->DisconnectedAt()+" ";
                     if((*i)->GetLeftReason( ).find("left")!=string::npos) {
-                        Reason = m_GHost->m_Language->LeftAt()+" ";
+                        Reason = m_OHBot->m_Language->LeftAt()+" ";
                     }
                     if( EndTime < 300 ) {
                         Reason += UTIL_ToString( LeftTime/60 ) + "/" + UTIL_ToString( EndTime/60 )+"min";
@@ -148,7 +141,7 @@ CGame :: ~CGame( )
 
                         Reason += LeftMin+":"+LeftSec + "/" + EndMin+":"+EndSec;
                     }
-		    BanPlayerByPenality( (*i)->GetName( ), (*i)->GetIP( ), m_GHost->m_BotManagerName, (*i)->GetLeaverLevel( ), Reason ); 
+		    BanPlayerByPenality( (*i)->GetName( ), (*i)->GetIP( ), m_OHBot->m_BotManagerName, (*i)->GetLeaverLevel( ), Reason ); 
                 }
             }
         }
@@ -173,7 +166,7 @@ CGame :: ~CGame( )
                 AppendLogData("\t-");
         }
         AppendLogData("\n");
-        m_PairedLogUpdates.push_back( PairedLogUpdate( string( ), m_GHost->m_DB->ThreadedStoreLog( m_HostCounter, m_LogData,  m_AdminLog ) ) );
+        m_PairedLogUpdates.push_back( PairedLogUpdate( string( ), m_OHBot->m_DB->ThreadedStoreLog( m_HostCounter, m_LogData,  m_AdminLog ) ) );
         m_LogData = string();
         m_AdminLog = vector<string>();
         m_PlayerUpdate = false;
@@ -189,53 +182,50 @@ CGame :: ~CGame( )
             // store the CDBGamePlayers in the database
 
             for( vector<CDBGamePlayer *> :: iterator i = m_DBGamePlayers.begin( ); i != m_DBGamePlayers.end( ); ++i )
-                m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedGamePlayerAdd( m_CallableGameAdd->GetResult( ), (*i)->GetName( ), (*i)->GetIP( ), (*i)->GetSpoofed( ), (*i)->GetSpoofedRealm( ), (*i)->GetReserved( ), (*i)->GetLoadingTime( ), (*i)->GetLeft( ), (*i)->GetLeftReason( ), (*i)->GetTeam( ), (*i)->GetColour( ), (*i)->GetID() ) );
+                m_OHBot->m_Callables.push_back( m_OHBot->m_DB->ThreadedGamePlayerAdd( m_CallableGameAdd->GetResult( ), (*i)->GetName( ), (*i)->GetIP( ), (*i)->GetSpoofed( ), (*i)->GetSpoofedRealm( ), (*i)->GetReserved( ), (*i)->GetLoadingTime( ), (*i)->GetLeft( ), (*i)->GetLeftReason( ), (*i)->GetTeam( ), (*i)->GetColour( ), (*i)->GetID() ) );
 
             if( m_Stats )
             {
-                m_Stats->Save( m_GHost, m_GHost->m_DB, m_CallableGameAdd->GetResult( ) );
+                m_Stats->Save( m_OHBot, m_OHBot->m_DB, m_CallableGameAdd->GetResult( ) );
             }
         }
         else
             CONSOLE_Print( "[GAME: " + m_GameName + "] unable to save player/stats data to database" );
 
-        m_GHost->m_DB->RecoverCallable( m_CallableGameAdd );
+        m_OHBot->m_DB->RecoverCallable( m_CallableGameAdd );
         delete m_CallableGameAdd;
         m_CallableGameAdd = NULL;
     }
 
     for( vector<PairedPUp> :: iterator i = m_PairedPUps.begin( ); i != m_PairedPUps.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedBanCheck> :: iterator i = m_PairedBanChecks.begin( ); i != m_PairedBanChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<Pairedpm> :: iterator i = m_Pairedpms.begin( ); i != m_Pairedpms.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedGSCheck> :: iterator i = m_PairedGSChecks.begin( ); i != m_PairedGSChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedRankCheck> :: iterator i = m_PairedRankChecks.begin( ); i != m_PairedRankChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedStreakCheck> :: iterator i = m_PairedStreakChecks.begin( ); i != m_PairedStreakChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedSCheck> :: iterator i = m_PairedSChecks.begin( ); i != m_PairedSChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedPWCheck> :: iterator i = m_PairedPWChecks.begin( ); i != m_PairedPWChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedPassCheck> :: iterator i = m_PairedPassChecks.begin( ); i != m_PairedPassChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
-
-    for( vector<PairedSS> :: iterator i = m_PairedSSs.begin( ); i != m_PairedSSs.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedRegAdd> :: iterator i = m_PairedRegAdds.begin( ); i != m_PairedRegAdds.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     callablesLock.unlock( );
 
@@ -257,8 +247,8 @@ CGame :: ~CGame( )
     if( m_CallableGameAdd )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] game is being deleted before all game data was saved, game data has been lost" );
-	boost::mutex::scoped_lock lock( m_GHost->m_CallablesMutex );
-        m_GHost->m_Callables.push_back( m_CallableGameAdd );
+	boost::mutex::scoped_lock lock( m_OHBot->m_CallablesMutex );
+        m_OHBot->m_Callables.push_back( m_CallableGameAdd );
 	lock.unlock( );
     }
 }
@@ -272,11 +262,11 @@ bool CGame :: Update( void *fd, void *send_fd )
         {
             bool Result = i->second->GetResult( );
             if( Result )
-                SendAllChat( m_GHost->m_Language->ChangedRankOfUser( i->second->GetName( ), UTIL_ToString( i->second->GetLevel( ) ), i->second->GetRealm( ) ) );
+                SendAllChat( m_OHBot->m_Language->ChangedRankOfUser( i->second->GetName( ), UTIL_ToString( i->second->GetLevel( ) ), i->second->GetRealm( ) ) );
             else
-                SendAllChat( m_GHost->m_Language->NoRecordFoundForUser(i->second->GetName()) );
+                SendAllChat( m_OHBot->m_Language->NoRecordFoundForUser(i->second->GetName()) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedPUps.erase( i );
         }
@@ -291,19 +281,19 @@ bool CGame :: Update( void *fd, void *send_fd )
             CGamePlayer *Player = GetPlayerFromName( i->first, true );
             if( Player )
             {
-                if( Result == 2 && !m_GHost->PlayerCached( Player->GetName ( ) ) ) {
-                    SendChat( Player, m_GHost->m_Language->PassProtAcc( ) );
+                if( Result == 2 && !m_OHBot->PlayerCached( Player->GetName ( ) ) ) {
+                    SendChat( Player, m_OHBot->m_Language->PassProtAcc( ) );
                     Player->SetPasswordProt( true );
                     Player->SetRegistered( true );
-                } else if( Result == 2 && m_GHost->PlayerCached( Player->GetName ( ) ) ) {
-                    SendChat( Player, m_GHost->m_Language->SuccessfullyUsedCachedPass( ));
+                } else if( Result == 2 && m_OHBot->PlayerCached( Player->GetName ( ) ) ) {
+                    SendChat( Player, m_OHBot->m_Language->SuccessfullyUsedCachedPass( ));
                     Player->SetRegistered( true );
                 } else if( Result == 1 ) {
                     Player->SetRegistered( true );
                 }
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedPWChecks.erase( i );
         }
@@ -324,22 +314,22 @@ bool CGame :: Update( void *fd, void *send_fd )
 		    cachedPlayer p;
 		    p.name = Player->GetName( );
 		    p.time = GetTime();
-                    SendChat( Player, m_GHost->m_Language->SuccessfullyTypedPassword(Player->GetName()) );
-                    m_GHost->m_PlayerCache.push_back( p );
+                    SendChat( Player, m_OHBot->m_Language->SuccessfullyTypedPassword(Player->GetName()) );
+                    m_OHBot->m_PlayerCache.push_back( p );
                     Player->SetPasswordProt( false );
                     Player->SetSpoofed( true );
                 }
                 else if ( Result == 2 )
-                    SendChat( Player, m_GHost->m_Language->WrongPassword() );
+                    SendChat( Player, m_OHBot->m_Language->WrongPassword() );
                 else if ( Result == 3 )
-                    SendChat( Player, m_GHost->m_Language->NoPassProtAcc( ) );
+                    SendChat( Player, m_OHBot->m_Language->NoPassProtAcc( ) );
                 else if ( Result == 4 )
-                    SendChat( Player, m_GHost->m_Language->RemovedPassProtAcc( ) );
+                    SendChat( Player, m_OHBot->m_Language->RemovedPassProtAcc( ) );
                 else
-                    SendAllChat( m_GHost->m_Language->WrongContactBotOwner() );
+                    SendAllChat( m_OHBot->m_Language->WrongContactBotOwner() );
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedPassChecks.erase( i );
         }
@@ -352,7 +342,7 @@ bool CGame :: Update( void *fd, void *send_fd )
         if( i->second->GetReady( ) )
         {
             CDBBan *Ban = i->second->GetResult( );
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedBanChecks.erase( i );
         }
@@ -369,12 +359,12 @@ bool CGame :: Update( void *fd, void *send_fd )
             if( Player )
             {
                 if( Result == -1 )
-                    SendChat( Player, m_GHost->m_Language->SuccessfullyStoredMessage() );
+                    SendChat( Player, m_OHBot->m_Language->SuccessfullyStoredMessage() );
                 else if( Result > 0 )
-                    SendChat( Player, m_GHost->m_Language->NewMessages(Player->GetName( ), UTIL_ToString( Result ) ) );
+                    SendChat( Player, m_OHBot->m_Language->NewMessages(Player->GetName( ), UTIL_ToString( Result ) ) );
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_Pairedpms.erase( i );
         }
@@ -391,9 +381,9 @@ bool CGame :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
             if( StatsPlayerSummary )
             {
                 if(! StatsPlayerSummary->GetHidden() )
@@ -404,12 +394,12 @@ bool CGame :: Update( void *fd, void *send_fd )
                         if( StatsPlayerSummary->GetStreak( ) < 0 )
                             string Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
 
-                        SendAllChat( m_GHost->m_Language->HasPlayedGamesWithThisBot( StatsPlayerSummary->GetPlayer( ),
+                        SendAllChat( m_OHBot->m_Language->HasPlayedGamesWithThisBot( StatsPlayerSummary->GetPlayer( ),
                                      UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                      UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                      UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                      Streak,
-                                     m_GHost->GetMonthInWords(Month),
+                                     m_OHBot->GetMonthInWords(Month),
                                      Year
                                                                                    ) );
                     }
@@ -426,12 +416,12 @@ bool CGame :: Update( void *fd, void *send_fd )
                             else
                                 string Streak = UTIL_ToString( sn );
 
-                            SendChat( Player, m_GHost->m_Language->HasPlayedGamesWithThisBot( Player->GetName( ),
+                            SendChat( Player, m_OHBot->m_Language->HasPlayedGamesWithThisBot( Player->GetName( ),
                                       UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                       UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                       UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                       Streak,
-                                      m_GHost->GetMonthInWords(Month),
+                                      m_OHBot->GetMonthInWords(Month),
                                       Year
                                                                                               ) );
                         }
@@ -444,7 +434,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                     if( Player )
                     {
                         if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                            SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc( Player->GetName( ) ) );
+                            SendChat( Player, m_OHBot->m_Language->UserHasAHiddenAcc( Player->GetName( ) ) );
                         else
                         {
                             uint32_t sn = StatsPlayerSummary->GetStreak( );
@@ -454,12 +444,12 @@ bool CGame :: Update( void *fd, void *send_fd )
                             else
                                 string Streak = UTIL_ToString( sn );
 
-                            SendChat( Player, m_GHost->m_Language->HasPlayedGamesWithThisBot( Player->GetName( ),
+                            SendChat( Player, m_OHBot->m_Language->HasPlayedGamesWithThisBot( Player->GetName( ),
                                       UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                       UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                       UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                       Streak,
-                                      m_GHost->GetMonthInWords(Month),
+                                      m_OHBot->GetMonthInWords(Month),
                                       Year
                                                                                             ) );
                         }
@@ -470,25 +460,25 @@ bool CGame :: Update( void *fd, void *send_fd )
             else
             {
                 if( i->first.empty( ) )
-                    SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                 m_GHost->GetMonthInWords(Month),
+                    SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                 m_OHBot->GetMonthInWords(Month),
                                  Year,
-                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                 m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                       ) );
                 else
                 {
                     CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
                     if( Player )
-                        SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
-                                     m_GHost->GetMonthInWords(Month),
+                        SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
+                                     m_OHBot->GetMonthInWords(Month),
                                      Year,
-                                     m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                     m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                           ) );
                 }
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedGSChecks.erase( i );
         }
@@ -504,9 +494,9 @@ bool CGame :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
             if( StatsPlayerSummary )
             {
                 string Time = Month+"/"+Year;
@@ -516,20 +506,20 @@ bool CGame :: Update( void *fd, void *send_fd )
                     {
                         uint32_t Level = 0;
                         string LevelName;
-                        for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+                        for( vector<CBNET *> :: iterator k = m_OHBot->m_BNETs.begin( ); k != m_OHBot->m_BNETs.end( ); ++k )
                         {
-                            if( ( (*k)->GetServer( ) == StatsPlayerSummary->GetRealm( ) || (*k)->GetServer( ) == m_GHost->m_WC3ConnectAlias ) && m_GHost->m_RanksLoaded )
+                            if( ( (*k)->GetServer( ) == StatsPlayerSummary->GetRealm( ) || (*k)->GetServer( ) == m_OHBot->m_WC3ConnectAlias ) && m_OHBot->m_RanksLoaded )
                             {
                                 Level = (*k)->IsLevel( i->second->GetName( ) );
                                 LevelName = (*k)->GetLevelName( Level );
                                 break;
                             }
                         }
-                        if(m_GHost->m_RanksLoaded)
-                            SendAllChat( m_GHost->m_Language->RankOfUser( StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(Level), LevelName ) );
+                        if(m_OHBot->m_RanksLoaded)
+                            SendAllChat( m_OHBot->m_Language->RankOfUser( StatsPlayerSummary->GetPlayer( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(Level), LevelName ) );
                         else {
-                            SendAllChat( m_GHost->m_Language->RankOfUserWithoutLevel(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),StatsPlayerSummary->GetRank( )) );
-                            CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded());
+                            SendAllChat( m_OHBot->m_Language->RankOfUserWithoutLevel(StatsPlayerSummary->GetPlayer( ),Time,m_OHBot->GetAliasName( i->second->GetAlias( ) ),StatsPlayerSummary->GetRank( )) );
+                            CONSOLE_Print(m_OHBot->m_Language->RanksNotLoaded());
                         }
                     }
                     else
@@ -540,20 +530,20 @@ bool CGame :: Update( void *fd, void *send_fd )
                         {
                             uint32_t Level = 0;
                             string LevelName;
-                            for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+                            for( vector<CBNET *> :: iterator k = m_OHBot->m_BNETs.begin( ); k != m_OHBot->m_BNETs.end( ); ++k )
                             {
-                                if( ( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) || Player->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias ) && m_GHost->m_RanksLoaded)
+                                if( ( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) || Player->GetSpoofedRealm( ) == m_OHBot->m_WC3ConnectAlias ) && m_OHBot->m_RanksLoaded)
                                 {
                                     Level = (*k)->IsLevel( Player->GetName( ) );
                                     LevelName = (*k)->GetLevelName( Level );
                                     break;
                                 }
                             }
-                            if(m_GHost->m_RanksLoaded)
-                                SendChat( Player, m_GHost->m_Language->RankOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(Level), LevelName ) );
+                            if(m_OHBot->m_RanksLoaded)
+                                SendChat( Player, m_OHBot->m_Language->RankOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(Level), LevelName ) );
                             else {
-                                SendChat( Player, m_GHost->m_Language->RankOfUserWithoutLevel( StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( )));
-                                CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded());
+                                SendChat( Player, m_OHBot->m_Language->RankOfUserWithoutLevel( StatsPlayerSummary->GetPlayer( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( )));
+                                CONSOLE_Print(m_OHBot->m_Language->RanksNotLoaded());
                             }
                         }
                     }
@@ -563,25 +553,25 @@ bool CGame :: Update( void *fd, void *send_fd )
                     if( Player )
                     {
                         if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                            SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc(StatsPlayerSummary->GetPlayer( )) );
+                            SendChat( Player, m_OHBot->m_Language->UserHasAHiddenAcc(StatsPlayerSummary->GetPlayer( )) );
                         else
                         {
                             uint32_t Level = 0;
                             string LevelName;
-                            for( vector<CBNET *> :: iterator k = m_GHost->m_BNETs.begin( ); k != m_GHost->m_BNETs.end( ); ++k )
+                            for( vector<CBNET *> :: iterator k = m_OHBot->m_BNETs.begin( ); k != m_OHBot->m_BNETs.end( ); ++k )
                             {
-                                if( ( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) || Player->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias ) && m_GHost->m_RanksLoaded)
+                                if( ( (*k)->GetServer( ) == Player->GetSpoofedRealm( ) || Player->GetSpoofedRealm( ) == m_OHBot->m_WC3ConnectAlias ) && m_OHBot->m_RanksLoaded)
                                 {
                                     Level = (*k)->IsLevel( Player->GetName( ) );
                                     LevelName = (*k)->GetLevelName( Level );
                                     break;
                                 }
                             }
-                            if(m_GHost->m_RanksLoaded)
-                                SendChat( Player, m_GHost->m_Language->RankOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),StatsPlayerSummary->GetRank( ),UTIL_ToString(Level),LevelName ) );
+                            if(m_OHBot->m_RanksLoaded)
+                                SendChat( Player, m_OHBot->m_Language->RankOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_OHBot->GetAliasName( i->second->GetAlias( ) ),StatsPlayerSummary->GetRank( ),UTIL_ToString(Level),LevelName ) );
                             else {
-                                SendChat( Player, m_GHost->m_Language->RankOfUserWithoutLevel( StatsPlayerSummary->GetPlayer( ),Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( )));
-                                CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded());
+                                SendChat( Player, m_OHBot->m_Language->RankOfUserWithoutLevel( StatsPlayerSummary->GetPlayer( ),Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( )));
+                                CONSOLE_Print(m_OHBot->m_Language->RanksNotLoaded());
                             }
                         }
                     }
@@ -590,25 +580,25 @@ bool CGame :: Update( void *fd, void *send_fd )
             else
             {
                 if( i->first.empty( ) )
-                    SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                 m_GHost->GetMonthInWords(Month),
+                    SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                 m_OHBot->GetMonthInWords(Month),
                                  Year,
-                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                 m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                       ) );
                 else
                 {
                     CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
                     if( Player )
-                        SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
-                                     m_GHost->GetMonthInWords(Month),
+                        SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
+                                     m_OHBot->GetMonthInWords(Month),
                                      Year,
-                                     m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                     m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                           ) );
                 }
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedRankChecks.erase( i );
         }
@@ -625,35 +615,35 @@ bool CGame :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
             if( StatsPlayerSummary )
             {
                 string Time = Month+"/"+Year;
                 if(! StatsPlayerSummary->GetHidden() )
                 {
-                    SendAllChat( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
+                    SendAllChat( m_OHBot->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_OHBot->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
                 } else {
                     CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
                     if( Player )
                     {
                         if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                            SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc(StatsPlayerSummary->GetPlayer( )) );
+                            SendChat( Player, m_OHBot->m_Language->UserHasAHiddenAcc(StatsPlayerSummary->GetPlayer( )) );
                         else
-                            SendAllChat( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_GHost->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
+                            SendAllChat( m_OHBot->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ),Time,m_OHBot->GetAliasName( i->second->GetAlias( ) ),(StatsPlayerSummary->GetStreak()!=0?UTIL_ToString( StatsPlayerSummary->GetStreak( ) ):UTIL_ToString( StatsPlayerSummary->GetLosingStreak() )),UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ),UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
                     }
                 }
             }
             else
-                SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                             m_GHost->GetMonthInWords(Month),
+                SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                             m_OHBot->GetMonthInWords(Month),
                              Year,
-                             m_GHost->GetAliasName( i->second->GetAlias( ) )
+                             m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                   ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedStreakChecks.erase( i );
         }
@@ -669,16 +659,16 @@ bool CGame :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
             if( StatsPlayerSummary )
             {
-                string Alias = m_GHost->GetAliasName( i->second->GetAlias( ) );
+                string Alias = m_OHBot->GetAliasName( i->second->GetAlias( ) );
                 transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
                 string Summary="";
                 if( Alias.find("lod")!=string::npos || Alias.find("dota")!=string::npos || Alias.find("imba")!=string::npos ) {
-                    Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot(
+                    Summary = m_OHBot->m_Language->HasPlayedAliasGamesWithThisBot(
                                   UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                   UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                                   UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
@@ -718,7 +708,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                 if(! StatsPlayerSummary->GetHidden() )
                 {
                     if( i->first.empty( ) ) {
-                        SendAllChat( "["+i->second->GetName( )+"] "+m_GHost->GetMonthInWords(Month)+", "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
+                        SendAllChat( "["+i->second->GetName( )+"] "+m_OHBot->GetMonthInWords(Month)+", "+Year+", Type: "+m_OHBot->GetAliasName( i->second->GetAlias( ) ) );
                         SendAllChat( Summary );
                     }
                     else
@@ -726,7 +716,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                         CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
                         if( Player ) {
-                            SendChat( Player, "["+Player->GetName()+"] "+m_GHost->GetMonthInWords(Month)+", "+Year+", Type: "+m_GHost->GetAliasName( i->second->GetAlias( ) ) );
+                            SendChat( Player, "["+Player->GetName()+"] "+m_OHBot->GetMonthInWords(Month)+", "+Year+", Type: "+m_OHBot->GetAliasName( i->second->GetAlias( ) ) );
                             SendChat( Player, Summary );
                         }
                     }
@@ -736,7 +726,7 @@ bool CGame :: Update( void *fd, void *send_fd )
                     if( Player )
                     {
                         if( Player->GetName() != StatsPlayerSummary->GetPlayer( ) )
-                            SendChat( Player, m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
+                            SendChat( Player, m_OHBot->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                         else
                             SendChat( Player, Summary );
                     }
@@ -745,70 +735,27 @@ bool CGame :: Update( void *fd, void *send_fd )
             else
             {
                 if( i->first.empty( ) )
-                    SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                 m_GHost->GetMonthInWords(Month),
+                    SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                 m_OHBot->GetMonthInWords(Month),
                                  Year,
-                                 m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                 m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                       ) );
                 else
                 {
                     CGamePlayer *Player = GetPlayerFromName( i->first, true );
 
                     if( Player )
-                        SendAllChat( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
-                                     m_GHost->GetMonthInWords(Month),
+                        SendAllChat( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( Player->GetName( ),
+                                     m_OHBot->GetMonthInWords(Month),
                                      Year,
-                                     m_GHost->GetAliasName( i->second->GetAlias( ) )
+                                     m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                           ) );
                 }
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedSChecks.erase( i );
-        }
-        else
-            ++i;
-    }
-
-    for( vector<PairedSS> :: iterator i = m_PairedSSs.begin( ); i != m_PairedSSs.end( ); )
-    {
-        if( i->second->GetReady( ) )
-        {
-            string Result = i->second->GetResult( );
-            if( i->second->GetType( ) == "betcheck" )
-                SendAllChat( m_GHost->m_Language->CurrentPoints( i->second->GetUser( ), Result ) );
-            else if( i->second->GetType( ) == "bet" ) {
-                CGamePlayer *Player = GetPlayerFromName( i->second->GetUser( ), true );
-                if( Result == "already bet" )
-                    SendChat( Player, m_GHost->m_Language->ErrorAlreadyBet() );
-                else if( Result == "successfully bet" )
-                    SendAllChat( m_GHost->m_Language->UserBet(i->second->GetUser( ), UTIL_ToString( i->second->GetOne( ) ) ) );
-                else if( Result == "not listed" )
-                    SendChat( Player, m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ) );
-                else if ( Result != "failed" )
-                    SendChat( Player, m_GHost->m_Language->BetATooHighAmount( Result));
-                else
-                    CONSOLE_Print( "Betsystem have an issue here" );
-            }
-            else if( i->second->GetType() == "top") {
-                if( Result != "failed" )
-                    SendAllChat( Result );
-                else
-                    SendAllChat( m_GHost->m_Language->WrongContactBotOwner() );
-            }
-            else if(i->second->GetType() == "forcedgproxy") {
-                if( Result != "failed" )
-                    SendAllChat( Result );
-                else
-                    SendAllChat( m_GHost->m_Language->WrongContactBotOwner() );
-            }
-            else
-                CONSOLE_Print( "Unrecognized type was send.");
-
-            m_GHost->m_DB->RecoverCallable( i->second );
-            delete i->second;
-            i = m_PairedSSs.erase( i );
         }
         else
             ++i;
@@ -822,22 +769,22 @@ bool CGame :: Update( void *fd, void *send_fd )
             uint32_t Result = i->second->GetResult( );
             if( Player ) {
                 if( Result == 1 )
-                    SendChat( Player, m_GHost->m_Language->SuccessfullyRegistered() );
+                    SendChat( Player, m_OHBot->m_Language->SuccessfullyRegistered() );
                 else if( Result == 2 )
-                    SendChat( Player,m_GHost->m_Language->SuccessfullyRegistered() );
+                    SendChat( Player,m_OHBot->m_Language->SuccessfullyRegistered() );
                 else if( Result == 3 )
-                    SendChat( Player,m_GHost->m_Language->WrongPassword() );
+                    SendChat( Player,m_OHBot->m_Language->WrongPassword() );
                 else if( Result == 4 )
-                    SendChat( Player,m_GHost->m_Language->WrongEMail() );
+                    SendChat( Player,m_OHBot->m_Language->WrongEMail() );
                 else if( Result == 5 )
-                    SendChat( Player,m_GHost->m_Language->NameAlreadyUsed( ) );
+                    SendChat( Player,m_OHBot->m_Language->NameAlreadyUsed( ) );
                 else if( Result == 6 )
-                    SendChat( Player,m_GHost->m_Language->NoAccountToConfirm( ) );
+                    SendChat( Player,m_OHBot->m_Language->NoAccountToConfirm( ) );
                 else
-                    SendChat( Player,m_GHost->m_Language->WrongContactBotOwner( ) );
+                    SendChat( Player,m_OHBot->m_Language->WrongContactBotOwner( ) );
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedRegAdds.erase( i );
         }
@@ -867,8 +814,8 @@ bool CGame :: Update( void *fd, void *send_fd )
         string ForfeitTeamString = "Sentinel";
         if( m_ForfeitTeam == 1 ) ForfeitTeamString = "Scourge";
 
-        SendAllChat( m_GHost->m_Language->RemovingPlayerNotifyFF( ForfeitTeamString ) );
-        SendAllChat( m_GHost->m_Language->WaitForProperStatsSafe( ) );
+        SendAllChat( m_OHBot->m_Language->RemovingPlayerNotifyFF( ForfeitTeamString ) );
+        SendAllChat( m_OHBot->m_Language->WaitForProperStatsSafe( ) );
         m_ForfeitTime = 0;
         m_GameOverTime = GetTime( );
     }
@@ -878,23 +825,23 @@ bool CGame :: Update( void *fd, void *send_fd )
     // the cooldown can be only breaked by 100% of the loosing side votes
     if( m_EndGame && GetTicks( ) - m_EndTicks >= 30000 && m_EndTicks != 0 )
     {
-        if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_GHost->m_AutoEndTime ) * 1000 ) - 10000 ) )
+        if( ( GetTicks() - m_StartEndTicks ) >= ( ( ( m_OHBot->m_AutoEndTime ) * 1000 ) - 10000 ) )
         {
-            SendAllChat( m_GHost->m_Language->GameWillEndInTen( ));
+            SendAllChat( m_OHBot->m_Language->GameWillEndInTen( ));
             string WinnerTeam = m_LoosingTeam % 2  == 0 ? "Scourge" : "Sentinel";
-            SendAllChat(m_GHost->m_Language->WinnerSetTo( WinnerTeam ) );
+            SendAllChat(m_OHBot->m_Language->WinnerSetTo( WinnerTeam ) );
             m_Stats->SetWinner( ( ( m_LoosingTeam + 1 ) % 2 ) + 1 );
             m_GameOverTime = GetTime();
         } else
-            SendAllChat( m_GHost->m_Language->AutoEndSpreadInterruptNotify( UTIL_ToString( ( ( ( m_StartEndTicks + ( m_GHost->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 ) +1 ), UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes) ) );
+            SendAllChat( m_OHBot->m_Language->AutoEndSpreadInterruptNotify( UTIL_ToString( ( ( ( m_StartEndTicks + ( m_OHBot->m_AutoEndTime * 1000 ) ) - GetTicks( ) ) / 1000 ) +1 ), UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes) ) );
 
         m_EndTicks = GetTicks( );
 
     }
 
     // mode voting the process if the mode hasnt been voted after the specific time, or if there is no clear "winner"
-    if(! m_Voted && GetTime() >= m_VotedTimeStart + m_GHost->m_MaxVotingTime && !m_CountDownStarted && m_VotedTimeStart != 0 ) {
-        SendAllChat( m_GHost->m_Language-> VoteModeExpired( ) );
+    if(! m_Voted && GetTime() >= m_VotedTimeStart + m_OHBot->m_MaxVotingTime && !m_CountDownStarted && m_VotedTimeStart != 0 ) {
+        SendAllChat( m_OHBot->m_Language-> VoteModeExpired( ) );
         uint32_t a = 0;
         uint32_t b = 0;
         uint32_t c = 0;
@@ -953,25 +900,25 @@ bool CGame :: Update( void *fd, void *send_fd )
 
         if( Same.size() <= 1 || HighestVote == 0 ) {
             if( HighestVote != g && Same.size() != 0 && HighestVote != 0) {
-                SendAllChat(m_GHost->m_Language->AbsoluteVoteChoosen( m_ModesToVote[UTIL_ToUInt32(Same[0])-1] ) );
-                m_HCLCommandString =  m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Same[0])-1]) : m_ModesToVote[UTIL_ToUInt32(Same[0])-1];
+                SendAllChat(m_OHBot->m_Language->AbsoluteVoteChoosen( m_ModesToVote[UTIL_ToUInt32(Same[0])-1] ) );
+                m_HCLCommandString =  m_lGameAliasName.find("lod") != string :: npos ? m_OHBot->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Same[0])-1]) : m_ModesToVote[UTIL_ToUInt32(Same[0])-1];
                 m_Voted = true;
-                StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
+                StartCountDownAuto( m_OHBot->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
             } else {
                 uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
-                SendAllChat( m_GHost->m_Language->AbsoluteVoteChoosenRandom(m_ModesToVote[RandomMode] ) );
-                m_HCLCommandString = m_lGameAliasName.find("lod")!=string::npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode]) : m_ModesToVote[RandomMode];
+                SendAllChat( m_OHBot->m_Language->AbsoluteVoteChoosenRandom(m_ModesToVote[RandomMode] ) );
+                m_HCLCommandString = m_lGameAliasName.find("lod")!=string::npos ? m_OHBot->GetLODMode(m_ModesToVote[RandomMode]) : m_ModesToVote[RandomMode];
                 m_Voted = true;
-                StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
+                StartCountDownAuto( m_OHBot->m_RequireSpoofChecks );
                 m_LastAutoStartTime = GetTime( );
             }
         } else {
             uint32_t RandomMode = rand( ) % ( Same.size() - 1 );
-            SendAllChat(m_GHost->m_Language->TopVoteChoosenRandom(m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1] ) );
-            m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1]) : m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1];
+            SendAllChat(m_OHBot->m_Language->TopVoteChoosenRandom(m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1] ) );
+            m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_OHBot->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1]) : m_ModesToVote[UTIL_ToUInt32(Same[RandomMode])-1];
             m_Voted = true;
-            StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
+            StartCountDownAuto( m_OHBot->m_RequireSpoofChecks );
             m_LastAutoStartTime = GetTime( );
         }
     }
@@ -980,15 +927,6 @@ bool CGame :: Update( void *fd, void *send_fd )
 
 void CGame :: EventPlayerDeleted( CGamePlayer *player)
 {
-    try	
-    { 
- 	EXECUTE_HANDLER("PlayerDeleted", true, boost::ref(this), boost::ref(player)) 
-    }
-    catch(...) 
-    { 
- 	return;
-    }
- 
     CBaseGame :: EventPlayerDeleted( player );
 
     // record everything we need to know about the player for storing in the database later
@@ -1023,7 +961,7 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player)
 
         // if this was early leave, suggest to draw the game
         if( m_GameTicks < 1000 * 60 )
-            SendAllChat( m_GHost->m_Language->UseDrawToDrawGame( ) );
+            SendAllChat( m_OHBot->m_Language->UseDrawToDrawGame( ) );
 
         if( Team != 12 && m_GameOverTime == 0 && m_ForfeitTime == 0 )
         {
@@ -1067,24 +1005,24 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player)
 
             uint32_t spread = CountAlly > CountEnemy ? CountAlly - CountEnemy : CountEnemy - CountAlly;
 
-            if( spread <= 1 && !player->GetSafeDrop()  && m_GHost->m_AutobanAll && player->GetLeavePerc () > 10)
+            if( spread <= 1 && !player->GetSafeDrop()  && m_OHBot->m_AutobanAll && player->GetLeavePerc () > 10)
             {
                 m_AutoBans.push_back( player->GetName( ) );
-                SendAllChat( m_GHost->m_Language->UserMayBanned( player->GetName( ) ) );
+                SendAllChat( m_OHBot->m_Language->UserMayBanned( player->GetName( ) ) );
             }
 
-            if( m_GHost->m_MaxAllowedSpread <= spread && m_Stats && CountAlly < CountEnemy )
+            if( m_OHBot->m_MaxAllowedSpread <= spread && m_Stats && CountAlly < CountEnemy )
             {
-                if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
-                    SendAllChat( m_GHost->m_Language->AutoEndHighSpread(UTIL_ToString(spread)) );
+                if( m_OHBot->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
+                    SendAllChat( m_OHBot->m_Language->AutoEndHighSpread(UTIL_ToString(spread)) );
                 m_LoosingTeam = Team;
                 m_EndGame = true;
                 m_BreakAutoEndVotesNeeded = CountAlly-1;
             }
             // here is no spread and we actually need the full remaining players
-            else if( CountAlly+(CountEnemy-1) <= m_GHost->m_MinPlayerAutoEnd && m_Stats )
+            else if( CountAlly+(CountEnemy-1) <= m_OHBot->m_MinPlayerAutoEnd && m_Stats )
             {
-                SendAllChat( m_GHost->m_Language->AutoEndTooFewPlayers( ) );
+                SendAllChat( m_OHBot->m_Language->AutoEndTooFewPlayers( ) );
                 m_LoosingTeam = Team;
                 m_EndGame = true;
                 m_BreakAutoEndVotesNeeded = CountAlly-1;
@@ -1098,16 +1036,16 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player)
                 if( m_GameTicks < 1000 * 180 )
                 {
                     m_Stats->SetWinner( ( ( Team + 1 ) % 2 ) + 1 );
-                    if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
-                        SendAllChat( m_GHost->m_Language->AutoEndToDraw( ) );
+                    if( m_OHBot->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
+                        SendAllChat( m_OHBot->m_Language->AutoEndToDraw( ) );
                     m_GameOverTime = GetTime();
                 }
 
                 // otherwise, if more than fifteen minutes have elapsed, give the other team the win
                 else if( m_GameTicks > 1000 * 180 && m_Stats )
                 {
-                    if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
-                        SendAllChat( m_GHost->m_Language->AutoEndOneTeamRemain( ) );
+                    if( m_OHBot->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
+                        SendAllChat( m_OHBot->m_Language->AutoEndOneTeamRemain( ) );
                     m_Stats->SetWinner( ( ( Team + 1 ) % 2 ) + 1 );
                     m_SoftGameOver = true;
                     m_LoosingTeam = Team;
@@ -1115,18 +1053,18 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player)
                 }
             }
 
-            if( m_EndGame && m_GHost->m_AutoEndTime != 0 )
+            if( m_EndGame && m_OHBot->m_AutoEndTime != 0 )
             {
                 string LTeam = m_LoosingTeam % 2  == 0 ? "Sentinel" : "Scourge";
-                if( m_GHost->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
-                    SendAllChat(m_GHost->m_Language->AutoEndSpreadNotify( LTeam, UTIL_ToString(m_BreakAutoEndVotesNeeded) ) );
+                if( m_OHBot->m_HideMessages && GetTime( ) - m_LastLeaverTime >= 60 )
+                    SendAllChat(m_OHBot->m_Language->AutoEndSpreadNotify( LTeam, UTIL_ToString(m_BreakAutoEndVotesNeeded) ) );
                 m_EndTicks = GetTicks();
                 m_StartEndTicks = GetTicks();
             }
         }
 
         // if stats and not solo, and at least two leavers in first four minutes, then draw the game
-        if( !m_SoftGameOver && m_Stats && m_GameOverTime == 0 && Team != 12 && m_GameTicks < 1000 * 60 * 5 && m_GHost->m_EarlyEnd )
+        if( !m_SoftGameOver && m_Stats && m_GameOverTime == 0 && Team != 12 && m_GameTicks < 1000 * 60 * 5 && m_OHBot->m_EarlyEnd )
         {
             // check how many leavers, by starting from start players and subtracting each non-leaver player
             uint32_t m_NumLeavers = m_StartPlayers;
@@ -1139,9 +1077,9 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player)
 
             if( m_NumLeavers >= 2 )
             {
-                SendAllChat( m_GHost->m_Language->AutoEndEarlyDrawOne() );
-                SendAllChat( m_GHost->m_Language->AutoEndEarlyDrawTwo() );
-                SendAllChat( m_GHost->m_Language->AutoEndEarlyDrawThree() );
+                SendAllChat( m_OHBot->m_Language->AutoEndEarlyDrawOne() );
+                SendAllChat( m_OHBot->m_Language->AutoEndEarlyDrawTwo() );
+                SendAllChat( m_OHBot->m_Language->AutoEndEarlyDrawThree() );
 
                 // make sure leavers will get banned
                 m_EarlyDraw = true;
@@ -1151,8 +1089,6 @@ void CGame :: EventPlayerDeleted( CGamePlayer *player)
         }
         m_LastLeaverTime = GetTime( );
     }
-
-    EXECUTE_HANDLER("PlayerDeleted", false, boost::ref(this), boost::ref(player))
 }
 
 bool CGame :: EventPlayerAction( CGamePlayer *player, CIncomingAction *action )
@@ -1183,22 +1119,17 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     uint32_t Level = force ? 10 : player->GetLevel();
     string LevelName;
     // do this for the public commands
-    if(m_GHost->m_RanksLoaded && !force) {
+    if(m_OHBot->m_RanksLoaded && !force) {
         LevelName = player->GetLevelName();
     }
     else if(!force) {
-        LevelName = m_GHost->m_Language->Unknown();
+        LevelName = m_OHBot->m_Language->Unknown();
         CONSOLE_Print("Could not add correctly a levelname. ranks.txt was not loaded.");
     }
 
-    try {
-        EXECUTE_HANDLER("GameCommand", true, boost::ref(this), boost::ref(player), Command, Payload)
-    } catch(...) { }
-    EXECUTE_HANDLER("GameCommand", false, boost::ref(this), boost::ref(player), Command, Payload)
+    bool hasAccess = m_OHBot->CanAccessCommand(User, Command );
 
-    bool hasAccess = m_GHost->CanAccessCommand(User, Command );
-
-    if( spoofed && m_GHost->m_RanksLoaded && ( Level >= 5 || hasAccess ) )
+    if( spoofed && m_OHBot->m_RanksLoaded && ( Level >= 5 || hasAccess ) )
     {
         CONSOLE_Print( "[GAME: " + m_GameName + "] "+ LevelName +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
 
@@ -1227,17 +1158,17 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "forcemode" && (Level >= 9||hasAccess)) {
                 if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( )-1 ) {
-                    SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
+                    SendChat( player, m_OHBot->m_Language->ErrorInvalidModeWasVoted( ) );
                 } else {
-                    SendAllChat( m_GHost->m_Language->UserForcedMode ( User,  m_ModesToVote[UTIL_ToUInt32(Payload)-1]) );
+                    SendAllChat( m_OHBot->m_Language->UserForcedMode ( User,  m_ModesToVote[UTIL_ToUInt32(Payload)-1]) );
 					m_ForcedGameMode = UTIL_ToUInt32(Payload);
                     player->SetVotedMode(UTIL_ToUInt32(Payload));
                     if( UTIL_ToUInt32(Payload) != 7 ) {
-                        m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
+                        m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_OHBot->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
                         m_Voted = true;
                     } else {
                         uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
-                        m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
+                        m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_OHBot->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
                         m_Voted = true;
                     }
 					m_ForcedMode = true;
@@ -1257,21 +1188,21 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 CGamePlayer *LastMatch = NULL;
                 uint32_t Matches=GetPlayerFromNamePartial(user,&LastMatch);
                 if(Matches==0)
-                    SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
+                    SendChat(player,m_OHBot->m_Language->FoundNoMatchWithPlayername( ));
                 else if(Matches==1)
                 {
-                    SendChat( LastMatch, m_GHost->m_Language->LevelWasChanged( level, User ) );
+                    SendChat( LastMatch, m_OHBot->m_Language->LevelWasChanged( level, User ) );
                     LastMatch->SetLevel (UTIL_ToUInt32(level));
                 }
                 else if(Matches>1)
-                    SendChat(player,m_GHost->m_Language->FoundMultiplyMatches( ) );
+                    SendChat(player,m_OHBot->m_Language->FoundMultiplyMatches( ) );
             }
 
 
             /***********************/
             /***  FUN COMMANDS :-) */
             /***********************/
-            if( m_GHost->m_FunCommands )
+            if( m_OHBot->m_FunCommands )
             {
                 //
                 // !INSULT
@@ -1279,20 +1210,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Command=="insult" || Command=="i" && (Level >= 9||hasAccess))
                 {
                     if( Payload.empty())
-                        SendAllChat(m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
+                        SendAllChat(m_OHBot->m_Insults[rand( ) % m_OHBot->m_Insults.size( )]);
                     else
                     {
                         CGamePlayer *LastMatch = NULL;
                         uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
                         if(Matches==0)
-                           SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername( ));
+                           SendChat(player,m_OHBot->m_Language->FoundNoMatchWithPlayername( ));
                         else if(Matches==1)
                         {
-                            SendChat( player,m_GHost->m_Language->SuccessfullyLetPlayerInsult( ));
-                            SendAllChat((unsigned char)LastMatch->GetPID(),m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
+                            SendChat( player,m_OHBot->m_Language->SuccessfullyLetPlayerInsult( ));
+                            SendAllChat((unsigned char)LastMatch->GetPID(),m_OHBot->m_Insults[rand( ) % m_OHBot->m_Insults.size( )]);
                         }
                         else if(Matches>1)
-                            SendChat(player,m_GHost->m_Language->FoundMultiplyMatches( ) );
+                            SendChat(player,m_OHBot->m_Language->FoundMultiplyMatches( ) );
                     }
                     return true;
                 }
@@ -1307,14 +1238,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                   CGamePlayer *LastMatch = NULL;
                   uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
                   if(Matches==0)
-                   SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername());
+                   SendChat(player,m_OHBot->m_Language->FoundNoMatchWithPlayername());
                   else if(Matches==1)
                   {
                    LastMatch->SetCookie(3);
                    SendAllChat("[INFO] "+User+" refilled "+LastMatch->GetName()+"'s cookie jar.");
                   }
                   else if(Matches>1)
-                   SendChat(player,m_GHost->m_Language->FoundMultiplyMatches());
+                   SendChat(player,m_OHBot->m_Language->FoundMultiplyMatches());
 		  return true;
 		}
                 //
@@ -1323,19 +1254,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else if( Command=="setinsult" && Level >= 9 )
                 {
                     if(Payload.empty())
-                        SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                        SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername());
                     else
                     {
                         CGamePlayer *LastMatch = NULL;
                         uint32_t Matches=GetPlayerFromNamePartial(Payload,&LastMatch);
                         if(Matches==0)
-                            SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername());
+                            SendChat(player,m_OHBot->m_Language->FoundNoMatchWithPlayername());
                         else if(Matches==1)
                         {
-                            LastMatch->SetInsultM( m_GHost->m_Insults[rand( ) % m_GHost->m_Insults.size( )]);
+                            LastMatch->SetInsultM( m_OHBot->m_Insults[rand( ) % m_OHBot->m_Insults.size( )]);
                         }
                         else if(Matches>1)
-                            SendChat(player,m_GHost->m_Language->FoundMultiplyMatches());
+                            SendChat(player,m_OHBot->m_Language->FoundMultiplyMatches());
                     }
                     return true;
                 }
@@ -1350,7 +1281,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     SS<<Payload;
                     SS>>suser;
                     if(suser.size()<3)
-                        SendChat(player,m_GHost->m_Language->InvalidNameTooShort());
+                        SendChat(player,m_OHBot->m_Language->InvalidNameTooShort());
                     else
                     {
                         SS>>message;
@@ -1362,19 +1293,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 message=message.substr(Start);
                         }
                         if(message.length()>100)
-                            SendChat(player,m_GHost->m_Language->MessageTooLongChooseAMoreShorten( ));
+                            SendChat(player,m_OHBot->m_Language->MessageTooLongChooseAMoreShorten( ));
                         else
                         {
                             CGamePlayer *LastMatch = NULL;
                             uint32_t Matches=GetPlayerFromNamePartial(suser,&LastMatch);
                             if(Matches==0)
-                                SendChat(player,m_GHost->m_Language->FoundNoMatchWithPlayername());
+                                SendChat(player,m_OHBot->m_Language->FoundNoMatchWithPlayername());
                             else if(Matches==1)
                             {
                                 SendAllChat((unsigned char)LastMatch->GetPID(),message);
                             }
                             else if(Matches>1)
-                                SendChat(player,m_GHost->m_Language->FoundMultiplyMatches());
+                                SendChat(player,m_OHBot->m_Language->FoundMultiplyMatches());
                         }
                     }
                     return true;
@@ -1394,7 +1325,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                 if( Name.length() <= 3 )
                 {
-                    SendChat( player, m_GHost->m_Language->InvalidNameTooShort() );
+                    SendChat( player, m_OHBot->m_Language->InvalidNameTooShort() );
                     return true;
                 }
 
@@ -1402,18 +1333,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                 if( SS.fail( ) || NewLevel.empty() )
                 {
-                    SendChat( player, m_GHost->m_Language->WrongInputInvalidLevel());
+                    SendChat( player, m_OHBot->m_Language->WrongInputInvalidLevel());
                     return true;
                 }
                 else
                 {
                     if( !NewLevel.find_first_not_of( "1234567890" ) == string :: npos )
                     {
-                        SendChat( player, m_GHost->m_Language->WrongInputUseALevel() );
+                        SendChat( player, m_OHBot->m_Language->WrongInputUseALevel() );
                         return true;
                     }
 
-                    m_PairedPUps.push_back( PairedPUp( string( ), m_GHost->m_DB->ThreadedPUp( Name, UTIL_ToUInt32( NewLevel ), "Garena", User) ) );
+                    m_PairedPUps.push_back( PairedPUp( string( ), m_OHBot->m_DB->ThreadedPUp( Name, UTIL_ToUInt32( NewLevel ), "Garena", User) ) );
                 }
             }
 
@@ -1426,24 +1357,24 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                     if( Command == "only" )
                     {
-                        SendAllChat( m_GHost->m_Language->DisallowedOnlyCountryCheckNotify( ) );
+                        SendAllChat( m_OHBot->m_Language->DisallowedOnlyCountryCheckNotify( ) );
                         m_LimitCountries = false;
                     }
                     else if( Command == "unallow" || Command == "disallow" || Command == "deniecountry" )
                     {
-                        SendAllChat( m_GHost->m_Language->DisallowedUnallowedCountryCheckNotify( ) );
+                        SendAllChat( m_OHBot->m_Language->DisallowedUnallowedCountryCheckNotify( ) );
                         m_DenieCountries = false;
                     }
                     m_LimitedCountries.clear();
                 }
                 else if( m_DenieCountries && Command == "only" )
                 {
-                    SendChat( player, m_GHost->m_Language->ErrorCountryDenyListIsntCleared( ) );
+                    SendChat( player, m_OHBot->m_Language->ErrorCountryDenyListIsntCleared( ) );
                     return HideCommand;
                 }
                 else if( m_LimitCountries && Command == "unallow" || Command == "disallow" || Command == "deniecountry" )
                 {
-                    SendChat( player, m_GHost->m_Language->ErrorCountryOnlyListIsntCleared( ) );
+                    SendChat( player, m_OHBot->m_Language->ErrorCountryOnlyListIsntCleared( ) );
                     return HideCommand;
                 }
                 else
@@ -1464,18 +1395,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             AllLimitedCountries = AllLimitedCountries + ", " + *i;
                     }
 
-                    SendAllChat( m_GHost->m_Language->EnabledDeniedOrLimitedCountries( ( Command = "only" ? "Allowed countries" : "Denied countries" ), AllLimitedCountries ) );
+                    SendAllChat( m_OHBot->m_Language->EnabledDeniedOrLimitedCountries( ( Command = "only" ? "Allowed countries" : "Denied countries" ), AllLimitedCountries ) );
 
                     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
                     {
                         string CC = (*i)->GetCLetter( );
                         transform( CC.begin( ), CC.end( ), CC.begin( ), (int(*)(int))toupper );
                         bool isReserved = false;
-                        for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); j++ )
+                        for( vector<CBNET *> :: iterator j = m_OHBot->m_BNETs.begin( ); j != m_OHBot->m_BNETs.end( ); j++ )
                         {
                             if( (*j)->IsLevel( (*i)->GetName( ) ) != 0 )
                             {
-                                SendAllChat(m_GHost->m_Language->CountryKickExceptionPlayer( (*i)->GetName( ),CC,(isReserved?"":"not "),(*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) ) );
+                                SendAllChat(m_OHBot->m_Language->CountryKickExceptionPlayer( (*i)->GetName( ),CC,(isReserved?"":"not "),(*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) ) );
                                 isReserved = true;
                                 break;
                             }
@@ -1491,7 +1422,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                         if ( !isReserved && (*i)->GetName( ) != User && unallowedcountry )
                         {
-                            SendAllChat( m_GHost->m_Language->KickedPlayerForDeniedCountry( (*i)->GetName( ) ) );
+                            SendAllChat( m_OHBot->m_Language->KickedPlayerForDeniedCountry( (*i)->GetName( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was autokicked by having an unallowed country.");
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1506,19 +1437,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "forcegproxy" ) {
                 if(Payload.empty()) {
-                    SendChat( player, m_GHost->m_Language->NoUserDefined( ));
+                    SendChat( player, m_OHBot->m_Language->NoUserDefined( ));
                 } else {
                     CGamePlayer *LastMatch = NULL;
                     uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                     if( Matches == 0 )
                     {
-                        SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                        SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername());
                     }
                     else if( Matches == 1 )
                     {
-                        m_PairedSSs.push_back( PairedSS( string( ), m_GHost->m_DB->ThreadedStatsSystem( Payload,User, 0, "forcegproxy" ) ) );
+                        m_PairedSSs.push_back( PairedSS( string( ), m_OHBot->m_DB->ThreadedStatsSystem( Payload,User, 0, "forcegproxy" ) ) );
                     } else {
-                        SendChat( player, m_GHost->m_Language->FoundMultiplyMatches());
+                        SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches());
                     }
                 }
             }
@@ -1531,22 +1462,22 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload == "on" )
                 {
                     m_GameNoGarena = true;
-                    SendAllChat( m_GHost->m_Language->DeniedGarenaKickNotify( ) );
+                    SendAllChat( m_OHBot->m_Language->DeniedGarenaKickNotify( ) );
                     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); i++ )
                     {
                         bool isReserved = false;
-                        for( vector<CBNET *> :: iterator j = m_GHost->m_BNETs.begin( ); j != m_GHost->m_BNETs.end( ); j++ )
+                        for( vector<CBNET *> :: iterator j = m_OHBot->m_BNETs.begin( ); j != m_OHBot->m_BNETs.end( ); j++ )
                         {
                             if( (*j)->IsLevel( (*i)->GetName( ) ) != 0 )
                             {
-                                SendAllChat(m_GHost->m_Language->CountryKickExceptionPlayer( (*i)->GetName( ),(*i)->GetSpoofedRealm( ),(isReserved?"":"not "),(*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) ) );
+                                SendAllChat(m_OHBot->m_Language->CountryKickExceptionPlayer( (*i)->GetName( ),(*i)->GetSpoofedRealm( ),(isReserved?"":"not "),(*j)->GetLevelName( (*j)->IsLevel( (*i)->GetName( ) ) ) ) );
                                 isReserved = true;
                                 break;
                             }
                         }
                         if( !isReserved && (*i)->GetSpoofedRealm( ) == "garena" )
                         {
-                            SendAllChat( m_GHost->m_Language->KickedPlayerForDeniedGarena( (*i)->GetName( ) ) );
+                            SendAllChat( m_OHBot->m_Language->KickedPlayerForDeniedGarena( (*i)->GetName( ) ) );
                             (*i)->SetDeleteMe( true );
                             (*i)->SetLeftReason( "was autokicked by having an unallowed realm.");
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1557,7 +1488,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 else if( Payload == "off" )
                     m_GameNoGarena = false;
                 else
-                    SendChat( player, m_GHost->m_Language->WrongOptionUserOnOff() );
+                    SendChat( player, m_OHBot->m_Language->WrongOptionUserOnOff() );
             }
 
             //
@@ -1579,12 +1510,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Matches == 0 )
                 {
 	            DenyPlayer(Payload, Payload, false);
-                    SendAllChat( m_GHost->m_Language->DeniedUser( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->DeniedUser( Payload ) );
                 }
                 else if( Matches == 1 )
                 {
 		    DenyPlayer(LastMatch->GetName(), LastMatch->GetExternalIPString( ), true);
-                    SendAllChat( m_GHost->m_Language->DeniedUser( LastMatch->GetName( ) ) );
+                    SendAllChat( m_OHBot->m_Language->DeniedUser( LastMatch->GetName( ) ) );
                     LastMatch->SetDeleteMe( true );
                     LastMatch->SetLeftReason( "got denied for this lobby" );
                     LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -1592,7 +1523,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_Balanced = false;
                 }
                 else
-                    SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                    SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
             }
 	    //
 	    // !undeny
@@ -1624,7 +1555,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( !Payload.empty() )
                     StatsUser = Payload;
 
-                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( StatsUser, "", "", 0, "check" ) ) );
+                m_Pairedpenps.push_back( Pairedpenp( string(), m_OHBot->m_DB->Threadedpenp( StatsUser, "", "", 0, "check" ) ) );
             }
 
             //
@@ -1642,7 +1573,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( SS.fail( ) || Victim.empty() )
                     CONSOLE_Print( "[PP] bad input #1 to !TEMPBAN command" );
                 else if( Victim.size() < 3 )
-                    SendChat( player, m_GHost->m_Language->InvalidNameTooShort());
+                    SendChat( player, m_OHBot->m_Language->InvalidNameTooShort());
                 else
                 {
                     SS >> Amount;
@@ -1650,7 +1581,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( SS.fail( ) || Amount == 0 )
                         CONSOLE_Print( "[PP] bad input #2 to !TEMPBAN command" );
                     else if( ( Amount > 3 && (hasAccess||Level < 8) ) || Amount > 10 && Level <= 10 )
-                        SendChat( player, m_GHost->m_Language->TooMuchPPoints() );
+                        SendChat( player, m_OHBot->m_Language->TooMuchPPoints() );
                     else
                     {
                         SS >> Reason;
@@ -1668,14 +1599,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             CGamePlayer *LastMatch = NULL;
                             uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
                             if( Matches == 0 )
-                                SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
+                                SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername() );
                             else if( Matches == 1 )
-                                m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( LastMatch->GetName( ), Reason, User, Amount , "add" ) ) );
+                                m_Pairedpenps.push_back( Pairedpenp( string(), m_OHBot->m_DB->Threadedpenp( LastMatch->GetName( ), Reason, User, Amount , "add" ) ) );
                             else if( Matches > 1 )
-                                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                                SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
                         }
                         else
-                            SendChat( player, m_GHost->m_Language->ErrorMissingReason() );
+                            SendChat( player, m_OHBot->m_Language->ErrorMissingReason() );
                     }
                 }
             }
@@ -1683,7 +1614,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // give
             //
-            else if( Command == "give" && Level >= 7 && m_GHost->m_FunCommands)
+            else if( Command == "give" && Level >= 7 && m_OHBot->m_FunCommands)
             {
                 string User;
                 string TheThing;
@@ -1722,16 +1653,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                 uint32_t Matches = GetPlayerFromNamePartial( User, &LastMatch );
 
                                 if( Matches == 0 )
-                                    SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
+                                    SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername() );
                                 else if( Matches == 1 )
                                 {
                                     LastMatch->SetTheThing (TheThing);
                                     LastMatch->SetTheThingType (TheThingType);
                                     LastMatch->SetTheThingAmount(TheThingAmount);
-                                    SendAllChat( m_GHost->m_Language->GaveTheThing(User, LastMatch->GetName() ) );
+                                    SendAllChat( m_OHBot->m_Language->GaveTheThing(User, LastMatch->GetName() ) );
                                 }
                                 else if( Matches > 1 )
-                                    SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                                    SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
                             }
                         }
                     }
@@ -1749,7 +1680,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // we use "!a" as an alias for abort because you don't have much time to abort the countdown so it's useful for the abort command to be easy to type
             else if( ( Command == "abort" || Command == "a" ) && m_CountDownStarted && !m_GameLoading && !m_GameLoaded && Level >= 7 )
             {
-                SendAllChat( m_GHost->m_Language->CountDownAborted( ) );
+                SendAllChat( m_OHBot->m_Language->CountDownAborted( ) );
                 m_CountDownStarted = false;
             }
 
@@ -1818,11 +1749,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
 
                         if( Matches == 0 )
-                            SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanNoMatchesFound( Victim ) );
                         else if( Matches == 1 )
-                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, 0, "" ) ) );
+                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_OHBot->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, 0, "" ) ) );
                         else
-                            SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                     }
                     else
                     {
@@ -1830,15 +1761,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
 
                         if( Matches == 0 )
-                            SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanNoMatchesFound( Victim ) );
                         else if( Matches == 1 )
-                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, 0, LastMatch->GetCLetter( ) ) ) );
+                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_OHBot->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, 0, LastMatch->GetCLetter( ) ) ) );
                         else
-                            SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                     }
                 }
                 else
-                    SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                    SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
             }
             //
             // !ADDBAN
@@ -1893,12 +1824,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
 
                         if( Matches == 0 )
-                            SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanNoMatchesFound( Victim ) );
                         else if( Matches == 1 ) {
 			    BanPlayerByPenality( LastMatch->GetName(), LastMatch->GetIP(), User, LastMatch->GetPenalityLevel(), Reason ); 
 			}
                         else
-                            SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                     }
                     else
                     {
@@ -1906,16 +1837,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
 
                         if( Matches == 0 )
-                            SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanNoMatchesFound( Victim ) );
                         else if( Matches == 1 ) {
 			    BanPlayerByPenality( LastMatch->GetName(), LastMatch->GetExternalIPString(), User, LastMatch->GetPenalityLevel(), Reason );
 			}
                         else
-                            SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                     }
                 }
                 else
-                    SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                    SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
             }
 
             //
@@ -1941,7 +1872,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( SS.fail( ) || Victim.empty() )
                     CONSOLE_Print( "[TEMPBAN] bad input #1 to !TEMPBAN command" );
                 else if( Victim.size() < 3 )
-                    SendChat( player, m_GHost->m_Language->InvalidNameTooShort() );
+                    SendChat( player, m_OHBot->m_Language->InvalidNameTooShort() );
                 else
                 {
                     SS >> Amount;
@@ -2020,16 +1951,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                     }
 
                                     if( Matches == 0 )
-                                        SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                                        SendAllChat( m_OHBot->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                     else if( Matches == 1 )
                                     {
                                         if( Level >= 6 || ( Level == 5 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
-                                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "" ) ) );
+                                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_OHBot->m_DB->ThreadedBanAdd( LastMatch->GetServer( ), LastMatch->GetName( ), LastMatch->GetIP( ), m_GameName, User, Reason, BanTime, "" ) ) );
                                         else
-                                            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                                            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
                                     }
                                     else
-                                        SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                                        SendAllChat( m_OHBot->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                                 }
                                 else
                                 {
@@ -2037,22 +1968,22 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                                     uint32_t Matches = GetPlayerFromNamePartial( Victim, &LastMatch );
 
                                     if( Matches == 0 )
-                                        SendAllChat( m_GHost->m_Language->UnableToBanNoMatchesFound( Victim ) );
+                                        SendAllChat( m_OHBot->m_Language->UnableToBanNoMatchesFound( Victim ) );
                                     else if( Matches == 1 )
                                     {
                                         if( Level >= 6 || ( Level == 5 ) && ( ( Suffix == "hour" || Suffix == "hours" || Suffix == "h" ) || ( ( Suffix == "days" || Suffix == "d" || Suffix == "day" ) && Amount <= 5 ) ) )
-                                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ) ) ) );
+                                            m_PairedBanAdds.push_back( PairedBanAdd( User, m_OHBot->m_DB->ThreadedBanAdd( LastMatch->GetJoinedRealm( ), LastMatch->GetName( ), LastMatch->GetExternalIPString( ), m_GameName, User, Reason, BanTime, LastMatch->GetCLetter( ) ) ) );
                                         else
-                                            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                                            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
 
                                     }
                                     else
-                                        SendAllChat( m_GHost->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
+                                        SendAllChat( m_OHBot->m_Language->UnableToBanFoundMoreThanOneMatch( Victim ) );
                                 }
                             }
                             else
                             {
-                                SendChat( player, m_GHost->m_Language->ErrorBanningWrongSuffix(Suffix) );
+                                SendChat( player, m_OHBot->m_Language->ErrorBanningWrongSuffix(Suffix) );
                             }
                         }
                     }
@@ -2067,7 +1998,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload.empty( ) || Payload == "off" )
                 {
-                    SendAllChat( m_GHost->m_Language->AnnounceMessageDisabled( ) );
+                    SendAllChat( m_OHBot->m_Language->AnnounceMessageDisabled( ) );
                     SetAnnounce( 0, string( ) );
                 }
                 else
@@ -2095,7 +2026,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             if( Start != string :: npos )
                                 Message = Message.substr( Start );
 
-                            SendAllChat( m_GHost->m_Language->AnnounceMessageEnabled( ) );
+                            SendAllChat( m_OHBot->m_Language->AnnounceMessageEnabled( ) );
                             SetAnnounce( Interval, Message );
                         }
                     }
@@ -2110,12 +2041,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload == "on" )
                 {
-                    SendAllChat( m_GHost->m_Language->AutoSaveEnabled( ) );
+                    SendAllChat( m_OHBot->m_Language->AutoSaveEnabled( ) );
                     m_AutoSave = true;
                 }
                 else if( Payload == "off" )
                 {
-                    SendAllChat( m_GHost->m_Language->AutoSaveDisabled( ) );
+                    SendAllChat( m_OHBot->m_Language->AutoSaveDisabled( ) );
                     m_AutoSave = false;
                 }
             }
@@ -2128,7 +2059,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload.empty( ) || Payload == "off" )
                 {
-                    SendAllChat( m_GHost->m_Language->AutoStartDisabled( ) );
+                    SendAllChat( m_OHBot->m_Language->AutoStartDisabled( ) );
                     m_AutoStartPlayers = 0;
                 }
                 else
@@ -2137,7 +2068,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                     if( AutoStartPlayers != 0 )
                     {
-                        SendAllChat( m_GHost->m_Language->AutoStartEnabled( UTIL_ToString( AutoStartPlayers ) ) );
+                        SendAllChat( m_OHBot->m_Language->AutoStartEnabled( UTIL_ToString( AutoStartPlayers ) ) );
                         m_AutoStartPlayers = AutoStartPlayers;
                     }
                 }
@@ -2154,10 +2085,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( Payload.empty( ) )
                         Payload = "Leaver";
 
-                    m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 0, "" ) ) );
+                    m_PairedBanAdds.push_back( PairedBanAdd( User, m_OHBot->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 0, "" ) ) );
                 }
                 else
-                    SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                    SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
             }
 
             //
@@ -2169,7 +2100,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload.empty( ) )
                     Payload = "Leaver";
 
-                m_PairedBanAdds.push_back( PairedBanAdd( User, m_GHost->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 432000, "" ) ) );
+                m_PairedBanAdds.push_back( PairedBanAdd( User, m_OHBot->m_DB->ThreadedBanAdd( m_DBBanLast->GetServer( ), m_DBBanLast->GetName( ), m_DBBanLast->GetIP( ), m_GameName, User, Payload, 432000, "" ) ) );
             }
 
             //
@@ -2183,16 +2114,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
                     if( Matches == 0 )
-                        SendAllChat( m_GHost->m_Language->UnableToCheckPlayerNoMatchesFound( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToCheckPlayerNoMatchesFound( Payload ) );
                     else if( Matches == 1 )
                     {
-                        SendAllChat( "[" + LastMatch->GetName( ) + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( LastMatch->GetNumPings( ) > 0 ? UTIL_ToString( LastMatch->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") "+LastMatch->GetCLetter()==""?"":("(" + m_GHost->m_Language->Country() + ": " + LastMatch->GetCLetter( )+ ") ")+"(" + m_GHost->m_Language->Status() + ": " + ( LastMatch->GetLevelName( ).empty() ? m_GHost->m_Language->Unknown() : LastMatch->GetLevelName( ) ) + ") (" + m_GHost->m_Language->SpoofChecked() + ": " + ( LastMatch->GetSpoofed( ) ? m_GHost->m_Language->Yes() : m_GHost->m_Language->No() ) + ") (" + m_GHost->m_Language->Realm() + ": " + ( LastMatch->GetSpoofedRealm( ).empty( ) ? "N/A" : LastMatch->GetSpoofedRealm( ) ) + ")" );
+                        SendAllChat( "[" + LastMatch->GetName( ) + "] (" + m_OHBot->m_Language->YourPingIsToday( ) + ": " + ( LastMatch->GetNumPings( ) > 0 ? UTIL_ToString( LastMatch->GetPing( m_OHBot->m_LCPings ) ) + m_OHBot->m_Language->Ms() : "N/A" ) + ") "+LastMatch->GetCLetter()==""?"":("(" + m_OHBot->m_Language->Country() + ": " + LastMatch->GetCLetter( )+ ") ")+"(" + m_OHBot->m_Language->Status() + ": " + ( LastMatch->GetLevelName( ).empty() ? m_OHBot->m_Language->Unknown() : LastMatch->GetLevelName( ) ) + ") (" + m_OHBot->m_Language->SpoofChecked() + ": " + ( LastMatch->GetSpoofed( ) ? m_OHBot->m_Language->Yes() : m_OHBot->m_Language->No() ) + ") (" + m_OHBot->m_Language->Realm() + ": " + ( LastMatch->GetSpoofedRealm( ).empty( ) ? "N/A" : LastMatch->GetSpoofedRealm( ) ) + ")" );
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->UnableToCheckPlayerFoundMoreThanOneMatch( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToCheckPlayerFoundMoreThanOneMatch( Payload ) );
                 }
                 else
-                    SendAllChat( "[" + User + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") "+player->GetCLetter()==""?"":("(" + m_GHost->m_Language->Country() + ": " + player->GetCLetter( ) + ") ")+"(" + m_GHost->m_Language->Status() + ": " + (LevelName.empty() ? m_GHost->m_Language->Unknown() : LevelName) + ") (" + m_GHost->m_Language->SpoofChecked() + ": " + ( player->GetSpoofed( ) ? m_GHost->m_Language->Yes() : m_GHost->m_Language->No() ) + ") (" + m_GHost->m_Language->Realm() + ": " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) +")" );
+                    SendAllChat( "[" + User + "] (" + m_OHBot->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_OHBot->m_LCPings ) ) + m_OHBot->m_Language->Ms() : "N/A" ) + ") "+player->GetCLetter()==""?"":("(" + m_OHBot->m_Language->Country() + ": " + player->GetCLetter( ) + ") ")+"(" + m_OHBot->m_Language->Status() + ": " + (LevelName.empty() ? m_OHBot->m_Language->Unknown() : LevelName) + ") (" + m_OHBot->m_Language->SpoofChecked() + ": " + ( player->GetSpoofed( ) ? m_OHBot->m_Language->Yes() : m_OHBot->m_Language->No() ) + ") (" + m_OHBot->m_Language->Realm() + ": " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) +")" );
             }
 
             //
@@ -2200,8 +2131,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "checkban" && !Payload.empty( ) )
             {
-                for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
-                    m_PairedBanChecks.push_back( PairedBanCheck( User, m_GHost->m_DB->ThreadedBanCheck( (*i)->GetServer( ), Payload, string( ) ) ) );
+                for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
+                    m_PairedBanChecks.push_back( PairedBanCheck( User, m_OHBot->m_DB->ThreadedBanCheck( (*i)->GetServer( ), Payload, string( ) ) ) );
             }
 
             //
@@ -2210,7 +2141,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             else if( Command == "clearhcl" && !m_CountDownStarted && Level >= 8 )
             {
                 m_HCLCommandString.clear( );
-                SendAllChat( m_GHost->m_Language->ClearingHCL( ) );
+                SendAllChat( m_OHBot->m_Language->ClearingHCL( ) );
             }
 
             //
@@ -2470,7 +2401,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // !DBSTATUS
             //
             else if( Command == "dbstatus" && Level >= 9 )
-                SendAllChat( m_GHost->m_DB->GetStatus( ) );
+                SendAllChat( m_OHBot->m_DB->GetStatus( ) );
 
             //
             // !DOWNLOAD
@@ -2482,7 +2413,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
                 if( Matches == 0 )
-                    SendAllChat( m_GHost->m_Language->UnableToStartDownloadNoMatchesFound( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToStartDownloadNoMatchesFound( Payload ) );
                 else if( Matches == 1 )
                 {
                     if( !LastMatch->GetDownloadStarted( ) && !LastMatch->GetDownloadFinished( ) )
@@ -2502,7 +2433,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     }
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToStartDownloadFoundMoreThanOneMatch( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToStartDownloadFoundMoreThanOneMatch( Payload ) );
             }
 
             //
@@ -2523,7 +2454,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             // !FAKEPLAYER
             //
-            else if( Command == "fakeplayer" && !m_CountDownStarted && Level >= 8 && !m_GHost->m_ObserverFake )
+            else if( Command == "fakeplayer" && !m_CountDownStarted && Level >= 8 && !m_OHBot->m_ObserverFake )
             {
                 if( m_FakePlayerPID == 255 )
                     CreateFakePlayer( );
@@ -2574,16 +2505,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         if( Payload.find_first_not_of( HCLChars ) == string :: npos )
                         {
                             m_HCLCommandString = Payload;
-                            SendAllChat( m_GHost->m_Language->SettingHCL( m_HCLCommandString ) );
+                            SendAllChat( m_OHBot->m_Language->SettingHCL( m_HCLCommandString ) );
                         }
                         else
-                            SendAllChat( m_GHost->m_Language->UnableToSetHCLInvalid( ) );
+                            SendAllChat( m_OHBot->m_Language->UnableToSetHCLInvalid( ) );
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->UnableToSetHCLTooLong( ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToSetHCLTooLong( ) );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->TheHCLIs( m_HCLCommandString ) );
+                    SendAllChat( m_OHBot->m_Language->TheHCLIs( m_HCLCommandString ) );
             }
 
             //
@@ -2608,7 +2539,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     }
                     else
                     {
-                        SendAllChat( m_GHost->m_Language->AddedPlayerToTheHoldList( HoldName ) );
+                        SendAllChat( m_OHBot->m_Language->AddedPlayerToTheHoldList( HoldName ) );
                         AddToReserved( HoldName, 255, 1 );
                     }
                 }
@@ -2654,7 +2585,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
                 if( Matches == 0 )
-                    SendAllChat( m_GHost->m_Language->UnableToKickNoMatchesFound( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToKickNoMatchesFound( Payload ) );
                 else if( Matches == 1 )
                 {
                     uint32_t VictimLevel = LastMatch->GetLevel();
@@ -2663,14 +2594,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     {
                         LastMatch->SetDeleteMe( true );
 			if(Command != "skick" || Command != "sk" ) {
-	                        LastMatch->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
+	                        LastMatch->SetLeftReason( m_OHBot->m_Language->WasKickedByPlayer( User ) );
 
 	                        if( !m_GameLoading && !m_GameLoaded )
         	                    LastMatch->SetLeftCode( PLAYERLEAVE_LOBBY );
                 	        else
                         	    LastMatch->SetLeftCode( PLAYERLEAVE_LOST );
 			} else {
-			    LastMatch->SetLeftReason( m_GHost->m_Language->HasLostConnectionClosedByRemoteHost( ) );
+			    LastMatch->SetLeftReason( m_OHBot->m_Language->HasLostConnectionClosedByRemoteHost( ) );
 			    LastMatch->SetLeftCode( PLAYERLEAVE_DISCONNECT );
 			    return true;
 			}
@@ -2681,10 +2612,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         }
                     }
                     else
-                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                        SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToKickFoundMoreThanOneMatch( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToKickFoundMoreThanOneMatch( Payload ) );
             }
 
             //
@@ -2693,7 +2624,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             else if( Command == "latency" && Level >= 9 )
             {
                 if( Payload.empty( ) )
-                    SendAllChat( m_GHost->m_Language->LatencyIs( UTIL_ToString( m_Latency ) ) );
+                    SendAllChat( m_OHBot->m_Language->LatencyIs( UTIL_ToString( m_Latency ) ) );
                 else
                 {
                     m_Latency = UTIL_ToUInt32( Payload );
@@ -2701,15 +2632,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( m_Latency <= 20 )
                     {
                         m_Latency = 20;
-                        SendAllChat( m_GHost->m_Language->SettingLatencyToMinimum( "20" ) );
+                        SendAllChat( m_OHBot->m_Language->SettingLatencyToMinimum( "20" ) );
                     }
                     else if( m_Latency >= 500 )
                     {
                         m_Latency = 500;
-                        SendAllChat( m_GHost->m_Language->SettingLatencyToMaximum( "500" ) );
+                        SendAllChat( m_OHBot->m_Language->SettingLatencyToMaximum( "500" ) );
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->SettingLatencyTo( UTIL_ToString( m_Latency ) ) );
+                        SendAllChat( m_OHBot->m_Language->SettingLatencyTo( UTIL_ToString( m_Latency ) ) );
                 }
             }
 
@@ -2718,7 +2649,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "gamelock" && Level >= 9 )
             {
-                SendAllChat( m_GHost->m_Language->GameLocked( ) );
+                SendAllChat( m_OHBot->m_Language->GameLocked( ) );
                 m_Locked = true;
             }
 
@@ -2729,12 +2660,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload == "on" )
                 {
-                    SendAllChat( m_GHost->m_Language->LocalAdminMessagesEnabled( ) );
+                    SendAllChat( m_OHBot->m_Language->LocalAdminMessagesEnabled( ) );
                     m_LocalAdminMessages = true;
                 }
                 else if( Payload == "off" )
                 {
-                    SendAllChat( m_GHost->m_Language->LocalAdminMessagesDisabled( ) );
+                    SendAllChat( m_OHBot->m_Language->LocalAdminMessagesDisabled( ) );
                     m_LocalAdminMessages = false;
                 }
             }
@@ -2746,13 +2677,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload == "on" )
                 {
-                    SendAllChat( m_GHost->m_Language->EnabledAutobalance ());
-                    m_GHost->m_OHBalance = true;
+                    SendAllChat( m_OHBot->m_Language->EnabledAutobalance ());
+                    m_OHBot->m_OHBalance = true;
                 }
                 else if( Payload == "off" )
                 {
-                    SendAllChat( m_GHost->m_Language->DisabledAutobalance ());
-                    m_GHost->m_OHBalance = false;
+                    SendAllChat( m_OHBot->m_Language->DisabledAutobalance ());
+                    m_OHBot->m_OHBalance = false;
                 }
             }
 
@@ -2765,21 +2696,21 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
                 if( Matches == 0 )
-                    SendAllChat( m_GHost->m_Language->UnableToMuteNoMatchesFound( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToMuteNoMatchesFound( Payload ) );
                 else if( Matches == 1 )
                 {
                     uint32_t VictimLevel = LastMatch->GetLevel();
                     string VictimLevelName = LastMatch->GetLevelName();
                     if( VictimLevel <= 1 || Level >= 9 )
                     {
-                        SendAllChat( m_GHost->m_Language->MutedPlayer( LastMatch->GetName( ), User ) );
+                        SendAllChat( m_OHBot->m_Language->MutedPlayer( LastMatch->GetName( ), User ) );
                         LastMatch->SetMuted( true );
                     }
                     else
-                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                        SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
             }
 
             //
@@ -2789,27 +2720,27 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload.empty())
                 {
-                    SendAllChat( m_GHost->m_Language->GlobalChatMuted( ) );
+                    SendAllChat( m_OHBot->m_Language->GlobalChatMuted( ) );
                     m_MuteAll = true;
                 } else {
                     CGamePlayer *LastMatch = NULL;
                     uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                     if( Matches == 0 )
-                        SendAllChat( m_GHost->m_Language->UnableToMuteNoMatchesFound( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToMuteNoMatchesFound( Payload ) );
                     else if( Matches == 1 )
                     {
                         uint32_t VictimLevel = LastMatch->GetLevel();
                         string VictimLevelName = LastMatch->GetLevelName();
                         if( VictimLevel <= 1 || Level >= 9 )
                         {
-                            SendAllChat( m_GHost->m_Language->MutedAllChatOfUser( LastMatch->GetName( ), User ) );
+                            SendAllChat( m_OHBot->m_Language->MutedAllChatOfUser( LastMatch->GetName( ), User ) );
                             LastMatch->SetGlobalChatMuted( true );
                         }
                         else
-                            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
                 }
             }
 
@@ -2856,17 +2787,17 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 {
                     if( !Payload.empty( ) )
                     {
-                        SendAllChat( m_GHost->m_Language->SettingGameOwnerTo( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->SettingGameOwnerTo( Payload ) );
                         m_OwnerName = Payload;
                     }
                     else
                     {
-                        SendAllChat( m_GHost->m_Language->SettingGameOwnerTo( User ) );
+                        SendAllChat( m_OHBot->m_Language->SettingGameOwnerTo( User ) );
                         m_OwnerName = User;
                     }
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToSetGameOwner( m_OwnerName ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToSetGameOwner( m_OwnerName ) );
             }
 
             //
@@ -2896,18 +2827,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                     if( (*i)->GetNumPings( ) > 0 )
                     {
-                        Pings += UTIL_ToString( (*i)->GetPing( m_GHost->m_LCPings ) );
+                        Pings += UTIL_ToString( (*i)->GetPing( m_OHBot->m_LCPings ) );
 
-                        if( !m_GameLoading && !m_GameLoaded && !(*i)->GetReserved( ) && KickPing > 0 && (*i)->GetPing( m_GHost->m_LCPings ) > KickPing )
+                        if( !m_GameLoading && !m_GameLoaded && !(*i)->GetReserved( ) && KickPing > 0 && (*i)->GetPing( m_OHBot->m_LCPings ) > KickPing )
                         {
                             (*i)->SetDeleteMe( true );
-                            (*i)->SetLeftReason( "was kicked for excessive ping " + UTIL_ToString( (*i)->GetPing( m_GHost->m_LCPings ) ) + " > " + UTIL_ToString( KickPing ) );
+                            (*i)->SetLeftReason( "was kicked for excessive ping " + UTIL_ToString( (*i)->GetPing( m_OHBot->m_LCPings ) ) + " > " + UTIL_ToString( KickPing ) );
                             (*i)->SetLeftCode( PLAYERLEAVE_LOBBY );
                             OpenSlot( GetSIDFromPID( (*i)->GetPID( ) ), false );
                             Kicked++;
                         }
 
-                        Pings += m_GHost->m_Language->Ms();
+                        Pings += m_OHBot->m_Language->Ms();
                     }
                     else
                         Pings += "N/A";
@@ -2928,7 +2859,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     SendAllChat( Pings );
 
                 if( Kicked > 0 )
-                    SendAllChat( m_GHost->m_Language->KickingPlayersWithPingsGreaterThan( UTIL_ToString( Kicked ), UTIL_ToString( KickPing ) ) );
+                    SendAllChat( m_OHBot->m_Language->KickingPlayersWithPingsGreaterThan( UTIL_ToString( Kicked ), UTIL_ToString( KickPing ) ) );
             }
 
             //
@@ -2939,14 +2870,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload.length() < 31 )
                 {
                     CONSOLE_Print( "[GAME: " + m_GameName + "] trying to rehost as private game [" + Payload + "]" );
-                    SendAllChat( m_GHost->m_Language->TryingToRehostAsPrivateGame( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->TryingToRehostAsPrivateGame( Payload ) );
                     m_GameState = GAME_PRIVATE;
                     m_LastGameName = m_GameName;
                     m_GameName = Payload;
                     m_RefreshError = false;
                     m_RefreshRehosted = true;
 
-                    for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+                    for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
                     {
                         // unqueue any existing game refreshes because we're going to assume the next successful game refresh indicates that the rehost worked
                         // this ignores the fact that it's possible a game refresh was just sent and no response has been received yet
@@ -2968,7 +2899,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_LastRefreshTime = GetTime( );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToCreateGameNameTooLong( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToCreateGameNameTooLong( Payload ) );
             }
 
             //
@@ -2979,13 +2910,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Payload.length() < 31 )
                 {
                     CONSOLE_Print( "[GAME: " + m_GameName + "] trying to rehost as public game [" + Payload + "]" );
-                    SendAllChat( m_GHost->m_Language->TryingToRehostAsPublicGame( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->TryingToRehostAsPublicGame( Payload ) );
                     m_GameState = GAME_PUBLIC;
                     m_LastGameName = m_GameName;
                     m_GameName = Payload;
                     m_RefreshError = false;
                     m_RefreshRehosted = true;
-                    for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+                    for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
                     {
                         // unqueue any existing game refreshes because we're going to assume the next successful game refresh indicates that the rehost worked
                         // this ignores the fact that it's possible a game refresh was just sent and no response has been received yet
@@ -3002,7 +2933,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_LastRefreshTime = GetTime( );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToCreateGameNameTooLong( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToCreateGameNameTooLong( Payload ) );
             }
 
             //
@@ -3012,12 +2943,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload == "on" )
                 {
-                    SendAllChat( m_GHost->m_Language->RefreshMessagesEnabled( ) );
+                    SendAllChat( m_OHBot->m_Language->RefreshMessagesEnabled( ) );
                     m_RefreshMessages = true;
                 }
                 else if( Payload == "off" )
                 {
-                    SendAllChat( m_GHost->m_Language->RefreshMessagesDisabled( ) );
+                    SendAllChat( m_OHBot->m_Language->RefreshMessagesDisabled( ) );
                     m_RefreshMessages = false;
                 }
             }
@@ -3027,7 +2958,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "say" && !Payload.empty( ) && Level >= 8 )
             {
-                for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+                for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
                     (*i)->QueueChatCommand( Payload );
 
                 HideCommand = true;
@@ -3042,7 +2973,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 // e.g. "1.2.3.4 6112" -> ip: "1.2.3.4", port: "6112"
 
                 string IP;
-                uint32_t Port = m_GHost->m_BroadCastPort;
+                uint32_t Port = m_OHBot->m_BroadCastPort;
                 stringstream SS;
                 SS << Payload;
                 SS >> IP;
@@ -3083,7 +3014,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         BYTEARRAY MapHeight;
                         MapHeight.push_back( 0 );
                         MapHeight.push_back( 0 );
-                        m_GHost->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_GHost->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                        m_OHBot->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_OHBot->m_TFT, m_OHBot->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_OHBot->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
                     }
                     else
                     {
@@ -3091,7 +3022,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
 
                         uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
-                        m_GHost->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_GHost->m_TFT, m_GHost->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_GHost->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, m_Map->GetMapPath( ), m_Map->GetMapCRC( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
+                        m_OHBot->m_UDPSocket->SendTo( IP, Port, m_Protocol->SEND_W3GS_GAMEINFO( m_OHBot->m_TFT, m_OHBot->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_OHBot->m_BNETs[0]->GetUserName(), GetTime( ) - m_CreationTime, m_Map->GetMapPath( ), m_Map->GetMapCRC( ), 12, 12, m_HostPort, FixedHostCounter, m_EntryKey ) );
                     }
                 }
             }
@@ -3101,7 +3032,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "sp" && !m_CountDownStarted && Level >= 8 )
             {
-                SendAllChat( m_GHost->m_Language->ShufflingPlayers( ) );
+                SendAllChat( m_OHBot->m_Language->ShufflingPlayers( ) );
                 ShuffleSlots( );
             }
 
@@ -3120,7 +3051,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( GetTicks( ) - m_LastPlayerLeaveTicks >= 2000 )
                         StartCountDown( false );
                     else
-                        SendAllChat( m_GHost->m_Language->CountDownAbortedSomeoneLeftRecently( ) );
+                        SendAllChat( m_OHBot->m_Language->CountDownAbortedSomeoneLeftRecently( ) );
                 }
             }
 
@@ -3170,7 +3101,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             else if( Command == "synclimit" && Level >= 9 )
             {
                 if( Payload.empty( ) )
-                    SendAllChat( m_GHost->m_Language->SyncLimitIs( UTIL_ToString( m_SyncLimit ) ) );
+                    SendAllChat( m_OHBot->m_Language->SyncLimitIs( UTIL_ToString( m_SyncLimit ) ) );
                 else
                 {
                     m_SyncLimit = UTIL_ToUInt32( Payload );
@@ -3178,15 +3109,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( m_SyncLimit <= 10 )
                     {
                         m_SyncLimit = 10;
-                        SendAllChat( m_GHost->m_Language->SettingSyncLimitToMinimum( "10" ) );
+                        SendAllChat( m_OHBot->m_Language->SettingSyncLimitToMinimum( "10" ) );
                     }
                     else if( m_SyncLimit >= 10000 )
                     {
                         m_SyncLimit = 10000;
-                        SendAllChat( m_GHost->m_Language->SettingSyncLimitToMaximum( "10000" ) );
+                        SendAllChat( m_OHBot->m_Language->SettingSyncLimitToMaximum( "10000" ) );
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->SettingSyncLimitTo( UTIL_ToString( m_SyncLimit ) ) );
+                        SendAllChat( m_OHBot->m_Language->SettingSyncLimitTo( UTIL_ToString( m_SyncLimit ) ) );
                 }
             }
 
@@ -3201,7 +3132,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "gameunlock" && Level >= 9 )
             {
-                SendAllChat( m_GHost->m_Language->GameUnlocked( ) );
+                SendAllChat( m_OHBot->m_Language->GameUnlocked( ) );
                 m_Locked = false;
             }
 
@@ -3214,14 +3145,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
                 if( Matches == 0 )
-                    SendAllChat( m_GHost->m_Language->UnableToMuteNoMatchesFound( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToMuteNoMatchesFound( Payload ) );
                 else if( Matches == 1 )
                 {
-                    SendAllChat( m_GHost->m_Language->UnmutedPlayer( LastMatch->GetName( ), User ) );
+                    SendAllChat( m_OHBot->m_Language->UnmutedPlayer( LastMatch->GetName( ), User ) );
                     LastMatch->SetMuted( false );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
+                    SendAllChat( m_OHBot->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
             }
 
             //
@@ -3231,27 +3162,27 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             {
                 if( Payload.empty())
                 {
-                    SendAllChat( m_GHost->m_Language->GlobalChatUnmuted( ) );
+                    SendAllChat( m_OHBot->m_Language->GlobalChatUnmuted( ) );
                     m_MuteAll = false;
                 } else {
                     CGamePlayer *LastMatch = NULL;
                     uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
                     if( Matches == 0 )
-                        SendAllChat( m_GHost->m_Language->UnableToMuteNoMatchesFound( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToMuteNoMatchesFound( Payload ) );
                     else if( Matches == 1 )
                     {
                         uint32_t VictimLevel = LastMatch->GetLevel();
                         string VictimLevelName = LastMatch->GetLevelName();
                         if( VictimLevel <= 1 || Level >= 9 )
                         {
-                            SendAllChat( m_GHost->m_Language->UnMutedAllChatOfUser( LastMatch->GetName( ), User ) );
+                            SendAllChat( m_OHBot->m_Language->UnMutedAllChatOfUser( LastMatch->GetName( ), User ) );
                             LastMatch->SetGlobalChatMuted( false );
                         }
                         else
-                            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
                     }
                     else
-                        SendAllChat( m_GHost->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
+                        SendAllChat( m_OHBot->m_Language->UnableToMuteFoundMoreThanOneMatch( Payload ) );
                 }
 
             }
@@ -3270,7 +3201,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             //
             else if( Command == "votecancel" && !m_KickVotePlayer.empty( ) && Level >= 8 )
             {
-                SendAllChat( m_GHost->m_Language->VoteKickCancelled( m_KickVotePlayer ) );
+                SendAllChat( m_OHBot->m_Language->VoteKickCancelled( m_KickVotePlayer ) );
                 m_KickVotePlayer.clear( );
                 m_StartedKickVoteTime = 0;
             }
@@ -3292,7 +3223,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     Name = Payload.substr( 0, MessageStart );
                     Message = Payload.substr( MessageStart + 1 );
 
-                    for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+                    for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
                         (*i)->QueueChatCommand( Message, Name, true );
                 }
 
@@ -3304,7 +3235,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             else if( Command == "winner" && m_GameLoaded && Level >= 9 )
             {
                 m_Stats->SetWinner(UTIL_ToUInt32(Payload));
-                SendAllChat(m_GHost->m_Language->SetWinnerByUser( User, (Payload=="1"?"Sentinel":"Scourge") ) );
+                SendAllChat(m_OHBot->m_Language->SetWinnerByUser( User, (Payload=="1"?"Sentinel":"Scourge") ) );
                 m_GameOverTime = GetTime();
                 m_EndGame = false;
             }
@@ -3312,11 +3243,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else
         {
             CONSOLE_Print( "[GAME: " + m_GameName + "] admin command ignored, the game is locked" );
-            SendChat( player, m_GHost->m_Language->TheGameIsLocked( ) );
+            SendChat( player, m_OHBot->m_Language->TheGameIsLocked( ) );
         }
     }
-    else if(!m_GHost->m_RanksLoaded)
-        CONSOLE_Print(m_GHost->m_Language->RanksNotLoaded());
+    else if(!m_OHBot->m_RanksLoaded)
+        CONSOLE_Print(m_OHBot->m_Language->RanksNotLoaded());
     else
     {
         if( !spoofed )
@@ -3335,11 +3266,11 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     if( Command == "checkme" || Command == "cm" )
     {
-        SendChat( player, "[" + User + "] (" + m_GHost->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) + ") (" + m_GHost->m_Language->Country() + ": " + player->GetCLetter( ) + ") (" + m_GHost->m_Language->Status() + ": " + ( LevelName.empty() ? m_GHost->m_Language->Unknown() : LevelName ) + ") (" + m_GHost->m_Language->SpoofChecked() + ": " + ( player->GetSpoofed( ) ? m_GHost->m_Language->Yes() : m_GHost->m_Language->No() ) + ") (" + m_GHost->m_Language->Realm() + ": " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) + ")" );
+        SendChat( player, "[" + User + "] (" + m_OHBot->m_Language->YourPingIsToday( ) + ": " + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_OHBot->m_LCPings ) ) + m_OHBot->m_Language->Ms() : "N/A" ) + ") (" + m_OHBot->m_Language->Country() + ": " + player->GetCLetter( ) + ") (" + m_OHBot->m_Language->Status() + ": " + ( LevelName.empty() ? m_OHBot->m_Language->Unknown() : LevelName ) + ") (" + m_OHBot->m_Language->SpoofChecked() + ": " + ( player->GetSpoofed( ) ? m_OHBot->m_Language->Yes() : m_OHBot->m_Language->No() ) + ") (" + m_OHBot->m_Language->Realm() + ": " + ( player->GetSpoofedRealm( ).empty( ) ? "N/A" : player->GetSpoofedRealm( ) ) + ")" );
         if( player->GetForfeitVote() )
-            SendChat( player, m_GHost->m_Language->UserAlreadyVotedForFF( ) );
+            SendChat( player, m_OHBot->m_Language->UserAlreadyVotedForFF( ) );
         if( player->GetDrawVote( ) )
-            SendChat( player, m_GHost->m_Language->UserAlreadyVotedForDraw( ) );
+            SendChat( player, m_OHBot->m_Language->UserAlreadyVotedForDraw( ) );
         string IgnoredPlayers;
         for( vector<string> :: iterator i = player->m_IgnoreList.begin( ); i != player->m_IgnoreList.end( ); ++i )
         {
@@ -3349,15 +3280,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 IgnoredPlayers = ", " + *i;
         }
         if( !IgnoredPlayers.empty( ) )
-            SendChat( player, m_GHost->m_Language->DisplayIgnoredPlayersForUser( IgnoredPlayers ) );
+            SendChat( player, m_OHBot->m_Language->DisplayIgnoredPlayersForUser( IgnoredPlayers ) );
         if( player->GetAFKMarked( ) )
-            SendChat( player, m_GHost->m_Language->AlreadyMarkedAsAFK( ) );
+            SendChat( player, m_OHBot->m_Language->AlreadyMarkedAsAFK( ) );
         if( player->GetFeedLevel( ) == 1 )
-            SendChat( player, m_GHost->m_Language->AlreadyMarkedAsFeeder( ) );
+            SendChat( player, m_OHBot->m_Language->AlreadyMarkedAsFeeder( ) );
         if( player->GetFeedLevel( ) == 2 )
-            SendChat( player, m_GHost->m_Language->AlreadyMarkedAsFullFeeder( ) );
+            SendChat( player, m_OHBot->m_Language->AlreadyMarkedAsFullFeeder( ) );
         if( player->GetHighPingTimes( ) > 0 )
-            SendChat( player, m_GHost->m_Language->AlreadyMarkedXTimesWithHighPing( UTIL_ToString( player->GetHighPingTimes( ) ) ) );
+            SendChat( player, m_OHBot->m_Language->AlreadyMarkedXTimesWithHighPing( UTIL_ToString( player->GetHighPingTimes( ) ) ) );
     }
     //
     // !STATS
@@ -3384,19 +3315,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( Matches == 0 )
         {
             if( spoofed && Level >= 8 )
-                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
+                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
             else
-                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
+                m_PairedGSChecks.push_back( PairedGSCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
         }
         else if( Matches == 1 )
         {
             if( spoofed && Level >= 8 )
-                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ),Month, Year, 0 ) ) );
+                m_PairedGSChecks.push_back( PairedGSCheck( string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ),Month, Year, 0 ) ) );
             else
-                m_PairedGSChecks.push_back( PairedGSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, 0 ) ) );
+                m_PairedGSChecks.push_back( PairedGSCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, 0 ) ) );
         }
         else if( Matches > 1 )
-            SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+            SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
 
         player->SetStatsSentTime( GetTime( ) );
     }
@@ -3419,14 +3350,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else if( Command.size( ) < 4 )
             alias = Command.substr( 1, Command.size( ) - 1 );
 
-        m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
+        m_StatsAlias = m_OHBot->GetStatsAliasNumber( alias );
 
         if( m_StatsAlias == 0 ) {
-            SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            if(m_GHost->m_Aliases.size() != 0 && m_GHost->m_Aliases.size() > m_GameAlias) {
-                SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            SendChat( player, m_OHBot->m_Language->DidNotFoundAlias( alias ) );
+            if(m_OHBot->m_Aliases.size() != 0 && m_OHBot->m_Aliases.size() > m_GameAlias) {
+                SendChat( player, m_OHBot->m_Language->UsingDefaultAlias( m_OHBot->m_Aliases[m_GameAlias-1] ) );
             } else {
-                SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
+                SendChat( player, m_OHBot->m_Language->LostConnectionPleaseTryLater());
             }
             m_StatsAlias = m_GameAlias;
         }
@@ -3447,19 +3378,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if( Matches == 0 )
             {
                 if( spoofed && Level >= 8 )
-                    m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                    m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                 else
-                    m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                    m_PairedRankChecks.push_back( PairedRankCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
             }
             else if( Matches == 1 )
             {
                 if( spoofed && Level >= 8 )
-                    m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                    m_PairedRankChecks.push_back( PairedRankCheck( string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
                 else
-                    m_PairedRankChecks.push_back( PairedRankCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                    m_PairedRankChecks.push_back( PairedRankCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
             }
             else if( Matches > 1 )
-                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
         }
 
         player->SetStatsSentTime( GetTime( ) );
@@ -3483,14 +3414,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else if( Command.size( ) < 5 )
             alias = Command.substr( 1, Command.size( ) - 1 );
 
-        m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
+        m_StatsAlias = m_OHBot->GetStatsAliasNumber( alias );
 
         if( m_StatsAlias == 0 ) {
-            SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            if(m_GHost->m_Aliases.size() != 0 && m_GHost->m_Aliases.size() > m_GameAlias) {
-                SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            SendChat( player, m_OHBot->m_Language->DidNotFoundAlias( alias ) );
+            if(m_OHBot->m_Aliases.size() != 0 && m_OHBot->m_Aliases.size() > m_GameAlias) {
+                SendChat( player, m_OHBot->m_Language->UsingDefaultAlias( m_OHBot->m_Aliases[m_GameAlias-1] ) );
             } else {
-                SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
+                SendChat( player, m_OHBot->m_Language->LostConnectionPleaseTryLater());
             }
             m_StatsAlias = m_GameAlias;
         }
@@ -3514,19 +3445,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if( Matches == 0 )
             {
                 if( spoofed && Level >= 8 )
-                    m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                    m_PairedSChecks.push_back( PairedSCheck( string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
                 else
-                    m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                    m_PairedSChecks.push_back( PairedSCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
             }
             else if( Matches == 1 )
             {
                 if( spoofed && Level >= 8 )
-                    m_PairedSChecks.push_back( PairedSCheck( string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                    m_PairedSChecks.push_back( PairedSCheck( string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
                 else
-                    m_PairedSChecks.push_back( PairedSCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
+                    m_PairedSChecks.push_back( PairedSCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( LastMatch->GetName( ), Month, Year, m_StatsAlias ) ) );
             }
             else if( Matches > 1 )
-                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
         }
 
         player->SetStatsDotASentTime( GetTime( ) );
@@ -3549,14 +3480,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         else if( Command.size( ) < 6 )
             alias = Command.substr( 2, Command.size( ) - 2 );
 
-        m_StatsAlias = m_GHost->GetStatsAliasNumber( alias );
+        m_StatsAlias = m_OHBot->GetStatsAliasNumber( alias );
 
         if( m_StatsAlias == 0 ) {
-            SendChat( player, m_GHost->m_Language->DidNotFoundAlias( alias ) );
-            if(m_GHost->m_Aliases.size() != 0  && m_GHost->m_Aliases.size() > m_GameAlias) {
-                SendChat( player, m_GHost->m_Language->UsingDefaultAlias( m_GHost->m_Aliases[m_GameAlias-1] ) );
+            SendChat( player, m_OHBot->m_Language->DidNotFoundAlias( alias ) );
+            if(m_OHBot->m_Aliases.size() != 0  && m_OHBot->m_Aliases.size() > m_GameAlias) {
+                SendChat( player, m_OHBot->m_Language->UsingDefaultAlias( m_OHBot->m_Aliases[m_GameAlias-1] ) );
             } else {
-                SendChat( player, m_GHost->m_Language->LostConnectionPleaseTryLater());
+                SendChat( player, m_OHBot->m_Language->LostConnectionPleaseTryLater());
             }
             m_StatsAlias = m_GameAlias;
         }
@@ -3576,7 +3507,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             // check for potential abuse
 
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                m_PairedStreakChecks.push_back( PairedStreakCheck( User, m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
         }
 
         player->SetStatsDotASentTime( GetTime( ) );
@@ -3588,7 +3519,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     else if( Command == "statsaliases") {
         string Aliases = "";
         uint32_t c = 1;
-        for( vector<string> :: iterator i = m_GHost->m_Aliases.begin( ); i != m_GHost->m_Aliases.end( ); ++i ) {
+        for( vector<string> :: iterator i = m_OHBot->m_Aliases.begin( ); i != m_OHBot->m_Aliases.end( ); ++i ) {
             if( c == 1 )
                 Aliases += *i;
             else
@@ -3610,9 +3541,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     else if( Command == "version" )
     {
         if( spoofed && Level >= 8 )
-            SendAllChat( m_GHost->m_Language->VersionAdmin( m_GHost->m_Version ) );
+            SendAllChat( m_OHBot->m_Language->VersionAdmin( m_OHBot->m_Version ) );
         else
-            SendAllChat( m_GHost->m_Language->VersionNotAdmin( m_GHost->m_Version ) );
+            SendAllChat( m_OHBot->m_Language->VersionNotAdmin( m_OHBot->m_Version ) );
     }
 
     //
@@ -3620,8 +3551,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( ( Command == "wvk" || Command == "whovk" || Command == "whovoted" || Command == "whovotekicked" ) && !m_KickVotePlayer.empty( ) )
     {
-        SendChat( player, m_GHost->m_Language->CurrentVoteKickProcessUser( m_KickVotePlayer) );
-        SendChat( player, m_GHost->m_Language->CurrentVoteKickRunTime( UTIL_ToString(GetTime()-m_StartedKickVoteTime), UTIL_ToString(60-(GetTime()-m_StartedKickVoteTime)) ) );
+        SendChat( player, m_OHBot->m_Language->CurrentVoteKickProcessUser( m_KickVotePlayer) );
+        SendChat( player, m_OHBot->m_Language->CurrentVoteKickRunTime( UTIL_ToString(GetTime()-m_StartedKickVoteTime), UTIL_ToString(60-(GetTime()-m_StartedKickVoteTime)) ) );
         uint32_t VotesNeeded = (float)( ( GetNumHumanPlayers( ) - 1 ) /2) * 0.75;
         uint32_t Votes = 0;
         string VotedPlayers;
@@ -3643,20 +3574,20 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     // !VOTEKICK
     //
 
-    else if( Command == "votekick" && m_GHost->m_VoteKickAllowed && !Payload.empty( ) && ( !m_GameLoaded || ( m_GameLoaded && m_GHost->m_IngameVoteKick) ) )
+    else if( Command == "votekick" && m_OHBot->m_VoteKickAllowed && !Payload.empty( ) && ( !m_GameLoaded || ( m_GameLoaded && m_OHBot->m_IngameVoteKick) ) )
     {
         player->SetVKTimes( );
         if( player->GetVKTimes( ) == 8 )
-           BanPlayerByPenality( User, player->GetExternalIPString(), m_GHost->m_BotManagerName, player->GetPenalityLevel(), "votekick abuse" ); 
+           BanPlayerByPenality( User, player->GetExternalIPString(), m_OHBot->m_BotManagerName, player->GetPenalityLevel(), "votekick abuse" ); 
 	else if( player->GetVKTimes( ) == 5 )
-            m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( User, "votekick abuse", m_GHost->m_BotManagerName, 1, "add" ) ) );
+            m_Pairedpenps.push_back( Pairedpenp( string(), m_OHBot->m_DB->Threadedpenp( User, "votekick abuse", m_OHBot->m_BotManagerName, 1, "add" ) ) );
         else if( player->GetVKTimes( ) >= 2 )
-            SendChat( player, m_GHost->m_Language->NotifyForAbusiveVotekick( ) );
+            SendChat( player, m_OHBot->m_Language->NotifyForAbusiveVotekick( ) );
 
         if( !m_KickVotePlayer.empty( ) )
-            SendChat( player, m_GHost->m_Language->UnableToVoteKickAlreadyInProgress( ) );
+            SendChat( player, m_OHBot->m_Language->UnableToVoteKickAlreadyInProgress( ) );
         else if( m_Players.size( ) <= 3 )
-            SendChat( player, m_GHost->m_Language->UnableToVoteKickNotEnoughPlayers( ) );
+            SendChat( player, m_OHBot->m_Language->UnableToVoteKickNotEnoughPlayers( ) );
         else
         {
             string name;
@@ -3667,12 +3598,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SS >> reason;
             if( SS.fail( ) || reason.empty( ) )
             {
-                SendChat( player, m_GHost->m_Language->ErrorMissingReason() );
+                SendChat( player, m_OHBot->m_Language->ErrorMissingReason() );
                 return HideCommand;
             }
             if( !CustomVoteKickReason( reason ) )
             {
-                SendChat( player, m_GHost->m_Language->NotifyForCustomVotekickReason( ) );
+                SendChat( player, m_OHBot->m_Language->NotifyForCustomVotekickReason( ) );
                 return HideCommand;
             }
             else
@@ -3681,7 +3612,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 uint32_t Matches = GetPlayerFromNamePartial( name, &LastMatch );
 
                 if( Matches == 0 )
-                    SendChat( player, m_GHost->m_Language->UnableToVoteKickNoMatchesFound( name ) );
+                    SendChat( player, m_OHBot->m_Language->UnableToVoteKickNoMatchesFound( name ) );
                 else if( Matches == 1 )
                 {
                     //see if the player is the only one left on his team
@@ -3714,9 +3645,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                     uint32_t VLevel = 0;
                     string VLevelName;
-                    for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+                    for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
                     {
-                        if( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias )
+                        if( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == m_OHBot->m_WC3ConnectAlias )
                         {
                             VLevel = (*i)->IsLevel( LastMatch->GetName( ) );
                             VLevelName = (*i)->GetLevelName( Level );
@@ -3726,25 +3657,25 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                     if( reason.find( "feeding" ) != string::npos && LastMatch->GetFeedLevel( ) == 0 )
                     {
-                        SendChat( player, m_GHost->m_Language->VoteKickedUserWhoWasntMarkedAsFeeder( LastMatch->GetName( ) ) );
-                        SendChat( player, m_GHost->m_Language->VoteKickFeederAbuseReason( ));
+                        SendChat( player, m_OHBot->m_Language->VoteKickedUserWhoWasntMarkedAsFeeder( LastMatch->GetName( ) ) );
+                        SendChat( player, m_OHBot->m_Language->VoteKickFeederAbuseReason( ));
                         player->SetVKTimes( );
                         return HideCommand;
                     }
 
                     if( reason.find( "feeding" ) != string::npos && LastMatch->GetFeedLevel( ) == 1 )
                     {
-                        SendChat( player, m_GHost->m_Language->VoteKickedUserWhoWasMarkedAsFeederLevelOne(LastMatch->GetName( ) ) );
-                        SendChat( player, m_GHost->m_Language->ReminederForVotekickAFeederLevelOne( ) );
+                        SendChat( player, m_OHBot->m_Language->VoteKickedUserWhoWasMarkedAsFeederLevelOne(LastMatch->GetName( ) ) );
+                        SendChat( player, m_OHBot->m_Language->ReminederForVotekickAFeederLevelOne( ) );
                         return HideCommand;
                     }
 
                     if( VLevel > 2 || Level < VLevel )
-                        SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+                        SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
                     else if( OnlyPlayer )
-                        SendChat( player, m_GHost->m_Language->VoteKickNotPossiblePlayerIsInAnotherTeam( LastMatch->GetName( ) ) );
+                        SendChat( player, m_OHBot->m_Language->VoteKickNotPossiblePlayerIsInAnotherTeam( LastMatch->GetName( ) ) );
                     else if( LastMatch == player )
-                        SendChat( player, m_GHost->m_Language->UnableToVotekickYourself( ) );
+                        SendChat( player, m_OHBot->m_Language->UnableToVotekickYourself( ) );
                     else
                     {
                         m_KickVotePlayer = LastMatch->GetName( );
@@ -3754,12 +3685,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                             (*i)->SetKickVote( false );
 
                         player->SetKickVote( true );
-                        SendAllChat( m_GHost->m_Language->StartedVoteKick( LastMatch->GetName( ), User, UTIL_ToString( (float)( ( GetNumHumanPlayers( ) - 1 ) /2) * 0.75, 0 ) ) );
-                        SendAllChat( m_GHost->m_Language->TypeYesToVote( string( 1, m_GHost->m_CommandTrigger ) ) );
+                        SendAllChat( m_OHBot->m_Language->StartedVoteKick( LastMatch->GetName( ), User, UTIL_ToString( (float)( ( GetNumHumanPlayers( ) - 1 ) /2) * 0.75, 0 ) ) );
+                        SendAllChat( m_OHBot->m_Language->TypeYesToVote( string( 1, m_OHBot->m_CommandTrigger ) ) );
                     }
                 }
                 else
-                    SendChat( player, m_GHost->m_Language->UnableToVoteKickFoundMoreThanOneMatch( name ) );
+                    SendChat( player, m_OHBot->m_Language->UnableToVoteKickFoundMoreThanOneMatch( name ) );
             }
         }
     }
@@ -3769,7 +3700,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( Command == "vkreasons" && m_KickVotePlayer.empty( ) )
     {
-        SendChat( player, m_GHost->m_Language->CustomVoteKickReasons( ) );
+        SendChat( player, m_OHBot->m_Language->CustomVoteKickReasons( ) );
         SendChat( player, "Maphack, Fountainfarm, Feeding, Flaming & Gameruin" );
         return HideCommand;
     }
@@ -3778,14 +3709,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     // !VOTESTART
     //
 
-    if( ( Command == "votestart" || Command == "vs" ) && !m_CountDownStarted && m_GHost->m_AllowVoteStart )
+    if( ( Command == "votestart" || Command == "vs" ) && !m_CountDownStarted && m_OHBot->m_AllowVoteStart )
     {
 
-        if( !m_GHost->m_CurrentGame->GetLocked( ) )
+        if( !m_OHBot->m_CurrentGame->GetLocked( ) )
         {
             if(m_StartedVoteStartTime == 0) { //need >minplayers or admin to START a votestart
-                if (GetNumHumanPlayers() < m_GHost->m_VoteStartMinPlayers ) { //need at least eight players to votestart
-                    SendChat( player, m_GHost->m_Language->UnableToVoteStartMissingPlayers( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ) );
+                if (GetNumHumanPlayers() < m_OHBot->m_VoteStartMinPlayers ) { //need at least eight players to votestart
+                    SendChat( player, m_OHBot->m_Language->UnableToVoteStartMissingPlayers( UTIL_ToString(m_OHBot->m_VoteStartMinPlayers) ) );
                     return false;
                 }
 
@@ -3810,16 +3741,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
 
             if(Votes < VotesNeeded) {
-                SendAllChat( m_GHost->m_Language->UnableToVoteStartMissingVotesd( UTIL_ToString(VotesNeeded - Votes) ) );
+                SendAllChat( m_OHBot->m_Language->UnableToVoteStartMissingVotesd( UTIL_ToString(VotesNeeded - Votes) ) );
             } else {
 //                                if( m_MatchMaking && m_AutoStartPlayers != 0 )
 //                                        BalanceSlots( );
-                SendAllChat(m_GHost->m_Language->SuccessfullyVoteStarted( ));
+                SendAllChat(m_OHBot->m_Language->SuccessfullyVoteStarted( ));
                 StartCountDown( true );
             }
         }
         else {
-            SendChat( player, m_GHost->m_Language->UnableToVoteStartOwnerInGame( ) );
+            SendChat( player, m_OHBot->m_Language->UnableToVoteStartOwnerInGame( ) );
         }
     }
 
@@ -3855,7 +3786,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 if( Victim )
                 {
                     Victim->SetDeleteMe( true );
-                    Victim->SetLeftReason( m_GHost->m_Language->WasKickedByVote( ) );
+                    Victim->SetLeftReason( m_OHBot->m_Language->WasKickedByVote( ) );
 
                     if( !m_GameLoading && !m_GameLoaded )
                         Victim->SetLeftCode( PLAYERLEAVE_LOBBY );
@@ -3865,19 +3796,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( !m_GameLoading && !m_GameLoaded )
                         OpenSlot( GetSIDFromPID( Victim->GetPID( ) ), false );
 
-                    SendAllChat( m_GHost->m_Language->VoteKickPassed( m_KickVotePlayer ) );
+                    SendAllChat( m_OHBot->m_Language->VoteKickPassed( m_KickVotePlayer ) );
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->ErrorVoteKickingPlayer( m_KickVotePlayer ) );
+                    SendAllChat( m_OHBot->m_Language->ErrorVoteKickingPlayer( m_KickVotePlayer ) );
 
                 m_KickVotePlayer.clear( );
                 m_StartedKickVoteTime = 0;
             }
             else
-                SendAllChat( m_GHost->m_Language->VoteKickAcceptedNeedMoreVotes( m_KickVotePlayer, User, UTIL_ToString( VotesNeeded - Votes ) ) );
+                SendAllChat( m_OHBot->m_Language->VoteKickAcceptedNeedMoreVotes( m_KickVotePlayer, User, UTIL_ToString( VotesNeeded - Votes ) ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->UnableToVoteKickNotUsersTeam( ) );
+            SendChat( player, m_OHBot->m_Language->UnableToVoteKickNotUsersTeam( ) );
 
     }
 
@@ -3911,24 +3842,24 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
                 if( Votes >= VotesNeeded )
                 {
-                    SendAllChat( m_GHost->m_Language->AutoEndEarlyDrawTwo( ) );
+                    SendAllChat( m_OHBot->m_Language->AutoEndEarlyDrawTwo( ) );
                     m_SoftGameOver = true;
                     m_GameOverTime = GetTime( );
                 }
                 else if( ChangedVote ) //only display message if they actually changed vote
                 {
-                    SendAllChat( m_GHost->m_Language->UserVotedForDraw( User, UTIL_ToString( VotesNeeded - Votes ) ) );
-                    SendChat( player, m_GHost->m_Language->UndrawNotify( ) );
+                    SendAllChat( m_OHBot->m_Language->UserVotedForDraw( User, UTIL_ToString( VotesNeeded - Votes ) ) );
+                    SendChat( player, m_OHBot->m_Language->UndrawNotify( ) );
                 }
             }
             else if( Command == "undraw" && player->GetDrawVote( ) )
             {
                 player->SetDrawVote( false );
-                SendAllChat( m_GHost->m_Language->UserRecalledDrawVote( User ) );
+                SendAllChat( m_OHBot->m_Language->UserRecalledDrawVote( User ) );
             }
         }
         else
-            SendChat( player, m_GHost->m_Language->ObserverTriesToDraw( ) );
+            SendChat( player, m_OHBot->m_Language->ObserverTriesToDraw( ) );
     }
 
     //
@@ -3936,8 +3867,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     if( m_GameLoaded && m_ForfeitTime == 0 && ( Command == "ff" || Command == "forfeit" ) && !m_SoftGameOver )
     {
-        if( GetTime( ) - m_GameLoadedTime <= ( m_GHost->m_MinFF*60 - 400*m_Leavers ) )
-            SendChat( player, m_GHost->m_Language->RemainFFTime( UTIL_ToString(m_GHost->m_MinFF), UTIL_ToString( ( ( m_GameLoadedTime + ( ( m_GHost->m_MinFF - m_Leavers * 2 ) * 60 ) ) - GetTime( ) ) / 60 ) ) );
+        if( GetTime( ) - m_GameLoadedTime <= ( m_OHBot->m_MinFF*60 - 400*m_Leavers ) )
+            SendChat( player, m_OHBot->m_Language->RemainFFTime( UTIL_ToString(m_OHBot->m_MinFF), UTIL_ToString( ( ( m_GameLoadedTime + ( ( m_OHBot->m_MinFF - m_Leavers * 2 ) * 60 ) ) - GetTime( ) ) / 60 ) ) );
         else
         {
             bool ChangedVote = true;
@@ -3988,14 +3919,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     {
                         m_Stats->SetWinner( ( ( playerTeam + 1 ) % 2 ) + 1 );
                         m_ForfeitTime = GetTime( );
-                        SendAllChat( m_GHost->m_Language->TeamForfeited( ForfeitTeamString ) );
-                        SendAllChat( m_GHost->m_Language->StayToSafeStats( ) );
+                        SendAllChat( m_OHBot->m_Language->TeamForfeited( ForfeitTeamString ) );
+                        SendAllChat( m_OHBot->m_Language->StayToSafeStats( ) );
                     }
 
                     else if( ChangedVote )
                     {
-                        SendAllChat( m_GHost->m_Language->UserForfeitedGame( User ) );
-                        SendAllChat( m_GHost->m_Language->UserForfeitedGameNotify(ForfeitTeamString, UTIL_ToString( numVoted ), UTIL_ToString( numTotal ) ) );
+                        SendAllChat( m_OHBot->m_Language->UserForfeitedGame( User ) );
+                        SendAllChat( m_OHBot->m_Language->UserForfeitedGameNotify(ForfeitTeamString, UTIL_ToString( numVoted ), UTIL_ToString( numTotal ) ) );
                     }
                 }
             }
@@ -4008,7 +3939,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     // !ID
     else if(Command == "id") {
-        SendChat(player, m_GHost->m_Language->YourUniqueId( UTIL_ToString(player->GetID())));
+        SendChat(player, m_OHBot->m_Language->YourUniqueId( UTIL_ToString(player->GetID())));
     }
 
     //
@@ -4057,9 +3988,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             Votes++;
         }
         if( Votes == 0 )
-            SendChat( player, m_GHost->m_Language->NoOneHasForfeitedYet( ) );
+            SendChat( player, m_OHBot->m_Language->NoOneHasForfeitedYet( ) );
         else if( !twoteammap )
-            SendChat( player, m_GHost->m_Language->ErrorForfeitingNoTwoTeamMap( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorForfeitingNoTwoTeamMap( ) );
         else
         {
             SendChat( player, "[Sentinel ("+UTIL_ToString(SeVotes)+"/"+UTIL_ToString(SePlayers)+"): "+SeNames );
@@ -4081,14 +4012,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 SwapSlots( oldsid, 11 );
                 OpenSlot( oldsid, true );
                 m_AutoStartPlayers = m_AutoStartPlayers+1;
-                SendAllChat( m_GHost->m_Language->UserWillObserveGame( User ) );
-                SendAllChat( m_GHost->m_Language->AutoStartEnabled( "11" ) );
+                SendAllChat( m_OHBot->m_Language->UserWillObserveGame( User ) );
+                SendAllChat( m_OHBot->m_Language->AutoStartEnabled( "11" ) );
             }
             else
-                SendChat( player, m_GHost->m_Language->ErrorObserverGameAlreadyObserver( ) );
+                SendChat( player, m_OHBot->m_Language->ErrorObserverGameAlreadyObserver( ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
     }
 
     //
@@ -4118,18 +4049,18 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             SwapSlots( newslot, 11 );
             CloseSlot( 11, true );
             m_AutoStartPlayers = m_AutoStartPlayers-1;
-            SendAllChat( m_GHost->m_Language->UserWillNoLongerObserveGame( User ) );
-            SendAllChat( m_GHost->m_Language->AutoStartEnabled( "10" ) );
+            SendAllChat( m_OHBot->m_Language->UserWillNoLongerObserveGame( User ) );
+            SendAllChat( m_OHBot->m_Language->AutoStartEnabled( "10" ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
     }
 
     //
     // !PW  !PASS   !PASSWORD
     //
 
-    else if( ( Command == "pw" || Command == "pass" || Command == "password" ) && m_GHost->m_AccountProtection )
+    else if( ( Command == "pw" || Command == "pass" || Command == "password" ) && m_OHBot->m_AccountProtection )
     {
         string Status;
         string Password;
@@ -4149,13 +4080,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
             if( player->GetPasswordProt( ) )
             {
-                m_PairedPassChecks.push_back( PairedPassCheck( User, m_GHost->m_DB->ThreadedPassCheck( User, Password, 0 ) ) );
+                m_PairedPassChecks.push_back( PairedPassCheck( User, m_OHBot->m_DB->ThreadedPassCheck( User, Password, 0 ) ) );
             }
         }
         else if( Status == "0" || Status == "clear" )
-            m_PairedPassChecks.push_back( PairedPassCheck( User, m_GHost->m_DB->ThreadedPassCheck( User, Password, 1 ) ) );
+            m_PairedPassChecks.push_back( PairedPassCheck( User, m_OHBot->m_DB->ThreadedPassCheck( User, Password, 1 ) ) );
         else
-            SendChat( player, m_GHost->m_Language->ErrorRemovingPassProtectionInvalidOption( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorRemovingPassProtectionInvalidOption( ) );
 
         HideCommand = true;
     }
@@ -4163,13 +4094,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !LG   !LASTGAME
     //
-    else if( ( Command == "lg" || Command == "lastgame" ) && Payload.empty( ) && m_GHost->m_MessageSystem )
-        m_PairedINChecks.push_back( PairedINCheck( User, m_GHost->m_DB->ThreadedInboxSummaryCheck( User ) ) );
+    else if( ( Command == "lg" || Command == "lastgame" ) && Payload.empty( ) && m_OHBot->m_MessageSystem )
+        m_PairedINChecks.push_back( PairedINCheck( User, m_OHBot->m_DB->ThreadedInboxSummaryCheck( User ) ) );
 
     //
     // !PM
     //
-    else if( Command == "pm" && !Payload.empty( ) && m_GHost->m_MessageSystem )
+    else if( Command == "pm" && !Payload.empty( ) && m_OHBot->m_MessageSystem )
     {
         string UserTo;
         string Message;
@@ -4185,25 +4116,25 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 Message = Message.substr( Start );
         }
         else
-            SendChat( player, m_GHost->m_Language->ErrorWrongInputForMessage( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorWrongInputForMessage( ) );
 
         if( UserTo.length() >= 3 )
         {
             if( Payload.length() > 3 )
             {
-                m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
+                m_Pairedpms.push_back( Pairedpm( User, m_OHBot->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
             }
             else
-                SendChat( player, m_GHost->m_Language->ErrorMessageTooShort() );
+                SendChat( player, m_OHBot->m_Language->ErrorMessageTooShort() );
         }
         else
-            SendChat( player, m_GHost->m_Language->InvalidName() );
+            SendChat( player, m_OHBot->m_Language->InvalidName() );
     }
 
     //
     // !POINTS      !P
     //
-    else if( ( Command == "points" || Command == "p" || Command == "pts" ) && m_GHost->m_BetSystem )
+    else if( ( Command == "points" || Command == "p" || Command == "pts" ) && m_OHBot->m_BetSystem )
     {
         string StatsUser = User;
 
@@ -4213,31 +4144,31 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         // check for potential abuse
 
         if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-            m_PairedSSs.push_back( PairedSS( User, m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "betsystem", 0, "betcheck" ) ) );
+            m_PairedSSs.push_back( PairedSS( User, m_OHBot->m_DB->ThreadedStatsSystem( StatsUser, "betsystem", 0, "betcheck" ) ) );
     }
 
     //
     // !BET !B
     //
-    else if( ( Command == "bet" || Command == "b" ) && m_GameLoaded && !m_GameLoading && m_GHost->m_BetSystem )
+    else if( ( Command == "bet" || Command == "b" ) && m_GameLoaded && !m_GameLoading && m_OHBot->m_BetSystem )
     {
         if( !Payload.find_first_not_of( "1234567890" ) == string :: npos )
         {
-            SendChat( player, m_GHost->m_Language->ErrorBetInvalidAmount( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorBetInvalidAmount( ) );
             return HideCommand;
         }
         if( UTIL_ToUInt32( Payload ) > 50 || UTIL_ToUInt32( Payload ) <= 0 )
         {
-            SendChat( player, m_GHost->m_Language->ErrorBetInvalidLogicalAmount( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorBetInvalidLogicalAmount( ) );
             return HideCommand;
         }
         if( GetTime() - m_GameLoadedTime >= 300 )
         {
-            SendChat( player, m_GHost->m_Language->ErrorBetAlreadyTooLate( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorBetAlreadyTooLate( ) );
             return HideCommand;
         }
         else
-            m_PairedSSs.push_back( PairedSS( User, m_GHost->m_DB->ThreadedStatsSystem( User, "betsystem", UTIL_ToUInt32( Payload ), "bet" ) ) );
+            m_PairedSSs.push_back( PairedSS( User, m_OHBot->m_DB->ThreadedStatsSystem( User, "betsystem", UTIL_ToUInt32( Payload ), "bet" ) ) );
     }
 
     //
@@ -4245,19 +4176,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( Command == "top" || Command == "top10" )
     {
-        m_PairedSSs.push_back( PairedSS( User, m_GHost->m_DB->ThreadedStatsSystem( "", "", 0, "top" ) ) );
+        m_PairedSSs.push_back( PairedSS( User, m_OHBot->m_DB->ThreadedStatsSystem( "", "", 0, "top" ) ) );
     }
     //
     // !PAUSE
     //
     else if( Command == "pause" && !m_GameLoading && m_GameLoaded && !player->GetUsedPause() )
     {
-        if( Level >= m_GHost->m_MinPauseLevel )
+        if( Level >= m_OHBot->m_MinPauseLevel )
         {
             if( !m_PauseReq )
             {
-                SendAllChat( m_GHost->m_Language->UserRequestedToPauseGame( User ) );
-                SendAllChat( m_GHost->m_Language->GamePauseNotify( ) );
+                SendAllChat( m_OHBot->m_Language->UserRequestedToPauseGame( User ) );
+                SendAllChat( m_OHBot->m_Language->GamePauseNotify( ) );
                 player->SetUsedPause( true );
                 m_PauseReq = true;
                 m_PauseIntroTime = GetTime();
@@ -4265,10 +4196,10 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 m_Paused = false;
             }
             else
-                SendChat( player, m_GHost->m_Language->ErrorPausingAlreadyRequested( ) );
+                SendChat( player, m_OHBot->m_Language->ErrorPausingAlreadyRequested( ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
     }
 
     //
@@ -4280,16 +4211,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
             if( m_Paused )
             {
-                SendAllChat( m_GHost->m_Language->UserRequestedToUnPauseGame( User ) );
+                SendAllChat( m_OHBot->m_Language->UserRequestedToUnPauseGame( User ) );
                 m_PauseTime = 55;
                 m_PauseTicks = 5;
                 m_LastCountDownTicks = 0;
             }
             else
-                SendChat( player, m_GHost->m_Language->ErrorUnPausingGameIsntPaused( ) );
+                SendChat( player, m_OHBot->m_Language->ErrorUnPausingGameIsntPaused( ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->NoPermissionToExecCommand() );
+            SendChat( player, m_OHBot->m_Language->NoPermissionToExecCommand() );
     }
 
     //
@@ -4327,14 +4258,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
           SendChat( player, "Win rate:"+gen);
         }
         else
-          SendChat( player,  m_GHost->m_Language->WinChance( "50", "50" ) );
+          SendChat( player,  m_OHBot->m_Language->WinChance( "50", "50" ) );
     }
 
     //
     // !SLAP
     //
 
-    else if( Command == "slap" && !Payload.empty( ) && m_GHost->m_FunCommands )
+    else if( Command == "slap" && !Payload.empty( ) && m_OHBot->m_FunCommands )
     {
         CGamePlayer *LastMatch = NULL;
         uint32_t Matches = GetPlayerFromNamePartial( Payload , &LastMatch );
@@ -4344,9 +4275,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
         uint32_t VLevel = 0;
         string VLevelName;
-        for( vector<CBNET *> :: iterator i = m_GHost->m_BNETs.begin( ); i != m_GHost->m_BNETs.end( ); ++i )
+        for( vector<CBNET *> :: iterator i = m_OHBot->m_BNETs.begin( ); i != m_OHBot->m_BNETs.end( ); ++i )
         {
-            if( ( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == m_GHost->m_WC3ConnectAlias ) && m_GHost->m_RanksLoaded )
+            if( ( (*i)->GetServer( ) == LastMatch->GetSpoofedRealm( )  || LastMatch->GetSpoofedRealm( ) == m_OHBot->m_WC3ConnectAlias ) && m_OHBot->m_RanksLoaded )
             {
                 VLevel = (*i)->IsLevel( LastMatch->GetName( ) );
                 VLevelName = (*i)->GetLevelName( VLevel );
@@ -4410,14 +4341,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
         if( Matches == 0 )
-            SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
+            SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername() );
         else if( Matches == 1 )
         {
             player->Ignore( LastMatch->GetName( ) );
-            SendChat( player, m_GHost->m_Language->UserIgnoredPlayer( LastMatch->GetName( ) ) );
+            SendChat( player, m_OHBot->m_Language->UserIgnoredPlayer( LastMatch->GetName( ) ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+            SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
     }
 
     //
@@ -4429,14 +4360,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
 
         if( Matches == 0 )
-            SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername() );
+            SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername() );
         else if( Matches == 1 )
         {
             player->UnIgnore( LastMatch->GetName( ) );
-            SendChat( player, m_GHost->m_Language->UserUnIgnoredPlayer( LastMatch->GetName( ) ) );
+            SendChat( player, m_OHBot->m_Language->UserUnIgnoredPlayer( LastMatch->GetName( ) ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+            SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
     }
 
     //
@@ -4448,7 +4379,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
             player->Ignore( (*i)->GetName( ) );
         }
-        SendChat( player, m_GHost->m_Language->UserIgnoringAllPlayersNotify( ) );
+        SendChat( player, m_OHBot->m_Language->UserIgnoringAllPlayersNotify( ) );
     }
 
     //
@@ -4460,7 +4391,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         {
             player->UnIgnore( (*i)->GetName( ) );
         }
-        SendChat( player, m_GHost->m_Language->UserUnIgnoringAllPlayersNotify( ) );
+        SendChat( player, m_OHBot->m_Language->UserUnIgnoringAllPlayersNotify( ) );
     }
 
     //
@@ -4470,8 +4401,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     {
         if( Payload.empty( ) )
         {
-            SendChat( player, m_GHost->m_Language->RuleTags()+GetRuleTags( ) );
-            SendChat( player, m_GHost->m_Language->RuleTagNotify( ) );
+            SendChat( player, m_OHBot->m_Language->RuleTags()+GetRuleTags( ) );
+            SendChat( player, m_OHBot->m_Language->RuleTagNotify( ) );
         }
         else
             SendChat( player, GetRule( Payload ) );
@@ -4480,14 +4411,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !VOTEMUTE
     //
-    else if( Command == "votemute" && m_GameLoaded && m_GHost->m_VoteMuting)
+    else if( Command == "votemute" && m_GameLoaded && m_OHBot->m_VoteMuting)
     {
         if( m_VoteMuteEventTime == 0 && m_VoteMutePlayer.empty() && m_MuteType == 2 && !Payload.empty())
         {
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
             if( Matches == 0 )
-                SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername());
             else if( Matches == 1)
             {
                 char votePlayerTeam = m_Slots[GetSIDFromPID(player->GetPID())].GetTeam( );
@@ -4504,19 +4435,19 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     }
                     //remove the target
                     VotesNeeded--;
-                    SendAllChat(m_GHost->m_Language->UserStartedVoteMute( User, LastMatch->GetName() ) );
-                    SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVotesNeeded( TeamString, UTIL_ToString(VotesNeeded) ) );
-                    SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_GHost->m_VoteMuteTime) ) );
+                    SendAllChat(m_OHBot->m_Language->UserStartedVoteMute( User, LastMatch->GetName() ) );
+                    SendAllChat( m_OHBot->m_Language->UserStartedVoteMuteVotesNeeded( TeamString, UTIL_ToString(VotesNeeded) ) );
+                    SendAllChat( m_OHBot->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_OHBot->m_VoteMuteTime) ) );
                     m_MuteType = 0;
                 } else {
                     // enemy team we need 2 votes from each team to have a success votemute (only allchat is affected)
-                    SendAllChat( m_GHost->m_Language->UserStartedVoteGlobalMute( User, LastMatch->GetName() ) );
-                    SendAllChat( m_GHost->m_Language->UserStartedVoteGlobalMuteVotesNeeded( ) );
-                    SendAllChat( m_GHost->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_GHost->m_VoteMuteTime) ) );
+                    SendAllChat( m_OHBot->m_Language->UserStartedVoteGlobalMute( User, LastMatch->GetName() ) );
+                    SendAllChat( m_OHBot->m_Language->UserStartedVoteGlobalMuteVotesNeeded( ) );
+                    SendAllChat( m_OHBot->m_Language->UserStartedVoteMuteVoteExpire(UTIL_ToString(m_OHBot->m_VoteMuteTime) ) );
                     m_MuteType = 1;
                     m_EnemyVotes = 1;
                 }
-                SendAllChat( m_GHost->m_Language->UserStartedVoteNotify( ) );
+                SendAllChat( m_OHBot->m_Language->UserStartedVoteNotify( ) );
                 m_VoteMuteEventTime = GetTime();
                 m_VoteMutePlayer = LastMatch->GetName();
                 m_VoteMuteTargetTeam = targetPlayerTeam;
@@ -4544,7 +4475,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                         if( Player )
                         {
                             Player->SetMuted(true);
-                            SendAllChat( m_GHost->m_Language->SuccessfullyVoteMutedUser( Player->GetName() ) );
+                            SendAllChat( m_OHBot->m_Language->SuccessfullyVoteMutedUser( Player->GetName() ) );
                         }
 
                         m_VoteMuteEventTime = 0;
@@ -4556,7 +4487,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     }
                     else
                     {
-                        SendAllChat( m_GHost->m_Language->UserVotedForMute( User, m_VoteMutePlayer, UTIL_ToString(VotesNeeded-m_MuteVotes) ) );
+                        SendAllChat( m_OHBot->m_Language->UserVotedForMute( User, m_VoteMutePlayer, UTIL_ToString(VotesNeeded-m_MuteVotes) ) );
                     }
                 }
             }
@@ -4572,9 +4503,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_EnemyVotes++;
                 }
                 else if( m_EnemyVotes == 2 || m_MuteVotes-m_EnemyVotes == 2)
-                    SendChat( player, m_GHost->m_Language->UserVotedToModeNoVotesOnTeam( ));
+                    SendChat( player, m_OHBot->m_Language->UserVotedToModeNoVotesOnTeam( ));
                 else
-                    SendChat( player, m_GHost->m_Language->UserVotedToModeNoVotesOnObserver( ));
+                    SendChat( player, m_OHBot->m_Language->UserVotedToModeNoVotesOnObserver( ));
 
                 if(m_MuteVotes == 4)
                 {
@@ -4582,7 +4513,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     if( Player )
                     {
                         Player->SetGlobalChatMuted(true);
-                        SendAllChat(m_GHost->m_Language->SuccessfullyVoteMutedUser( Player->GetName() ));
+                        SendAllChat(m_OHBot->m_Language->SuccessfullyVoteMutedUser( Player->GetName() ));
                     }
 
                     m_VoteMuteEventTime = 0;
@@ -4593,12 +4524,12 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_MuteType = 2;
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UserVotedForMute( User, m_VoteMutePlayer, UTIL_ToString(4-m_MuteVotes) ) );
+                    SendAllChat( m_OHBot->m_Language->UserVotedForMute( User, m_VoteMutePlayer, UTIL_ToString(4-m_MuteVotes) ) );
 
             }
         }
         else
-            SendChat( player, m_GHost->m_Language->ErrorVotingThereIsNoVote( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorVotingThereIsNoVote( ) );
     }
 
     // autoending break command
@@ -4619,16 +4550,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                     m_BreakAutoEndVotes = 0;
                     m_BreakAutoEndVotesNeeded = 0;
                     m_LoosingTeam = 0;
-                    SendAllChat( m_GHost->m_Language->SuccessfullyInterruptedAutoEnd( ));
+                    SendAllChat( m_OHBot->m_Language->SuccessfullyInterruptedAutoEnd( ));
                     for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i )
                     {
                         (*i)->SetVotedForInterruption( false );
                     }
                 }
                 else
-                    SendAllChat( m_GHost->m_Language->UserVotedForInterruptAutoEnd( User, UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes) ) );
+                    SendAllChat( m_OHBot->m_Language->UserVotedForInterruptAutoEnd( User, UTIL_ToString(m_BreakAutoEndVotesNeeded-m_BreakAutoEndVotes) ) );
             } else {
-                SendChat( player, m_GHost->m_Language->UserAlreadyVotedForIntteruptAutoEnd( ) );
+                SendChat( player, m_OHBot->m_Language->UserAlreadyVotedForIntteruptAutoEnd( ) );
             }
         }
     }
@@ -4638,23 +4569,23 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     else if( Command == "ping" && Level < 5 )
     {
-        SendChat( player, m_GHost->m_Language->YourPingIsToday( )+" [" + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_GHost->m_LCPings ) ) + m_GHost->m_Language->Ms() : "N/A" ) +"]" );
+        SendChat( player, m_OHBot->m_Language->YourPingIsToday( )+" [" + ( player->GetNumPings( ) > 0 ? UTIL_ToString( player->GetPing( m_OHBot->m_LCPings ) ) + m_OHBot->m_Language->Ms() : "N/A" ) +"]" );
     }
 
     //
     // !VOTE
     //
-    else if( ( Command == "vote" || Command == "v" ) && m_GHost->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) && !m_Voted) {
+    else if( ( Command == "vote" || Command == "v" ) && m_OHBot->m_VoteMode && (! m_GameLoaded ||! m_GameLoading ||! m_CountDownStarted ) && !m_Voted) {
 		if (m_ForcedMode) {
-			SendChat(player, m_GHost->m_Language->ErrorModeWasAlreadyForced());
+			SendChat(player, m_OHBot->m_Language->ErrorModeWasAlreadyForced());
 			return false;
 		}
 		if( player->GetVotedMode() != 0 ) {
-            SendChat( player, m_GHost->m_Language->ErrorVotedAlreadyForMode( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorVotedAlreadyForMode( ) );
         } else if( Payload.size( ) != 1 ||  UTIL_ToUInt32(Payload) < 1 || UTIL_ToUInt32(Payload) > m_ModesToVote.size( ) ) {
-            SendChat( player, m_GHost->m_Language->ErrorInvalidModeWasVoted( ) );
+            SendChat( player, m_OHBot->m_Language->ErrorInvalidModeWasVoted( ) );
         } else {
-            SendAllChat( m_GHost->m_Language->UserVotedForMode( User, m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
+            SendAllChat( m_OHBot->m_Language->UserVotedForMode( User, m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
             player->SetVotedMode(UTIL_ToUInt32(Payload));
             uint32_t c = 0;
             for( vector<CGamePlayer *> :: iterator i = m_Players.begin( ); i != m_Players.end( ); ++i ) {
@@ -4664,17 +4595,17 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             }
             if( GetNumHumanPlayers( ) / 2  <= c && m_VotedTimeStart != 0 ) {
                 if( UTIL_ToUInt32(Payload) != 7 ) {
-                    SendAllChat( m_GHost->m_Language->AbsoluteVoteChoosen( m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
-                    m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
+                    SendAllChat( m_OHBot->m_Language->AbsoluteVoteChoosen( m_ModesToVote[UTIL_ToUInt32(Payload)-1] ) );
+                    m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_OHBot->GetLODMode(m_ModesToVote[UTIL_ToUInt32(Payload)-1]) : m_ModesToVote[UTIL_ToUInt32(Payload)-1];
                     m_Voted = true;
-                    StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
+                    StartCountDownAuto( m_OHBot->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 } else {
                     uint32_t RandomMode = rand( ) % ( m_ModesToVote.size( ) - 1 );
-                    SendAllChat( m_GHost->m_Language->AbsoluteVoteChoosenRandom( m_ModesToVote[RandomMode-1] ) );
-                    m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_GHost->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
+                    SendAllChat( m_OHBot->m_Language->AbsoluteVoteChoosenRandom( m_ModesToVote[RandomMode-1] ) );
+                    m_HCLCommandString = m_lGameAliasName.find("lod") != string :: npos ? m_OHBot->GetLODMode(m_ModesToVote[RandomMode-1]) : m_ModesToVote[RandomMode-1];
                     m_Voted = true;
-                    StartCountDownAuto( m_GHost->m_RequireSpoofChecks );
+                    StartCountDownAuto( m_OHBot->m_RequireSpoofChecks );
                     m_LastAutoStartTime = GetTime( );
                 }
             }
@@ -4684,8 +4615,8 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !VOTEOPTIONS
     //
-    else if( ( Command == "voteoptions" || Command == "votelist" || Command == "vo" ) && m_GHost->m_VoteMode ) {
-        SendChat( player, m_GHost->m_Language->PossibleModesToVote( ) );
+    else if( ( Command == "voteoptions" || Command == "votelist" || Command == "vo" ) && m_OHBot->m_VoteMode ) {
+        SendChat( player, m_OHBot->m_Language->PossibleModesToVote( ) );
         string Modes;
         uint32_t c = 1;
         for( vector<string> :: iterator k = m_ModesToVote.begin( ); k != m_ModesToVote.end( ); ++k ) {
@@ -4702,9 +4633,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !VOTERESULT
     //
-    else if( ( Command == "voteresult" || Command == "vr" )  && m_GHost->m_VoteMode) {
+    else if( ( Command == "voteresult" || Command == "vr" )  && m_OHBot->m_VoteMode) {
 		if (m_ForcedMode) {
-			SendChat(player, m_GHost->m_Language->ModeWasForcedTo(m_ModesToVote[m_ForcedGameMode - 1]));
+			SendChat(player, m_OHBot->m_Language->ModeWasForcedTo(m_ModesToVote[m_ForcedGameMode - 1]));
 			return false;
 		}
         uint32_t c = 0;
@@ -4736,7 +4667,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             } else
                 notvoted++;
         }
-        SendChat( player, m_GHost->m_Language->VoteResult( ));
+        SendChat( player, m_OHBot->m_Language->VoteResult( ));
         string Return = "";
         if( mode1 != 0 ) {
             Return += "["+m_ModesToVote[0]+": "+UTIL_ToString(mode1)+"] ";
@@ -4767,7 +4698,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         	SendChat( player, Return );
 	}
         if( notvoted != 0 ) {
-            SendChat( player, m_GHost->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ) ;
+            SendChat( player, m_OHBot->m_Language->PlayersWhoDidntVoteForMode( UTIL_ToString(notvoted) ) ) ;
         }
     }
 
@@ -4780,9 +4711,9 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         player->SetNoLag( !player->GetNoLag( ) );
 
         if( player->GetNoLag( ) )
-            SendAllChat( m_GHost->m_Language->UserEnabledNoLag (User ) );
+            SendAllChat( m_OHBot->m_Language->UserEnabledNoLag (User ) );
         else
-            SendAllChat( m_GHost->m_Language->UserDisabledNoLag ( User ) );
+            SendAllChat( m_OHBot->m_Language->UserDisabledNoLag ( User ) );
 
         player->SetStatsDotASentTime( GetTime( ) );
     }
@@ -4817,16 +4748,16 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
         if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
         {
             if( Password.find( " " ) != string::npos )
-                SendChat( player, m_GHost->m_Language->WrongPassRegisterCommand( Password ) );
+                SendChat( player, m_OHBot->m_Language->WrongPassRegisterCommand( Password ) );
             else if( Password.length() > 2 )
             {
-                m_PairedRegAdds.push_back( PairedRegAdd( string( ), m_GHost->m_DB->ThreadedRegAdd( User, player->GetSpoofedRealm(), Mail, Password, type ) ) );
+                m_PairedRegAdds.push_back( PairedRegAdd( string( ), m_OHBot->m_DB->ThreadedRegAdd( User, player->GetSpoofedRealm(), Mail, Password, type ) ) );
             }
             else
-                SendChat( player, m_GHost->m_Language->PassTooShortRegisterCommand( Password ) );
+                SendChat( player, m_OHBot->m_Language->PassTooShortRegisterCommand( Password ) );
         }
         else
-            SendChat( player, m_GHost->m_Language->InvalidEmailRegisterCommand( Mail) );
+            SendChat( player, m_OHBot->m_Language->InvalidEmailRegisterCommand( Mail) );
 
         return true;
 
@@ -4846,7 +4777,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
             if( Matches == 0 ) {
-                SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername());
                 return true;
             }
             else if( Matches == 1)
@@ -4855,7 +4786,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
                 EXP = LastMatch->GetEXP();
             }
             else {
-                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
                 return true;
             }
         }
@@ -4906,14 +4837,14 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     else if( Command == "votebalance" && m_GameLoaded && !m_GameLoading) {
         if(! player->GetVotedForBalance () ) {
             m_BalanceVotes++;
-            SendAllChat( m_GHost->m_Language->UserVotedForBalance ( User ) );
+            SendAllChat( m_OHBot->m_Language->UserVotedForBalance ( User ) );
 
             if(m_BalanceVotes > ( GetNumHumanPlayers () / 2 ) ) {
                 m_GameBalance = true;
-                SendAllChat( m_GHost->m_Language->EnabledBalanceForThisGame () );
+                SendAllChat( m_OHBot->m_Language->EnabledBalanceForThisGame () );
             }
         } else {
-            SendChat( player, m_GHost->m_Language->ErrorVotedAlreadyForBalance () );
+            SendChat( player, m_OHBot->m_Language->ErrorVotedAlreadyForBalance () );
         }
     }
 
@@ -4925,13 +4856,13 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
             if( Matches == 0 )
-                SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername());
             else if( Matches == 1)
-                SendAllChat( m_GHost->m_Language->UsersReputation ( LastMatch->GetName (), UTIL_ToString( LastMatch->GetReputation (), 2 ) ) );
+                SendAllChat( m_OHBot->m_Language->UsersReputation ( LastMatch->GetName (), UTIL_ToString( LastMatch->GetReputation (), 2 ) ) );
             else
-                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
         } else {
-            SendChat( player, m_GHost->m_Language->UsersOwnReputation (UTIL_ToString( player->GetReputation (), 2 ) ) );
+            SendChat( player, m_OHBot->m_Language->UsersOwnReputation (UTIL_ToString( player->GetReputation (), 2 ) ) );
         }
     }
 
@@ -4939,7 +4870,7 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
     //
     // !use
     //
-    else if(Command=="use" && m_GHost->m_FunCommands ) {
+    else if(Command=="use" && m_OHBot->m_FunCommands ) {
         uint32_t thingsleft = player->GetTheThingAmount ();
         if( thingsleft != 0) {
             PlayerUsed(player->GetTheThing (), player->GetTheThingType (), User);
@@ -4958,30 +4889,30 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             CGamePlayer *LastMatch = NULL;
             uint32_t Matches = GetPlayerFromNamePartial( Payload, &LastMatch );
             if( Matches == 0 )
-                SendChat( player, m_GHost->m_Language->FoundNoMatchWithPlayername());
+                SendChat( player, m_OHBot->m_Language->FoundNoMatchWithPlayername());
             else if( Matches == 1) {
                 if( LastMatch->GetSwapTarget() == 255 ) {
-                    SendChat(player, m_GHost->m_Language->RequestedSwapWithPlayer( LastMatch->GetName() ));
-                    SendChat(LastMatch, m_GHost->m_Language->PlayerRequestedSwapWithYou( User ));
+                    SendChat(player, m_OHBot->m_Language->RequestedSwapWithPlayer( LastMatch->GetName() ));
+                    SendChat(LastMatch, m_OHBot->m_Language->PlayerRequestedSwapWithYou( User ));
                     player->SetSwapRequested(true);
                     player->SetSwapTarget(LastMatch->GetPID());
                     LastMatch->SetSwapTarget(player->GetPID());
                 } else if ( LastMatch->GetSwapTarget() == player->GetPID() ) {
-                    SendAllChat(m_GHost->m_Language->PlayersSwapped( User, LastMatch->GetName()));
+                    SendAllChat(m_OHBot->m_Language->PlayersSwapped( User, LastMatch->GetName()));
                     SwapSlots( (unsigned char)( GetSIDFromPID(player->GetPID()) ), (unsigned char)( GetSIDFromPID(LastMatch->GetPID())) );
                     player->SetSwapTarget(255);
                     LastMatch->SetSwapTarget(255);
                     LastMatch->SetSwapRequested(false);
                 } else {
-                    SendChat(player, m_GHost->m_Language->PlayerIsAlreadySwapping( User ));
+                    SendChat(player, m_OHBot->m_Language->PlayerIsAlreadySwapping( User ));
                 }
             }
             else
-                SendChat( player, m_GHost->m_Language->FoundMultiplyMatches() );
+                SendChat( player, m_OHBot->m_Language->FoundMultiplyMatches() );
 
         }
         else
-            SendChat(player, m_GHost->m_Language->YouAlreadyRequestedASwap());
+            SendChat(player, m_OHBot->m_Language->YouAlreadyRequestedASwap());
     }
 
     //
@@ -4992,35 +4923,35 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
             if(!player->GetSwapRequested()) {
                 CGamePlayer *Player = GetPlayerFromPID(player->GetSwapTarget());
                 if(Player) {
-                    SendAllChat(m_GHost->m_Language->PlayersSwapped( User, Player->GetName()));
+                    SendAllChat(m_OHBot->m_Language->PlayersSwapped( User, Player->GetName()));
                     SwapSlots( (unsigned char)( GetSIDFromPID(player->GetPID()) ), (unsigned char)( GetSIDFromPID(Player->GetPID())) );
                     player->SetSwapTarget(255);
                     Player->SetSwapTarget(255);
                     Player->SetSwapRequested(false);
                 }
                 else {
-                    SendChat(player, m_GHost->m_Language->ThePlayerAlreadyLeft());
+                    SendChat(player, m_OHBot->m_Language->ThePlayerAlreadyLeft());
                     player->SetSwapTarget(255);
                 }
             }
             else
-                SendChat(player, m_GHost->m_Language->TryingToSwapAcceptWhenRequested( ));
+                SendChat(player, m_OHBot->m_Language->TryingToSwapAcceptWhenRequested( ));
         }
         else
-            SendChat(player, m_GHost->m_Language->NoOneIsSwappingWithYou( ));
+            SendChat(player, m_OHBot->m_Language->NoOneIsSwappingWithYou( ));
     }
 
     //
     // !swapabort
     //
     else if(Command == "swapabort" && player->GetSwapRequested() && !m_GameLoaded ) {
-        SendChat(player, m_GHost->m_Language->AbortedTheSwap( ));
+        SendChat(player, m_OHBot->m_Language->AbortedTheSwap( ));
         player->SetSwapRequested(false);
         CGamePlayer *Player = GetPlayerFromPID(player->GetSwapTarget());
         player->SetSwapTarget(255);
         if(Player) {
             Player->SetSwapTarget(255);
-            SendChat(Player, m_GHost->m_Language->UserAbortedSwapWithYou( User ) );
+            SendChat(Player, m_OHBot->m_Language->UserAbortedSwapWithYou( User ) );
         }
 
     }
@@ -5051,15 +4982,15 @@ bool CGame :: EventPlayerBotCommand( CGamePlayer *player, string command, string
 
     else if( Command == "info" ) {
    	if( m_GameBalance)
-        	SendChat(player, m_GHost->m_Language->EnabledBalanceForThisGame ());
-   	if( m_GHost->m_VoteMode ) {
-        	SendChat( player, m_GHost->m_Language->VoteHasBeenEnabledNotify( ) );
+        	SendChat(player, m_OHBot->m_Language->EnabledBalanceForThisGame ());
+   	if( m_OHBot->m_VoteMode ) {
+        	SendChat( player, m_OHBot->m_Language->VoteHasBeenEnabledNotify( ) );
     	}
-    	if( m_GHost->m_AllowVoteStart ) {
-        	SendChat( player, m_GHost->m_Language->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_GHost->m_VoteStartMinPlayers) ));
+    	if( m_OHBot->m_AllowVoteStart ) {
+        	SendChat( player, m_OHBot->m_Language->VoteStartIsEnabledVotesRequired( UTIL_ToString(m_OHBot->m_VoteStartMinPlayers) ));
     	}
 
-	SendChat( player, m_GHost->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
+	SendChat( player, m_OHBot->m_Language->WaitingForPlayersBeforeAutoStart( UTIL_ToString( m_AutoStartPlayers ), UTIL_ToString( m_AutoStartPlayers - GetNumHumanPlayers( ) ) ) );
 
     }
     return HideCommand;
@@ -5091,15 +5022,10 @@ bool CGame :: IsGameDataSaved( )
 void CGame :: SaveGameData( )
 {
     CONSOLE_Print( "[GAME: " + m_GameName + "] saving game data to database" );
-    m_CallableGameAdd = m_GHost->m_DB->ThreadedGameAdd( m_GHost->m_BNETs.size( ) == 1 ? m_GHost->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog,m_DatabaseID, m_GameLoadedTime - m_CreationTime );
-    m_GHost->m_FinishedGames++;
-    m_GHost->m_CheckForFinishedGames = GetTime();
+    m_CallableGameAdd = m_OHBot->m_DB->ThreadedGameAdd( m_OHBot->m_BNETs.size( ) == 1 ? m_OHBot->m_BNETs[0]->GetServer( ) : string( ), m_DBGame->GetMap( ), m_GameName, m_OwnerName, m_GameTicks / 1000, m_GameState, m_CreatorName, m_CreatorServer, m_GameType, m_LobbyLog, m_GameLog,m_DatabaseID, m_GameLoadedTime - m_CreationTime );
+    m_OHBot->m_FinishedGames++;
+    m_OHBot->m_CheckForFinishedGames = GetTime();
     DoGameUpdate(true);
-    try {
-        EXECUTE_HANDLER("GameEnded", true, boost::ref(this))
-    } catch(...) { return; }
-    EXECUTE_HANDLER("GameEnded", false, boost::ref(this))
-
 }
 
 bool CGame :: IsAutoBanned( string name )
@@ -5127,7 +5053,7 @@ string CGame :: GetRuleTags( )
 {
     string Tags;
     uint32_t saver = 0;
-    for( vector<string> :: iterator i = m_GHost->m_Rules.begin( ); i != m_GHost->m_Rules.end( ); i++ )
+    for( vector<string> :: iterator i = m_OHBot->m_Rules.begin( ); i != m_OHBot->m_Rules.end( ); i++ )
     {
         string tag;
         stringstream SS;
@@ -5151,7 +5077,7 @@ string CGame :: GetRule( string tag )
 {
     transform( tag.begin( ), tag.end( ), tag.begin( ), ::tolower );
     uint32_t saver = 0;
-    for( vector<string> :: iterator i = m_GHost->m_Rules.begin( ); i != m_GHost->m_Rules.end( ); i++ )
+    for( vector<string> :: iterator i = m_OHBot->m_Rules.begin( ); i != m_OHBot->m_Rules.end( ); i++ )
     {
         string rtag;
         string rule;
@@ -5173,59 +5099,38 @@ string CGame :: GetRule( string tag )
 
                 return "["+rtag+"] "+rule;
             }
-            return m_GHost->m_Language->WrongContactBotOwner();
+            return m_OHBot->m_Language->WrongContactBotOwner();
         }
         ++saver;
         if( saver > 10 )
         {
             CONSOLE_Print( "There to many rules, stopping after 10.");
-            return m_GHost->m_Language->WrongContactBotOwner();
+            return m_OHBot->m_Language->WrongContactBotOwner();
             break;
         }
     }
-    return m_GHost->m_Language->RuleTagNotify();
+    return m_OHBot->m_Language->RuleTagNotify();
 }
 
 void CGame :: PlayerUsed(string thething, uint32_t thetype, string playername) {
     switch(thetype) {
         case 1:
-            SendAllChat(m_GHost->m_Language->UserUsed1( playername, thething ) );
+            SendAllChat(m_OHBot->m_Language->UserUsed1( playername, thething ) );
             break;
         case 2:
-            SendAllChat(m_GHost->m_Language->UserUsed2( playername, thething ) );
+            SendAllChat(m_OHBot->m_Language->UserUsed2( playername, thething ) );
             break;
         case 3:
-            SendAllChat(m_GHost->m_Language->UserUsed3( playername, thething ) );
+            SendAllChat(m_OHBot->m_Language->UserUsed3( playername, thething ) );
             break;
         case 4:
-            SendAllChat(m_GHost->m_Language->UserUsed4( playername, thething ) );
+            SendAllChat(m_OHBot->m_Language->UserUsed4( playername, thething ) );
             break;
         case 5:
-            SendAllChat(m_GHost->m_Language->UserUsed5( playername, thething ) );
+            SendAllChat(m_OHBot->m_Language->UserUsed5( playername, thething ) );
             break;
         default:
-            SendAllChat(m_GHost->m_Language->UserUsed6( playername, thething ) );
+            SendAllChat(m_OHBot->m_Language->UserUsed6( playername, thething ) );
         break;
     }
-}
-
-#include <boost/python.hpp>
-
-void CGame :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_< CGame, bases<CBaseGame>, boost::noncopyable >("game", no_init)
-		.def_readonly("DBBanLast", &CGame::m_DBBanLast)
-		.def_readonly("DBBans", &CGame::m_DBBans)
-		.def_readonly("DBGame", &CGame::m_DBGame)
-		.def_readonly("DBGamePlayers", &CGame::m_DBGamePlayers)
-		.def_readonly("stats", &CGame::m_Stats)
-		.def_readonly("callableGameAdd", &CGame::m_CallableGameAdd)
-		.def_readonly("pairedBanChecks", &CGame::m_PairedBanChecks)
-		.def_readonly("pairedBanAdds", &CGame::m_PairedBanAdds)
-
-		.def("isGameDataSaved", &CGame::IsGameDataSaved)
-		.def("saveGameData", &CGame::SaveGameData)
-	;
 }

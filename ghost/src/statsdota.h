@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 #ifndef STATSDOTA_H
 #define STATSDOTA_H
@@ -64,13 +64,14 @@ private:
     string m_BufferedItemSix[12];
     uint32_t m_BufferedItemCount[12];
     uint32_t m_FFKills[12];
+    uint32_t m_MaphackClickCounter[12];
 
 public:
     CStatsDOTA( CBaseGame *nGame );
     virtual ~CStatsDOTA( );
 
     virtual bool ProcessAction( CIncomingAction *Action );
-    virtual void Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID );
+    virtual void Save( COHBot *GHost, COHBotDB *DB, uint32_t GameID );
     virtual void SetWinner( uint32_t nWinner ) {
         m_Winner = nWinner;
     }

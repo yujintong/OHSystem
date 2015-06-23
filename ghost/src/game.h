@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef GAME_H
@@ -36,7 +36,6 @@ class CCallablePassCheck;
 class CCallableGameAdd;
 class CCallableGamePlayerSummaryCheck;
 class CCallableStatsPlayerSummaryCheck;
-class CCallableStatsSystem;
 class CCallablePUp;
 class CCallableRegAdd;
 
@@ -46,7 +45,6 @@ typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedGSCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedRankCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedStreakCheck;
 typedef pair<string,CCallableStatsPlayerSummaryCheck *> PairedSCheck;
-typedef pair<string,CCallableStatsSystem *> PairedSS;
 typedef pair<string,CCallablePUp *> PairedPUp;
 typedef pair<string,CCallableRegAdd *> PairedRegAdd;
 
@@ -65,7 +63,6 @@ protected:
     vector<PairedRankCheck> m_PairedRankChecks;
     vector<PairedStreakCheck> m_PairedStreakChecks;       // vector of paired threaded database ingame checks in progress
     vector<PairedSCheck> m_PairedSChecks;	// vector of paired threaded database DotA player summary checks in progress
-    vector<PairedSS> m_PairedSSs;
     vector<PairedPUp> m_PairedPUps;                   // vector of paired threaded database permission changes in progress
     vector<PairedRegAdd> m_PairedRegAdds;               // vector of paired threaded database reg adds in progress
     vector<string> m_AutoBans;
@@ -78,7 +75,7 @@ protected:
     uint32_t m_BalanceVotes;
 
 public:
-    CGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
+    CGame( COHBot *nOHBot, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
     virtual ~CGame( );
 
     virtual bool Update( void *fd, void *send_fd );

@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "ghostdb.h"
 #include "gameplayer.h"
@@ -346,7 +346,7 @@ bool CStatsW3MMD :: ProcessAction( CIncomingAction *Action )
     return false;
 }
 
-void CStatsW3MMD :: Save( CGHost *GHost, CGHostDB *DB, uint32_t GameID )
+void CStatsW3MMD :: Save( COHBot *GHost, COHBotDB *DB, uint32_t GameID )
 {
     CONSOLE_Print( "[STATSW3MMD: " + m_Game->GetGameName( ) + "] received " + UTIL_ToString( m_NextValueID ) + "/" + UTIL_ToString( m_NextCheckID ) + " value/check messages" );
 

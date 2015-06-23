@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "crc32.h"
 #include "sha1.h"
@@ -37,7 +37,7 @@
 // CMap
 //
 
-CMap :: CMap( CGHost *nGHost ) : m_GHost( nGHost ), m_Valid( true ), m_MapPath( "Maps\\FrozenThrone\\(12)EmeraldGardens.w3x" ), m_MapSize( UTIL_ExtractNumbers( "174 221 4 0", 4 ) ), m_MapInfo( UTIL_ExtractNumbers( "251 57 68 98", 4 ) ), m_MapCRC( UTIL_ExtractNumbers( "108 250 204 59", 4 ) ), m_MapSHA1( UTIL_ExtractNumbers( "35 81 104 182 223 63 204 215 1 17 87 234 220 66 3 185 82 99 6 13", 20 ) ), m_MapSpeed( MAPSPEED_FAST ), m_MapVisibility( MAPVIS_DEFAULT ), m_MapObservers( MAPOBS_NONE ), m_MapFlags( MAPFLAG_TEAMSTOGETHER | MAPFLAG_FIXEDTEAMS ), m_MapFilterMaker( MAPFILTER_MAKER_BLIZZARD ), m_MapFilterType( MAPFILTER_TYPE_MELEE ), m_MapFilterSize( MAPFILTER_SIZE_LARGE ), m_MapFilterObs( MAPFILTER_OBS_NONE ), m_MapOptions( MAPOPT_MELEE ), m_MapWidth( UTIL_ExtractNumbers( "172 0", 2 ) ), m_MapHeight( UTIL_ExtractNumbers( "172 0", 2 ) ), m_MapLoadInGame( false ), m_MapNumPlayers( 12 ), m_MapNumTeams( 12 )
+CMap :: CMap( COHBot *nOHBot ) : m_OHBot( nOHBot ), m_Valid( true ), m_MapPath( "Maps\\FrozenThrone\\(12)EmeraldGardens.w3x" ), m_MapSize( UTIL_ExtractNumbers( "174 221 4 0", 4 ) ), m_MapInfo( UTIL_ExtractNumbers( "251 57 68 98", 4 ) ), m_MapCRC( UTIL_ExtractNumbers( "108 250 204 59", 4 ) ), m_MapSHA1( UTIL_ExtractNumbers( "35 81 104 182 223 63 204 215 1 17 87 234 220 66 3 185 82 99 6 13", 20 ) ), m_MapSpeed( MAPSPEED_FAST ), m_MapVisibility( MAPVIS_DEFAULT ), m_MapObservers( MAPOBS_NONE ), m_MapFlags( MAPFLAG_TEAMSTOGETHER | MAPFLAG_FIXEDTEAMS ), m_MapFilterMaker( MAPFILTER_MAKER_BLIZZARD ), m_MapFilterType( MAPFILTER_TYPE_MELEE ), m_MapFilterSize( MAPFILTER_SIZE_LARGE ), m_MapFilterObs( MAPFILTER_OBS_NONE ), m_MapOptions( MAPOPT_MELEE ), m_MapWidth( UTIL_ExtractNumbers( "172 0", 2 ) ), m_MapHeight( UTIL_ExtractNumbers( "172 0", 2 ) ), m_MapLoadInGame( false ), m_MapNumPlayers( 12 ), m_MapNumTeams( 12 )
 {
     //CONSOLE_Print( "[MAP] using hardcoded Emerald Gardens map data for Warcraft 3 version 1.24 & 1.24b" );
     m_Slots.push_back( CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, 0, 0, SLOTRACE_RANDOM | SLOTRACE_SELECTABLE ) );
@@ -54,7 +54,7 @@ CMap :: CMap( CGHost *nGHost ) : m_GHost( nGHost ), m_Valid( true ), m_MapPath( 
     m_Slots.push_back( CGameSlot( 0, 255, SLOTSTATUS_OPEN, 0, 11, 11, SLOTRACE_RANDOM | SLOTRACE_SELECTABLE ) );
 }
 
-CMap :: CMap( CGHost *nGHost, CConfig *CFG, string nCFGFile ) : m_GHost( nGHost )
+CMap :: CMap( COHBot *nOHBot, CConfig *CFG, string nCFGFile ) : m_OHBot( nOHBot )
 {
     Load( CFG, nCFGFile );
 }
@@ -240,11 +240,11 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
     m_MapData.clear( );
 
     if( !m_MapLocalPath.empty( ) )
-        m_MapData = UTIL_FileRead( m_GHost->m_MapPath + m_MapLocalPath );
+        m_MapData = UTIL_FileRead( m_OHBot->m_MapPath + m_MapLocalPath );
 
     // load the map MPQ
 
-    string MapMPQFileName = m_GHost->m_MapPath + m_MapLocalPath;
+    string MapMPQFileName = m_OHBot->m_MapPath + m_MapLocalPath;
     HANDLE MapMPQ;
     bool MapMPQReady = false;
 
@@ -265,7 +265,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
 
     if( !m_MapData.empty( ) )
     {
-        m_GHost->m_SHA->Reset( );
+        m_OHBot->m_SHA->Reset( );
 
         // calculate map_size
 
@@ -274,22 +274,22 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
 
         // calculate map_info (this is actually the CRC)
 
-        MapInfo = UTIL_CreateByteArray( (uint32_t)m_GHost->m_CRC->FullCRC( (unsigned char *)m_MapData.c_str( ), m_MapData.size( ) ), false );
+        MapInfo = UTIL_CreateByteArray( (uint32_t)m_OHBot->m_CRC->FullCRC( (unsigned char *)m_MapData.c_str( ), m_MapData.size( ) ), false );
         //CONSOLE_Print( "[MAP] calculated map_info = " + UTIL_ByteArrayToDecString( MapInfo ) );
 
         // calculate map_crc (this is not the CRC) and map_sha1
         // a big thank you to Strilanc for figuring the map_crc algorithm out
 
-        string CommonJ = UTIL_FileRead( m_GHost->m_MapCFGPath + "common.j" );
+        string CommonJ = UTIL_FileRead( m_OHBot->m_MapCFGPath + "common.j" );
 
         if( CommonJ.empty( ) )
-            CONSOLE_Print( "[MAP] unable to calculate map_crc/sha1 - unable to read file [" + m_GHost->m_MapCFGPath + "common.j]" );
+            CONSOLE_Print( "[MAP] unable to calculate map_crc/sha1 - unable to read file [" + m_OHBot->m_MapCFGPath + "common.j]" );
         else
         {
-            string BlizzardJ = UTIL_FileRead( m_GHost->m_MapCFGPath + "blizzard.j" );
+            string BlizzardJ = UTIL_FileRead( m_OHBot->m_MapCFGPath + "blizzard.j" );
 
             if( BlizzardJ.empty( ) )
-                CONSOLE_Print( "[MAP] unable to calculate map_crc/sha1 - unable to read file [" + m_GHost->m_MapCFGPath + "blizzard.j]" );
+                CONSOLE_Print( "[MAP] unable to calculate map_crc/sha1 - unable to read file [" + m_OHBot->m_MapCFGPath + "blizzard.j]" );
             else
             {
                 uint32_t Val = 0;
@@ -320,7 +320,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
                                 //CONSOLE_Print( "[MAP] overriding default common.j with map copy while calculating map_crc/sha1" );
                                 OverrodeCommonJ = true;
                                 Val = Val ^ XORRotateLeft( (unsigned char *)SubFileData, BytesRead );
-                                m_GHost->m_SHA->Update( (unsigned char *)SubFileData, BytesRead );
+                                m_OHBot->m_SHA->Update( (unsigned char *)SubFileData, BytesRead );
                             }
 
                             delete [] SubFileData;
@@ -333,7 +333,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
                 if( !OverrodeCommonJ )
                 {
                     Val = Val ^ XORRotateLeft( (unsigned char *)CommonJ.c_str( ), CommonJ.size( ) );
-                    m_GHost->m_SHA->Update( (unsigned char *)CommonJ.c_str( ), CommonJ.size( ) );
+                    m_OHBot->m_SHA->Update( (unsigned char *)CommonJ.c_str( ), CommonJ.size( ) );
                 }
 
                 if( MapMPQReady )
@@ -356,7 +356,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
                                 //CONSOLE_Print( "[MAP] overriding default blizzard.j with map copy while calculating map_crc/sha1" );
                                 OverrodeBlizzardJ = true;
                                 Val = Val ^ XORRotateLeft( (unsigned char *)SubFileData, BytesRead );
-                                m_GHost->m_SHA->Update( (unsigned char *)SubFileData, BytesRead );
+                                m_OHBot->m_SHA->Update( (unsigned char *)SubFileData, BytesRead );
                             }
 
                             delete [] SubFileData;
@@ -369,12 +369,12 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
                 if( !OverrodeBlizzardJ )
                 {
                     Val = Val ^ XORRotateLeft( (unsigned char *)BlizzardJ.c_str( ), BlizzardJ.size( ) );
-                    m_GHost->m_SHA->Update( (unsigned char *)BlizzardJ.c_str( ), BlizzardJ.size( ) );
+                    m_OHBot->m_SHA->Update( (unsigned char *)BlizzardJ.c_str( ), BlizzardJ.size( ) );
                 }
 
                 Val = ROTL( Val, 3 );
                 Val = ROTL( Val ^ 0x03F1379E, 3 );
-                m_GHost->m_SHA->Update( (unsigned char *)"\x9E\x37\xF1\x03", 4 );
+                m_OHBot->m_SHA->Update( (unsigned char *)"\x9E\x37\xF1\x03", 4 );
 
                 if( MapMPQReady )
                 {
@@ -415,7 +415,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
                                         FoundScript = true;
 
                                     Val = ROTL( Val ^ XORRotateLeft( (unsigned char *)SubFileData, BytesRead ), 3 );
-                                    m_GHost->m_SHA->Update( (unsigned char *)SubFileData, BytesRead );
+                                    m_OHBot->m_SHA->Update( (unsigned char *)SubFileData, BytesRead );
                                     // DEBUG_Print( "*** found: " + *i );
                                 }
 
@@ -436,10 +436,10 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
                     MapCRC = UTIL_CreateByteArray( Val, false );
                     //CONSOLE_Print( "[MAP] calculated map_crc = " + UTIL_ByteArrayToDecString( MapCRC ) );
 
-                    m_GHost->m_SHA->Final( );
+                    m_OHBot->m_SHA->Final( );
                     unsigned char SHA1[20];
                     memset( SHA1, 0, sizeof( unsigned char ) * 20 );
-                    m_GHost->m_SHA->GetHash( SHA1 );
+                    m_OHBot->m_SHA->GetHash( SHA1 );
                     MapSHA1 = UTIL_CreateByteArray( SHA1, 20 );
                     //CONSOLE_Print( "[MAP] calculated map_sha1 = " + UTIL_ByteArrayToDecString( MapSHA1 ) );
                 }
@@ -797,7 +797,7 @@ void CMap :: Load( CConfig *CFG, string nCFGFile )
     m_Alias = CFG->GetInt( "game_alias", 0 );
     m_MapTradeAllowed = CFG->GetInt( "map_trade_allowed", 1 ) == 0 ? false : true;
     m_PossibleModesToHost = CFG->GetString( "game_modes", string( ) );
-    m_AliasType = m_GHost->GetAliasName( m_Alias );
+    m_AliasType = m_OHBot->GetAliasName( m_Alias );
 
     if( m_AliasType == "failed" ) {
         CONSOLE_Print( "Unrecognized AliasType, make sure you have set it correctly.");
@@ -998,78 +998,4 @@ uint32_t CMap :: XORRotateLeft( unsigned char *data, uint32_t length )
     }
 
     return Val;
-}
-
-
-#include <boost/python.hpp>
-
-void CMap :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_<CMap>("map", no_init)
-		.def_readonly("GHost", &CMap::m_GHost)
-		.def_readonly("valid", &CMap::m_Valid)
-		.def_readonly("CFGFile", &CMap::m_CFGFile)
-		.def_readonly("mapPath", &CMap::m_MapPath)
-		.def_readonly("mapSize", &CMap::m_MapSize)
-		.def_readonly("mapInfo", &CMap::m_MapInfo)
-		.def_readonly("mapCRC", &CMap::m_MapCRC)
-		.def_readonly("mapSHA1", &CMap::m_MapSHA1)
-		.def_readonly("mapSpeed", &CMap::m_MapSpeed)
-		.def_readonly("mapVisibility", &CMap::m_MapVisibility)
-		.def_readonly("mapObservers", &CMap::m_MapObservers)
-		.def_readonly("mapFlags", &CMap::m_MapFlags)
-		.def_readonly("mapFilterMaker", &CMap::m_MapFilterMaker)
-		.def_readonly("mapFilterType", &CMap::m_MapFilterType)
-		.def_readonly("mapFilterSize", &CMap::m_MapFilterSize)
-		.def_readonly("mapFilterObs", &CMap::m_MapFilterObs)
-		.def_readonly("mapOptions", &CMap::m_MapOptions)
-		.def_readonly("mapWidth", &CMap::m_MapWidth)
-		.def_readonly("mapHeight", &CMap::m_MapHeight)
-		.def_readonly("mapType", &CMap::m_MapType)
-		.def_readonly("mapMatchMakingCategory", &CMap::m_MapMatchMakingCategory)
-		.def_readonly("mapStatsW3MMDCategory", &CMap::m_MapStatsW3MMDCategory)
-		.def_readonly("mapDefaultHCL", &CMap::m_MapDefaultHCL)
-		.def_readonly("mapDefaultPlayerScore", &CMap::m_MapDefaultPlayerScore)
-		.def_readonly("mapLocalPath", &CMap::m_MapLocalPath)
-		.def_readonly("mapLoadInGame", &CMap::m_MapLoadInGame)
-		.def_readonly("mapData", &CMap::m_MapData)
-		.def_readonly("mapNumPlayers", &CMap::m_MapNumPlayers)
-		.def_readonly("mapNumTeams", &CMap::m_MapNumTeams)
-		.def_readonly("slots", &CMap::m_Slots)
-
-		.def("getValid", &CMap::GetValid)
-		.def("getCFGFile", &CMap::GetCFGFile)
-		.def("getMapPath", &CMap::GetMapPath)
-		.def("getMapSize", &CMap::GetMapSize)
-		.def("getMapInfo", &CMap::GetMapInfo)
-		.def("getMapCRC", &CMap::GetMapCRC)
-		.def("getMapSHA1", &CMap::GetMapSHA1)
-		.def("getMapSpeed", &CMap::GetMapSpeed)
-		.def("getMapVisibility", &CMap::GetMapVisibility)
-		.def("getMapObservers", &CMap::GetMapObservers)
-		.def("getMapFlags", &CMap::GetMapFlags)
-		.def("getMapGameFlags", &CMap::GetMapGameFlags)
-		.def("getMapGameType", &CMap::GetMapGameType)
-		.def("getMapOptions", &CMap::GetMapOptions)
-		.def("getMapLayoutStyle", &CMap::GetMapLayoutStyle)
-		.def("getMapWidth", &CMap::GetMapWidth)
-		.def("getMapHeight", &CMap::GetMapHeight)
-		.def("getMapType", &CMap::GetMapType)
-		.def("getMapMatchMakingCategory", &CMap::GetMapMatchMakingCategory)
-		.def("getMapStatsW3MMDCategory", &CMap::GetMapStatsW3MMDCategory)
-		.def("getMapDefaultHCL", &CMap::GetMapDefaultHCL)
-		.def("getMapDefaultPlayerScore", &CMap::GetMapDefaultPlayerScore)
-		.def("getMapLocalPath", &CMap::GetMapLocalPath)
-		.def("getMapLoadInGame", &CMap::GetMapLoadInGame)
-		.def("getMapData", &CMap::GetMapData, return_internal_reference<>())
-		.def("getMapNumPlayers", &CMap::GetMapNumPlayers)
-		.def("getMapNumTeams", &CMap::GetMapNumTeams)
-		.def("getSlots", &CMap::GetSlots)
-
-		.def("load", &CMap::Load)
-		.def("checkValid", &CMap::CheckValid)
-		.def("XORRotateLeft", &CMap::XORRotateLeft)
-	;
 }

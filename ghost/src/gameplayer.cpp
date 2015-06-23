@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "language.h"
 #include "socket.h"
@@ -32,7 +32,7 @@
 #include "gcbiprotocol.h"
 #include "gpsprotocol.h"
 #include "game_base.h"
-#include "ghost.h"
+#include "ohbot.h"
 #include "ghostdb.h"
 
 //
@@ -208,9 +208,9 @@ void CPotentialPlayer :: ProcessPackets( )
             if( Packet->GetID( ) == CGCBIProtocol :: GCBI_INIT )
             {
                 delete m_IncomingGarenaUser;
-                m_IncomingGarenaUser = m_Game->m_GHost->m_GCBIProtocol->RECEIVE_GCBI_INIT( Packet->GetData( ) );
+                m_IncomingGarenaUser = m_Game->m_OHBot->m_GCBIProtocol->RECEIVE_GCBI_INIT( Packet->GetData( ) );
                 string RoomID = UTIL_ToString(m_IncomingGarenaUser->GetRoomID( ));
-                m_RoomName = m_Game->m_GHost->GetRoomName( string( RoomID.begin( ), RoomID.end( ) ) );
+                m_RoomName = m_Game->m_OHBot->GetRoomName( string( RoomID.begin( ), RoomID.end( ) ) );
                 CONSOLE_Print( "[GCBI] Garena user detected; userid=" + UTIL_ToString( m_IncomingGarenaUser->GetUserID( ) ) + ", roomid=" + RoomID + ", RoomName=" + m_RoomName + ", experience=" + UTIL_ToString( m_IncomingGarenaUser->GetUserExp( ) ) + ", country=" + m_IncomingGarenaUser->GetCountryCode( ) );
             }
         }
@@ -236,7 +236,7 @@ CGamePlayer :: CGamePlayer( CGameProtocol *nProtocol, CBaseGame *nGame, CTCPSock
     m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "??" ), m_Country( "unknown" ), m_TheThingAmount( 0 ), m_TheThing( "" ), m_TheThingType( 0 ), m_Count( 0 ), m_Silence( false ), m_HasLeft( false ),
     m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
     m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 ), m_PlayerLanguage( "en" ), m_PenalityLevel( 0 ),
-	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 ), m_DenyLimit( m_Game->m_GHost->m_DenyLimit ), m_SwapLimit( m_Game->m_GHost->m_SwapLimit )
+	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 ), m_DenyLimit( m_Game->m_OHBot->m_DenyLimit ), m_SwapLimit( m_Game->m_OHBot->m_SwapLimit )
 {
 
 }
@@ -248,7 +248,7 @@ CGamePlayer :: CGamePlayer( CPotentialPlayer *potential, unsigned char nPID, str
     m_DropVote( false ), m_KickVote( false ), m_Muted( false ), m_LeftMessageSent( false ), m_GProxy( false ), m_GProxyDisconnectNoticeSent( false ), m_GProxyReconnectKey( rand( ) ), m_LastGProxyAckTime( 0 ), m_Autoban( false ), m_Locked( false ), m_ForfeitVote( false ), m_DrawVote( false ), m_TimeActive( 0 ), m_UsedPause( false ), m_PauseTried( 0 ), m_CLetter( "??" ), m_Country( "unknown" ), m_TheThingAmount( 0 ), m_TheThing( "" ), m_TheThingType( 0 ), m_Count( 0 ), m_Silence( false ), m_HasLeft( false ),
     m_AFKMarked( false ), m_SafeDrop( false ), m_FeedLevel( 0 ), m_VKTimes( 0 ), m_HighPingTimes( 0 ), m_AnnounceTime( GetTime( ) ), m_Level( 0 ), m_LevelName( "unknown" ), m_StartVoted( false ), m_GlobalChatMuted( false ), m_InsultM( "" ), m_DownloadTicks( 0 ), m_Checked( 0 ), m_VotedForInterruption( false ),
     m_VotedMode( 0 ), m_NoLag( false ), m_ActionCounter( 0 ), m_FirstPartOfMinute( 0 ), m_SecondPartOfMinute( 0 ), m_ThirdPartOfMinute( 0 ), m_FourthPartOfMinute( 0 ), m_FifthPartOfMinute( 0 ), m_SixthPartOfMinute( 0 ), m_AFKWarnings( 0 ), m_LastAfkWarn( 0 ), m_EXP( 0 ), m_ID( 0 ), m_VotedForBalance(false), m_Reputation( 0.00 ), m_PlayerLanguage( "en" ), m_PenalityLevel( 0 ),
-	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 ), m_DenyLimit( m_Game->m_GHost->m_DenyLimit ), m_SwapLimit( m_Game->m_GHost->m_SwapLimit )
+	m_RequestedSwap(false), m_SwapTarget(255), m_LastAttackCommandToFountain(GetTime()), m_FFLevel(0), m_Cookies( 0 ), m_DenyLimit( m_Game->m_OHBot->m_DenyLimit ), m_SwapLimit( m_Game->m_OHBot->m_SwapLimit )
 {
     // todotodo: properly copy queued packets to the new player, this just discards them
     // this isn't a big problem because official Warcraft III clients don't send any packets after the join request until they receive a response
@@ -297,7 +297,7 @@ uint32_t CGamePlayer :: GetPing( bool LCPing )
     AvgPing /= m_Pings.size( );
 
     if( LCPing ) {
-	if(GetSpoofedRealm( ) ==  m_Game->m_GHost->m_WC3ConnectAlias)
+	if(GetSpoofedRealm( ) ==  m_Game->m_OHBot->m_WC3ConnectAlias)
 		return AvgPing / 4;
         return AvgPing / 2;
     }
@@ -351,7 +351,7 @@ bool CGamePlayer :: Update( void *fd )
     {
         // todotodo: we could get kicked from battle.net for sending a command with invalid characters, do some basic checking
 
-        for( vector<CBNET *> :: iterator i = m_Game->m_GHost->m_BNETs.begin( ); i != m_Game->m_GHost->m_BNETs.end( ); ++i )
+        for( vector<CBNET *> :: iterator i = m_Game->m_OHBot->m_BNETs.begin( ); i != m_Game->m_OHBot->m_BNETs.end( ); ++i )
         {
             if( (*i)->GetServer( ) == m_JoinedRealm )
             {
@@ -363,7 +363,7 @@ bool CGamePlayer :: Update( void *fd )
                         (*i)->QueueChatCommand( "/whois " + m_Name );
                 }
                 else if( m_Game->GetGameState( ) == GAME_PRIVATE )
-                    (*i)->QueueChatCommand( m_Game->m_GHost->m_Language->SpoofCheckByReplying( ), m_Name, true );
+                    (*i)->QueueChatCommand( m_Game->m_OHBot->m_Language->SpoofCheckByReplying( ), m_Name, true );
             }
         }
 
@@ -394,7 +394,7 @@ bool CGamePlayer :: Update( void *fd )
     // make this a bit dynamically, first 10 KB/s is a bit too low, increasing to 100KB/s
     //decreasing the checktime to 5 seconds
     // adding an actual playercheck how many players are ingame, if there less than 1 open slots we deny users with a download rate under 500KB/s
-    if( m_DownloadStarted && !m_DownloadFinished && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() && GetLastMapPartSent( ) > 0 && m_Game->m_GHost->m_KickSlowDownloader )
+    if( m_DownloadStarted && !m_DownloadFinished && !m_Game->GetGameLoaded() && !m_Game->GetGameLoading() && GetLastMapPartSent( ) > 0 && m_Game->m_OHBot->m_KickSlowDownloader )
     {
         uint32_t downloadingTime = GetTicks( ) - m_StartedDownloadingTicks;
 
@@ -405,7 +405,7 @@ bool CGamePlayer :: Update( void *fd )
                 m_DeleteMe = true;
                 SetLeftReason( "download speed too low" );
                 SetLeftCode( PLAYERLEAVE_LOBBY );
-                m_Game->SendAllChat( m_Game->m_GHost->m_Language->UserWasKickedForSlowDownloadRate( m_Name ) );
+                m_Game->SendAllChat( m_Game->m_OHBot->m_Language->UserWasKickedForSlowDownloadRate( m_Name ) );
                 m_Game->OpenSlot( m_Game->GetSIDFromPID( GetPID( ) ), false );
             }
             else if( GetLastMapPartAcked( ) / downloadingTime < 100 )
@@ -413,7 +413,7 @@ bool CGamePlayer :: Update( void *fd )
                 m_DeleteMe = true;
                 SetLeftReason( "download speed too low" );
                 SetLeftCode( PLAYERLEAVE_LOBBY );
-                m_Game->SendAllChat( m_Game->m_GHost->m_Language->UserWasKickedForSlowDownloadRate( m_Name ) );
+                m_Game->SendAllChat( m_Game->m_OHBot->m_Language->UserWasKickedForSlowDownloadRate( m_Name ) );
                 m_Game->OpenSlot( m_Game->GetSIDFromPID( GetPID( ) ), false );
             }
         }
@@ -423,7 +423,7 @@ bool CGamePlayer :: Update( void *fd )
     if( GetMuted( ) && m_MutedAuto && GetTicks( ) - m_MutedTicks > 30000  )
     {
         SetMuted( false );
-        m_Game->SendChat( m_PID, "["+m_Game->m_GHost->m_BotManagerName+"] "+m_Game->m_GHost->m_Language->UserWasAutomaticallyUnmuted( ) );
+        m_Game->SendChat( m_PID, "["+m_Game->m_OHBot->m_BotManagerName+"] "+m_Game->m_OHBot->m_Language->UserWasAutomaticallyUnmuted( ) );
         m_MuteMessages.clear( );
     }
 
@@ -432,7 +432,7 @@ bool CGamePlayer :: Update( void *fd )
     if( m_GProxy && GetTime( ) - m_LastGProxyAckTime >= 10 )
     {
         if( m_Socket )
-            m_Socket->PutBytes( m_Game->m_GHost->m_GPSProtocol->SEND_GPSS_ACK( m_TotalPacketsReceived ) );
+            m_Socket->PutBytes( m_Game->m_OHBot->m_GPSProtocol->SEND_GPSS_ACK( m_TotalPacketsReceived ) );
 
         m_LastGProxyAckTime = GetTime( );
     }
@@ -611,40 +611,40 @@ void CGamePlayer :: ProcessPackets( )
                                 }
                             }
 
-                            if( m_Game->m_GHost->m_AutoMuteSpammer && RecentCount >= 7 )
+                            if( m_Game->m_OHBot->m_AutoMuteSpammer && RecentCount >= 7 )
                             {
                                 m_Count++;
                                 if(  m_Count == 1 )
                                 {
                                     SetMuted( true );
                                     m_MutedAuto = true;
-                                    m_Game->SendChat( m_PID, "["+m_Game->m_GHost->m_BotManagerName+"] "+m_Game->m_GHost->m_Language->SpamWarning( ) );
+                                    m_Game->SendChat( m_PID, "["+m_Game->m_OHBot->m_BotManagerName+"] "+m_Game->m_OHBot->m_Language->SpamWarning( ) );
                                     m_MuteMessages.clear( );
-                                    m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "spamming" ) );
+                                    m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "spamming" ) );
                                 }
                                 if( m_Count == 2 )
                                 {
-                                    m_Game->SendAllChat( m_Game->m_GHost->m_Language->UserIgnoerNotify( m_Name ) );
-                                    m_Game->SendChat( m_PID, "["+m_Game->m_GHost->m_BotManagerName+"] "+m_Game->m_GHost->m_Language->SpamWarning2( ) );
+                                    m_Game->SendAllChat( m_Game->m_OHBot->m_Language->UserIgnoerNotify( m_Name ) );
+                                    m_Game->SendChat( m_PID, "["+m_Game->m_OHBot->m_BotManagerName+"] "+m_Game->m_OHBot->m_Language->SpamWarning2( ) );
                                     SetMuted( true );
-                                    m_Game->m_Pairedpenps.push_back( Pairedpenp( string(), m_Game->m_GHost->m_DB->Threadedpenp( m_Name, "Spam" , m_Game->m_GHost->m_BotManagerName, 1, "add" ) ) );
+                                    m_Game->m_Pairedpenps.push_back( Pairedpenp( string(), m_Game->m_OHBot->m_DB->Threadedpenp( m_Name, "Spam" , m_Game->m_OHBot->m_BotManagerName, 1, "add" ) ) );
                                     m_MutedAuto = true;
-                                    m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "spamming" ) );
+                                    m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "spamming" ) );
                                 }
                                 if( m_Count == 3 )
                                 {
-				    m_Game->BanPlayerByPenality( m_Name, GetExternalIPString( ), m_Game->m_GHost->m_BotManagerName, m_PenalityLevel, "Spam" );
+				    m_Game->BanPlayerByPenality( m_Name, GetExternalIPString( ), m_Game->m_OHBot->m_BotManagerName, m_PenalityLevel, "Spam" );
                                     SetMuted( true );
-                                    m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "spamming" ) );
+                                    m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "spamming" ) );
 
                                 }
                             }
 
-                            //we adding this condition not in the next condition to avoid a jump into ghost.cpp to check if the message was a flame message or not
-                            if(m_Game->m_GHost->m_FlameCheck && ( m_Name != "dolan" || m_Name != "Dolan" ) )
+                            //we adding this condition not in the next condition to avoid a jump into ohbot.cpp to check if the message was a flame message or not
+                            if(m_Game->m_OHBot->m_FlameCheck && ( m_Name != "dolan" || m_Name != "Dolan" ) )
                             {
                                 //now check for flamers
-                                if( m_Game->m_GHost->FlameCheck( ChatPlayer->GetMessage( ) ) )
+                                if( m_Game->m_OHBot->FlameCheck( ChatPlayer->GetMessage( ) ) )
                                 {
                                     m_FlameMessages.push_back( GetTicks( ) );
 
@@ -661,39 +661,39 @@ void CGamePlayer :: ProcessPackets( )
 
                                     if( RecentCount == 1 )
                                     {
-                                        m_Game->SendChat( m_PID, "["+m_Game->m_GHost->m_BotManagerName+"] "+m_Game->m_GHost->m_Language->FlameWarn ());
+                                        m_Game->SendChat( m_PID, "["+m_Game->m_OHBot->m_BotManagerName+"] "+m_Game->m_OHBot->m_Language->FlameWarn ());
                                     }
 
                                     if( RecentCount == 2 )
                                     {
-                                        m_Game->SendChat( m_PID, "["+m_Game->m_GHost->m_BotManagerName+"] "+m_Game->m_GHost->m_Language->FlameWarn2 () );
+                                        m_Game->SendChat( m_PID, "["+m_Game->m_OHBot->m_BotManagerName+"] "+m_Game->m_OHBot->m_Language->FlameWarn2 () );
                                         SetMuted( true );
                                         m_MutedAuto = true;
-                                        m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
+                                        m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
                                     }
 
                                     if( RecentCount == 3 )
                                     {
-                                        m_Game->SendChat( m_PID, m_Game->m_GHost->m_Language->FlameWarn3 () );
+                                        m_Game->SendChat( m_PID, m_Game->m_OHBot->m_Language->FlameWarn3 () );
                                         SetMuted( true );
-                                        m_Game->m_Pairedpenps.push_back( Pairedpenp( string(), m_Game->m_GHost->m_DB->Threadedpenp( m_Name, "Flame/Insult" , m_Game->m_GHost->m_BotManagerName, 1, "add" ) ) );
+                                        m_Game->m_Pairedpenps.push_back( Pairedpenp( string(), m_Game->m_OHBot->m_DB->Threadedpenp( m_Name, "Flame/Insult" , m_Game->m_OHBot->m_BotManagerName, 1, "add" ) ) );
                                         m_MutedAuto = true;
-                                        m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
+                                        m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
                                     }
 
                                     if( RecentCount == 4 )
                                     {
-					m_Game->BanPlayerByPenality( m_Name, GetExternalIPString( ), m_Game->m_GHost->m_BotManagerName, m_PenalityLevel, "Flame/Insult" );
+					m_Game->BanPlayerByPenality( m_Name, GetExternalIPString( ), m_Game->m_OHBot->m_BotManagerName, m_PenalityLevel, "Flame/Insult" );
                                         SetMuted( true );
-                                        m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
+                                        m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
 
                                     }
                                     if( RecentCount == 5 )
                                     {
                                         //some people simple dont understand the ban policy.
-                                        m_Game->BanPlayerByPenality( m_Name, GetExternalIPString( ), m_Game->m_GHost->m_BotManagerName, m_PenalityLevel, "Flame/Insult" );
+                                        m_Game->BanPlayerByPenality( m_Name, GetExternalIPString( ), m_Game->m_OHBot->m_BotManagerName, m_PenalityLevel, "Flame/Insult" );
 					SetMuted( true );
-                                        m_Game->SendAllChat( "["+m_Game->m_GHost->m_BotManagerName+"] " + m_Game->m_GHost->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
+                                        m_Game->SendAllChat( "["+m_Game->m_OHBot->m_BotManagerName+"] " + m_Game->m_OHBot->m_Language->UserWasMutedForReason( m_Name, "flaming" ) );
 
                                     }
                                 }
@@ -718,7 +718,7 @@ void CGamePlayer :: ProcessPackets( )
                 break;
 
             case CGameProtocol :: W3GS_MAPSIZE:
-                MapSize = m_Protocol->RECEIVE_W3GS_MAPSIZE( Packet->GetData( ), m_Game->m_GHost->m_Map->GetMapSize( ) );
+                MapSize = m_Protocol->RECEIVE_W3GS_MAPSIZE( Packet->GetData( ), m_Game->m_OHBot->m_Map->GetMapSize( ) );
 
                 if( MapSize )
                     m_Game->EventPlayerMapSize( this, MapSize );
@@ -742,7 +742,7 @@ void CGamePlayer :: ProcessPackets( )
                     {
                         // we also discard pong values when anyone else is downloading if we're configured to
 
-                        if( m_Game->m_GHost->m_PingDuringDownloads || !m_Game->IsDownloading( ) )
+                        if( m_Game->m_OHBot->m_PingDuringDownloads || !m_Game->IsDownloading( ) )
                         {
                             m_Pings.push_back( GetTicks( ) - Pong );
 
@@ -762,10 +762,10 @@ void CGamePlayer :: ProcessPackets( )
 
             if( Packet->GetID( ) == CGPSProtocol :: GPS_INIT )
             {
-                if( m_Game->m_GHost->m_Reconnect )
+                if( m_Game->m_OHBot->m_Reconnect )
                 {
                     m_GProxy = true;
-                    m_Socket->PutBytes( m_Game->m_GHost->m_GPSProtocol->SEND_GPSS_INIT( m_Game->m_GHost->m_ReconnectPort, m_PID, m_GProxyReconnectKey, m_Game->GetGProxyEmptyActions( ) ) );
+                    m_Socket->PutBytes( m_Game->m_OHBot->m_GPSProtocol->SEND_GPSS_INIT( m_Game->m_OHBot->m_ReconnectPort, m_PID, m_GProxyReconnectKey, m_Game->GetGProxyEmptyActions( ) ) );
                     //CONSOLE_Print( "[GAME: " + m_Game->GetGameName( ) + "] player [" + m_Name + "] is using GProxy++" );
                 }
                 else
@@ -777,7 +777,7 @@ void CGamePlayer :: ProcessPackets( )
             }
             else if( Packet->GetID( ) == CGPSProtocol :: GPS_RECONNECT )
             {
-                // this is handled in ghost.cpp
+                // this is handled in ohbot.cpp
             }
             else if( Packet->GetID( ) == CGPSProtocol :: GPS_ACK && Data.size( ) == 8 )
             {
@@ -822,7 +822,7 @@ void CGamePlayer :: EventGProxyReconnect( CTCPSocket *NewSocket, uint32_t LastPa
 {
     delete m_Socket;
     m_Socket = NewSocket;
-    m_Socket->PutBytes( m_Game->m_GHost->m_GPSProtocol->SEND_GPSS_RECONNECT( m_TotalPacketsReceived ) );
+    m_Socket->PutBytes( m_Game->m_OHBot->m_GPSProtocol->SEND_GPSS_RECONNECT( m_TotalPacketsReceived ) );
 
     uint32_t PacketsAlreadyUnqueued = m_TotalPacketsSent - m_GProxyBuffer.size( );
 
@@ -853,165 +853,6 @@ void CGamePlayer :: EventGProxyReconnect( CTCPSocket *NewSocket, uint32_t LastPa
 
     m_GProxyBuffer = TempBuffer;
     m_GProxyDisconnectNoticeSent = false;
-    m_Game->SendAllChat( m_Game->m_GHost->m_Language->PlayerReconnectedWithGProxy( m_Name ) );
+    m_Game->SendAllChat( m_Game->m_OHBot->m_Language->PlayerReconnectedWithGProxy( m_Name ) );
 	m_CachedIP = m_Socket->GetIPString();
-}
-
-#include <boost/python.hpp>
-
-void CPotentialPlayer :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_<CPotentialPlayer>("potentialPlayer", no_init)
-		.def_readonly("protocol", &CPotentialPlayer::m_Protocol)
-		.def_readonly("game", &CPotentialPlayer::m_Game)
-
-		.def_readonly("socket", &CPotentialPlayer::m_Socket)
-		.def_readonly("packets", &CPotentialPlayer::m_Packets)
-		.def_readonly("deleteMe", &CPotentialPlayer::m_DeleteMe)
-		.def_readonly("error", &CPotentialPlayer::m_Error)
-		.def_readonly("errorString", &CPotentialPlayer::m_ErrorString)
-		.def_readonly("incomingJoinPlayer", &CPotentialPlayer::m_IncomingJoinPlayer)
-
-		.def("getSocket", &CPotentialPlayer::GetSocket, return_internal_reference<>())
-		.def("getExternalIP", &CPotentialPlayer::GetExternalIP)
-		.def("getExternalIPString", &CPotentialPlayer::GetExternalIPString)
-		.def("getPackets", &CPotentialPlayer::GetPackets)
-		.def("getDeleteMe", &CPotentialPlayer::GetDeleteMe)
-		.def("getError", &CPotentialPlayer::GetError)
-		.def("getErrorString", &CPotentialPlayer::GetErrorString)
-		.def("getJoinPlayer", &CPotentialPlayer::GetJoinPlayer, return_internal_reference<>())
-
-		.def("setSocket", &CPotentialPlayer::SetSocket)
-		.def("setDeleteMe", &CPotentialPlayer::SetDeleteMe)
-
-		.def("send", &CPotentialPlayer::Send)
-	;
-}
-
-void CGamePlayer :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_< CGamePlayer, bases<CPotentialPlayer> >("gamePlayer", no_init)
-		.def_readonly("PID", &CGamePlayer::m_PID)
-		.def_readonly("name", &CGamePlayer::m_Name)
-		.def_readonly("internalIP", &CGamePlayer::m_InternalIP)
-		.def_readonly("pings", &CGamePlayer::m_Pings)
-		.def_readonly("checkSums", &CGamePlayer::m_CheckSums)
-		.def_readonly("leftReason", &CGamePlayer::m_LeftReason)
-		.def_readonly("spoofedRealm", &CGamePlayer::m_SpoofedRealm)
-		.def_readonly("joinedRealm", &CGamePlayer::m_JoinedRealm)
-		.def_readonly("totalPacketsSent", &CGamePlayer::m_TotalPacketsSent)
-		.def_readonly("totalPacketsReceived", &CGamePlayer::m_TotalPacketsReceived)
-		.def_readonly("leftCode", &CGamePlayer::m_LeftCode)
-		.def_readonly("loginAttempts", &CGamePlayer::m_LoginAttempts)
-		.def_readonly("syncCounter", &CGamePlayer::m_SyncCounter)
-		.def_readonly("joinTime", &CGamePlayer::m_JoinTime)
-		.def_readonly("lastMapPartSent", &CGamePlayer::m_LastMapPartSent)
-		.def_readonly("lastMapPartAcked", &CGamePlayer::m_LastMapPartAcked)
-		.def_readonly("startedDownloadingTicks", &CGamePlayer::m_StartedDownloadingTicks)
-		.def_readonly("finishedDownloadingTime", &CGamePlayer::m_FinishedDownloadingTime)
-		.def_readonly("finishedLoadingTicks", &CGamePlayer::m_FinishedLoadingTicks)
-		.def_readonly("startedLaggingTicks", &CGamePlayer::m_StartedLaggingTicks)
-		.def_readonly("statsSentTime", &CGamePlayer::m_StatsSentTime)
-		.def_readonly("statsDotASentTime", &CGamePlayer::m_StatsDotASentTime)
-		.def_readonly("lastGProxyWaitNoticeSentTime", &CGamePlayer::m_LastGProxyWaitNoticeSentTime)
-		.def_readonly("loadInGameData", &CGamePlayer::m_LoadInGameData)
-		.def_readonly("score", &CGamePlayer::m_Score)
-		.def_readonly("loggedIn", &CGamePlayer::m_LoggedIn)
-		.def_readonly("spoofed", &CGamePlayer::m_Spoofed)
-		.def_readonly("reserved", &CGamePlayer::m_Reserved)
-		.def_readonly("whoisShouldBeSent", &CGamePlayer::m_WhoisShouldBeSent)
-		.def_readonly("whoisSent", &CGamePlayer::m_WhoisSent)
-		.def_readonly("downloadAllowed", &CGamePlayer::m_DownloadAllowed)
-		.def_readonly("downloadStarted", &CGamePlayer::m_DownloadStarted)
-		.def_readonly("downloadFinished", &CGamePlayer::m_DownloadFinished)
-		.def_readonly("finishedLoading", &CGamePlayer::m_FinishedLoading)
-		.def_readonly("lagging", &CGamePlayer::m_Lagging)
-		.def_readonly("dropVote", &CGamePlayer::m_DropVote)
-		.def_readonly("kickVote", &CGamePlayer::m_KickVote)
-		.def_readonly("muted", &CGamePlayer::m_Muted)
-		.def_readonly("leftMessageSent", &CGamePlayer::m_LeftMessageSent)
-		.def_readonly("GProxy", &CGamePlayer::m_GProxy)
-		.def_readonly("GProxyDisconnectNoticeSent", &CGamePlayer::m_GProxyDisconnectNoticeSent)
-		.def_readonly("GProxyBuffer", &CGamePlayer::m_GProxyBuffer)
-		.def_readonly("GProxyReconnectKey", &CGamePlayer::m_GProxyReconnectKey)
-		.def_readonly("lastGProxyAckTime", &CGamePlayer::m_LastGProxyAckTime)
-
-		.def("getPID", &CGamePlayer::GetPID)
-		.def("getName", &CGamePlayer::GetName)
-		.def("getInternalIP", &CGamePlayer::GetInternalIP)
-		.def("getNumPings", &CGamePlayer::GetNumPings)
-		.def("getNumCheckSums", &CGamePlayer::GetNumCheckSums)
-		.def("getCheckSums", &CGamePlayer::GetCheckSums, return_internal_reference<>())
-		.def("getLeftReason", &CGamePlayer::GetLeftReason)
-		.def("getSpoofedRealm", &CGamePlayer::GetSpoofedRealm)
-		.def("getJoinedRealm", &CGamePlayer::GetJoinedRealm)
-		.def("getLeftCode", &CGamePlayer::GetLeftCode)
-		.def("getLoginAttempts", &CGamePlayer::GetLoginAttempts)
-		.def("getSyncCounter", &CGamePlayer::GetSyncCounter)
-		.def("getJoinTime", &CGamePlayer::GetJoinTime)
-		.def("getLastMapPartSent", &CGamePlayer::GetLastMapPartSent)
-		.def("getLastMapPartAcked", &CGamePlayer::GetLastMapPartAcked)
-		.def("getStartedDownloadingTicks", &CGamePlayer::GetStartedDownloadingTicks)
-		.def("getFinishedDownloadingTime", &CGamePlayer::GetFinishedDownloadingTime)
-		.def("getFinishedLoadingTicks", &CGamePlayer::GetFinishedLoadingTicks)
-		.def("getStartedLaggingTicks", &CGamePlayer::GetStartedLaggingTicks)
-		.def("getStatsSentTime", &CGamePlayer::GetStatsSentTime)
-		.def("getStatsDotASentTime", &CGamePlayer::GetStatsDotASentTime)
-		.def("getLastGProxyWaitNoticeSentTime", &CGamePlayer::GetLastGProxyWaitNoticeSentTime)
-		.def("getLoadInGameData", &CGamePlayer::GetLoadInGameData, return_internal_reference<>())
-		.def("getScore", &CGamePlayer::GetScore)
-		.def("getLoggedIn", &CGamePlayer::GetLoggedIn)
-		.def("getSpoofed", &CGamePlayer::GetSpoofed)
-		.def("getReserved", &CGamePlayer::GetReserved)
-		.def("getWhoisShouldBeSent", &CGamePlayer::GetWhoisShouldBeSent)
-		.def("getWhoisSent", &CGamePlayer::GetWhoisSent)
-		.def("getDownloadAllowed", &CGamePlayer::GetDownloadAllowed)
-		.def("getDownloadStarted", &CGamePlayer::GetDownloadStarted)
-		.def("getDownloadFinished", &CGamePlayer::GetDownloadFinished)
-		.def("getFinishedLoading", &CGamePlayer::GetFinishedLoading)
-		.def("getLagging", &CGamePlayer::GetLagging)
-		.def("getDropVote", &CGamePlayer::GetDropVote)
-		.def("getKickVote", &CGamePlayer::GetKickVote)
-		.def("getMuted", &CGamePlayer::GetMuted)
-		.def("getLeftMessageSent", &CGamePlayer::GetLeftMessageSent)
-		.def("getGProxy", &CGamePlayer::GetGProxy)
-		.def("getGProxyDisconnectNoticeSent", &CGamePlayer::GetGProxyDisconnectNoticeSent)
-		.def("getGProxyReconnectKey", &CGamePlayer::GetGProxyReconnectKey)
-		.def("setLeftReason", &CGamePlayer::SetLeftReason)
-		.def("setSpoofedRealm", &CGamePlayer::SetSpoofedRealm)
-		.def("setLeftCode", &CGamePlayer::SetLeftCode)
-		.def("setLoginAttempts", &CGamePlayer::SetLoginAttempts)
-		.def("setSyncCounter", &CGamePlayer::SetSyncCounter)
-		.def("setLastMapPartSent", &CGamePlayer::SetLastMapPartSent)
-		.def("setLastMapPartAcked", &CGamePlayer::SetLastMapPartAcked)
-		.def("setStartedDownloadingTicks", &CGamePlayer::SetStartedDownloadingTicks)
-		.def("setFinishedDownloadingTime", &CGamePlayer::SetFinishedDownloadingTime)
-		.def("setStartedLaggingTicks", &CGamePlayer::SetStartedLaggingTicks)
-		.def("setStatsSentTime", &CGamePlayer::SetStatsSentTime)
-		.def("setStatsDotASentTime", &CGamePlayer::SetStatsDotASentTime)
-		.def("setLastGProxyWaitNoticeSentTime", &CGamePlayer::SetLastGProxyWaitNoticeSentTime)
-		.def("setScore", &CGamePlayer::SetScore)
-		.def("setLoggedIn", &CGamePlayer::SetLoggedIn)
-		.def("setSpoofed", &CGamePlayer::SetSpoofed)
-		.def("setReserved", &CGamePlayer::SetReserved)
-		.def("setWhoisShouldBeSent", &CGamePlayer::SetWhoisShouldBeSent)
-		.def("setDownloadAllowed", &CGamePlayer::SetDownloadAllowed)
-		.def("setDownloadStarted", &CGamePlayer::SetDownloadStarted)
-		.def("setDownloadFinished", &CGamePlayer::SetDownloadFinished)
-		.def("setLagging", &CGamePlayer::SetLagging)
-		.def("setDropVote", &CGamePlayer::SetDropVote)
-		.def("setKickVote", &CGamePlayer::SetKickVote)
-		.def("setMuted", &CGamePlayer::SetMuted)
-		.def("setLeftMessageSent", &CGamePlayer::SetLeftMessageSent)
-		.def("setGProxyDisconnectNoticeSent", &CGamePlayer::SetGProxyDisconnectNoticeSent)
-
-		.def("getNameTerminated", &CGamePlayer::GetNameTerminated)
-		.def("getPing", &CGamePlayer::GetPing)
-
-		.def("addLoadInGameData", &CGamePlayer::AddLoadInGameData)
-	;
 }

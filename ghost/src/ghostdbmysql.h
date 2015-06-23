@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef GHOSTDBMYSQL_H
@@ -157,9 +157,9 @@ CREATE TABLE w3mmdvars (
  **************/
 
 //
-// CGHostDBMySQL
+// COHBotDBMySQL
 //
-class CGHostDBMySQL : public CGHostDB
+class COHBotDBMySQL : public COHBotDB
 {
 private:
     string m_Server;
@@ -181,8 +181,8 @@ private:
 	return ini;
     }
 public:
-    CGHostDBMySQL( CConfig *CFG );
-    virtual ~CGHostDBMySQL( );
+    COHBotDBMySQL( CConfig *CFG );
+    virtual ~COHBotDBMySQL( );
 
     virtual string GetStatus( );
 
@@ -309,16 +309,16 @@ protected:
 public:
     CMySQLCallable( void *nConnection, uint32_t nSQLBotID, string nSQLServer, string nSQLDatabase, string nSQLUser, string nSQLPassword, uint16_t nSQLPort, string nCallableName ) : CBaseCallable( ), m_Connection( nConnection ), m_SQLBotID( nSQLBotID ), m_SQLServer( nSQLServer ), m_SQLDatabase( nSQLDatabase ), m_SQLUser( nSQLUser ), m_SQLPassword( nSQLPassword ), m_SQLPort( nSQLPort), m_CallableName( nCallableName ) {
 
-	map<string, uint16_t>::iterator i = CGHostDBMySQL::outstandingCalls.find(m_CallableName);
-	if(i != CGHostDBMySQL::outstandingCalls.end())
+	map<string, uint16_t>::iterator i = COHBotDBMySQL::outstandingCalls.find(m_CallableName);
+	if(i != COHBotDBMySQL::outstandingCalls.end())
 		i->second = i->second+1;
 	else
-		CGHostDBMySQL::outstandingCalls.insert(make_pair(m_CallableName, 1));
+		COHBotDBMySQL::outstandingCalls.insert(make_pair(m_CallableName, 1));
     }
 
     virtual ~CMySQLCallable( ) {
-        map<string, uint16_t>::iterator i = CGHostDBMySQL::outstandingCalls.find(m_CallableName);
-        if(i != CGHostDBMySQL::outstandingCalls.end())
+        map<string, uint16_t>::iterator i = COHBotDBMySQL::outstandingCalls.find(m_CallableName);
+        if(i != COHBotDBMySQL::outstandingCalls.end())
                 i->second = i->second-1;
  	else
 		DEBUG_Print("[MYSQL_DEBUG] Unknown Callable got recovered: " + m_CallableName );
@@ -329,9 +329,9 @@ public:
     }
 
     virtual string GetOutstanding() {
-        map<string, uint16_t>::iterator i = CGHostDBMySQL::outstandingCalls.find(m_CallableName);
+        map<string, uint16_t>::iterator i = COHBotDBMySQL::outstandingCalls.find(m_CallableName);
 	uint16_t out = 0;
-        if(i != CGHostDBMySQL::outstandingCalls.end()) {
+        if(i != COHBotDBMySQL::outstandingCalls.end()) {
 		out = i->second - 1;
 		if(out!=0) {
 			return "WARNING - UNRECOVERED CALLABLE DETECTED: ["+m_CallableName+"] with ["+UTIL_ToString(out)+"] callables";

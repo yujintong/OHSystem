@@ -17,14 +17,14 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef GHOSTDB_H
 #define GHOSTDB_H
 
 //
-// CGHostDB
+// COHBotDB
 //
 
 class CBaseCallable;
@@ -81,15 +81,15 @@ class CDBDotAPlayer;
 
 typedef pair<uint32_t,string> VarP;
 
-class CGHostDB
+class COHBotDB
 {
 protected:
     bool m_HasError;
     string m_Error;
 
 public:
-    CGHostDB( CConfig *CFG );
-    virtual ~CGHostDB( );
+    COHBotDB( CConfig *CFG );
+    virtual ~COHBotDB( );
 
     bool HasError( )			{
         return m_HasError;
@@ -220,7 +220,7 @@ public:
 //  - the RecoverCallable function allows the database to recover some of the callable's resources to be reused later (e.g. MySQL connections)
 //  - note that this will NOT free the callable's memory, you must do that yourself after calling the RecoverCallable function
 //  - be careful not to leak any callables, it's NOT safe to delete a callable even if you decide that you don't want the result anymore
-//  - you should deliver any to-be-orphaned callables to the main vector in CGHost so they can be properly deleted when ready even if you don't care about the result anymore
+//  - you should deliver any to-be-orphaned callables to the main vector in COHBot so they can be properly deleted when ready even if you don't care about the result anymore
 //  - e.g. if a player does a stats check immediately before a game is deleted you can't just delete the callable on game deletion unless it's ready
 
 class CBaseCallable

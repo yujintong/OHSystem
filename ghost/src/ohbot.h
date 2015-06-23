@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef GHOST_H
@@ -26,7 +26,7 @@
 #include "includes.h"
 
 //
-// CGHost
+// COHBot
 //
 
 class CUDPSocket;
@@ -39,7 +39,7 @@ class CCRC32;
 class CSHA1;
 class CBNET;
 class CBaseGame;
-class CGHostDB;
+class COHBotDB;
 class CBaseCallable;
 class CLanguage;
 class CMap;
@@ -66,7 +66,7 @@ struct GProxyReconnector {
 
 CConfig GetCFG( );
 
-class CGHost
+class COHBot
 {
 public:
     CUDPSocket *m_UDPSocket;				// a UDP socket for sending broadcasts and other junk (used with !sendlan)
@@ -82,8 +82,8 @@ public:
     vector<CBaseGame *> m_Games;			// these games are in progress
     boost::thread_group m_GameThreads;		// the threads for games in progress and stuff
     boost::mutex m_GamesMutex;
-    CGHostDB *m_DB;							// database
-    CGHostDB *m_DBLocal;					// local database (for temporary data)
+    COHBotDB *m_DB;							// database
+    COHBotDB *m_DBLocal;					// local database (for temporary data)
     vector<CBaseCallable *> m_Callables;	// vector of orphaned callables waiting to die
     boost::mutex m_CallablesMutex;
     vector<BYTEARRAY> m_LocalAddresses;		// vector of local IP addresses
@@ -95,8 +95,8 @@ public:
     CMap *m_AutoHostMap;					// the map to use when autohosting
     CSaveGame *m_SaveGame;					// the save game to use
     vector<PIDPlayer> m_EnforcePlayers;		// vector of pids to force players to use in the next game (used with saved games)
-    bool m_Exiting;							// set to true to force ghost to shutdown next update (used by SignalCatcher)
-    bool m_ExitingNice;						// set to true to force ghost to disconnect from all battle.net connections and wait for all games to finish before shutting down
+    bool m_Exiting;							// set to true to force ohbot to shutdown next update (used by SignalCatcher)
+    bool m_ExitingNice;						// set to true to force ohbot to disconnect from all battle.net connections and wait for all games to finish before shutting down
     bool m_Enabled;							// set to false to prevent new games from being created
     string m_Version;						// GHost++ version string
     uint32_t m_HostCounter;					// the current host counter (a unique number to identify a game, incremented each time a game is created)
@@ -297,8 +297,8 @@ public:
     bool m_FountainFarmBan;
     uint32_t m_GarenaPort;
 
-    CGHost( CConfig *CFG );
-    ~CGHost( );
+    COHBot( CConfig *CFG );
+    ~COHBot( );
 
     // processing functions
 

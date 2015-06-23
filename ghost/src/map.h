@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef MAP_H
@@ -94,7 +94,7 @@
 class CMap
 {
 public:
-    CGHost *m_GHost;
+    COHBot *m_OHBot;
 
 private:
     bool m_Valid;
@@ -132,8 +132,8 @@ private:
     bool m_MapTradeAllowed;
 
 public:
-    CMap( CGHost *nGHost );
-    CMap( CGHost *nGHost, CConfig *CFG, string nCFGFile );
+    CMap( COHBot *nOHBot );
+    CMap( COHBot *nOHBot, CConfig *CFG, string nCFGFile );
     ~CMap( );
 
     bool GetValid( )						{

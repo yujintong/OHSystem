@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "bncsutilinterface.h"
 
@@ -160,42 +160,4 @@ BYTEARRAY CBNCSUtilInterface :: CreateKeyInfo( string key, uint32_t clientToken,
     }
 
     return KeyInfo;
-}
-
-#include <boost/python.hpp>
-
-void CBNCSUtilInterface :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	class_<CBNCSUtilInterface>("BNCSUtilInterface", no_init)
-		.def_readonly("EXEVersion", &CBNCSUtilInterface::m_EXEVersion)
-		.def_readonly("EXEVersionHash", &CBNCSUtilInterface::m_EXEVersionHash)
-		.def_readonly("EXEInfo", &CBNCSUtilInterface::m_EXEInfo)
-		.def_readonly("keyInfoROC", &CBNCSUtilInterface::m_KeyInfoROC)
-		.def_readonly("keyInfoTFT", &CBNCSUtilInterface::m_KeyInfoTFT)
-		.def_readonly("clientKey", &CBNCSUtilInterface::m_ClientKey)
-		.def_readonly("M1", &CBNCSUtilInterface::m_M1)
-		.def_readonly("PvPGNPasswordHash", &CBNCSUtilInterface::m_PvPGNPasswordHash)
-
-		.def("getEXEVersion", &CBNCSUtilInterface::GetEXEVersion)
-		.def("getEXEVersionHash", &CBNCSUtilInterface::GetEXEVersionHash)
-		.def("getEXEInfo", &CBNCSUtilInterface::GetEXEInfo)
-		.def("getKeyInfoROC", &CBNCSUtilInterface::GetKeyInfoROC)
-		.def("getKeyInfoTFT", &CBNCSUtilInterface::GetKeyInfoTFT)
-		.def("getClientKey", &CBNCSUtilInterface::GetClientKey)
-		.def("getM1", &CBNCSUtilInterface::GetM1)
-		.def("getPvPGNPasswordHash", &CBNCSUtilInterface::GetPvPGNPasswordHash)
-
-		.def("setEXEVersion", &CBNCSUtilInterface::SetEXEVersion)
-		.def("setEXEVersionHash", &CBNCSUtilInterface::SetEXEVersionHash)
-
-		.def("reset", &CBNCSUtilInterface::Reset)
-
-		.def("HELP_SID_AUTH_CHECK", &CBNCSUtilInterface::HELP_SID_AUTH_CHECK)
-		.def("HELP_SID_AUTH_ACCOUNTLOGON", &CBNCSUtilInterface::HELP_SID_AUTH_ACCOUNTLOGON)
-		.def("HELP_SID_AUTH_ACCOUNTLOGONPROOF", &CBNCSUtilInterface::HELP_SID_AUTH_ACCOUNTLOGONPROOF)
-		.def("HELP_PvPGNPasswordHash", &CBNCSUtilInterface::HELP_PvPGNPasswordHash)
-
-	;
 }

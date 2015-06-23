@@ -17,15 +17,15 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "config.h"
 #include "ghostdb.h"
 #include "ghostdbmysql.h"
-#include "ghost.h"
+#include "ohbot.h"
 #include <signal.h>
 
 #ifdef WIN32
@@ -36,13 +36,13 @@
 #include <boost/thread.hpp>
 
 //
-// CGHostDBMySQL
+// COHBotDBMySQL
 //
 
 
-CGHostDBMySQL::calls CGHostDBMySQL::outstandingCalls;
+COHBotDBMySQL::calls COHBotDBMySQL::outstandingCalls;
 
-CGHostDBMySQL :: CGHostDBMySQL( CConfig *CFG ) : CGHostDB( CFG )
+COHBotDBMySQL :: COHBotDBMySQL( CConfig *CFG ) : COHBotDB( CFG )
 {
     bool m_ReadGlobalMySQL = CFG->GetInt("oh_readglobalmysql", 0) == 0 ? false : true;
     if(m_ReadGlobalMySQL) {
@@ -50,13 +50,13 @@ CGHostDBMySQL :: CGHostDBMySQL( CConfig *CFG ) : CGHostDB( CFG )
       CConfig CFG2;
       CFG2.Read( m_GlobalMySQLPath+"mysql.cfg" );
       m_Server = CFG2.GetString( "db_mysql_server", string( ) );
-      m_Database = CFG2.GetString( "db_mysql_database", "ghost" );
+      m_Database = CFG2.GetString( "db_mysql_database", "ohbot" );
       m_User = CFG2.GetString( "db_mysql_user", string( ) );
       m_Password = CFG2.GetString( "db_mysql_password", string( ) );
       m_Port = CFG2.GetInt( "db_mysql_port", 0 );
     } else {
       m_Server = CFG->GetString( "db_mysql_server", string( ) );
-      m_Database = CFG->GetString( "db_mysql_database", "ghost" );
+      m_Database = CFG->GetString( "db_mysql_database", "ohbot" );
       m_User = CFG->GetString( "db_mysql_user", string( ) );
       m_Password = CFG->GetString( "db_mysql_password", string( ) );
       m_Port = CFG->GetInt( "db_mysql_port", 0 );
@@ -94,7 +94,7 @@ CGHostDBMySQL :: CGHostDBMySQL( CConfig *CFG ) : CGHostDB( CFG )
     m_IdleConnections.push( Connection );
 }
 
-CGHostDBMySQL :: ~CGHostDBMySQL( )
+COHBotDBMySQL :: ~COHBotDBMySQL( )
 {
     boost::mutex::scoped_lock lock(m_DatabaseMutex);
 
@@ -112,12 +112,12 @@ CGHostDBMySQL :: ~CGHostDBMySQL( )
     mysql_library_end( );
 }
 
-string CGHostDBMySQL :: GetStatus( )
+string COHBotDBMySQL :: GetStatus( )
 {
 
     string response = "DB STATUS --- Connections: " + UTIL_ToString( m_IdleConnections.size( ) ) + "/" + UTIL_ToString( m_NumConnections ) + " idle. Outstanding callables: " + UTIL_ToString( m_OutstandingCallables ) + ".";
 
-    for(map<string,uint16_t>::iterator iter = CGHostDBMySQL::outstandingCalls.begin(); iter != CGHostDBMySQL::outstandingCalls.end(); ++iter) {
+    for(map<string,uint16_t>::iterator iter = COHBotDBMySQL::outstandingCalls.begin(); iter != COHBotDBMySQL::outstandingCalls.end(); ++iter) {
 	if(iter->second >=1 ) {
 		CONSOLE_Print("WARNING - UNRECOVERED CALLABLE FOUND - ["+iter->first+"] with ["+UTIL_ToString(iter->second)+"] unrecovered callables!");
 	}
@@ -126,7 +126,7 @@ string CGHostDBMySQL :: GetStatus( )
     return response;
 }
 
-void CGHostDBMySQL :: RecoverCallable( CBaseCallable *callable )
+void COHBotDBMySQL :: RecoverCallable( CBaseCallable *callable )
 {
     boost::mutex::scoped_lock lock(m_DatabaseMutex);
     CMySQLCallable *MySQLCallable = dynamic_cast<CMySQLCallable *>( callable );
@@ -173,7 +173,7 @@ bool HasSpecialCharacters(const char *str)
     return str[strspn(str, "0123456789.")] != 0;
 }
 
-void CGHostDBMySQL :: CreateThread( CBaseCallable *callable )
+void COHBotDBMySQL :: CreateThread( CBaseCallable *callable )
 {
     try
     {
@@ -196,7 +196,7 @@ void CGHostDBMySQL :: CreateThread( CBaseCallable *callable )
     }
 }
 
-CCallableRegAdd *CGHostDBMySQL :: ThreadedRegAdd( string user, string server, string mail, string password, string type )
+CCallableRegAdd *COHBotDBMySQL :: ThreadedRegAdd( string user, string server, string mail, string password, string type )
 {
     void *Connection = GetIdleConnection( );
 
@@ -209,7 +209,7 @@ CCallableRegAdd *CGHostDBMySQL :: ThreadedRegAdd( string user, string server, st
     return Callable;
 }
 
-CCallableStatsSystem *CGHostDBMySQL :: ThreadedStatsSystem( string user, string input, uint32_t one, string type )
+CCallableStatsSystem *COHBotDBMySQL :: ThreadedStatsSystem( string user, string input, uint32_t one, string type )
 {
     void *Connection = GetIdleConnection( );
 
@@ -222,7 +222,7 @@ CCallableStatsSystem *CGHostDBMySQL :: ThreadedStatsSystem( string user, string 
     return Callable;
 }
 
-CCallablePWCheck *CGHostDBMySQL :: ThreadedPWCheck( string user )
+CCallablePWCheck *COHBotDBMySQL :: ThreadedPWCheck( string user )
 {
     void *Connection = GetIdleConnection( );
 
@@ -235,7 +235,7 @@ CCallablePWCheck *CGHostDBMySQL :: ThreadedPWCheck( string user )
     return Callable;
 }
 
-CCallablePassCheck *CGHostDBMySQL :: ThreadedPassCheck( string user, string pass, uint32_t st )
+CCallablePassCheck *COHBotDBMySQL :: ThreadedPassCheck( string user, string pass, uint32_t st )
 {
     void *Connection = GetIdleConnection( );
 
@@ -248,7 +248,7 @@ CCallablePassCheck *CGHostDBMySQL :: ThreadedPassCheck( string user, string pass
     return Callable;
 }
 
-CCallablepm *CGHostDBMySQL :: Threadedpm( string user, string listener, uint32_t status, string message, string type )
+CCallablepm *COHBotDBMySQL :: Threadedpm( string user, string listener, uint32_t status, string message, string type )
 {
     void *Connection = GetIdleConnection( );
 
@@ -261,7 +261,7 @@ CCallablepm *CGHostDBMySQL :: Threadedpm( string user, string listener, uint32_t
     return Callable;
 }
 
-CCallablePList *CGHostDBMySQL :: ThreadedPList( string server )
+CCallablePList *COHBotDBMySQL :: ThreadedPList( string server )
 {
     void *Connection = GetIdleConnection( );
 
@@ -274,7 +274,7 @@ CCallablePList *CGHostDBMySQL :: ThreadedPList( string server )
     return Callable;
 }
 
-CCallableFlameList *CGHostDBMySQL :: ThreadedFlameList( )
+CCallableFlameList *COHBotDBMySQL :: ThreadedFlameList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -287,7 +287,7 @@ CCallableFlameList *CGHostDBMySQL :: ThreadedFlameList( )
     return Callable;
 }
 
-CCallableForcedGProxyList *CGHostDBMySQL :: ThreadedForcedGProxyList( )
+CCallableForcedGProxyList *COHBotDBMySQL :: ThreadedForcedGProxyList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -300,7 +300,7 @@ CCallableForcedGProxyList *CGHostDBMySQL :: ThreadedForcedGProxyList( )
     return Callable;
 }
 
-CCallableAliasList *CGHostDBMySQL :: ThreadedAliasList( )
+CCallableAliasList *COHBotDBMySQL :: ThreadedAliasList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -313,7 +313,7 @@ CCallableAliasList *CGHostDBMySQL :: ThreadedAliasList( )
     return Callable;
 }
 
-CCallableDeniedNamesList *CGHostDBMySQL :: ThreadedDeniedNamesList( )
+CCallableDeniedNamesList *COHBotDBMySQL :: ThreadedDeniedNamesList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -326,7 +326,7 @@ CCallableDeniedNamesList *CGHostDBMySQL :: ThreadedDeniedNamesList( )
     return Callable;
 }
 
-CCallableAnnounceList *CGHostDBMySQL :: ThreadedAnnounceList( )
+CCallableAnnounceList *COHBotDBMySQL :: ThreadedAnnounceList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -339,7 +339,7 @@ CCallableAnnounceList *CGHostDBMySQL :: ThreadedAnnounceList( )
     return Callable;
 }
 
-CCallableDCountryList *CGHostDBMySQL :: ThreadedDCountryList( )
+CCallableDCountryList *COHBotDBMySQL :: ThreadedDCountryList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -352,7 +352,7 @@ CCallableDCountryList *CGHostDBMySQL :: ThreadedDCountryList( )
     return Callable;
 }
 
-CCallableStoreLog *CGHostDBMySQL :: ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin )
+CCallableStoreLog *COHBotDBMySQL :: ThreadedStoreLog( uint32_t chatid, string game, vector<string> admin )
 {
     void *Connection = GetIdleConnection( );
 
@@ -365,7 +365,7 @@ CCallableStoreLog *CGHostDBMySQL :: ThreadedStoreLog( uint32_t chatid, string ga
     return Callable;
 }
 
-CCallablegs *CGHostDBMySQL :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
+CCallablegs *COHBotDBMySQL :: Threadedgs( uint32_t chatid, string gn, uint32_t st, uint32_t gametype, uint32_t gamealias )
 {
     void *Connection = GetIdleConnection( );
 
@@ -378,7 +378,7 @@ CCallablegs *CGHostDBMySQL :: Threadedgs( uint32_t chatid, string gn, uint32_t s
     return Callable;
 }
 
-CCallablepenp *CGHostDBMySQL :: Threadedpenp( string name, string reason, string admin, uint32_t amount, string type )
+CCallablepenp *COHBotDBMySQL :: Threadedpenp( string name, string reason, string admin, uint32_t amount, string type )
 {
     void *Connection = GetIdleConnection( );
 
@@ -391,7 +391,7 @@ CCallablepenp *CGHostDBMySQL :: Threadedpenp( string name, string reason, string
     return Callable;
 }
 
-CCallableBanCount *CGHostDBMySQL :: ThreadedBanCount( string server )
+CCallableBanCount *COHBotDBMySQL :: ThreadedBanCount( string server )
 {
     void *Connection = GetIdleConnection( );
 
@@ -404,7 +404,7 @@ CCallableBanCount *CGHostDBMySQL :: ThreadedBanCount( string server )
     return Callable;
 }
 
-CCallableBanCheck *CGHostDBMySQL :: ThreadedBanCheck( string server, string user, string ip )
+CCallableBanCheck *COHBotDBMySQL :: ThreadedBanCheck( string server, string user, string ip )
 {
     void *Connection = GetIdleConnection( );
 
@@ -417,7 +417,7 @@ CCallableBanCheck *CGHostDBMySQL :: ThreadedBanCheck( string server, string user
     return Callable;
 }
 
-CCallableBanCheck2 *CGHostDBMySQL :: ThreadedBanCheck2( string server, string user, string type )
+CCallableBanCheck2 *COHBotDBMySQL :: ThreadedBanCheck2( string server, string user, string type )
 {
     void *Connection = GetIdleConnection( );
 
@@ -430,7 +430,7 @@ CCallableBanCheck2 *CGHostDBMySQL :: ThreadedBanCheck2( string server, string us
     return Callable;
 }
 
-CCallableBanAdd *CGHostDBMySQL :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
+CCallableBanAdd *COHBotDBMySQL :: ThreadedBanAdd( string server, string user, string ip, string gamename, string admin, string reason, uint32_t bantime, string country )
 {
     void *Connection = GetIdleConnection( );
 
@@ -443,7 +443,7 @@ CCallableBanAdd *CGHostDBMySQL :: ThreadedBanAdd( string server, string user, st
     return Callable;
 }
 
-CCallablePUp *CGHostDBMySQL :: ThreadedPUp( string name, uint32_t level, string realm, string user )
+CCallablePUp *COHBotDBMySQL :: ThreadedPUp( string name, uint32_t level, string realm, string user )
 {
     void *Connection = GetIdleConnection( );
 
@@ -456,7 +456,7 @@ CCallablePUp *CGHostDBMySQL :: ThreadedPUp( string name, uint32_t level, string 
     return Callable;
 }
 
-CCallableBanRemove *CGHostDBMySQL :: ThreadedBanRemove( string server, string user )
+CCallableBanRemove *COHBotDBMySQL :: ThreadedBanRemove( string server, string user )
 {
     void *Connection = GetIdleConnection( );
 
@@ -469,7 +469,7 @@ CCallableBanRemove *CGHostDBMySQL :: ThreadedBanRemove( string server, string us
     return Callable;
 }
 
-CCallableBanRemove *CGHostDBMySQL :: ThreadedBanRemove( string user )
+CCallableBanRemove *COHBotDBMySQL :: ThreadedBanRemove( string user )
 {
     void *Connection = GetIdleConnection( );
 
@@ -482,7 +482,7 @@ CCallableBanRemove *CGHostDBMySQL :: ThreadedBanRemove( string user )
     return Callable;
 }
 
-CCallableBanList *CGHostDBMySQL :: ThreadedBanList( string server )
+CCallableBanList *COHBotDBMySQL :: ThreadedBanList( string server )
 {
     void *Connection = GetIdleConnection( );
 
@@ -495,7 +495,7 @@ CCallableBanList *CGHostDBMySQL :: ThreadedBanList( string server )
     return Callable;
 }
 
-CCallableTBRemove *CGHostDBMySQL :: ThreadedTBRemove( string server )
+CCallableTBRemove *COHBotDBMySQL :: ThreadedTBRemove( string server )
 {
     void *Connection = GetIdleConnection( );
 
@@ -508,7 +508,7 @@ CCallableTBRemove *CGHostDBMySQL :: ThreadedTBRemove( string server )
     return Callable;
 }
 
-CCallableCommandList *CGHostDBMySQL :: ThreadedCommandList( )
+CCallableCommandList *COHBotDBMySQL :: ThreadedCommandList( )
 {
     void *Connection = GetIdleConnection( );
 
@@ -521,7 +521,7 @@ CCallableCommandList *CGHostDBMySQL :: ThreadedCommandList( )
     return Callable;
 }
 
-CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid, uint32_t lobbytime )
+CCallableGameAdd *COHBotDBMySQL :: ThreadedGameAdd( string server, string map, string gamename, string ownername, uint32_t duration, uint32_t gamestate, string creatorname, string creatorserver, uint32_t gametype, vector<string> lobbylog, vector<string> gamelog, uint32_t databaseid, uint32_t lobbytime )
 {
     void *Connection = GetIdleConnection( );
 
@@ -534,7 +534,7 @@ CCallableGameAdd *CGHostDBMySQL :: ThreadedGameAdd( string server, string map, s
     return Callable;
 }
 
-CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias )
+CCallableGameDBInit *COHBotDBMySQL :: ThreadedGameDBInit( vector<CDBBan *> players, string gamename, uint32_t gameid, uint32_t gamealias )
 {
     void *Connection = GetIdleConnection( );
 
@@ -547,7 +547,7 @@ CCallableGameDBInit *CGHostDBMySQL :: ThreadedGameDBInit( vector<CDBBan *> playe
     return Callable;
 }
 
-CCallableGamePlayerAdd *CGHostDBMySQL :: ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id )
+CCallableGamePlayerAdd *COHBotDBMySQL :: ThreadedGamePlayerAdd( uint32_t gameid, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t reserved, uint32_t loadingtime, uint32_t left, string leftreason, uint32_t team, uint32_t colour, uint32_t id )
 {
     void *Connection = GetIdleConnection( );
 
@@ -560,7 +560,7 @@ CCallableGamePlayerAdd *CGHostDBMySQL :: ThreadedGamePlayerAdd( uint32_t gameid,
     return Callable;
 }
 
-CCallableGameUpdate *CGHostDBMySQL :: ThreadedGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist )
+CCallableGameUpdate *COHBotDBMySQL :: ThreadedGameUpdate( uint32_t hostcounter, uint32_t lobby, string map_type, uint32_t duration, string gamename, string ownername, string creatorname, string map, uint32_t players, uint32_t total, vector<PlayerOfPlayerList> playerlist )
 {
     void *Connection = GetIdleConnection( );
 
@@ -573,7 +573,7 @@ CCallableGameUpdate *CGHostDBMySQL :: ThreadedGameUpdate( uint32_t hostcounter, 
     return Callable;
 }
 
-CCallableGamePlayerSummaryCheck *CGHostDBMySQL :: ThreadedGamePlayerSummaryCheck( string name )
+CCallableGamePlayerSummaryCheck *COHBotDBMySQL :: ThreadedGamePlayerSummaryCheck( string name )
 {
     void *Connection = GetIdleConnection( );
 
@@ -586,7 +586,7 @@ CCallableGamePlayerSummaryCheck *CGHostDBMySQL :: ThreadedGamePlayerSummaryCheck
     return Callable;
 }
 
-CCallableStatsPlayerSummaryCheck *CGHostDBMySQL :: ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias )
+CCallableStatsPlayerSummaryCheck *COHBotDBMySQL :: ThreadedStatsPlayerSummaryCheck( string name, string month, string year, uint32_t alias )
 {
     void *Connection = GetIdleConnection( );
 
@@ -600,7 +600,7 @@ CCallableStatsPlayerSummaryCheck *CGHostDBMySQL :: ThreadedStatsPlayerSummaryChe
 }
 
 
-CCallableInboxSummaryCheck *CGHostDBMySQL :: ThreadedInboxSummaryCheck( string name )
+CCallableInboxSummaryCheck *COHBotDBMySQL :: ThreadedInboxSummaryCheck( string name )
 {
     void *Connection = GetIdleConnection( );
 
@@ -613,7 +613,7 @@ CCallableInboxSummaryCheck *CGHostDBMySQL :: ThreadedInboxSummaryCheck( string n
     return Callable;
 }
 
-CCallableDotAGameAdd *CGHostDBMySQL :: ThreadedDotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec )
+CCallableDotAGameAdd *COHBotDBMySQL :: ThreadedDotAGameAdd( uint32_t gameid, uint32_t winner, uint32_t min, uint32_t sec )
 {
     void *Connection = GetIdleConnection( );
 
@@ -626,7 +626,7 @@ CCallableDotAGameAdd *CGHostDBMySQL :: ThreadedDotAGameAdd( uint32_t gameid, uin
     return Callable;
 }
 
-CCallableDotAPlayerAdd *CGHostDBMySQL :: ThreadedDotAPlayerAdd( uint32_t gameid, string m_Data )
+CCallableDotAPlayerAdd *COHBotDBMySQL :: ThreadedDotAPlayerAdd( uint32_t gameid, string m_Data )
 {
     void *Connection = GetIdleConnection( );
 
@@ -639,7 +639,7 @@ CCallableDotAPlayerAdd *CGHostDBMySQL :: ThreadedDotAPlayerAdd( uint32_t gameid,
     return Callable;
 }
 
-CCallableDotAPlayerSummaryCheck *CGHostDBMySQL :: ThreadedDotAPlayerSummaryCheck( string name )
+CCallableDotAPlayerSummaryCheck *COHBotDBMySQL :: ThreadedDotAPlayerSummaryCheck( string name )
 {
     void *Connection = GetIdleConnection( );
 
@@ -652,7 +652,7 @@ CCallableDotAPlayerSummaryCheck *CGHostDBMySQL :: ThreadedDotAPlayerSummaryCheck
     return Callable;
 }
 
-CCallableDownloadAdd *CGHostDBMySQL :: ThreadedDownloadAdd( string map, uint32_t mapsize, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t downloadtime )
+CCallableDownloadAdd *COHBotDBMySQL :: ThreadedDownloadAdd( string map, uint32_t mapsize, string name, string ip, uint32_t spoofed, string spoofedrealm, uint32_t downloadtime )
 {
     void *Connection = GetIdleConnection( );
 
@@ -665,7 +665,7 @@ CCallableDownloadAdd *CGHostDBMySQL :: ThreadedDownloadAdd( string map, uint32_t
     return Callable;
 }
 
-CCallableScoreCheck *CGHostDBMySQL :: ThreadedScoreCheck( string category, string name, string server )
+CCallableScoreCheck *COHBotDBMySQL :: ThreadedScoreCheck( string category, string name, string server )
 {
     void *Connection = GetIdleConnection( );
 
@@ -679,7 +679,7 @@ CCallableScoreCheck *CGHostDBMySQL :: ThreadedScoreCheck( string category, strin
 }
 
 
-CCallableConnectCheck *CGHostDBMySQL :: ThreadedConnectCheck( string name, uint32_t sessionkey )
+CCallableConnectCheck *COHBotDBMySQL :: ThreadedConnectCheck( string name, uint32_t sessionkey )
 {
     void *Connection = GetIdleConnection( );
 
@@ -692,7 +692,7 @@ CCallableConnectCheck *CGHostDBMySQL :: ThreadedConnectCheck( string name, uint3
     return Callable;
 }
 
-CCallableW3MMDPlayerAdd *CGHostDBMySQL :: ThreadedW3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
+CCallableW3MMDPlayerAdd *COHBotDBMySQL :: ThreadedW3MMDPlayerAdd( string category, uint32_t gameid, uint32_t pid, string name, string flag, uint32_t leaver, uint32_t practicing )
 {
     void *Connection = GetIdleConnection( );
 
@@ -705,7 +705,7 @@ CCallableW3MMDPlayerAdd *CGHostDBMySQL :: ThreadedW3MMDPlayerAdd( string categor
     return Callable;
 }
 
-CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints )
+CCallableW3MMDVarAdd *COHBotDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,int32_t> var_ints )
 {
     void *Connection = GetIdleConnection( );
 
@@ -718,7 +718,7 @@ CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map
     return Callable;
 }
 
-CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals )
+CCallableW3MMDVarAdd *COHBotDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,double> var_reals )
 {
     void *Connection = GetIdleConnection( );
 
@@ -731,7 +731,7 @@ CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map
     return Callable;
 }
 
-CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings )
+CCallableW3MMDVarAdd *COHBotDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map<VarP,string> var_strings )
 {
     void *Connection = GetIdleConnection( );
 
@@ -744,7 +744,7 @@ CCallableW3MMDVarAdd *CGHostDBMySQL :: ThreadedW3MMDVarAdd( uint32_t gameid, map
     return Callable;
 }
 
-CCallableBotStatusCreate *CGHostDBMySQL :: ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft )
+CCallableBotStatusCreate *COHBotDBMySQL :: ThreadedBotStatusCreate( string username, string gamename, string ip, uint16_t hostport, string roc, string tft )
 {
     void *Connection = GetIdleConnection( );
 
@@ -757,7 +757,7 @@ CCallableBotStatusCreate *CGHostDBMySQL :: ThreadedBotStatusCreate( string usern
     return Callable;
 }
 
-CCallableBotStatusUpdate *CGHostDBMySQL :: ThreadedBotStatusUpdate( string server, uint32_t status )
+CCallableBotStatusUpdate *COHBotDBMySQL :: ThreadedBotStatusUpdate( string server, uint32_t status )
 {
     void *Connection = GetIdleConnection( );
 
@@ -770,7 +770,7 @@ CCallableBotStatusUpdate *CGHostDBMySQL :: ThreadedBotStatusUpdate( string serve
     return Callable;
 }
 
-void *CGHostDBMySQL :: GetIdleConnection( )
+void *COHBotDBMySQL :: GetIdleConnection( )
 {
     boost::mutex::scoped_lock lock(m_DatabaseMutex);
 

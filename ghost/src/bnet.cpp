@@ -17,10 +17,10 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
-#include "ghost.h"
+#include "ohbot.h"
 #include "util.h"
 #include "config.h"
 #include "language.h"
@@ -47,24 +47,24 @@ using namespace boost :: filesystem;
 // CBNET
 //
 
-CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNLSServer, uint16_t nBNLSPort, uint32_t nBNLSWardenCookie, string nCDKeyROC, string nCDKeyTFT, string nCountryAbbrev, string nCountry, uint32_t nLocaleID, string nUserName, string nUserPassword, string nFirstChannel, char nCommandTrigger, bool nHoldFriends, bool nHoldClan, bool nPublicCommands, unsigned char nWar3Version, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, string nPVPGNRealmName, uint32_t nMaxMessageLength, uint32_t nHostCounterID, uint8_t nup )
+CBNET :: CBNET( COHBot *nOHBot, string nServer, string nServerAlias, string nBNLSServer, uint16_t nBNLSPort, uint32_t nBNLSWardenCookie, string nCDKeyROC, string nCDKeyTFT, string nCountryAbbrev, string nCountry, uint32_t nLocaleID, string nUserName, string nUserPassword, string nFirstChannel, char nCommandTrigger, bool nHoldFriends, bool nHoldClan, bool nPublicCommands, unsigned char nWar3Version, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType, string nPVPGNRealmName, uint32_t nMaxMessageLength, uint32_t nHostCounterID, uint8_t nup )
 {
     // todotodo: append path seperator to Warcraft3Path if needed
     UpTime = nup;
-    m_GHost = nGHost;
+    m_OHBot = nOHBot;
     m_Socket = new CTCPClient( );
     m_Protocol = new CBNETProtocol( );
     m_BNLSClient = NULL;
     m_BNCSUtil = new CBNCSUtilInterface( nUserName, nUserPassword );
-    m_CallablePList = m_GHost->m_DB->ThreadedPList( nServer );
-    m_CallableBanList = m_GHost->m_DB->ThreadedBanList( nServer );
-    m_CallableTBRemove = m_GHost->m_DB->ThreadedTBRemove( nServer );
+    m_CallablePList = m_OHBot->m_DB->ThreadedPList( nServer );
+    m_CallableBanList = m_OHBot->m_DB->ThreadedBanList( nServer );
+    m_CallableTBRemove = m_OHBot->m_DB->ThreadedTBRemove( nServer );
     m_Exiting = false;
     m_Server = nServer;
     string LowerServer = m_Server;
     m_AdminLog = vector<string>();
     transform( LowerServer.begin( ), LowerServer.end( ), LowerServer.begin( ), ::tolower );
-    m_GHost->m_CheckForFinishedGames = GetTime();
+    m_OHBot->m_CheckForFinishedGames = GetTime();
     LastUpdateTime = GetTime();
     if( !nServerAlias.empty( ) )
         m_ServerAlias = nServerAlias;
@@ -110,7 +110,7 @@ CBNET :: CBNET( CGHost *nGHost, string nServer, string nServerAlias, string nBNL
     if( m_CDKeyROC.size( ) != 26 && ! m_FakeRealm )
       CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your ROC CD key is not 26 characters long and is probably invalid" );
 
-    if( m_GHost->m_TFT && m_CDKeyTFT.size( ) != 26 && ! m_FakeRealm )
+    if( m_OHBot->m_TFT && m_CDKeyTFT.size( ) != 26 && ! m_FakeRealm )
       CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - your TFT CD key is not 26 characters long and is probably invalid" );
 
     m_CountryAbbrev = nCountryAbbrev;
@@ -166,67 +166,67 @@ CBNET :: ~CBNET( )
         delete *i;
 
     for( vector<PairedRegAdd> :: iterator i = m_PairedRegAdds.begin( ); i != m_PairedRegAdds.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedSS> :: iterator i = m_PairedSSs.begin( ); i != m_PairedSSs.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<Pairedpm> :: iterator i = m_Pairedpms.begin( ); i != m_Pairedpms.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedPassCheck> :: iterator i = m_PairedPassChecks.begin( ); i != m_PairedPassChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<Pairedpenp> :: iterator i = m_Pairedpenps.begin( ); i != m_Pairedpenps.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedPUp> :: iterator i = m_PairedPUps.begin( ); i != m_PairedPUps.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedBanCheck2> :: iterator i = m_PairedBanCheck2s.begin( ); i != m_PairedBanCheck2s.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedBanCount> :: iterator i = m_PairedBanCounts.begin( ); i != m_PairedBanCounts.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedBanAdd> :: iterator i = m_PairedBanAdds.begin( ); i != m_PairedBanAdds.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedBanRemove> :: iterator i = m_PairedBanRemoves.begin( ); i != m_PairedBanRemoves.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedGSCheck> :: iterator i = m_PairedGSChecks.begin( ); i != m_PairedGSChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedRankCheck> :: iterator i = m_PairedRankChecks.begin( ); i != m_PairedRankChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedStreakCheck> :: iterator i = m_PairedStreakChecks.begin( ); i != m_PairedStreakChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedINCheck> :: iterator i = m_PairedINChecks.begin( ); i != m_PairedINChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedSCheck> :: iterator i = m_PairedSChecks.begin( ); i != m_PairedSChecks.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<PairedGameUpdate> :: iterator i = m_PairedGameUpdates.begin( ); i != m_PairedGameUpdates.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<BotStatusUpdate> :: iterator i = m_BotStatusUpdate.begin( ); i != m_BotStatusUpdate.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     for( vector<BotStatusCreate> :: iterator i = m_BotStatusCreate.begin( ); i != m_BotStatusCreate.end( ); ++i )
-        m_GHost->m_Callables.push_back( i->second );
+        m_OHBot->m_Callables.push_back( i->second );
 
     if( m_CallablePList )
-        m_GHost->m_Callables.push_back( m_CallablePList );
+        m_OHBot->m_Callables.push_back( m_CallablePList );
 
     if( m_CallableBanList )
-        m_GHost->m_Callables.push_back( m_CallableBanList );
+        m_OHBot->m_Callables.push_back( m_CallableBanList );
 
     if( m_CallableTBRemove )
-        m_GHost->m_Callables.push_back( m_CallableTBRemove );
+        m_OHBot->m_Callables.push_back( m_CallableTBRemove );
 
     for( vector<CDBBan *> :: iterator i = m_Bans.begin( ); i != m_Bans.end( ); ++i )
         delete *i;
@@ -281,22 +281,22 @@ bool CBNET :: Update( void *fd, void *send_fd )
             uint32_t Result = i->second->GetResult( );
             m_LastRegisterProcess = GetTime( );
             if( Result == 1 )
-                QueueChatCommand( m_GHost->m_Language->SuccessfullyRegistered(), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->SuccessfullyRegistered(), i->first, true );
             else if( Result == 2 )
-                QueueChatCommand( m_GHost->m_Language->SuccessfullyRegistered(), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->SuccessfullyRegistered(), i->first, true );
             else if( Result == 3 )
-                QueueChatCommand( m_GHost->m_Language->WrongPassword(), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->WrongPassword(), i->first, true );
             else if( Result == 4 )
-                QueueChatCommand( m_GHost->m_Language->WrongEMail(), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->WrongEMail(), i->first, true );
             else if( Result == 5 )
-                QueueChatCommand( m_GHost->m_Language->NameAlreadyUsed( ), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->NameAlreadyUsed( ), i->first, true );
             else if( Result == 6 )
-                QueueChatCommand( m_GHost->m_Language->NoAccountToConfirm( ), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->NoAccountToConfirm( ), i->first, true );
             else
-                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, true );
 
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedRegAdds.erase( i );
         }
@@ -310,37 +310,37 @@ bool CBNET :: Update( void *fd, void *send_fd )
         {
             string Result = i->second->GetResult( );
             if( i->second->GetType( ) == "betcheck" )
-                QueueChatCommand( m_GHost->m_Language->BetPoints(i->second->GetUser( ), Result ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->BetPoints(i->second->GetUser( ), Result ), i->first, !i->first.empty( ) );
 
             else if( i->second->GetType( ) == "aliascheck" )
             {
                 if( Result != "failed" )
                     QueueChatCommand( Result, i->first, !i->first.empty( ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->NoRecordFoundForUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
             }
             else if( i->second->GetType( ) == "rpp" )
             {
                 if( Result != "failed" )
                     QueueChatCommand( Result, i->first, !i->first.empty( ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
             }
             else if( i->second->GetType() == "top")
             {
                 if( Result != "failed" )
                     QueueChatCommand( Result, i->first, !i->first.empty( ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
             }
             else if(i->second->GetType() == "forcedgproxy") {
                 if( Result != "failed" )
                     QueueChatCommand( Result, i->first, !i->first.empty( ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedSSs.erase( i );
         }
@@ -355,12 +355,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
             uint32_t Result = i->second->GetResult( );
 
             if( Result == -1 )
-                CONSOLE_Print( m_GHost->m_Language->SuccessfullyStoredMessage());
+                CONSOLE_Print( m_OHBot->m_Language->SuccessfullyStoredMessage());
             else if( Result > 0 ) {
-                QueueChatCommand( m_GHost->m_Language->NewMessages(i->first, UTIL_ToString(Result)), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->NewMessages(i->first, UTIL_ToString(Result)), i->first, true );
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_Pairedpms.erase( i );
         }
@@ -375,16 +375,16 @@ bool CBNET :: Update( void *fd, void *send_fd )
             uint32_t Result = i->second->GetResult( );
             if( Result == 1 )
             {
-                if( m_GHost->m_CurrentGame )
+                if( m_OHBot->m_CurrentGame )
                 {
-                    for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
+                    for( vector<CGamePlayer *> :: iterator k = m_OHBot->m_CurrentGame->m_Players.begin( ); k != m_OHBot->m_CurrentGame->m_Players.end( ); ++k )
                     {
-                        CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
+                        CGamePlayer *Player = m_OHBot->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
                         if( Player )
                         {
                             if( Player->GetName() == i->first )
                             {
-                                CONSOLE_Print( m_GHost->m_Language->SuccessfullyTypedPassword( Player->GetName() ));
+                                CONSOLE_Print( m_OHBot->m_Language->SuccessfullyTypedPassword( Player->GetName() ));
                                 Player->SetPasswordProt( false );
                                 Player->SetSpoofed( true );
                             }
@@ -393,7 +393,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
                 }
             }
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedPassChecks.erase( i );
         }
@@ -409,30 +409,30 @@ bool CBNET :: Update( void *fd, void *send_fd )
             if( i->second->GetType( ) == "check" )
             {
                 if( Result != 0 )
-                    QueueChatCommand( m_GHost->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ), i->first, !i->first.empty( ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->UserGotNoPenalityPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
             }
             else if( i->second->GetType( ) == "checkall" )
             {
                 if( Result != 0 )
-                    QueueChatCommand( m_GHost->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->UserGotPenalityPoints(i->second->GetName(), UTIL_ToString( Result ) ), i->first, !i->first.empty( ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->UserGotNoPenalityPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->UserGotNoPenalityPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
             }
             else if( i->second->GetType( ) == "add" )
             {
                 if( Result == 1 )
-                    QueueChatCommand( m_GHost->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->AddedPenalityPoints(i->second->GetName(), i->second->GetAdmin(),UTIL_ToString( i->second->GetAmount( ) ) ), i->first, !i->first.empty( ) );
                 else if(  Result == 2 )
-                    QueueChatCommand( m_GHost->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->BannedUserForReachingTooManyPPoints( i->second->GetName() ), i->first, !i->first.empty( ) );
                 else
-                    CONSOLE_Print( m_GHost->m_Language->FailedToAddPPoint( ) );
+                    CONSOLE_Print( m_OHBot->m_Language->FailedToAddPPoint( ) );
             }
             else
-                CONSOLE_Print(  m_GHost->m_Language->WrongContactBotOwner( ) );
+                CONSOLE_Print(  m_OHBot->m_Language->WrongContactBotOwner( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_Pairedpenps.erase( i );
         }
@@ -447,13 +447,13 @@ bool CBNET :: Update( void *fd, void *send_fd )
             uint32_t Count = i->second->GetResult( );
 
             if( Count == 0 )
-                QueueChatCommand( m_GHost->m_Language->ThereAreNoBannedUsers( m_Server ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->ThereAreNoBannedUsers( m_Server ), i->first, !i->first.empty( ) );
             else if( Count == 1 )
-                QueueChatCommand( m_GHost->m_Language->ThereIsBannedUser( m_Server ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->ThereIsBannedUser( m_Server ), i->first, !i->first.empty( ) );
             else
-                QueueChatCommand( m_GHost->m_Language->ThereAreBannedUsers( m_Server, UTIL_ToString( Count ) ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->ThereAreBannedUsers( m_Server, UTIL_ToString( Count ) ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedBanCounts.erase( i );
         }
@@ -467,13 +467,13 @@ bool CBNET :: Update( void *fd, void *send_fd )
         {
             string Result = i->second->GetResult( );
             if( Result == "norec" )
-                QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->first), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->NoRecordFoundForUser( i->first), i->first, !i->first.empty( ) );
             else if( Result == "fail" )
-                QueueChatCommand( m_GHost->m_Language->NotIPBanned( ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->NotIPBanned( ), i->first, !i->first.empty( ) );
             else
-                QueueChatCommand( m_GHost->m_Language->FoundIPBans( Result ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->FoundIPBans( Result ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedBanCheck2s.erase( i );
         }
@@ -487,23 +487,23 @@ bool CBNET :: Update( void *fd, void *send_fd )
         {
             uint32_t Result = i->second->GetResult( );
             if( Result == 1 )
-                QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyPermBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
+                QueueChatCommand( m_OHBot->m_Language->ErrorBanningUserAlreadyPermBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
             else if( Result == 2 )
-                QueueChatCommand( m_GHost->m_Language->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
+                QueueChatCommand( m_OHBot->m_Language->ErrorBanningUserAlreadyLongerBanned( i->second->GetUser( ) ), i->first, !i->first.empty( )  );
             else if( Result >= 3 && Result <= 5 )
             {
                 AddBan( i->second->GetUser( ), i->second->GetIP( ), i->second->GetGameName( ), i->second->GetAdmin( ), i->second->GetReason( ) );
                 if( Result == 3 )
-                    QueueChatCommand( m_GHost->m_Language->SuccessfullyBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->SuccessfullyBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
                 else if( Result == 4)
-                    QueueChatCommand( m_GHost->m_Language->SuccessfullyUpdatedBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->SuccessfullyUpdatedBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
                 else if( Result == 5)
-                    QueueChatCommand( m_GHost->m_Language->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
+                    QueueChatCommand( m_OHBot->m_Language->SuccessfullyPermBannedUser( i->second->GetUser( ), i->second->GetServer( ) ), i->first, !i->first.empty( ) );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( )  );
+                QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( )  );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedBanAdds.erase( i );
         }
@@ -516,14 +516,14 @@ bool CBNET :: Update( void *fd, void *send_fd )
         if( i->second->GetReady( ) )
         {
             bool Result = i->second->GetResult( );
-            if( Result && m_GHost->m_RanksLoaded)
-                QueueChatCommand( m_GHost->m_Language->ChangedRankOfUser( i->second->GetName( ), GetLevelName( i->second->GetLevel( ) ), i->second->GetRealm( ) ) );
-            else if( Result && !m_GHost->m_RanksLoaded)
-                QueueChatCommand( m_GHost->m_Language->RanksNotLoaded());
+            if( Result && m_OHBot->m_RanksLoaded)
+                QueueChatCommand( m_OHBot->m_Language->ChangedRankOfUser( i->second->GetName( ), GetLevelName( i->second->GetLevel( ) ), i->second->GetRealm( ) ) );
+            else if( Result && !m_OHBot->m_RanksLoaded)
+                QueueChatCommand( m_OHBot->m_Language->RanksNotLoaded());
             else
-                QueueChatCommand( m_GHost->m_Language->NoRecordFoundForUser( i->second->GetName( ) ) );
+                QueueChatCommand( m_OHBot->m_Language->NoRecordFoundForUser( i->second->GetName( ) ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedPUps.erase( i );
         }
@@ -538,12 +538,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
             if( i->second->GetResult( ) )
             {
                 RemoveBan( i->second->GetUser( ) );
-                QueueChatCommand( m_GHost->m_Language->UnbannedUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->UnbannedUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->ErrorUnbanningUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
+                QueueChatCommand( m_OHBot->m_Language->ErrorUnbanningUser( i->second->GetUser( ) ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedBanRemoves.erase( i );
         }
@@ -559,9 +559,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
 
             if( StatsPlayerSummary )
             {
@@ -571,42 +571,42 @@ bool CBNET :: Update( void *fd, void *send_fd )
                     if( StatsPlayerSummary->GetStreak( ) < 0 )
                         string Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
 
-                    QueueChatCommand( m_GHost->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
+                    QueueChatCommand( m_OHBot->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
                                       UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                       UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                       UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                       Streak,
-                                      m_GHost->GetMonthInWords(Month),
+                                      m_OHBot->GetMonthInWords(Month),
                                       Year
                                                                                     ) );
                 }
                 else
                 {
                     if( i->first != i->second->GetName( ) )
-                        QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
+                        QueueChatCommand( m_OHBot->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                     else
                     {
                         string Streak = UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
                         if( StatsPlayerSummary->GetStreak( ) < 0 )
                             Streak = "-" + UTIL_ToString( StatsPlayerSummary->GetStreak( ) );
 
-                        QueueChatCommand( m_GHost->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
+                        QueueChatCommand( m_OHBot->m_Language->HasPlayedGamesWithThisBot( i->second->GetName( ),
                                           UTIL_ToString( StatsPlayerSummary->GetScore( ), 0 ),
                                           UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                                           UTIL_ToString( StatsPlayerSummary->GetWinPerc( ), 2 ),
                                           Streak,
-                                          m_GHost->GetMonthInWords(Month),
+                                          m_OHBot->GetMonthInWords(Month),
                                           Year
                                                                                         ), i->first, true );
                     }
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
-                                  m_GHost->GetMonthInWords(Month),
+                QueueChatCommand( m_OHBot->m_Language->HasntPlayedGamesWithThisBot( i->second->GetName( ),
+                                  m_OHBot->GetMonthInWords(Month),
                                   Year ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedGSChecks.erase( i );
         }
@@ -622,37 +622,37 @@ bool CBNET :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
             if( StatsPlayerSummary )
             {
                 string Time = Month+"/"+Year;
                 if(! StatsPlayerSummary->GetHidden() )
                 {
-                    if( m_GHost->m_RanksLoaded )
-                        QueueChatCommand( m_GHost->m_Language->RankOfUser( i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(IsLevel( i->second->GetName( ) )), GetLevelName( IsLevel( i->second->GetName( ) ) ) ), i->first, !i->first.empty( ) );
+                    if( m_OHBot->m_RanksLoaded )
+                        QueueChatCommand( m_OHBot->m_Language->RankOfUser( i->second->GetName( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(IsLevel( i->second->GetName( ) )), GetLevelName( IsLevel( i->second->GetName( ) ) ) ), i->first, !i->first.empty( ) );
                     else
-                        QueueChatCommand( m_GHost->m_Language->RankOfUserWithoutLevel(i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ) ), i->first, !i->first.empty( ) );
+                        QueueChatCommand( m_OHBot->m_Language->RankOfUserWithoutLevel(i->second->GetName( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ) ), i->first, !i->first.empty( ) );
                 } else {
                     if( i->first != i->second->GetName( ) )
-                        QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
+                        QueueChatCommand( m_OHBot->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                     else
                     {
-                        if( m_GHost->m_RanksLoaded )
-                            QueueChatCommand( m_GHost->m_Language->RankOfUser( i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(IsLevel( i->second->GetName( ) )), GetLevelName( IsLevel( i->second->GetName( ) ) ) ), i->first, true );
+                        if( m_OHBot->m_RanksLoaded )
+                            QueueChatCommand( m_OHBot->m_Language->RankOfUser( i->second->GetName( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ), UTIL_ToString(IsLevel( i->second->GetName( ) )), GetLevelName( IsLevel( i->second->GetName( ) ) ) ), i->first, true );
                         else
-                            QueueChatCommand( m_GHost->m_Language->RankOfUserWithoutLevel(i->second->GetName( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ) ), i->first, true );
+                            QueueChatCommand( m_OHBot->m_Language->RankOfUserWithoutLevel(i->second->GetName( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ), StatsPlayerSummary->GetRank( ) ), i->first, true );
                     }
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                  m_GHost->GetMonthInWords(Month),
+                QueueChatCommand( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                  m_OHBot->GetMonthInWords(Month),
                                   Year,
-                                  m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
+                                  m_OHBot->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedRankChecks.erase( i );
         }
@@ -668,28 +668,28 @@ bool CBNET :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
             if( StatsPlayerSummary )
             {
                 string Time = Month+"/"+Year;
                 if(! StatsPlayerSummary->GetHidden() )
-                    QueueChatCommand( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ),( StatsPlayerSummary->GetStreak( ) != 0 ? UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) : "-" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) ), UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ), UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
+                    QueueChatCommand( m_OHBot->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ),( StatsPlayerSummary->GetStreak( ) != 0 ? UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) : "-" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) ), UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ), UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ) );
                 else {
                     if( i->first != i->second->GetName())
-                        QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
+                        QueueChatCommand( m_OHBot->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                     else
-                        QueueChatCommand( m_GHost->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_GHost->GetAliasName( i->second->GetAlias( ) ),( StatsPlayerSummary->GetStreak( ) != 0 ? UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) : "-" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) ), UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ), UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ), i->first, true );
+                        QueueChatCommand( m_OHBot->m_Language->StreakOfUser(StatsPlayerSummary->GetPlayer( ), Time, m_OHBot->GetAliasName( i->second->GetAlias( ) ),( StatsPlayerSummary->GetStreak( ) != 0 ? UTIL_ToString( StatsPlayerSummary->GetStreak( ) ) : "-" + UTIL_ToString( StatsPlayerSummary->GetLosingStreak( ) ) ), UTIL_ToString( StatsPlayerSummary->GetMaxStreak( ) ), UTIL_ToString( StatsPlayerSummary->GetMaxLosingStreak( ) ) ), i->first, true );
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                  m_GHost->GetMonthInWords(Month),
+                QueueChatCommand( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                  m_OHBot->GetMonthInWords(Month),
                                   Year,
-                                  m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
+                                  m_OHBot->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedStreakChecks.erase( i );
         }
@@ -706,9 +706,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
             if( InboxSummary )
                 QueueChatCommand( "[" + InboxSummary->GetUser( ) + "] " + InboxSummary->GetMessage( ), i->first, true );
             else
-                QueueChatCommand( m_GHost->m_Language->ErrorInboxEmpty( ), i->first, true );
+                QueueChatCommand( m_OHBot->m_Language->ErrorInboxEmpty( ), i->first, true );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedINChecks.erase( i );
         }
@@ -725,17 +725,17 @@ bool CBNET :: Update( void *fd, void *send_fd )
             string Month = i->second->GetMonth();
             string Year = i->second->GetYear();
             if(Month.empty())
-                Month=m_GHost->GetTimeFunction(1);
+                Month=m_OHBot->GetTimeFunction(1);
             if(Year.empty())
-                Year=m_GHost->GetTimeFunction(0);
+                Year=m_OHBot->GetTimeFunction(0);
 
             if( StatsPlayerSummary )
             {
-                string Alias = m_GHost->GetAliasName( i->second->GetAlias( ) );
+                string Alias = m_OHBot->GetAliasName( i->second->GetAlias( ) );
                 transform( Alias.begin( ), Alias.end( ), Alias.begin( ), ::tolower );
                 string Summary="";
                 if( Alias.find("lod")!=string::npos || Alias.find("dota")!=string::npos || Alias.find("imba")!=string::npos ) {
-                    Summary = m_GHost->m_Language->HasPlayedAliasGamesWithThisBot2( i->second->GetName( ),
+                    Summary = m_OHBot->m_Language->HasPlayedAliasGamesWithThisBot2( i->second->GetName( ),
                               UTIL_ToString( StatsPlayerSummary->GetGames( ) ),
                               UTIL_ToString( StatsPlayerSummary->GetWins( ) ),
                               UTIL_ToString( StatsPlayerSummary->GetLosses( ) ),
@@ -756,9 +756,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
                               UTIL_ToString( StatsPlayerSummary->GetAvgNeutrals( ), 1 ),
                               UTIL_ToString( StatsPlayerSummary->GetAvgTowers( ), 1 ),
                               UTIL_ToString( StatsPlayerSummary->GetAvgRax( ), 1 ),
-                              m_GHost->GetMonthInWords(Month),
+                              m_OHBot->GetMonthInWords(Month),
                               Year,
-                              m_GHost->GetAliasName( i->second->GetAlias( ) )
+                              m_OHBot->GetAliasName( i->second->GetAlias( ) )
                                                                                   );
                 } else if(Alias.find("legion")!=string::npos) {
                     /**
@@ -781,18 +781,18 @@ bool CBNET :: Update( void *fd, void *send_fd )
                     QueueChatCommand( Summary, i->first, !i->first.empty( ) );
                 } else {
                     if( i->first != i->second->GetName())
-                        QueueChatCommand( m_GHost->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
+                        QueueChatCommand( m_OHBot->m_Language->UserHasAHiddenAcc( StatsPlayerSummary->GetPlayer( ) ) );
                     else
                         QueueChatCommand( Summary, i->first, true );
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
-                                  m_GHost->GetMonthInWords(Month),
+                QueueChatCommand( m_OHBot->m_Language->HasntPlayedAliasGamesWithThisBot( i->second->GetName( ),
+                                  m_OHBot->GetMonthInWords(Month),
                                   Year,
-                                  m_GHost->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
+                                  m_OHBot->GetAliasName( i->second->GetAlias( ) ) ), i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedSChecks.erase( i );
         }
@@ -807,7 +807,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
             string response = i->second->GetResult( );
             QueueChatCommand( response, i->first, !i->first.empty( ) );
 
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_PairedGameUpdates.erase( i );
         }
@@ -819,7 +819,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
     {
         if( i->second->GetReady( ) )
         {
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_BotStatusUpdate.erase( i );
         }
@@ -831,7 +831,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
     {
         if( i->second->GetReady( ) )
         {
-            m_GHost->m_DB->RecoverCallable( i->second );
+            m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
             i = m_BotStatusCreate.erase( i );
         }
@@ -841,7 +841,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
     if( GetTime( ) - m_LastLogUpdateTime >= 1800 )
     {
-        m_GHost->m_Callables.push_back( m_GHost->m_DB->ThreadedStoreLog( 0, string(), m_AdminLog ) );
+        m_OHBot->m_Callables.push_back( m_OHBot->m_DB->ThreadedStoreLog( 0, string(), m_AdminLog ) );
         m_AdminLog = vector<string>();
         m_LastLogUpdateTime = GetTime();
     }
@@ -850,12 +850,12 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
     if( !m_CallablePList && GetTime( ) - m_LastAdminRefreshTime >= 300 )
     {
-        m_CallablePList = m_GHost->m_DB->ThreadedPList( m_Server );
+        m_CallablePList = m_OHBot->m_DB->ThreadedPList( m_Server );
         m_LastAdminRefreshTime = GetTime( );
     }
 
     // checking for finished games
-    if( GetTime( ) - m_GHost->m_CheckForFinishedGames >= 120 && m_GHost->m_StatsUpdate )
+    if( GetTime( ) - m_OHBot->m_CheckForFinishedGames >= 120 && m_OHBot->m_StatsUpdate )
     {
 #ifdef WIN32
         system("stats.exe");
@@ -863,15 +863,15 @@ bool CBNET :: Update( void *fd, void *send_fd )
         uint32_t result = system("./stats");
 	if(!result) { CONSOLE_Print("Error. Didn't found stats binary file. Couldn't update stats."); }
 #endif
-        m_GHost->m_CheckForFinishedGames = GetTime();
-//              m_GHost->m_FinishedGames--;
+        m_OHBot->m_CheckForFinishedGames = GetTime();
+//              m_OHBot->m_FinishedGames--;
     }
 
     if( m_CallablePList && m_CallablePList->GetReady( ) )
     {
-        m_GHost->LoadDatas();
+        m_OHBot->LoadDatas();
         m_Permissions = m_CallablePList->GetResult( );
-        m_GHost->m_DB->RecoverCallable( m_CallablePList );
+        m_OHBot->m_DB->RecoverCallable( m_CallablePList );
         delete m_CallablePList;
         m_CallablePList = NULL;
         m_LastAdminRefreshTime = GetTime( );
@@ -882,8 +882,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
     if( !m_CallableBanList && GetTime( ) - m_LastBanRefreshTime >= 300 )
     {
-        m_CallableBanList = m_GHost->m_DB->ThreadedBanList( m_Server );
-        m_CallableTBRemove = m_GHost->m_DB->ThreadedTBRemove( m_Server );
+        m_CallableBanList = m_OHBot->m_DB->ThreadedBanList( m_Server );
+        m_CallableTBRemove = m_OHBot->m_DB->ThreadedTBRemove( m_Server );
     }
 
     if( m_CallableBanList && m_CallableBanList->GetReady( ) && m_CallableTBRemove && m_CallableTBRemove->GetReady( ) )
@@ -894,10 +894,10 @@ bool CBNET :: Update( void *fd, void *send_fd )
             delete *i;
 
         m_Bans = m_CallableBanList->GetResult( );
-        m_GHost->m_DB->RecoverCallable( m_CallableBanList );
+        m_OHBot->m_DB->RecoverCallable( m_CallableBanList );
         delete m_CallableBanList;
         m_CallableBanList = NULL;
-        m_GHost->m_DB->RecoverCallable( m_CallableTBRemove );
+        m_OHBot->m_DB->RecoverCallable( m_CallableTBRemove );
         delete m_CallableTBRemove;
         m_CallableTBRemove = NULL;
         m_LastBanRefreshTime = GetTime( );
@@ -915,14 +915,10 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         if( m_Socket->GetError( ) == ECONNRESET && GetTime( ) - m_LastConnectionAttemptTime <= 15 ) {
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] warning - you are probably using an IP temporarily banned from battle.net" );
-	    try {
-        	EXECUTE_HANDLER("BNetIPBanned", true, boost::ref(this))
-	    } catch(...) { }
-	    EXECUTE_HANDLER("BNetIPBanned", false, boost::ref(this))
 	}
 
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
-        m_GHost->EventBNETDisconnected( this );
+        m_OHBot->EventBNETDisconnected( this );
         delete m_BNLSClient;
         m_BNLSClient = NULL;
         m_BNCSUtil->Reset( m_UserName, m_UserPassword );
@@ -940,7 +936,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] disconnected from battle.net" );
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
-        m_GHost->EventBNETDisconnected( this );
+        m_OHBot->EventBNETDisconnected( this );
         delete m_BNLSClient;
         m_BNLSClient = NULL;
         m_BNCSUtil->Reset( m_UserName, m_UserPassword );
@@ -1037,9 +1033,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
     if( m_Socket->GetConnecting( ) &&! m_FakeRealm)
     {
 
-        if(!m_GHost->isCreated) {
-            m_BotStatusCreate.push_back( BotStatusCreate( string( ),m_GHost->m_DB->ThreadedBotStatusCreate( m_UserName, m_GHost->m_AutoHostGameName, m_GHost->m_BindAddress, m_GHost->m_HostPort, m_CDKeyROC, m_CDKeyTFT ) ) );
-            m_GHost->isCreated = true;
+        if(!m_OHBot->isCreated) {
+            m_BotStatusCreate.push_back( BotStatusCreate( string( ),m_OHBot->m_DB->ThreadedBotStatusCreate( m_UserName, m_OHBot->m_AutoHostGameName, m_OHBot->m_BindAddress, m_OHBot->m_HostPort, m_CDKeyROC, m_CDKeyTFT ) ) );
+            m_OHBot->isCreated = true;
         }
         // we are currently attempting to connect to battle.net
 
@@ -1048,9 +1044,9 @@ bool CBNET :: Update( void *fd, void *send_fd )
             // the connection attempt completed
 
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] connected" );
-            m_GHost->EventBNETConnected( this );
+            m_OHBot->EventBNETConnected( this );
             m_Socket->PutBytes( m_Protocol->SEND_PROTOCOL_INITIALIZE_SELECTOR( ) );
-            m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_INFO( m_War3Version, m_GHost->m_TFT, m_LocaleID, m_CountryAbbrev, m_Country ) );
+            m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_INFO( m_War3Version, m_OHBot->m_TFT, m_LocaleID, m_CountryAbbrev, m_Country ) );
             m_Socket->DoSend( (fd_set *)send_fd );
             m_LastNullTime = GetTime( );
             m_LastOutPacketTicks = GetTicks( );
@@ -1066,12 +1062,8 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] connect timed out" );
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] waiting 90 seconds to reconnect" );
-	    try {
-       		EXECUTE_HANDLER("BNetTimeout", true, boost::ref(this))
-	    } catch(...) { }
-	    EXECUTE_HANDLER("BNetTimeout", false, boost::ref(this))
 
-            m_GHost->EventBNETConnectTimedOut( this );
+            m_OHBot->EventBNETConnectTimedOut( this );
             m_Socket->Reset( );
             m_LastDisconnectedTime = GetTime( );
             m_WaitingToConnect = true;
@@ -1085,14 +1077,14 @@ bool CBNET :: Update( void *fd, void *send_fd )
 
         m_FirstConnect = false;
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] connecting to server [" + m_Server + "] on port 6112" );
-        m_GHost->EventBNETConnecting( this );
+        m_OHBot->EventBNETConnecting( this );
 
-        if( !m_GHost->m_BindAddress.empty( ) )
-            CONSOLE_Print( "[BNET: " + m_ServerAlias + "] attempting to bind to address [" + m_GHost->m_BindAddress + "]" );
+        if( !m_OHBot->m_BindAddress.empty( ) )
+            CONSOLE_Print( "[BNET: " + m_ServerAlias + "] attempting to bind to address [" + m_OHBot->m_BindAddress + "]" );
 
         if( m_ServerIP.empty( ) )
         {
-            m_Socket->Connect( m_GHost->m_BindAddress, m_Server, 6112 );
+            m_Socket->Connect( m_OHBot->m_BindAddress, m_Server, 6112 );
 
             if( !m_Socket->HasError( ) )
             {
@@ -1105,7 +1097,7 @@ bool CBNET :: Update( void *fd, void *send_fd )
             // use cached server IP address since resolving takes time and is blocking
 
             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] using cached server IP address " + m_ServerIP );
-            m_Socket->Connect( m_GHost->m_BindAddress, m_ServerIP, 6112 );
+            m_Socket->Connect( m_OHBot->m_BindAddress, m_ServerIP, 6112 );
         }
 
         m_WaitingToConnect = false;
@@ -1228,12 +1220,12 @@ void CBNET :: ProcessPackets( )
                 if( m_Protocol->RECEIVE_SID_STARTADVEX3( Packet->GetData( ) ) )
                 {
                     m_InChat = false;
-                    m_GHost->EventBNETGameRefreshed( this );
+                    m_OHBot->EventBNETGameRefreshed( this );
                 }
                 else
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] startadvex3 failed" );
-                    m_GHost->EventBNETGameRefreshFailed( this );
+                    m_OHBot->EventBNETGameRefreshFailed( this );
                 }
 
                 break;
@@ -1245,7 +1237,7 @@ void CBNET :: ProcessPackets( )
             case CBNETProtocol :: SID_AUTH_INFO:
                 if( m_Protocol->RECEIVE_SID_AUTH_INFO( Packet->GetData( ) ) )
                 {
-                    if( m_BNCSUtil->HELP_SID_AUTH_CHECK( m_GHost->m_TFT, m_GHost->m_Warcraft3Path, m_CDKeyROC, m_CDKeyTFT, m_Protocol->GetValueStringFormulaString( ), m_Protocol->GetIX86VerFileNameString( ), m_Protocol->GetClientToken( ), m_Protocol->GetServerToken( ) ) )
+                    if( m_BNCSUtil->HELP_SID_AUTH_CHECK( m_OHBot->m_TFT, m_OHBot->m_Warcraft3Path, m_CDKeyROC, m_CDKeyTFT, m_Protocol->GetValueStringFormulaString( ), m_Protocol->GetIX86VerFileNameString( ), m_Protocol->GetClientToken( ), m_Protocol->GetServerToken( ) ) )
                     {
                         // override the exe information generated by bncsutil if specified in the config file
                         // apparently this is useful for pvpgn users
@@ -1262,12 +1254,12 @@ void CBNET :: ProcessPackets( )
                             m_BNCSUtil->SetEXEVersionHash( m_EXEVersionHash );
                         }
 
-                        if( m_GHost->m_TFT )
+                        if( m_OHBot->m_TFT )
                             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] attempting to auth as Warcraft III: The Frozen Throne" );
                         else
                             CONSOLE_Print( "[BNET: " + m_ServerAlias + "] attempting to auth as Warcraft III: Reign of Chaos" );
 
-                        m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_CHECK( m_GHost->m_TFT, m_Protocol->GetClientToken( ), m_BNCSUtil->GetEXEVersion( ), m_BNCSUtil->GetEXEVersionHash( ), m_BNCSUtil->GetKeyInfoROC( ), m_BNCSUtil->GetKeyInfoTFT( ), m_BNCSUtil->GetEXEInfo( ), "GHost" ) );
+                        m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_CHECK( m_OHBot->m_TFT, m_Protocol->GetClientToken( ), m_BNCSUtil->GetEXEVersion( ), m_BNCSUtil->GetEXEVersionHash( ), m_BNCSUtil->GetKeyInfoROC( ), m_BNCSUtil->GetKeyInfoTFT( ), m_BNCSUtil->GetEXEInfo( ), "GHost" ) );
 
                         // the Warden seed is the first 4 bytes of the ROC key hash
                         // initialize the Warden handler
@@ -1368,14 +1360,10 @@ void CBNET :: ProcessPackets( )
                     // logon successful
 
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] logon successful" );
-		    try {
-		        EXECUTE_HANDLER("BNetLogged", true, boost::ref(this))
-		    } catch(...) { return; }
-		    EXECUTE_HANDLER("BNetLogged", false, boost::ref(this))
 
                     m_LoggedIn = true;
-                    m_GHost->EventBNETLoggedIn( this );
-                    m_Socket->PutBytes( m_Protocol->SEND_SID_NETGAMEPORT( m_GHost->m_HostPort ) );
+                    m_OHBot->EventBNETLoggedIn( this );
+                    m_Socket->PutBytes( m_Protocol->SEND_SID_NETGAMEPORT( m_OHBot->m_HostPort ) );
                     m_Socket->PutBytes( m_Protocol->SEND_SID_ENTERCHAT( ) );
                     m_Socket->PutBytes( m_Protocol->SEND_SID_FRIENDSLIST( ) );
                     m_Socket->PutBytes( m_Protocol->SEND_SID_CLANMEMBERLIST( ) );
@@ -1447,25 +1435,25 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         if( Event == CBNETProtocol :: EID_WHISPER )
         {
             CONSOLE_Print( "[WHISPER: " + m_ServerAlias + "] [" + User + "] " + Message );
-            m_GHost->EventBNETWhisper( this, User, Message );
+            m_OHBot->EventBNETWhisper( this, User, Message );
         }
         else
         {
             CONSOLE_Print( "[LOCAL: " + m_ServerAlias + "] [" + User + "] " + Message );
-            m_GHost->EventBNETChat( this, User, Message );
+            m_OHBot->EventBNETChat( this, User, Message );
         }
 
         // handle spoof checking for current game
         // this case covers whispers - we assume that anyone who sends a whisper to the bot with message "spoofcheck" should be considered spoof checked
         // note that this means you can whisper "spoofcheck" even in a public game to manually spoofcheck if the /whois fails
 
-	boost::mutex::scoped_lock lock( m_GHost->m_GamesMutex );
+	boost::mutex::scoped_lock lock( m_OHBot->m_GamesMutex );
 
-        if( Event == CBNETProtocol :: EID_WHISPER && m_GHost->m_CurrentGame )
+        if( Event == CBNETProtocol :: EID_WHISPER && m_OHBot->m_CurrentGame )
         {
             if( Message == "s" || Message == "sc" || Message == "spoof" || Message == "check" || Message == "spoofcheck" )
-                m_GHost->m_CurrentGame->AddToSpoofed( m_Server, User, true );
-            else if( Message.find( m_GHost->m_CurrentGame->GetGameName( ) ) != string :: npos )
+                m_OHBot->m_CurrentGame->AddToSpoofed( m_Server, User, true );
+            else if( Message.find( m_OHBot->m_CurrentGame->GetGameName( ) ) != string :: npos )
             {
                 // look for messages like "entered a Warcraft III The Frozen Throne game called XYZ"
                 // we don't look for the English part of the text anymore because we want this to work with multiple languages
@@ -1478,10 +1466,10 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
                     vector<string> Tokens = UTIL_Tokenize( Message, ' ' );
 
                     if( Tokens.size( ) >= 3 )
-                        m_GHost->m_CurrentGame->AddToSpoofed( m_Server, Tokens[2], false );
+                        m_OHBot->m_CurrentGame->AddToSpoofed( m_Server, Tokens[2], false );
                 }
                 else
-                    m_GHost->m_CurrentGame->AddToSpoofed( m_Server, User, false );
+                    m_OHBot->m_CurrentGame->AddToSpoofed( m_Server, User, false );
             }
         }
 
@@ -1490,12 +1478,12 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         // handle bot commands
 
         if( Message == "?trigger" && ( IsLevel( User ) >= 9 || ( m_PublicCommands && m_OutPackets.size( ) <= 3 ) ) )
-            QueueChatCommand( m_GHost->m_Language->CommandTrigger( string( 1, m_CommandTrigger ) ), User, Whisper );
+            QueueChatCommand( m_OHBot->m_Language->CommandTrigger( string( 1, m_CommandTrigger ) ), User, Whisper );
         else if( !Message.empty( ) && Message[0] == m_CommandTrigger )
         {
             BotCommand( Message, User, Whisper, false );
         }
-	else if( !Message.empty( ) && Message.substr(0, 1) == "/" && Message.find("pvpgn")!=string::npos && m_GHost->m_PVPGNMode) {
+	else if( !Message.empty( ) && Message.substr(0, 1) == "/" && Message.find("pvpgn")!=string::npos && m_OHBot->m_PVPGNMode) {
 	    PVPGNCommand( Message );
 	}
     }
@@ -1524,22 +1512,22 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
         // this case covers whois results which are used when hosting a public game (we send out a "/whois [player]" for each player)
         // at all times you can still /w the bot with "spoofcheck" to manually spoof check
 
-	boost::mutex::scoped_lock lock( m_GHost->m_GamesMutex );	
+	boost::mutex::scoped_lock lock( m_OHBot->m_GamesMutex );	
 
-        if( m_GHost->m_CurrentGame && m_GHost->m_CurrentGame->GetPlayerFromName( UserName, true ) )
+        if( m_OHBot->m_CurrentGame && m_OHBot->m_CurrentGame->GetPlayerFromName( UserName, true ) )
         {
             if( Message.find( "is away" ) != string :: npos )
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofPossibleIsAway( UserName ) );
+                m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofPossibleIsAway( UserName ) );
             else if( Message.find( "is unavailable" ) != string :: npos )
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofPossibleIsUnavailable( UserName ) );
+                m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofPossibleIsUnavailable( UserName ) );
             else if( Message.find( "is refusing messages" ) != string :: npos )
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofPossibleIsRefusingMessages( UserName ) );
+                m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofPossibleIsRefusingMessages( UserName ) );
             else if( Message.find( "is using Warcraft III The Frozen Throne in the channel" ) != string :: npos )
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsNotInGame( UserName ) );
+                m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofDetectedIsNotInGame( UserName ) );
             else if( Message.find( "is using Warcraft III The Frozen Throne in channel" ) != string :: npos )
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsNotInGame( UserName ) );
+                m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofDetectedIsNotInGame( UserName ) );
             else if( Message.find( "is using Warcraft III The Frozen Throne in a private channel" ) != string :: npos )
-                m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInPrivateChannel( UserName ) );
+                m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofDetectedIsInPrivateChannel( UserName ) );
 
 	    string LMessage = Message;
        	    transform( LMessage.begin( ), LMessage.end( ), LMessage.begin( ), ::tolower );
@@ -1551,10 +1539,10 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
                 // this is because when the game is rehosted, players who joined recently will be in the previous game according to battle.net
                 // note: if the game is rehosted more than once it is possible (but unlikely) for a false positive because only two game names are checked
 
-                if( Message.find( m_GHost->m_CurrentGame->GetGameName( ) ) != string :: npos || Message.find( m_GHost->m_CurrentGame->GetLastGameName( ) ) != string :: npos || LMessage.find( m_GHost->m_SpoofPattern ) != string :: npos)
-                    m_GHost->m_CurrentGame->AddToSpoofed( m_Server, UserName, false );
+                if( Message.find( m_OHBot->m_CurrentGame->GetGameName( ) ) != string :: npos || Message.find( m_OHBot->m_CurrentGame->GetLastGameName( ) ) != string :: npos || LMessage.find( m_OHBot->m_SpoofPattern ) != string :: npos)
+                    m_OHBot->m_CurrentGame->AddToSpoofed( m_Server, UserName, false );
                 else
-                    m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->SpoofDetectedIsInAnotherGame( UserName ) );
+                    m_OHBot->m_CurrentGame->SendAllChat( m_OHBot->m_Language->SpoofDetectedIsInAnotherGame( UserName ) );
             }
         }
 	
@@ -1562,8 +1550,8 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
     }
 
     else if( Event == CBNETProtocol :: EID_JOIN ) {
-        if( m_GHost->m_MessageSystem )
-            m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, string(), 0, string(), "join" ) ) );
+        if( m_OHBot->m_MessageSystem )
+            m_Pairedpms.push_back( Pairedpm( User, m_OHBot->m_DB->Threadedpm( User, string(), 0, string(), "join" ) ) );
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] user [" + User + "] joined channel " + m_CurrentChannel );
     }
     else if( Event == CBNETProtocol :: EID_ERROR )
@@ -1571,7 +1559,7 @@ void CBNET :: ProcessChatEvent( CIncomingChatEvent *chatEvent )
     else if( Event == CBNETProtocol :: EID_EMOTE )
     {
         CONSOLE_Print( "[EMOTE: " + m_ServerAlias + "] [" + User + "] " + Message );
-        m_GHost->EventBNETEmote( this, User, Message );
+        m_OHBot->EventBNETEmote( this, User, Message );
     }
 }
 
@@ -1595,17 +1583,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
     transform( Command.begin( ), Command.end( ), Command.begin( ), ::tolower );
 
-    if(!ForceRoot && m_GHost->m_PVPGNMode && Command != "version" ) {
+    if(!ForceRoot && m_OHBot->m_PVPGNMode && Command != "version" ) {
       CONSOLE_Print("[PVPGN-Mode] User used command but bot is running in pvpgn-mode.");
       return;
     }
 
-    try {
-        EXECUTE_HANDLER("BNetCommand", true, boost::ref(this), User, Command, Payload)
-    } catch(...) { return; }
-    EXECUTE_HANDLER("BNetCommand", false, boost::ref(this), User, Command, Payload)
-
-    if( ( IsLevel( User ) >= 5 || ForceRoot ) && m_GHost->m_RanksLoaded )
+    if( ( IsLevel( User ) >= 5 || ForceRoot ) && m_OHBot->m_RanksLoaded )
     {
         string level = GetLevelName( IsLevel( User ) );
         CONSOLE_Print( "[BNET] "+ level +" [" + User + "] sent command [" + Command + "] with payload [" + Payload + "]" );
@@ -1613,464 +1596,6 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //save admin log
         m_AdminLog.push_back( User + " cl\t" + UTIL_ToString( IsLevel( User ) ) + "\t" + Command + "\t" + Payload );
 
-
-        /**************************************
-        * GRIEF-CODE COMMANDS | RCON COMMANDS *
-        **************************************/
-/*
-        //
-        // !RCON
-        //
-
-        if( Command == "rcon" && ForceRoot)
-        {
-            string RCONCommand;
-            string RCONPayload;
-            string :: size_type PayloadStart = Payload.find( " " );
-
-            if( PayloadStart != string :: npos )
-            {
-                RCONCommand = Payload.substr( 0, PayloadStart );
-                RCONPayload = Payload.substr( PayloadStart + 1 );
-            }
-            else
-                RCONCommand = Payload.substr( 1 );
-
-            transform( RCONCommand.begin( ), RCONCommand.end( ), RCONCommand.begin( ), ::tolower );
-
-            //
-            // !RESERVE
-            //
-            if( RCONCommand == "reserve" && m_GHost->m_CurrentGame ) {
-                string username;
-                string sid;
-                string level;
-                stringstream SS;
-                SS<<RCONPayload;
-                SS>>username;
-                if(SS.fail())
-                    CONSOLE_Print("Bad input for reserve a slot.");
-                else {
-                    SS>>sid;
-                    if(SS.fail())
-                        CONSOLE_Print("Bad input for reserve a slot.");
-                    else {
-                        SS>>level;
-                        if( SS.fail()) {
-                            m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), 1);
-                        } else {
-                            m_GHost->m_CurrentGame->AddToReserved (username, UTIL_ToUInt32(sid), UTIL_ToUInt32(level));
-                        }
-                    }
-                }
-            }
-
-            //
-            // !MUTE
-            //
-            else if( RCONCommand == "mute" )
-            {
-                bool Success = false;
-                string User;
-                string Name;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-mute command" );
-                else
-                {
-                    SS >> Name;
-                    if( SS.fail( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-mute command" );
-                    else
-                    {
-
-                        if( m_GHost->m_CurrentGame )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
-                            {
-                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
-                                if( Player )
-                                {
-                                    if( Player->GetName() == Name )
-                                    {
-                                        m_GHost->m_CurrentGame->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User ) );
-                                        Player->SetMuted( true );
-                                        Success = true;
-                                    }
-                                }
-                            }
-                        }
-                        for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
-                            {
-                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
-                                if( Player )
-                                {
-                                    if( Player->GetName() == Name )
-                                    {
-                                        (*i)->SendAllChat( m_GHost->m_Language->UserMutedByRCON( Name, User ) );
-                                        Player->SetMuted( true );
-                                        Success = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            //
-            // !UNMUTE
-            //
-            else if( RCONCommand == "unmute" )
-            {
-                bool Success = false;
-                string User;
-                string Name;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-unmute command" );
-                else
-                {
-                    SS >> Name;
-                    if( SS.fail( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-unmute command" );
-                    else
-                    {
-
-                        if( m_GHost->m_CurrentGame )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
-                            {
-                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
-                                if( Player )
-                                {
-                                    if( Player->GetName() == Name )
-                                    {
-                                        m_GHost->m_CurrentGame->SendAllChat(m_GHost->m_Language->UserUnMutedByRCON( Name, User ));
-                                        Player->SetMuted( false );
-                                        Success = true;
-                                    }
-                                }
-                            }
-                        }
-                        for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
-                            {
-                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
-                                if( Player )
-                                {
-                                    if( Player->GetName() == Name )
-                                    {
-                                        (*i)->SendAllChat(m_GHost->m_Language->UserUnMutedByRCON( Name, User ));
-                                        Player->SetMuted( false );
-                                        Success = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            //
-            // !KICK
-            //
-
-            else if( RCONCommand == "kick" )
-            {
-                bool Success = false;
-                string User;
-                string Name;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-kick command" );
-                else
-                {
-                    SS >> Name;
-                    if( SS.fail( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-kick command" );
-                    else
-                    {
-                        if( m_GHost->m_CurrentGame )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
-                            {
-                                CGamePlayer *Player = m_GHost->m_CurrentGame->GetPlayerFromName( (*k)->GetName( ), true );
-                                if( Player )
-                                {
-                                    if( Player->GetName() == Name )
-                                    {
-                                        m_GHost->m_CurrentGame->SendAllChat(m_GHost->m_Language->UserKickedByRCON( Name, User ));
-                                        Player->SetDeleteMe( true );
-                                        Player->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
-                                        Player->SetLeftCode( PLAYERLEAVE_LOBBY );
-                                        m_GHost->m_CurrentGame->OpenSlot( m_GHost->m_CurrentGame->GetSIDFromPID( Player->GetPID( ) ), false );
-                                        Success = true;
-                                    }
-                                }
-                            }
-                        }
-                        for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = (*i)->m_Players.begin( ); k != (*i)->m_Players.end( ); ++k )
-                            {
-                                CGamePlayer *Player = (*i)->GetPlayerFromName( (*k)->GetName( ), true );
-                                if( Player )
-                                {
-                                    if( Player->GetName() == Name )
-                                    {
-                                        (*i)->SendAllChat( m_GHost->m_Language->UserKickedByRCON( Name, User ) );
-                                        Player->SetDeleteMe( true );
-                                        Player->SetLeftReason( m_GHost->m_Language->WasKickedByPlayer( User ) );
-                                        Player->SetLeftCode( PLAYERLEAVE_LOST );
-                                        Success = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            //
-            // !SAYLOBBY
-            //
-            else if( RCONCommand == "saylobby" )
-            {
-
-                bool Success = false;
-                string User;
-                string GameID;
-                string Message;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                SS >> GameID;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-saylobby command" );
-                else
-                {
-                    if( !SS.eof( ) )
-                    {
-                        getline( SS, Message );
-                        string :: size_type Start = Message.find_first_not_of( " " );
-
-                        if( Start != string :: npos )
-                            Message = Message.substr( Start );
-                    }
-
-                    if( m_GHost->m_CurrentGame && User != "" && Message != "")
-                    {
-                        m_GHost->m_CurrentGame->SendAllChat( "[" + User + "] " + Message );
-                        Success = true;
-                    }
-                }
-            }
-
-            //
-            // !SAYGAME
-            //
-            else if( RCONCommand == "saygame" )
-            {
-
-                // extract the game number and the message
-                // e.g. "3 hello everyone" -> game number: "3", message: "hello everyone"
-
-                string User;
-                uint32_t GameNumber;
-                string Message;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-saygame command" );
-                else
-                {
-                    SS >> GameNumber;
-                    if( SS.fail( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-saygame command" );
-                    else
-                    {
-                        if( !SS.eof( ) )
-                        {
-                            getline( SS, Message );
-                            string :: size_type Start = Message.find_first_not_of( " " );
-
-                            if( Start != string :: npos )
-                                Message = Message.substr( Start );
-                        }
-
-                        for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                        {
-                            if( (*i)->m_HostCounter == GameNumber )
-                                (*i)->SendAllChat( "[" + User + "] " + Message );
-                        }
-                    }
-                }
-            }
-
-            //
-            // !LOBBYTEAM
-            //
-            else if( RCONCommand == "lobbyteam" )
-            {
-
-                bool Success = false;
-                uint32_t Team;
-                string User;
-                string GameID;
-                string Message;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                SS >> GameID;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-lobbyteam command" );
-                else
-                {
-                    SS >> Team;
-                    if( SS.fail( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-lobbyteam command" );
-                    else
-                    {
-                        if( !SS.eof( ) )
-                        {
-                            getline( SS, Message );
-                            string :: size_type Start = Message.find_first_not_of( " " );
-
-                            if( Start != string :: npos )
-                                Message = Message.substr( Start );
-                        }
-
-                        if( m_GHost->m_CurrentGame && Message != "" )
-                        {
-                            for( vector<CGamePlayer *> :: iterator k = m_GHost->m_CurrentGame->m_Players.begin( ); k != m_GHost->m_CurrentGame->m_Players.end( ); ++k )
-                            {
-                                unsigned char SID = m_GHost->m_CurrentGame->GetSIDFromPID( (*k)->GetPID() );
-                                string slot = UTIL_ToString( m_GHost->m_CurrentGame->GetSIDFromPID( (*k)->GetPID() ) );
-                                unsigned char fteam;
-                                fteam = m_GHost->m_CurrentGame->m_Slots[SID].GetTeam();
-                                if( fteam == Team )
-                                {
-                                    m_GHost->m_CurrentGame->SendChat( (*k), "[TC:"+ User +"] "+ Message );
-                                    Success = true;
-                                }
-                            }
-                        }
-                        else
-                            CONSOLE_Print( "There are no games at the lobby" );
-                    }
-                }
-            }
-
-            //
-            // !GAMETEAM
-            //
-            else if( RCONCommand == "gameteam" )
-            {
-
-                bool Success = false;
-                uint32_t Team;
-                uint32_t GameNumber;
-                string User;
-                string Message;
-                stringstream SS;
-                SS << RCONPayload;
-                SS >> User;
-                if( SS.fail( ) )
-                    CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #1 to the rcon-gameteam command" );
-                else
-                {
-                    SS >> GameNumber;
-                    if( SS.fail( ) )
-                        CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #2 to the rcon-gameteam command" );
-                    else
-                    {
-                        SS >> Team;
-                        if( SS.fail( ) )
-                            CONSOLE_Print( "[BNET: " + m_ServerAlias + "] bad input #3 to the rcon-gameteam command" );
-                        else
-                        {
-                            if( !SS.eof( ) )
-                            {
-                                getline( SS, Message );
-                                string :: size_type Start = Message.find_first_not_of( " " );
-
-                                if( Start != string :: npos )
-                                    Message = Message.substr( Start );
-                            }
-                            for( vector<CBaseGame *> :: iterator i = m_GHost->m_Games.begin( ); i != m_GHost->m_Games.end( ); ++i )
-                            {
-                                if( (*i)->m_HostCounter == GameNumber )
-                                {
-                                    for( vector<CGamePlayer *> :: iterator k = m_GHost->m_Games[GameNumber - 1]->m_Players.begin( ); k != m_GHost->m_Games[GameNumber - 1]->m_Players.end( ); ++k )
-                                    {
-                                        unsigned char SID = m_GHost->m_Games[GameNumber - 1]->GetSIDFromPID( (*k)->GetPID() );
-                                        string slot = UTIL_ToString( m_GHost->m_Games[GameNumber - 1]->GetSIDFromPID( (*k)->GetPID() ) );
-                                        unsigned char fteam;
-                                        fteam = m_GHost->m_Games[GameNumber - 1]->m_Slots[SID].GetTeam();
-                                        if( fteam == Team )
-                                        {
-                                            m_GHost->m_Games[GameNumber - 1]->SendChat( (*k), "[TC:"+ User +"] "+ Message );
-                                            Success = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-
-                }
-            }
-
-            //
-            // RCON FROM
-            //
-            else if( RCONCommand == "from" && m_GHost->m_CurrentGame )
-            {
-                uint32_t GameID = UTIL_ToUInt32(RCONPayload);
-                for( vector<CBaseGame *> :: iterator k = m_GHost->m_Games.begin( ); k != m_GHost->m_Games.end( ); ++k ) {
-                    if( (*k)->m_HostCounter == GameID ) {
-                        string Froms;
-
-                        for( vector<CGamePlayer *> :: iterator i = (*k)->m_Players.begin( ); i != (*k)->m_Players.end( ); ++i ) {
-                            // we reverse the byte order on the IP because it's stored in network byte order
-
-                            Froms += (*i)->GetNameTerminated( );
-                            Froms += ": (";
-                            Froms += (*i)->GetCLetter( );
-                            Froms += ")";
-
-                            if( i != (*k)->m_Players.end( ) - 1 )
-                                Froms += ", ";
-
-                            if( ( (*k)->m_GameLoading || (*k)->m_GameLoaded ) && Froms.size( ) > 100 )
-                            {
-                                // cut the text into multiple lines ingame
-
-                                (*k)->SendAllChat( Froms );
-                                Froms.clear( );
-                            }
-                        }
-
-                        if( !Froms.empty( ) )
-                            (*k)->SendAllChat( Froms );
-
-                    }
-                }
-            }
-        }
-*/
         //
         // !VOUCH
         //
@@ -2083,14 +1608,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             SS >> Name;
             if( Name.length() <= 3 )
             {
-                QueueChatCommand( m_GHost->m_Language->InvalidName( ) );
+                QueueChatCommand( m_OHBot->m_Language->InvalidName( ) );
                 return;
             }
             SS >> Realm;
             if( SS.fail( ) || Realm.empty() )
                 Realm = m_Server;
 
-            m_PairedPUps.push_back( PairedPUp( Whisper ? User : string( ), m_GHost->m_DB->ThreadedPUp( Name, 1, Realm, User ) ) );
+            m_PairedPUps.push_back( PairedPUp( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedPUp( Name, 1, Realm, User ) ) );
         }
 
         //
@@ -2107,7 +1632,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
             if( Name.length() <= 3 )
             {
-                QueueChatCommand( m_GHost->m_Language->InvalidName( ) );
+                QueueChatCommand( m_OHBot->m_Language->InvalidName( ) );
                 return;
             }
 
@@ -2115,21 +1640,21 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
             if( SS.fail( ) || NewLevel.empty() )
             {
-                QueueChatCommand( m_GHost->m_Language->WrongInputUseALevel( ) );
+                QueueChatCommand( m_OHBot->m_Language->WrongInputUseALevel( ) );
                 return;
             }
             else
             {
                 if( !NewLevel.find_first_not_of( "1234567890" ) == string :: npos )
                 {
-                    QueueChatCommand( m_GHost->m_Language->WrongInputInvalidLevel( ) );
+                    QueueChatCommand( m_OHBot->m_Language->WrongInputInvalidLevel( ) );
                     return;
                 }
                 SS >> Realm;
                 if( SS.fail( ) || Realm.empty() )
                     Realm = m_Server;
 
-                m_PairedPUps.push_back( PairedPUp( Whisper ? User : string( ), m_GHost->m_DB->ThreadedPUp( Name, UTIL_ToUInt32( NewLevel ), Realm, User ) ) );
+                m_PairedPUps.push_back( PairedPUp( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedPUp( Name, UTIL_ToUInt32( NewLevel ), Realm, User ) ) );
             }
         }
 
@@ -2155,7 +1680,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             if( !Payload.empty() )
                 StatsUser = Payload;
 
-            QueueChatCommand( m_GHost->m_Language->UserLevelCheck( StatsUser, UTIL_ToString( IsLevel( StatsUser ) ) ) );
+            QueueChatCommand( m_OHBot->m_Language->UserLevelCheck( StatsUser, UTIL_ToString( IsLevel( StatsUser ) ) ) );
         }
 
         //
@@ -2167,13 +1692,13 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             if( !Payload.empty() )
                 StatsUser = Payload;
 
-            m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( StatsUser, "", "", 0, "check" ) ) );
+            m_Pairedpenps.push_back( Pairedpenp( string(), m_OHBot->m_DB->Threadedpenp( StatsUser, "", "", 0, "check" ) ) );
         }
 
         //
         // !PPADD !PUNISH
         //
-        else if( (  Command == "ppadd" || Command == "punish" ) && m_GHost->m_ChannelBotOnly )
+        else if( (  Command == "ppadd" || Command == "punish" ) && m_OHBot->m_ChannelBotOnly )
         {
             string Victim;
             string Amount;
@@ -2185,9 +1710,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             if( SS.fail( ) || Victim.empty() )
                 CONSOLE_Print( "[PP] bad input #1 to the !TEMPBAN command" );
             else if( Victim.size() < 3 )
-                QueueChatCommand( m_GHost->m_Language->InvalidNameTooShort( ) );
+                QueueChatCommand( m_OHBot->m_Language->InvalidNameTooShort( ) );
             else if( IsLevel( User ) != 10 && ( ( IsLevel( User ) == 9 && IsLevel( Victim ) >= 6 ) || ( ( IsLevel( User ) == 5 || IsLevel( User ) == 6 || IsLevel( User ) == 7 ) && IsLevel( Victim ) >= 2 ) ) )
-                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->NoPermissionToExecCommand( ), User, Whisper );
             else
             {
                 SS >> Amount;
@@ -2195,7 +1720,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 if( SS.fail( ) || Amount == "0" )
                     CONSOLE_Print( "[PP] bad input #2 to !TEMPBAN command" );
                 else if( ( UTIL_ToUInt32( Amount ) > 3 && IsLevel( User ) < 8 ) || UTIL_ToUInt32( Amount ) > 10 && IsLevel( User ) <= 10 )
-                    QueueChatCommand( m_GHost->m_Language->TooMuchPPoints( ) );
+                    QueueChatCommand( m_OHBot->m_Language->TooMuchPPoints( ) );
                 else
                 {
                     SS >> Reason;
@@ -2210,10 +1735,10 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                     }
                     if( !Reason.empty() )
                     {
-                        m_Pairedpenps.push_back( Pairedpenp( string(), m_GHost->m_DB->Threadedpenp( Victim, Reason, User, UTIL_ToUInt32( Amount ), "add" ) ) );
+                        m_Pairedpenps.push_back( Pairedpenp( string(), m_OHBot->m_DB->Threadedpenp( Victim, Reason, User, UTIL_ToUInt32( Amount ), "add" ) ) );
                     }
                     else
-                        QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ) );
+                        QueueChatCommand( m_OHBot->m_Language->ErrorMissingReason( ) );
                 }
             }
         }
@@ -2221,7 +1746,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !RPP      !REMOVEPP
         //
-        else if( ( Command == "rpp" || Command == "removepp" ) && IsLevel( User ) >= 9 && m_GHost->m_ChannelBotOnly )
+        else if( ( Command == "rpp" || Command == "removepp" ) && IsLevel( User ) >= 9 && m_OHBot->m_ChannelBotOnly )
         {
             string SUser;
             string Amount;
@@ -2230,12 +1755,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             SS << Payload;
             SS >> SUser;
             if( SS.fail( ) || SUser.empty() )
-                QueueChatCommand( m_GHost->m_Language-> ErrorBadInput( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language-> ErrorBadInput( ), User, Whisper );
             else
             {
                 SS >> Amount;
                 if( SS.fail( ) || Amount.empty() )
-                    QueueChatCommand( m_GHost->m_Language-> ErrorBadInput( ), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language-> ErrorBadInput( ), User, Whisper );
                 else
                 {
                     SS >> Reason;
@@ -2249,9 +1774,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                             Reason = Reason.substr( Start );
                     }
                     if( !Reason.empty() )
-                        m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( SUser, Reason, UTIL_ToUInt32(Amount), "rpp" ) ) );
+                        m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( SUser, Reason, UTIL_ToUInt32(Amount), "rpp" ) ) );
                     else
-                        m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( SUser, "", UTIL_ToUInt32(Amount), "rpp" ) ) ) ;
+                        m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( SUser, "", UTIL_ToUInt32(Amount), "rpp" ) ) ) ;
                 }
             }
         }
@@ -2261,9 +1786,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         else if( Command == "forcegproxy" ) {
             if(Payload.empty()) {
-                QueueChatCommand(m_GHost->m_Language->NoUserDefined( ), User, Whisper );
+                QueueChatCommand(m_OHBot->m_Language->NoUserDefined( ), User, Whisper );
             } else {
-                m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( Payload,User, 0, "forcegproxy" ) ) );
+                m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( Payload,User, 0, "forcegproxy" ) ) );
             }
         }
 
@@ -2279,7 +1804,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !BAN
         //
 
-        else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) && m_GHost->m_ChannelBotOnly )
+        else if( ( Command == "addban" || Command == "ban" ) && !Payload.empty( ) && m_OHBot->m_ChannelBotOnly )
         {
             if( IsLevel( User ) >= 7 )
             {
@@ -2303,15 +1828,15 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 if( !Reason.empty() )
                 {
                     //if( IsBannedName( Victim ) )
-                    //      QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
+                    //      QueueChatCommand( m_OHBot->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
                     //else
-                    m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "" ) ) );
+                    m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, 0, "" ) ) );
                 }
                 else
-                    QueueChatCommand( m_GHost->m_Language->ErrorMissingReason( ), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language->ErrorMissingReason( ), User, Whisper );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
@@ -2320,7 +1845,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !IPRANGEBAN
         // PLEASE USE THIS BAN WITH CAUTION, IF YOU ARE NOT SURE WITH SUBNET's OR SIMILAIR THINGS, DON'T USE IT!
         //
-        else if( ( Command == "irb" || Command == "iprangeadd"  || Command == "iprangeban" ) && !Payload.empty( ) && IsLevel( User ) >= 9 && m_GHost->m_ChannelBotOnly )
+        else if( ( Command == "irb" || Command == "iprangeadd"  || Command == "iprangeban" ) && !Payload.empty( ) && IsLevel( User ) >= 9 && m_OHBot->m_ChannelBotOnly )
         {
             string VictimIP;
             string Reason;
@@ -2338,11 +1863,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             }
 
             if( IsBannedName( VictimIP ) )
-                QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, VictimIP ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->UserIsAlreadyBanned( m_Server, VictimIP ), User, Whisper );
             else
             {
-                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "" ) ) );
-                QueueChatCommand( m_GHost->m_Language->BannedIPRange( VictimIP, m_Server ), User, Whisper );
+                m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanAdd( m_Server, "IPRange", ":" + VictimIP, string( ), User, Reason, 0, "" ) ) );
+                QueueChatCommand( m_OHBot->m_Language->BannedIPRange( VictimIP, m_Server ), User, Whisper );
             }
         }
 
@@ -2350,7 +1875,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !TEMPBAN
         // !TBAN
         //
-        else if( ( Command == "tempban" || Command == "tban" ) && !Payload.empty( ) && m_GHost->m_ChannelBotOnly )
+        else if( ( Command == "tempban" || Command == "tban" ) && !Payload.empty( ) && m_OHBot->m_ChannelBotOnly )
         {
             // extract the victim and the reason
             // e.g. "Varlock leaver after dying" -> victim: "Varlock", reason: "leaver after dying"
@@ -2369,9 +1894,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             if( SS.fail( ) || Victim.empty() )
                 CONSOLE_Print( "[TEMPBAN] bad input #1 to the !TEMPBAN command" );
             else if( Victim.size() < 3 )
-                QueueChatCommand( m_GHost->m_Language->InvalidNameTooShort() );
+                QueueChatCommand( m_OHBot->m_Language->InvalidNameTooShort() );
             else if( IsLevel( User ) != 10 && ( ( IsLevel( User ) == 9 && IsLevel( Victim ) >= 6 ) || ( ( IsLevel( User ) == 5 || IsLevel( User ) == 6 || IsLevel( User ) == 7 ) && IsLevel( Victim ) >= 2 ) ) )
-                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand(), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->NoPermissionToExecCommand(), User, Whisper );
             else
             {
                 SS >> Amount;
@@ -2427,25 +1952,25 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                 }
 
                                 if( IsBannedName( Victim ) )
-                                    QueueChatCommand( m_GHost->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
+                                    QueueChatCommand( m_OHBot->m_Language->UserIsAlreadyBanned( m_Server, Victim ), User, Whisper );
                                 else
                                 {
                                     if( !Reason.empty() )
                                     {
-                                        m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, BanTime, "" ) ) );
+                                        m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanAdd( m_Server, Victim, string( ), string( ), User, Reason, BanTime, "" ) ) );
                                         //QueueChatCommand( "Temporary ban: " + Victim + " for " + UTIL_ToString(Amount) + " " + Suffix + " with reason: " + Reason, User, Whisper);
                                     }
                                     else
-                                        QueueChatCommand( m_GHost->m_Language->ErrorMissingReason(), User, Whisper );
+                                        QueueChatCommand( m_OHBot->m_Language->ErrorMissingReason(), User, Whisper );
                                 }
                             }
                             else
-                                QueueChatCommand( m_GHost->m_Language->NoPermissionToExecCommand(), User, Whisper );
+                                QueueChatCommand( m_OHBot->m_Language->NoPermissionToExecCommand(), User, Whisper );
 
                         }
                         else
                         {
-                            QueueChatCommand( m_GHost->m_Language->ErrorBanningWrongSuffix( Suffix ), User, Whisper);
+                            QueueChatCommand( m_OHBot->m_Language->ErrorBanningWrongSuffix( Suffix ), User, Whisper);
                         }
                     }
                 }
@@ -2456,12 +1981,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !ANNOUNCE
         //
 
-        else if( Command == "announce" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) )
+        else if( Command == "announce" && m_OHBot->m_CurrentGame && !m_OHBot->m_CurrentGame->GetCountDownStarted( ) )
         {
             if( Payload.empty( ) || Payload == "off" )
             {
-                QueueChatCommand( m_GHost->m_Language->AnnounceMessageDisabled( ), User, Whisper );
-                m_GHost->m_CurrentGame->SetAnnounce( 0, string( ) );
+                QueueChatCommand( m_OHBot->m_Language->AnnounceMessageDisabled( ), User, Whisper );
+                m_OHBot->m_CurrentGame->SetAnnounce( 0, string( ) );
             }
             else
             {
@@ -2488,8 +2013,8 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         if( Start != string :: npos )
                             Message = Message.substr( Start );
 
-                        QueueChatCommand( m_GHost->m_Language->AnnounceMessageEnabled( ), User, Whisper );
-                        m_GHost->m_CurrentGame->SetAnnounce( Interval, Message );
+                        QueueChatCommand( m_OHBot->m_Language->AnnounceMessageEnabled( ), User, Whisper );
+                        m_OHBot->m_CurrentGame->SetAnnounce( Interval, Message );
                     }
                 }
             }
@@ -2499,23 +2024,23 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !AUTOHOST
         //
 
-        else if( Command == "autohost" &&! m_GHost->m_ChannelBotOnly )
+        else if( Command == "autohost" &&! m_OHBot->m_ChannelBotOnly )
         {
             if( IsLevel( User ) == 10 || ForceRoot )
             {
                 if( Payload.empty( ) || Payload == "off" )
                 {
-                    QueueChatCommand( m_GHost->m_Language->AutoHostDisabled( ), User, Whisper );
-                    m_GHost->m_AutoHostGameName.clear( );
-                    m_GHost->m_AutoHostOwner.clear( );
-                    m_GHost->m_AutoHostServer.clear( );
-                    m_GHost->m_AutoHostMaximumGames = 0;
-                    m_GHost->m_AutoHostAutoStartPlayers = 0;
-                    m_GHost->m_AutoHostGameType = 3;
-                    m_GHost->m_LastAutoHostTime = GetTime( );
-                    m_GHost->m_AutoHostMatchMaking = false;
-                    m_GHost->m_AutoHostMinimumScore = 0.0;
-                    m_GHost->m_AutoHostMaximumScore = 0.0;
+                    QueueChatCommand( m_OHBot->m_Language->AutoHostDisabled( ), User, Whisper );
+                    m_OHBot->m_AutoHostGameName.clear( );
+                    m_OHBot->m_AutoHostOwner.clear( );
+                    m_OHBot->m_AutoHostServer.clear( );
+                    m_OHBot->m_AutoHostMaximumGames = 0;
+                    m_OHBot->m_AutoHostAutoStartPlayers = 0;
+                    m_OHBot->m_AutoHostGameType = 3;
+                    m_OHBot->m_LastAutoHostTime = GetTime( );
+                    m_OHBot->m_AutoHostMatchMaking = false;
+                    m_OHBot->m_AutoHostMinimumScore = 0.0;
+                    m_OHBot->m_AutoHostMaximumScore = 0.0;
                 }
                 else
                 {
@@ -2555,24 +2080,24 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                     if( Start != string :: npos )
                                         GameName = GameName.substr( Start );
 
-                                    QueueChatCommand( m_GHost->m_Language->AutoHostEnabled( ), User, Whisper );
-                                    delete m_GHost->m_AutoHostMap;
-                                    m_GHost->m_AutoHostMap = new CMap( *m_GHost->m_Map );
+                                    QueueChatCommand( m_OHBot->m_Language->AutoHostEnabled( ), User, Whisper );
+                                    delete m_OHBot->m_AutoHostMap;
+                                    m_OHBot->m_AutoHostMap = new CMap( *m_OHBot->m_Map );
                                     if( GameType == 4 )
-                                        m_GHost->m_AutoHostGameName = "[V]"+GameName;
+                                        m_OHBot->m_AutoHostGameName = "[V]"+GameName;
                                     else if( GameType == 5 )
-                                        m_GHost->m_AutoHostGameName = "[R]"+GameName;
+                                        m_OHBot->m_AutoHostGameName = "[R]"+GameName;
                                     else
-                                        m_GHost->m_AutoHostGameName = GameName;
-                                    m_GHost->m_AutoHostOwner = User;
-                                    m_GHost->m_AutoHostServer = m_Server;
-                                    m_GHost->m_AutoHostGameType = GameType;
-                                    m_GHost->m_AutoHostMaximumGames = MaximumGames;
-                                    m_GHost->m_AutoHostAutoStartPlayers = AutoStartPlayers;
-                                    m_GHost->m_LastAutoHostTime = GetTime( );
-                                    m_GHost->m_AutoHostMatchMaking = false;
-                                    m_GHost->m_AutoHostMinimumScore = 0.0;
-                                    m_GHost->m_AutoHostMaximumScore = 0.0;
+                                        m_OHBot->m_AutoHostGameName = GameName;
+                                    m_OHBot->m_AutoHostOwner = User;
+                                    m_OHBot->m_AutoHostServer = m_Server;
+                                    m_OHBot->m_AutoHostGameType = GameType;
+                                    m_OHBot->m_AutoHostMaximumGames = MaximumGames;
+                                    m_OHBot->m_AutoHostAutoStartPlayers = AutoStartPlayers;
+                                    m_OHBot->m_LastAutoHostTime = GetTime( );
+                                    m_OHBot->m_AutoHostMatchMaking = false;
+                                    m_OHBot->m_AutoHostMinimumScore = 0.0;
+                                    m_OHBot->m_AutoHostMaximumScore = 0.0;
                                 }
                             }
                         }
@@ -2580,30 +2105,30 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
         // !AUTOHOSTMM
         //
 
-        else if( Command == "autohostmm" &&! m_GHost->m_ChannelBotOnly )
+        else if( Command == "autohostmm" &&! m_OHBot->m_ChannelBotOnly )
         {
             if( IsLevel( User ) == 10 || ForceRoot )
             {
                 if( Payload.empty( ) || Payload == "off" )
                 {
-                    QueueChatCommand( m_GHost->m_Language->AutoHostDisabled( ), User, Whisper );
-                    m_GHost->m_AutoHostGameName.clear( );
-                    m_GHost->m_AutoHostOwner.clear( );
-                    m_GHost->m_AutoHostServer.clear( );
-                    m_GHost->m_AutoHostMaximumGames = 0;
-                    m_GHost->m_AutoHostAutoStartPlayers = 0;
-                    m_GHost->m_LastAutoHostTime = GetTime( );
-                    m_GHost->m_AutoHostMatchMaking = false;
-                    m_GHost->m_AutoHostMinimumScore = 0.0;
-                    m_GHost->m_AutoHostMaximumScore = 0.0;
-                    m_GHost->m_AutoHostGameType = 3;
+                    QueueChatCommand( m_OHBot->m_Language->AutoHostDisabled( ), User, Whisper );
+                    m_OHBot->m_AutoHostGameName.clear( );
+                    m_OHBot->m_AutoHostOwner.clear( );
+                    m_OHBot->m_AutoHostServer.clear( );
+                    m_OHBot->m_AutoHostMaximumGames = 0;
+                    m_OHBot->m_AutoHostAutoStartPlayers = 0;
+                    m_OHBot->m_LastAutoHostTime = GetTime( );
+                    m_OHBot->m_AutoHostMatchMaking = false;
+                    m_OHBot->m_AutoHostMinimumScore = 0.0;
+                    m_OHBot->m_AutoHostMaximumScore = 0.0;
+                    m_OHBot->m_AutoHostGameType = 3;
                 }
                 else
                 {
@@ -2657,19 +2182,19 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                                             if( Start != string :: npos )
                                                 GameName = GameName.substr( Start );
 
-                                            QueueChatCommand( m_GHost->m_Language->AutoHostEnabled( ), User, Whisper );
-                                            delete m_GHost->m_AutoHostMap;
-                                            m_GHost->m_AutoHostMap = new CMap( *m_GHost->m_Map );
-                                            m_GHost->m_AutoHostGameName = GameName;
-                                            m_GHost->m_AutoHostOwner = User;
-                                            m_GHost->m_AutoHostServer = m_Server;
-                                            m_GHost->m_AutoHostMaximumGames = MaximumGames;
-                                            m_GHost->m_AutoHostAutoStartPlayers = AutoStartPlayers;
-                                            m_GHost->m_LastAutoHostTime = GetTime( );
-                                            m_GHost->m_AutoHostMatchMaking = true;
-                                            m_GHost->m_AutoHostMinimumScore = MinimumScore;
-                                            m_GHost->m_AutoHostMaximumScore = MaximumScore;
-                                            m_GHost->m_AutoHostGameType = GameType;
+                                            QueueChatCommand( m_OHBot->m_Language->AutoHostEnabled( ), User, Whisper );
+                                            delete m_OHBot->m_AutoHostMap;
+                                            m_OHBot->m_AutoHostMap = new CMap( *m_OHBot->m_Map );
+                                            m_OHBot->m_AutoHostGameName = GameName;
+                                            m_OHBot->m_AutoHostOwner = User;
+                                            m_OHBot->m_AutoHostServer = m_Server;
+                                            m_OHBot->m_AutoHostMaximumGames = MaximumGames;
+                                            m_OHBot->m_AutoHostAutoStartPlayers = AutoStartPlayers;
+                                            m_OHBot->m_LastAutoHostTime = GetTime( );
+                                            m_OHBot->m_AutoHostMatchMaking = true;
+                                            m_OHBot->m_AutoHostMinimumScore = MinimumScore;
+                                            m_OHBot->m_AutoHostMaximumScore = MaximumScore;
+                                            m_OHBot->m_AutoHostGameType = GameType;
                                         }
                                     }
                                 }
@@ -2679,19 +2204,19 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 /*
         //
         // !AUTOSTART
         //
 
-        else if( Command == "autostart" && m_GHost->m_CurrentGame && !m_GHost->m_CurrentGame->GetCountDownStarted( ) && IsLevel( User ) >= 9 )
+        else if( Command == "autostart" && m_OHBot->m_CurrentGame && !m_OHBot->m_CurrentGame->GetCountDownStarted( ) && IsLevel( User ) >= 9 )
         {
             if( Payload.empty( ) || Payload == "off" )
             {
-                QueueChatCommand( m_GHost->m_Language->AutoStartDisabled( ), User, Whisper );
-                m_GHost->m_CurrentGame->SetAutoStartPlayers( 0 );
+                QueueChatCommand( m_OHBot->m_Language->AutoStartDisabled( ), User, Whisper );
+                m_OHBot->m_CurrentGame->SetAutoStartPlayers( 0 );
             }
             else
             {
@@ -2699,8 +2224,8 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
                 if( AutoStartPlayers != 0 )
                 {
-                    QueueChatCommand( m_GHost->m_Language->AutoStartEnabled( UTIL_ToString( AutoStartPlayers ) ), User, Whisper );
-                    m_GHost->m_CurrentGame->SetAutoStartPlayers( AutoStartPlayers );
+                    QueueChatCommand( m_OHBot->m_Language->AutoStartEnabled( UTIL_ToString( AutoStartPlayers ) ), User, Whisper );
+                    m_OHBot->m_CurrentGame->SetAutoStartPlayers( AutoStartPlayers );
                 }
             }
         }
@@ -2733,12 +2258,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                     Remaining += Ban->GetMinutes() + "m";
 
                 if( !Remaining.empty() )
-                    QueueChatCommand( m_GHost->m_Language->CheckBanTempUser( Ban->GetName(),Ban->GetDate(),Ban->GetExpire(),Remaining,Ban->GetReason() ) );
+                    QueueChatCommand( m_OHBot->m_Language->CheckBanTempUser( Ban->GetName(),Ban->GetDate(),Ban->GetExpire(),Remaining,Ban->GetReason() ) );
                 else
-                    QueueChatCommand( m_GHost->m_Language->CheckBanPermUser( Ban->GetName(),Ban->GetDate(),Ban->GetReason()), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language->CheckBanPermUser( Ban->GetName(),Ban->GetDate(),Ban->GetReason()), User, Whisper );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->UserIsNotBanned( m_Server, Payload ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->UserIsNotBanned( m_Server, Payload ), User, Whisper );
         }
 
         //
@@ -2750,12 +2275,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             CDBBan *Ban = IsBannedName( Payload );
             if( Ban )
             {
-                QueueChatCommand( m_GHost->m_Language->CheckBanNameBan( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->CheckBanNameBan( ), User, Whisper );
                 return;
             }
             else
             {
-                m_PairedBanCheck2s.push_back( PairedBanCheck2( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanCheck2( m_Server, Payload, "check" ) ) );
+                m_PairedBanCheck2s.push_back( PairedBanCheck2( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanCheck2( m_Server, Payload, "check" ) ) );
             }
         }
 /*
@@ -2763,9 +2288,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !CLOSE (close slot)
         //
 
-        else if( Command == "close" && !Payload.empty( ) && m_GHost->m_CurrentGame && IsLevel( User ) >= 7 )
+        else if( Command == "close" && !Payload.empty( ) && m_OHBot->m_CurrentGame && IsLevel( User ) >= 7 )
         {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
+            if( !m_OHBot->m_CurrentGame->GetLocked( ) )
             {
                 // close as many slots as specified, e.g. "5 10" closes slots 5 and 10
 
@@ -2783,23 +2308,23 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         break;
                     }
                     else
-                        m_GHost->m_CurrentGame->CloseSlot( (unsigned char)( SID - 1 ), true );
+                        m_OHBot->m_CurrentGame->CloseSlot( (unsigned char)( SID - 1 ), true );
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->TheGameIsLockedBNET( ), User, Whisper );
         }
 
         //
         // !CLOSEALL
         //
 
-        else if( Command == "closeall" && m_GHost->m_CurrentGame && IsLevel( User ) >= 9 )
+        else if( Command == "closeall" && m_OHBot->m_CurrentGame && IsLevel( User ) >= 9 )
         {
-            if( !m_GHost->m_CurrentGame->GetLocked( ) )
-                m_GHost->m_CurrentGame->CloseAllSlots( );
+            if( !m_OHBot->m_CurrentGame->GetLocked( ) )
+                m_OHBot->m_CurrentGame->CloseAllSlots( );
             else
-                QueueChatCommand( m_GHost->m_Language->TheGameIsLockedBNET( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->TheGameIsLockedBNET( ), User, Whisper );
         }
 */
         //
@@ -2807,14 +2332,14 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
 
         else if( Command == "countbans" && IsLevel( User ) >= 9 )
-            m_PairedBanCounts.push_back( PairedBanCount( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanCount( m_Server ) ) );
+            m_PairedBanCounts.push_back( PairedBanCount( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanCount( m_Server ) ) );
 
         //
         // !DBSTATUS
         //
 
         else if( Command == "dbstatus" && IsLevel( User ) >= 9 )
-            QueueChatCommand( m_GHost->m_DB->GetStatus( ), User, Whisper );
+            QueueChatCommand( m_OHBot->m_DB->GetStatus( ), User, Whisper );
 
         //
         // !DELBAN
@@ -2822,7 +2347,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
 
         else if( ( Command == "delban" || Command == "unban" ) && !Payload.empty( ) && IsLevel( User ) >= 7 )
-            m_PairedBanRemoves.push_back( PairedBanRemove( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanRemove( Payload ) ) );
+            m_PairedBanRemoves.push_back( PairedBanRemove( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanRemove( Payload ) ) );
 
         //
         // !DISABLE
@@ -2832,11 +2357,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             if( IsLevel( User ) == 10 || ForceRoot )
             {
-                QueueChatCommand( m_GHost->m_Language->BotDisabled( ), User, Whisper );
-                m_GHost->m_Enabled = false;
+                QueueChatCommand( m_OHBot->m_Language->BotDisabled( ), User, Whisper );
+                m_OHBot->m_Enabled = false;
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
@@ -2849,18 +2374,18 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
             if( Downloads == 0 )
             {
-                QueueChatCommand( m_GHost->m_Language->MapDownloadsDisabled( ), User, Whisper );
-                m_GHost->m_AllowDownloads = 0;
+                QueueChatCommand( m_OHBot->m_Language->MapDownloadsDisabled( ), User, Whisper );
+                m_OHBot->m_AllowDownloads = 0;
             }
             else if( Downloads == 1 )
             {
-                QueueChatCommand( m_GHost->m_Language->MapDownloadsEnabled( ), User, Whisper );
-                m_GHost->m_AllowDownloads = 1;
+                QueueChatCommand( m_OHBot->m_Language->MapDownloadsEnabled( ), User, Whisper );
+                m_OHBot->m_AllowDownloads = 1;
             }
             else if( Downloads == 2 )
             {
-                QueueChatCommand( m_GHost->m_Language->MapDownloadsConditional( ), User, Whisper );
-                m_GHost->m_AllowDownloads = 2;
+                QueueChatCommand( m_OHBot->m_Language->MapDownloadsConditional( ), User, Whisper );
+                m_OHBot->m_AllowDownloads = 2;
             }
         }
 
@@ -2872,11 +2397,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             if( IsLevel( User ) == 10 || ForceRoot )
             {
-                QueueChatCommand( m_GHost->m_Language->BotEnabled( ), User, Whisper );
-                m_GHost->m_Enabled = true;
+                QueueChatCommand( m_OHBot->m_Language->BotEnabled( ), User, Whisper );
+                m_OHBot->m_Enabled = true;
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
@@ -2889,21 +2414,21 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
             uint32_t GameNumber = UTIL_ToUInt32( Payload ) - 1;
 
-            if( GameNumber < m_GHost->m_Games.size( ) )
+            if( GameNumber < m_OHBot->m_Games.size( ) )
             {
                 // if the game owner is still in the game only allow the root admin to end the game
 
-                if( m_GHost->m_Games[GameNumber]->GetPlayerFromName( m_GHost->m_Games[GameNumber]->GetOwnerName( ), false ) && IsLevel( User ) != 10 )
-                    QueueChatCommand( m_GHost->m_Language->CantEndGameOwnerIsStillPlaying( m_GHost->m_Games[GameNumber]->GetOwnerName( ) ), User, Whisper );
+                if( m_OHBot->m_Games[GameNumber]->GetPlayerFromName( m_OHBot->m_Games[GameNumber]->GetOwnerName( ), false ) && IsLevel( User ) != 10 )
+                    QueueChatCommand( m_OHBot->m_Language->CantEndGameOwnerIsStillPlaying( m_OHBot->m_Games[GameNumber]->GetOwnerName( ) ), User, Whisper );
                 else
                 {
-                    QueueChatCommand( m_GHost->m_Language->EndingGame( m_GHost->m_Games[GameNumber]->GetDescription( ) ), User, Whisper );
-                    CONSOLE_Print( "[GAME: " + m_GHost->m_Games[GameNumber]->GetGameName( ) + "] is over (admin ended game)" );
-                    m_GHost->m_Games[GameNumber]->StopPlayers( "was disconnected (admin ended game)" );
+                    QueueChatCommand( m_OHBot->m_Language->EndingGame( m_OHBot->m_Games[GameNumber]->GetDescription( ) ), User, Whisper );
+                    CONSOLE_Print( "[GAME: " + m_OHBot->m_Games[GameNumber]->GetGameName( ) + "] is over (admin ended game)" );
+                    m_OHBot->m_Games[GameNumber]->StopPlayers( "was disconnected (admin ended game)" );
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->GameNumberDoesntExist( Payload ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->GameNumberDoesntExist( Payload ), User, Whisper );
         }
 
         //
@@ -2915,22 +2440,22 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             // only load files in the current directory just to be safe
 
             if( Payload.find( "/" ) != string :: npos || Payload.find( "\\" ) != string :: npos )
-                QueueChatCommand( m_GHost->m_Language->UnableToLoadReplaysOutside( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->UnableToLoadReplaysOutside( ), User, Whisper );
             else
             {
-                string File = m_GHost->m_ReplayPath + Payload + ".w3g";
+                string File = m_OHBot->m_ReplayPath + Payload + ".w3g";
 
                 if( UTIL_FileExists( File ) )
                 {
-                    QueueChatCommand( m_GHost->m_Language->LoadingReplay( File ), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language->LoadingReplay( File ), User, Whisper );
                     CReplay *Replay = new CReplay( );
                     Replay->Load( File, false );
                     Replay->ParseReplay( false );
-                    m_GHost->m_EnforcePlayers = Replay->GetPlayers( );
+                    m_OHBot->m_EnforcePlayers = Replay->GetPlayers( );
                     delete Replay;
                 }
                 else
-                    QueueChatCommand( m_GHost->m_Language->UnableToLoadReplayDoesntExist( File ), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language->UnableToLoadReplayDoesntExist( File ), User, Whisper );
             }
         }
 
@@ -2941,7 +2466,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         else if( Command == "getclan" )
         {
             SendGetClanList( );
-            QueueChatCommand( m_GHost->m_Language->UpdatingClanList( ), User, Whisper );
+            QueueChatCommand( m_OHBot->m_Language->UpdatingClanList( ), User, Whisper );
         }
 
         //
@@ -2951,7 +2476,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         else if( Command == "getfriends" )
         {
             SendGetFriendsList( );
-            QueueChatCommand( m_GHost->m_Language->UpdatingFriendsList( ), User, Whisper );
+            QueueChatCommand( m_OHBot->m_Language->UpdatingFriendsList( ), User, Whisper );
         }
 
         //
@@ -2962,34 +2487,34 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             uint32_t GameNumber = UTIL_ToUInt32( Payload ) - 1;
 
-            if( GameNumber < m_GHost->m_Games.size( ) )
-                QueueChatCommand( m_GHost->m_Language->GameNumberIs( Payload, m_GHost->m_Games[GameNumber]->GetDescription( ) ), User, Whisper );
+            if( GameNumber < m_OHBot->m_Games.size( ) )
+                QueueChatCommand( m_OHBot->m_Language->GameNumberIs( Payload, m_OHBot->m_Games[GameNumber]->GetDescription( ) ), User, Whisper );
             else
-                QueueChatCommand( m_GHost->m_Language->GameNumberDoesntExist( Payload ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->GameNumberDoesntExist( Payload ), User, Whisper );
         }
 
         //
         // !LOAD (load config file)
         //
 
-        else if( Command == "load" && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
+        else if( Command == "load" && IsLevel( User ) >= 8 && ! m_OHBot->m_ChannelBotOnly )
         {
             if( Payload.empty( ) )
-                QueueChatCommand( m_GHost->m_Language->CurrentlyLoadedMapCFGIs( m_GHost->m_Map->GetCFGFile( ) ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->CurrentlyLoadedMapCFGIs( m_OHBot->m_Map->GetCFGFile( ) ), User, Whisper );
             else
             {
                 string FoundMapConfigs;
 
                 try
                 {
-                    path MapCFGPath( m_GHost->m_MapCFGPath );
+                    path MapCFGPath( m_OHBot->m_MapCFGPath );
                     string Pattern = Payload;
                     transform( Pattern.begin( ), Pattern.end( ), Pattern.begin( ), ::tolower );
 
                     if( !exists( MapCFGPath ) )
                     {
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] error listing map configs - map config path doesn't exist" );
-                        QueueChatCommand( m_GHost->m_Language->ErrorListingMapConfigs( ), User, Whisper );
+                        QueueChatCommand( m_OHBot->m_Language->ErrorListingMapConfigs( ), User, Whisper );
                     }
                     else
                     {
@@ -3026,23 +2551,23 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 
                         if( Matches == 0 )
 
-                            QueueChatCommand( m_GHost->m_Language->NoMapConfigsFound( ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->NoMapConfigsFound( ), User, Whisper );
                         else if( Matches == 1 )
                         {
                             string File = LastMatch.filename( ).string( );
-                            QueueChatCommand( m_GHost->m_Language->LoadingConfigFile( m_GHost->m_MapCFGPath + File ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->LoadingConfigFile( m_OHBot->m_MapCFGPath + File ), User, Whisper );
                             CConfig MapCFG;
                             MapCFG.Read( LastMatch.string( ) );
-                            m_GHost->m_Map->Load( &MapCFG, m_GHost->m_MapCFGPath + File );
+                            m_OHBot->m_Map->Load( &MapCFG, m_OHBot->m_MapCFGPath + File );
                         }
                         else
-                            QueueChatCommand( m_GHost->m_Language->FoundMapConfigs( FoundMapConfigs ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->FoundMapConfigs( FoundMapConfigs ), User, Whisper );
                     }
                 }
                 catch( const exception &ex )
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] error listing map configs - caught exception [" + ex.what( ) + "]" );
-                    QueueChatCommand( m_GHost->m_Language->ErrorListingMapConfigs( ), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language->ErrorListingMapConfigs( ), User, Whisper );
                 }
             }
         }
@@ -3051,24 +2576,24 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // !MAP (load map file)
         //
 
-        else if( Command == "map" && IsLevel( User ) >= 8 && ! m_GHost->m_ChannelBotOnly )
+        else if( Command == "map" && IsLevel( User ) >= 8 && ! m_OHBot->m_ChannelBotOnly )
         {
             if( Payload.empty( ) )
-                QueueChatCommand( m_GHost->m_Language->CurrentlyLoadedMapCFGIs( m_GHost->m_Map->GetCFGFile( ) ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->CurrentlyLoadedMapCFGIs( m_OHBot->m_Map->GetCFGFile( ) ), User, Whisper );
             else
             {
                 string FoundMaps;
 
                 try
                 {
-                    path MapPath( m_GHost->m_MapPath );
+                    path MapPath( m_OHBot->m_MapPath );
                     string Pattern = Payload;
                     transform( Pattern.begin( ), Pattern.end( ), Pattern.begin( ), ::tolower );
 
                     if( !exists( MapPath ) )
                     {
                         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] error listing maps - map path doesn't exist" );
-                        QueueChatCommand( m_GHost->m_Language->ErrorListingMaps( ), User, Whisper );
+                        QueueChatCommand( m_OHBot->m_Language->ErrorListingMaps( ), User, Whisper );
                     }
                     else
                     {
@@ -3104,27 +2629,27 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         }
 
                         if( Matches == 0 )
-                            QueueChatCommand( m_GHost->m_Language->NoMapsFound( ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->NoMapsFound( ), User, Whisper );
                         else if( Matches == 1 )
                         {
                             string File = LastMatch.filename( ).string( );
-                            QueueChatCommand( m_GHost->m_Language->LoadingConfigFile( File ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->LoadingConfigFile( File ), User, Whisper );
 
                             // hackhack: create a config file in memory with the required information to load the map
 
                             CConfig MapCFG;
                             MapCFG.Set( "map_path", "Maps\\Download\\" + File );
                             MapCFG.Set( "map_localpath", File );
-                            m_GHost->m_Map->Load( &MapCFG, File );
+                            m_OHBot->m_Map->Load( &MapCFG, File );
                         }
                         else
-                            QueueChatCommand( m_GHost->m_Language->FoundMaps( FoundMaps ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->FoundMaps( FoundMaps ), User, Whisper );
                     }
                 }
                 catch( const exception &ex )
                 {
                     CONSOLE_Print( "[BNET: " + m_ServerAlias + "] error listing maps - caught exception [" + ex.what( ) + "]" );
-                    QueueChatCommand( m_GHost->m_Language->ErrorListingMaps( ), User, Whisper );
+                    QueueChatCommand( m_OHBot->m_Language->ErrorListingMaps( ), User, Whisper );
                 }
             }
         }
@@ -3136,16 +2661,16 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             if( Payload == "on" )
             {
-                m_GHost->m_RegVIPGames = 1;
-                QueueChatCommand( m_GHost->m_Language->ChangedStatusForVIPGames(Payload), User, Whisper );
+                m_OHBot->m_RegVIPGames = 1;
+                QueueChatCommand( m_OHBot->m_Language->ChangedStatusForVIPGames(Payload), User, Whisper );
             }
             else if (Payload == "off" )
             {
-                m_GHost->m_RegVIPGames = 0;
-                QueueChatCommand( m_GHost->m_Language->ChangedStatusForVIPGames(Payload), User, Whisper );
+                m_OHBot->m_RegVIPGames = 0;
+                QueueChatCommand( m_OHBot->m_Language->ChangedStatusForVIPGames(Payload), User, Whisper );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->WrongOptionUserOnOff( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->WrongOptionUserOnOff( ), User, Whisper );
         }
 
         //
@@ -3155,13 +2680,13 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             if( Payload.empty() )
             {
-                m_GHost->m_MinVIPGames = 50;
-                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
+                m_OHBot->m_MinVIPGames = 50;
+                QueueChatCommand( m_OHBot->m_Language->ChangedMinPlayedGames( "VIP", UTIL_ToString( m_OHBot->m_MinVIPGames ) ), User, Whisper );
             }
             else
             {
-                m_GHost->m_MinVIPGames = UTIL_ToUInt32( Payload );
-                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "VIP", UTIL_ToString( m_GHost->m_MinVIPGames ) ), User, Whisper );
+                m_OHBot->m_MinVIPGames = UTIL_ToUInt32( Payload );
+                QueueChatCommand( m_OHBot->m_Language->ChangedMinPlayedGames( "VIP", UTIL_ToString( m_OHBot->m_MinVIPGames ) ), User, Whisper );
             }
         }
 
@@ -3172,13 +2697,13 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             if( Payload.empty() )
             {
-                m_GHost->m_MinLimit = 25;
-                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
+                m_OHBot->m_MinLimit = 25;
+                QueueChatCommand( m_OHBot->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_OHBot->m_MinLimit ) ), User, Whisper );
             }
             else
             {
-                m_GHost->m_MinLimit = UTIL_ToUInt32( Payload );
-                QueueChatCommand( m_GHost->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_GHost->m_MinLimit ) ), User, Whisper );
+                m_OHBot->m_MinLimit = UTIL_ToUInt32( Payload );
+                QueueChatCommand( m_OHBot->m_Language->ChangedMinPlayedGames( "HIGH", UTIL_ToString( m_OHBot->m_MinLimit ) ), User, Whisper );
             }
         }
 
@@ -3190,11 +2715,11 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             if( IsLevel( User ) >= 9 || ForceRoot )
             {
-                QueueChatCommand( m_GHost->m_Language->ReloadingConfigurationFiles( ), User, Whisper );
-                m_GHost->ReloadConfigs( );
+                QueueChatCommand( m_OHBot->m_Language->ReloadingConfigurationFiles( ), User, Whisper );
+                m_OHBot->ReloadConfigs( );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
@@ -3207,7 +2732,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 QueueChatCommand( Payload );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
@@ -3241,15 +2766,15 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                         if( Start != string :: npos )
                             Message = Message.substr( Start );
 
-                        if( GameNumber - 1 < m_GHost->m_Games.size( ) )
-                            m_GHost->m_Games[GameNumber - 1]->SendAllChat( "ADMIN: " + Message );
+                        if( GameNumber - 1 < m_OHBot->m_Games.size( ) )
+                            m_OHBot->m_Games[GameNumber - 1]->SendAllChat( "ADMIN: " + Message );
                         else
-                            QueueChatCommand( m_GHost->m_Language->GameNumberDoesntExist( UTIL_ToString( GameNumber ) ), User, Whisper );
+                            QueueChatCommand( m_OHBot->m_Language->GameNumberDoesntExist( UTIL_ToString( GameNumber ) ), User, Whisper );
                     }
                 }
             }
             else
-                QueueChatCommand( m_GHost->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->YouDontHaveAccessToThatCommand( ), User, Whisper );
         }
 
         //
@@ -3264,8 +2789,8 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 QueueChatCommand( "WARDEN STATUS --- Not connected to a BNLS server.", User, Whisper );
         }
     }
-    else if( !m_GHost->m_RanksLoaded )
-        CONSOLE_Print( m_GHost->m_Language->RanksNotLoaded());
+    else if( !m_OHBot->m_RanksLoaded )
+        CONSOLE_Print( m_OHBot->m_Language->RanksNotLoaded());
     else
         CONSOLE_Print( "[BNET: " + m_ServerAlias + "] non-admin [" + User + "] sent command [" + Message + "]" );
 
@@ -3286,7 +2811,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
 /*
         if( Command == "games" || Command == "g" )
         {
-            m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_GHost->m_DB->ThreadedGameUpdate("", Payload, "", "", 0, "", 0, 0, 0, false ) ) );
+            m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedGameUpdate("", Payload, "", "", 0, "", 0, 0, 0, false ) ) );
         }
 */
         //
@@ -3308,10 +2833,10 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 if( Ban->GetMinutes() != "" )
                     Remaining += Ban->GetMinutes() + "m";
 
-                QueueChatCommand( m_GHost->m_Language->CheckBanTempUser(Ban->GetName(), Ban->GetDate(), Ban->GetExpire(), Remaining, Ban->GetReason() ) );
+                QueueChatCommand( m_OHBot->m_Language->CheckBanTempUser(Ban->GetName(), Ban->GetDate(), Ban->GetExpire(), Remaining, Ban->GetReason() ) );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->UserIsNotBanned( m_Server, User ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->UserIsNotBanned( m_Server, User ), User, Whisper );
         }
 
         //
@@ -3322,12 +2847,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             CDBBan *Ban = IsBannedName( User );
             if( Ban )
             {
-                QueueChatCommand( m_GHost->m_Language->CheckBanNameBan(), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->CheckBanNameBan(), User, Whisper );
                 return;
             }
             else
             {
-                m_PairedBanCheck2s.push_back( PairedBanCheck2( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanCheck2( m_Server, User, "check" ) ) );
+                m_PairedBanCheck2s.push_back( PairedBanCheck2( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanCheck2( m_Server, User, "check" ) ) );
             }
         }
 
@@ -3336,9 +2861,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         // This command is normally used in a relation to a modified GProxy.
         // GProxy will be added soon to the SVN
         //
-        else if( Command == "rconpw" && m_GHost->m_AccountProtection )
+        else if( Command == "rconpw" && m_OHBot->m_AccountProtection )
         {
-            m_PairedPassChecks.push_back( PairedPassCheck( User, m_GHost->m_DB->ThreadedPassCheck( User, Payload, 0 ) ) );
+            m_PairedPassChecks.push_back( PairedPassCheck( User, m_OHBot->m_DB->ThreadedPassCheck( User, Payload, 0 ) ) );
         }
 
         //
@@ -3360,7 +2885,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             // check for potential abuse
 
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedGSChecks.push_back( PairedGSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
+                m_PairedGSChecks.push_back( PairedGSCheck( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, 0 ) ) );
         }
 
         //
@@ -3375,9 +2900,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             uint32_t m_StatsAlias = 0;
             if( Command.size( ) > 4 )
-                m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 4, Command.size( ) - 4 ) );
+                m_StatsAlias =  m_OHBot->GetStatsAliasNumber( Command.substr( 4, Command.size( ) - 4 ) );
             else if( Command.size( ) < 4 )
-                m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
+                m_StatsAlias =  m_OHBot->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
 
             if( m_StatsAlias == 0 )
 		return;
@@ -3394,7 +2919,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             }
             // check for potential abuse
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                m_PairedRankChecks.push_back( PairedRankCheck( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
         }
 
         //
@@ -3409,9 +2934,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             uint32_t m_StatsAlias = 0;
             if( Command.size( ) > 5 )
-                m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
+                m_StatsAlias =  m_OHBot->GetStatsAliasNumber( Command.substr( 5, Command.size( ) - 5 ) );
             else if( Command.size( ) < 5 )
-                m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
+                m_StatsAlias =  m_OHBot->GetStatsAliasNumber( Command.substr( 1, Command.size( ) - 1 ) );
 
             if( m_StatsAlias == 0 )
 		return;	
@@ -3428,7 +2953,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             }
             // check for potential abuse
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                m_PairedSChecks.push_back( PairedSCheck( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
         }
 
         //
@@ -3444,9 +2969,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         {
             uint32_t m_StatsAlias = 0;
             if( Command.size( ) > 6 )
-                m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 6, Command.size( ) - 6 ) );
+                m_StatsAlias =  m_OHBot->GetStatsAliasNumber( Command.substr( 6, Command.size( ) - 6 ) );
             else if( Command.size( ) < 6 )
-                m_StatsAlias =  m_GHost->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
+                m_StatsAlias =  m_OHBot->GetStatsAliasNumber( Command.substr( 2, Command.size( ) - 2 ) );
 
             if( m_StatsAlias == 0 )
 		return;
@@ -3464,7 +2989,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             }
             // check for potential abuse
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
+                m_PairedStreakChecks.push_back( PairedStreakCheck( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsPlayerSummaryCheck( StatsUser, Month, Year, m_StatsAlias ) ) );
         }
 
         //
@@ -3474,9 +2999,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         else if( Command == "version" )
         {
             if( IsLevel( User ) >= 9 || ForceRoot )
-                QueueChatCommand( m_GHost->m_Language->VersionAdmin( m_GHost->m_Version ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->VersionAdmin( m_OHBot->m_Version ), User, Whisper );
             else
-                QueueChatCommand( m_GHost->m_Language->VersionNotAdmin( m_GHost->m_Version ), User, Whisper );
+                QueueChatCommand( m_OHBot->m_Language->VersionNotAdmin( m_OHBot->m_Version ), User, Whisper );
         }
 
         /************************
@@ -3486,7 +3011,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !PM
         //
-        else if( ( Command == "pm" || Command == "mail" ) && !Payload.empty( ) && m_GHost->m_MessageSystem )
+        else if( ( Command == "pm" || Command == "mail" ) && !Payload.empty( ) && m_OHBot->m_MessageSystem )
         {
             CDBBan *Ban = IsBannedName( User );
 
@@ -3505,29 +3030,29 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             }
             else
             {
-                QueueChatCommand( m_GHost->m_Language->ErrorWrongInputForMessage( ), User, true );
+                QueueChatCommand( m_OHBot->m_Language->ErrorWrongInputForMessage( ), User, true );
                 return;
             }
             if( UserTo.length() >= 3 )
             {
                 if( Payload.length() > 3 )
                 {
-                    QueueChatCommand( m_GHost->m_Language->SuccessfullyStoredMessage(), User, true );
-                    m_Pairedpms.push_back( Pairedpm( User, m_GHost->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
+                    QueueChatCommand( m_OHBot->m_Language->SuccessfullyStoredMessage(), User, true );
+                    m_Pairedpms.push_back( Pairedpm( User, m_OHBot->m_DB->Threadedpm( User, UserTo, 0, Message, "add" ) ) );
                 }
                 else
-                    QueueChatCommand( m_GHost->m_Language->ErrorMessageTooShort( ) );
+                    QueueChatCommand( m_OHBot->m_Language->ErrorMessageTooShort( ) );
             }
             else
-                QueueChatCommand( m_GHost->m_Language->InvalidNameTooShort() );
+                QueueChatCommand( m_OHBot->m_Language->InvalidNameTooShort() );
         }
 
         //
         // !INBOX
         //
-        else if( ( Command == "i" || Command == "inbox" ) && Payload.empty( ) && m_GHost->m_MessageSystem )
+        else if( ( Command == "i" || Command == "inbox" ) && Payload.empty( ) && m_OHBot->m_MessageSystem )
         {
-            m_PairedINChecks.push_back( PairedINCheck( User, m_GHost->m_DB->ThreadedInboxSummaryCheck( User ) ) );
+            m_PairedINChecks.push_back( PairedINCheck( User, m_OHBot->m_DB->ThreadedInboxSummaryCheck( User ) ) );
         }
 
         //
@@ -3543,7 +3068,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 type = "c";
 
             if( GetTime( ) - m_LastRegisterProcess <= 180 && ( Command == "reg" || Command == "registration" ) )
-                QueueChatCommand( m_GHost->m_Language->ErrorRegisterAbusePrevention( ) );
+                QueueChatCommand( m_OHBot->m_Language->ErrorRegisterAbusePrevention( ) );
             else
             {
                 string Mail;
@@ -3562,7 +3087,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                 }
                 else
                 {
-                    QueueChatCommand( m_GHost->m_Language-> WrongRegisterCommand( Command ), User, true );
+                    QueueChatCommand( m_OHBot->m_Language-> WrongRegisterCommand( Command ), User, true );
                     return;
                 }
                 if( Whisper )
@@ -3570,19 +3095,19 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
                     if( Mail.find( "@" ) != string::npos || Mail.find( "." ) != string::npos )
                     {
                         if( Password.find( " " ) != string::npos )
-                            QueueChatCommand( m_GHost->m_Language->WrongPassRegisterCommand( Password ), User, true );
+                            QueueChatCommand( m_OHBot->m_Language->WrongPassRegisterCommand( Password ), User, true );
                         else if( Password.length() > 2 )
                         {
-                            m_PairedRegAdds.push_back( PairedRegAdd( User, m_GHost->m_DB->ThreadedRegAdd( User, m_Server, Mail, Password, type ) ) );
+                            m_PairedRegAdds.push_back( PairedRegAdd( User, m_OHBot->m_DB->ThreadedRegAdd( User, m_Server, Mail, Password, type ) ) );
                         }
                         else
-                            QueueChatCommand( m_GHost->m_Language->PassTooShortRegisterCommand( Password ), User, true );
+                            QueueChatCommand( m_OHBot->m_Language->PassTooShortRegisterCommand( Password ), User, true );
                     }
                     else
-                        QueueChatCommand( m_GHost->m_Language->InvalidEmailRegisterCommand( Mail), User, true );
+                        QueueChatCommand( m_OHBot->m_Language->InvalidEmailRegisterCommand( Mail), User, true );
                 }
                 else
-                    QueueChatCommand( m_GHost->m_Language->ErrorWhispRegister( ), User, true );
+                    QueueChatCommand( m_OHBot->m_Language->ErrorWhispRegister( ), User, true );
             }
 
         }
@@ -3590,7 +3115,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !POINTS      !P
         //
-        else if( ( Command == "points" || Command == "p" ) && m_GHost->m_BetSystem )
+        else if( ( Command == "points" || Command == "p" ) && m_OHBot->m_BetSystem )
         {
             string StatsUser = User;
 
@@ -3600,7 +3125,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             // check for potential abuse
 
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "betsystem", 0, "betcheck" ) ) );
+                m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( StatsUser, "betsystem", 0, "betcheck" ) ) );
         }
         
         //
@@ -3618,7 +3143,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
             // check for potential abuse
 
             if( !StatsUser.empty( ) && StatsUser.size( ) < 16 && StatsUser[0] != '/' )
-                m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( StatsUser, "", 0, "aliascheck" ) ) );
+                m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( StatsUser, "", 0, "aliascheck" ) ) );
         }
 
         //
@@ -3626,7 +3151,7 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         else if( Command == "top" || Command == "top10" )
         {
-            m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_GHost->m_DB->ThreadedStatsSystem( "", "", 0, "top" ) ) );
+            m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( "", "", 0, "top" ) ) );
         }
 
         //
@@ -3635,9 +3160,9 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         else if( Command == "gproxylist" ) {
             if(!Payload.empty()) {
                 //return value is reserved :-D
-                if(! m_GHost->FindHackFiles(Payload) ) {
+                if(! m_OHBot->FindHackFiles(Payload) ) {
                     //found hack file
-                    m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_GHost->m_DB->ThreadedBanAdd( m_Server, User, string( ), string( ), User, "Suspicius File(s): "+Payload, 0, "" ) ) );
+                    m_PairedBanAdds.push_back( PairedBanAdd( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedBanAdd( m_Server, User, string( ), string( ), User, "Suspicius File(s): "+Payload, 0, "" ) ) );
                 }
             }
         }
@@ -3756,7 +3281,7 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
             MapHeight.push_back( 192 );
             MapHeight.push_back( 7 );
 
-            if( m_GHost->m_Reconnect )
+            if( m_OHBot->m_Reconnect )
                 m_OutPackets.push( m_Protocol->SEND_SID_STARTADVEX3( state, UTIL_CreateByteArray( MapGameType, false ), map->GetMapGameFlags( ), MapWidth, MapHeight, gameName, hostName, upTime, "Save\\Multiplayer\\" + saveGame->GetFileNameNoPath( ), saveGame->GetMagicNumber( ), map->GetMapSHA1( ), FixedHostCounter ) );
             else
                 m_OutPackets.push( m_Protocol->SEND_SID_STARTADVEX3( state, UTIL_CreateByteArray( MapGameType, false ), map->GetMapGameFlags( ), UTIL_CreateByteArray( (uint16_t)0, false ), UTIL_CreateByteArray( (uint16_t)0, false ), gameName, hostName, upTime, "Save\\Multiplayer\\" + saveGame->GetFileNameNoPath( ), saveGame->GetMagicNumber( ), map->GetMapSHA1( ), FixedHostCounter ) );
@@ -3766,7 +3291,7 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
             uint32_t MapGameType = map->GetMapGameType( );
             MapGameType |= MAPGAMETYPE_UNKNOWN0;
             //Apply overwrite if not equal to 0
-            MapGameType = ( m_GHost->m_MapGameType == 0 ) ? MapGameType : m_GHost->m_MapGameType;
+            MapGameType = ( m_OHBot->m_MapGameType == 0 ) ? MapGameType : m_OHBot->m_MapGameType;
 
             if( state == GAME_PRIVATE )
                 MapGameType |= MAPGAMETYPE_PRIVATEGAME;
@@ -3828,7 +3353,7 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
 
 	    //CONSOLE_Print("[INFO] Using now MapGameType: "+UTIL_ToString(MapGameType));
 
-            if( m_GHost->m_Reconnect )
+            if( m_OHBot->m_Reconnect )
                 m_OutPackets.push( m_Protocol->SEND_SID_STARTADVEX3( state, UTIL_CreateByteArray( MapGameType, false ), map->GetMapGameFlags( ), MapWidth, MapHeight, gameName, hostName, upTime, map->GetMapPath( ), map->GetMapCRC( ), map->GetMapSHA1( ), FixedHostCounter ) );
             else
                 m_OutPackets.push( m_Protocol->SEND_SID_STARTADVEX3( state, UTIL_CreateByteArray( MapGameType, false ), map->GetMapGameFlags( ), map->GetMapWidth( ), map->GetMapHeight( ), gameName, hostName, upTime, map->GetMapPath( ), map->GetMapCRC( ), map->GetMapSHA1( ), FixedHostCounter ) );
@@ -3916,9 +3441,9 @@ uint32_t CBNET :: IsLevel( string name )
 string CBNET :: GetLevelName( uint32_t level )
 {
     if( level < 0 || level > 10 )
-        return m_GHost->m_Ranks[level];
+        return m_OHBot->m_Ranks[level];
     else
-        return m_GHost->m_Language->Unknown();
+        return m_OHBot->m_Language->Unknown();
 }
 
 CDBBan *CBNET :: IsBannedName( string name )
@@ -4020,10 +3545,10 @@ void CBNET :: PVPGNCommand( string Command )
     transform( cmd.begin( ), cmd.end( ), cmd.begin( ), ::tolower );
 
     if(cmd=="init") {
-     if(m_GHost->m_PVPGNMode) {
-	m_GHost->m_PVPGNMode = false;
+     if(m_OHBot->m_PVPGNMode) {
+	m_OHBot->m_PVPGNMode = false;
      } else {
-	m_GHost->m_PVPGNMode = true;
+	m_OHBot->m_PVPGNMode = true;
      }
      return;
     }
@@ -4044,112 +3569,4 @@ void CBNET :: PVPGNCommand( string Command )
     else if(cmd=="abort"||cmd=="a") {}
     else if(cmd=="pub") {} // host? or chost?
     else if(cmd=="priv") {}
-}
-
-#include <boost/python.hpp>
-
-void CBNET :: RegisterPythonClass( )
-{
-	using namespace boost::python;
-
-	void (CBNET::*QueueChatCommand1)(string)				= &CBNET::QueueChatCommand;
-	void (CBNET::*QueueChatCommand2)(string, string, bool)  = &CBNET::QueueChatCommand;
-
-	class_<CBNET, boost::noncopyable>("BNET", no_init)
-		.def_readonly("GHost", &CBNET::m_GHost)
-
-		.def_readonly("socket", &CBNET::m_Socket)
-		.def_readonly("protocol", &CBNET::m_Protocol)
-		.def_readonly("BNLSClient", &CBNET::m_BNLSClient)
-		.def_readonly("packets", &CBNET::m_Packets)
-		.def_readonly("m_BNCSUtil", &CBNET::m_BNCSUtil)
-		.def_readonly("m_OutPackets", &CBNET::m_OutPackets)
-		.def_readonly("friends", &CBNET::m_Friends)
-		.def_readonly("clans", &CBNET::m_Clans)
-		.def_readonly("pairedBanCounts", &CBNET::m_PairedBanCounts)
-		.def_readonly("pairedBanAdds", &CBNET::m_PairedBanAdds)
-		.def_readonly("pairedBanRemoves", &CBNET::m_PairedBanRemoves)
-		.def_readonly("bans", &CBNET::m_Bans)
-		.def_readonly("exiting", &CBNET::m_Exiting)
-		.def_readonly("server", &CBNET::m_Server)
-		.def_readonly("serverIP", &CBNET::m_ServerIP)
-		.def_readonly("serverAlias", &CBNET::m_ServerAlias)
-		.def_readonly("BNLSServer", &CBNET::m_BNLSServer)
-		.def_readonly("BNLSPort", &CBNET::m_BNLSPort)
-		.def_readonly("BNLSWardenCookie", &CBNET::m_BNLSWardenCookie)
-		.def_readonly("countryAbbrev", &CBNET::m_CountryAbbrev)
-		.def_readonly("country", &CBNET::m_Country)
-		.def_readonly("localeID", &CBNET::m_LocaleID)
-		.def_readonly("userPassword", &CBNET::m_UserPassword)
-		.def_readonly("firstChannel", &CBNET::m_FirstChannel)
-		.def_readonly("currentChannel", &CBNET::m_CurrentChannel)
-		.def_readonly("rootAdmin", &CBNET::m_RootAdmin)
-		.def_readonly("commandTrigger", &CBNET::m_CommandTrigger)
-		.def_readonly("War3Version", &CBNET::m_War3Version)
-		.def_readonly("EXEVersion", &CBNET::m_EXEVersion)
-		.def_readonly("EXEVersionHash", &CBNET::m_EXEVersionHash)
-		.def_readonly("passwordHashType", &CBNET::m_PasswordHashType)
-		.def_readonly("PVPGNRealmName", &CBNET::m_PVPGNRealmName)
-		.def_readonly("maxMessageLength", &CBNET::m_MaxMessageLength)
-		.def_readonly("hostCounterID", &CBNET::m_HostCounterID)
-		.def_readonly("lastDisconnectedTime", &CBNET::m_LastDisconnectedTime)
-		.def_readonly("lastConnectionAttemptTime", &CBNET::m_LastConnectionAttemptTime)
-		.def_readonly("lastNullTime", &CBNET::m_LastNullTime)
-		.def_readonly("lastOutPacketTicks", &CBNET::m_LastOutPacketTicks)
-		.def_readonly("lastOutPacketSize", &CBNET::m_LastOutPacketSize)
-		.def_readonly("lastAdminRefreshTime", &CBNET::m_LastAdminRefreshTime)
-		.def_readonly("lastBanRefreshTime", &CBNET::m_LastBanRefreshTime)
-		.def_readonly("firstConnect", &CBNET::m_FirstConnect)
-		.def_readonly("waitingToConnect", &CBNET::m_WaitingToConnect)
-		.def_readonly("loggedIn", &CBNET::m_LoggedIn)
-		.def_readonly("inChat", &CBNET::m_InChat)
-		.def_readonly("holdFriends", &CBNET::m_HoldFriends)
-		.def_readonly("holdClan", &CBNET::m_HoldClan)
-		.def_readonly("publicCommands", &CBNET::m_PublicCommands)
-
-		.def("getExiting", &CBNET::GetExiting)
-		.def("getServer", &CBNET::GetServer)
-		.def("getServerAlias", &CBNET::GetServerAlias)
-		.def("getCDKeyROC", &CBNET::GetCDKeyROC)
-		.def("getCDKeyTFT", &CBNET::GetCDKeyTFT)
-		.def("getUserName", &CBNET::GetUserName)
-		.def("getUserPassword", &CBNET::GetUserPassword)
-		.def("getFirstChannel", &CBNET::GetFirstChannel)
-		.def("getCurrentChannel", &CBNET::GetCurrentChannel)
-		.def("getRootAdmin", &CBNET::GetRootAdmin)
-		.def("getCommandTrigger", &CBNET::GetCommandTrigger)
-		.def("getEXEVersion", &CBNET::GetEXEVersion)
-		.def("getEXEVersionHash", &CBNET::GetEXEVersionHash)
-		.def("getPasswordHashType", &CBNET::GetPasswordHashType)
-		.def("getPVPGNRealmName", &CBNET::GetPVPGNRealmName)
-		.def("getHostCounterID", &CBNET::GetHostCounterID)
-		.def("getLoggedIn", &CBNET::GetLoggedIn)
-		.def("getInChat", &CBNET::GetInChat)
-		.def("getHoldFriends", &CBNET::GetHoldFriends)
-		.def("getHoldClan", &CBNET::GetHoldClan)
-		.def("getPublicCommands", &CBNET::GetPublicCommands)
-		.def("getOutPacketsQueued", &CBNET::GetOutPacketsQueued)
-		.def("getUniqueName", &CBNET::GetUniqueName)
-
-		.def("sendJoinChannel", &CBNET::SendJoinChannel)
-		.def("sendGetFriendsList", &CBNET::SendGetFriendsList)
-		.def("sendGetClanList", &CBNET::SendGetClanList)
-		.def("queueEnterChat", &CBNET::QueueEnterChat)
-		.def("queueChatCommand", QueueChatCommand1)
-		.def("queueChatCommand", QueueChatCommand2)
-		.def("queueGameCreate", &CBNET::QueueGameCreate)
-		.def("queueGameRefresh", &CBNET::QueueGameRefresh)
-		.def("queueGameUncreate", &CBNET::QueueGameUncreate)
-
-		.def("unqueuePackets", &CBNET::UnqueuePackets)
-		.def("unqueueChatCommand", &CBNET::UnqueueChatCommand)
-		.def("unqueueGameRefreshes", &CBNET::UnqueueGameRefreshes)
-
-		.def("isBannedName", &CBNET::IsBannedName, return_internal_reference<>())
-		.def("isBannedIP", &CBNET::IsBannedIP, return_internal_reference<>())
-		.def("addBan", &CBNET::AddBan)
-		.def("removeBan", &CBNET::RemoveBan)
-		.def("holdFriends", &CBNET::HoldFriends)
-		.def("holdClan", &CBNET::HoldClan)
-	;
 }

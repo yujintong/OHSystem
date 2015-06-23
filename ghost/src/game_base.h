@@ -17,7 +17,7 @@
 * features and changes.
 *
 *
-* This is modified from GHOST++: http://ghostplusplus.googlecode.com/
+* This is modified from GHOST++: http://ohbotplusplus.googlecode.com/
 */
 
 #ifndef GAME_BASE_H
@@ -62,6 +62,7 @@ class CCallableInboxSummaryCheck;
 class CCallableGamePlayerAdd;
 struct ReservedPlayer;
 struct DeniedPlayer;
+class CCallableStatsSystem;
 
 typedef pair<string,CCallablePWCheck *> PairedPWCheck;
 typedef pair<string,CCallablepm *> Pairedpm;
@@ -73,12 +74,14 @@ typedef pair<string,CCallableStoreLog *> PairedLogUpdate;
 typedef pair<string,CCallableInboxSummaryCheck *> PairedINCheck;
 typedef pair<string,CCallableGamePlayerAdd *> PairedGPAdd;
 typedef pair<string,CCallableGameUpdate *> PairedGameUpdate;
+typedef pair<string,CCallableStatsSystem *> PairedSS;
 
 class CBaseGame
 {
 public:
-    CGHost *m_GHost;
+    COHBot *m_OHBot;
     vector<ReservedPlayer> m_ReservedPlayers;
+    vector<PairedSS> m_PairedSSs;
 
 protected:
     CDBBan *m_DBBanLast;						// last ban for the !banlast command - this is a pointer to one of the items in m_DBBans
@@ -219,7 +222,7 @@ public:
     boost::mutex m_SayGamesMutex;					// mutex for the above vector
 
 public:
-    CBaseGame( CGHost *nGHost, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
+    CBaseGame( COHBot *nOHBot, CMap *nMap, CSaveGame *nSaveGame, uint16_t nHostPort, unsigned char nGameState, string nGameName, string nOwnerName, string nCreatorName, string nCreatorServer, uint32_t nGameType, uint32_t nHostCounter );
     virtual ~CBaseGame( );
 
     virtual void loop( );
