@@ -262,7 +262,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         Killer->SetFFLevel();
 
                                         if(Killer->GetFFLevel() == 3 ) {
-					    m_Game->BanPlayerByPenality( Killer->GetName(), Killer->GetExternalIPString(), m_Game->m_OHBot->m_BotManagerName, Killer->GetPenalityLevel(), "FountainFarm" );
+	                                         m_Game->BanPlayerByPenality( Killer->GetName(), Killer->GetExternalIPString(), m_Game->m_OHBot->m_BotManagerName, Killer->GetPenalityLevel(), "FountainFarm" );
                                         }
                                     }
                                 }
@@ -323,7 +323,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                         Killer->SetFFLevel();
 
                                         if(Killer->GetFFLevel() == 3 ) {
-					    m_Game->BanPlayerByPenality( Killer->GetName(), Killer->GetExternalIPString(), m_Game->m_OHBot->m_BotManagerName, Killer->GetPenalityLevel(), "FountainFarm" );
+					                                     m_Game->BanPlayerByPenality( Killer->GetName(), Killer->GetExternalIPString(), m_Game->m_OHBot->m_BotManagerName, Killer->GetPenalityLevel(), "FountainFarm" );
                                         }
                                     }
                                 }
@@ -392,15 +392,15 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 CGamePlayer *Killer = m_Game->GetPlayerFromColour( ValueInt );
                                 CGamePlayer *Victim = m_Game->GetPlayerFromColour( VictimColour );
                                 /*
-                                                                if( Killer && Victim )
-                                                                    DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] killed a courier owned by player [" + Victim->GetName( ) + "]" );
-                                                                else if( Victim )
-                                                                {
-                                                                    if( ValueInt == 0 )
-                                                                        DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel killed a courier owned by player [" + Victim->GetName( ) + "]" );
-                                                                    else if( ValueInt == 6 )
-                                                                        DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge killed a courier owned by player [" + Victim->GetName( ) + "]" );
-                                                                }
+                                    if( Killer && Victim )
+                                        DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] player [" + Killer->GetName( ) + "] killed a courier owned by player [" + Victim->GetName( ) + "]" );
+                                    else if( Victim )
+                                    {
+                                        if( ValueInt == 0 )
+                                            DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Sentinel killed a courier owned by player [" + Victim->GetName( ) + "]" );
+                                        else if( ValueInt == 6 )
+                                            DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] the Scourge killed a courier owned by player [" + Victim->GetName( ) + "]" );
+                                    }
                                 */
                             }
                             else if( KeyString.size( ) >= 8 && KeyString.substr( 0, 5 ) == "Tower" )
@@ -527,7 +527,6 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                     }
                                 }
                             }
-//*** CUSTOM ADDS **//
                             else if( KeyString.size( ) >= 6 && KeyString.substr( 0, 5 ) == "Level" )
                             {
                                 string LevelString = KeyString.substr( 5 );
@@ -630,13 +629,13 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                             else if( KeyString.size( ) >= 3 && KeyString.substr( 0, 3 ) == "CSK" )
                             {
                                 /*
-                                                                if( ( ValueInt >= 1 && ValueInt <= 5 ) || ( ValueInt >= 7 && ValueInt <= 11 ) )
-                                                                {
-                                                                        if( !m_Players[ValueInt] )
-                                                                                m_Players[ValueInt] = new CDBDotAPlayer( );
+                                  if( ( ValueInt >= 1 && ValueInt <= 5 ) || ( ValueInt >= 7 && ValueInt <= 11 ) )
+                                  {
+                                          if( !m_Players[ValueInt] )
+                                                  m_Players[ValueInt] = new CDBDotAPlayer( );
 
-                                                                        m_Players[ValueInt]->SetCreepKills( m_Players[ValueInt]->GetCreepKills( ) + 1 );
-                                                                }
+                                          m_Players[ValueInt]->SetCreepKills( m_Players[ValueInt]->GetCreepKills( ) + 1 );
+                                  }
 
                                 */
                                 // creep kill value recieved (aprox every 3 - 4)
@@ -707,6 +706,9 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 else if( RuneType == "5" ) {
                                     Rune = "Invisible";
                                 }
+                                else if( RuneType == "6" ) {
+                                  Rune = "Bounty";
+                                }
                                 CGamePlayer *Player = m_Game->GetPlayerFromColour( ValueInt );
                                 if (Player) {
                                     m_Game->GAME_Print( 30, MinString, SecString, Player->GetName(), "", RuneType );
@@ -741,6 +743,9 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 else if( RuneType == "5" ) {
                                     Rune = "Invisible";
                                 }
+                                else if( RuneType == "6" ) {
+                                  Rune = "Bounty";
+                                }
                                 CGamePlayer *Player = m_Game->GetPlayerFromColour( ValueInt );
                                 if (Player) {
                                     m_Game->GAME_Print( 31, MinString, SecString, Player->GetName(), "", RuneType );
@@ -767,11 +772,11 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if(m_BufferedItemCount[ID]==6) {
                                     m_BufferedItemSix[ID] = Item;
                                     m_BufferedItemCount[ID]=0;
-				}
+                                }
                                 CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
                                 if (Player) {
                                     m_Game->AppendLogData("4\tinv\t" + Player->GetName( ) + "\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + Item + "\n");
-				}
+                                }
                             }
                             else if(KeyString.size( ) >= 5 && KeyString.substr( 0, 4 ) == "DRI_")
                             {
@@ -795,56 +800,56 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 m_Game->GAME_Print( 1, MinString, SecString, "System", "", ModeString );
                                 m_Game->AppendLogData("4\tmode\t-\t-\t-\t-\t" + MinString + ":" + SecString + "\t" + ModeString + "\n");
                             }
-			    else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "SP" )
-			    {
-				string Spell = string( Value.rbegin( ), Value.rend( ) );
-				string PlayerID = KeyString.substr( 4 );
-				string SpellID = KeyString.substr( 2, 1 );
-				uint32_t ID = UTIL_ToUInt32( PlayerID );
-				CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
-				DEBUG_Print( "[DEBUG:  Found Spell: "+Spell+ " | PlayerID: "+PlayerID+" | SpellID: "+SpellID  );
-                                if( ( ID >= 1 && ID <= 5 ) || ( ID >= 7 && ID <= 11 ) ) {
-                                	if( !m_Players[ID] )
-        	                        	m_Players[ID] = new CDBDotAPlayer( );
+                  			    else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "SP" )
+                  			    {
+                      				string Spell = string( Value.rbegin( ), Value.rend( ) );
+                      				string PlayerID = KeyString.substr( 4 );
+                      				string SpellID = KeyString.substr( 2, 1 );
+                      				uint32_t ID = UTIL_ToUInt32( PlayerID );
+                      				CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
+                      				DEBUG_Print( "[DEBUG:  Found Spell: "+Spell+ " | PlayerID: "+PlayerID+" | SpellID: "+SpellID  );
+                              if( ( ID >= 1 && ID <= 5 ) || ( ID >= 7 && ID <= 11 ) ) {
+                              	if( !m_Players[ID] )
+                                	m_Players[ID] = new CDBDotAPlayer( );
 
-                                        m_Players[ID]->SetSpell( UTIL_ToUInt32( SpellID ) - 1, Spell );
-					m_Game->AppendLogData("4\tspell\t" + Player->GetName( ) + "\t" + SpellID + "\t" + Spell + "\t-\t" + MinString + ":" + SecString + "\t\n");
-				}
-			   }
-		   	   else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "MH" )
-                           {
+                                m_Players[ID]->SetSpell( UTIL_ToUInt32( SpellID ) - 1, Spell );
+                      					m_Game->AppendLogData("4\tspell\t" + Player->GetName( ) + "\t" + SpellID + "\t" + Spell + "\t-\t" + MinString + ":" + SecString + "\t\n");
+                      				}
+                  			    }
+                  		   	  else if( KeyString.size( ) >= 2 && KeyString.substr( 0, 2 ) == "MH" )
+                            {
                                 string Spell = string( Value.rbegin( ), Value.rend( ) );
                                 string PlayerID = KeyString.substr( 2 );
                                 uint32_t ID = UTIL_ToUInt32( PlayerID );
-				uint32_t Time = ValueInt;
+                  				      uint32_t Time = ValueInt;
                                 CGamePlayer *Player = m_Game->GetPlayerFromColour( ID );
-				if( Player ) {
-					m_MaphackClickCounter[ID]++;
-					CONSOLE_Print("[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Increased MaphackClickCounter for ["+Player->GetName()+"] to ["+UTIL_ToString(m_MaphackClickCounter[ID])+"]");
-					if(m_MaphackClickCounter[ID] >= 5) {
-						m_Game->m_PairedSSs.push_back(PairedSS( string(), m_Game->m_OHBot->m_DB->ThreadedStatsSystem( Player->GetName(), m_Game->m_GameName, ValueInt, "mh_detection" ) ) );
-						m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_OHBot->m_DB->ThreadedBanAdd( Player->GetSpoofedRealm( ), Player->GetName( ), Player->GetExternalIPString( ), m_Game->m_GameName, m_Game->m_OHBot->m_BotManagerName, "Maphack", 0, "" ) ) );
-						
-						Player->SetDeleteMe( true );
-						Player->SetLeftReason( m_Game->m_OHBot->m_Language->WasKickedByPlayer( Player->GetName() ) );
-						Player->SetLeftCode( PLAYERLEAVE_LOST );
-						m_Game->SendAllChat("Player ["+Player->GetName()+"] got removed from the game for using unallowed 3rd party tools.");
+                        				if( Player ) {
+                        					m_MaphackClickCounter[ID]++;
+                        					CONSOLE_Print("[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Increased MaphackClickCounter for ["+Player->GetName()+"] to ["+UTIL_ToString(m_MaphackClickCounter[ID])+"]");
+                        					if(m_MaphackClickCounter[ID] >= 2) {
+                        						m_Game->m_PairedSSs.push_back(PairedSS( string(), m_Game->m_OHBot->m_DB->ThreadedStatsSystem( Player->GetName(), m_Game->m_GameName, ValueInt, "mh_detection" ) ) );
+                        						m_Game->m_PairedBanAdds.push_back( PairedBanAdd( string(), m_Game->m_OHBot->m_DB->ThreadedBanAdd( Player->GetSpoofedRealm( ), Player->GetName( ), Player->GetExternalIPString( ), m_Game->m_GameName, m_Game->m_OHBot->m_BotManagerName, "Maphack", 0, "" ) ) );
 
-					}
-				}
+                        						Player->SetDeleteMe( true );
+                        						Player->SetLeftReason( m_Game->m_OHBot->m_Language->WasKickedByPlayer( Player->GetName() ) );
+                        						Player->SetLeftCode( PLAYERLEAVE_LOST );
+                        						m_Game->SendAllChat("Player ["+Player->GetName()+"] got removed from the game for using unallowed 3rd party tools.");
+
+                        					}
+                        				}
                            }
-			   else if( KeyString.size( ) >= 12 && KeyString.substr( 0, 12 ) == "LoD_HeroResp" ) {
-				string ID = KeyString.substr(13);
-				uint32_t PlayerID = UTIL_ToUInt32(ID);
-				string type = string( Value.rbegin( ), Value.rend( ) );
-				uint32_t bb  = UTIL_ToUInt32( type );
+                  			   else if( KeyString.size( ) >= 12 && KeyString.substr( 0, 12 ) == "LoD_HeroResp" ) {
+                      				string ID = KeyString.substr(13);
+                      				uint32_t PlayerID = UTIL_ToUInt32(ID);
+                      				string type = string( Value.rbegin( ), Value.rend( ) );
+                      				uint32_t bb  = UTIL_ToUInt32( type );
 
-				CGamePlayer *Player = m_Game->GetPlayerFromColour( PlayerID );
-				if(Player) {
-					CONSOLE_Print("[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Player ["+Player->GetName( )+"] respawned." + (bb==1?"(buyback)":"(typical)"));
-				}
-			   }
-			   else if(KeyString.size() >= 11 && KeyString.substr(0, 11) == "LoD_DeadFor" ) {
+                      				CGamePlayer *Player = m_Game->GetPlayerFromColour( PlayerID );
+                      				if(Player) {
+                      					CONSOLE_Print("[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Player ["+Player->GetName( )+"] respawned." + (bb==1?"(buyback)":"(typical)"));
+                      				}
+                  			   }
+                  			   else if(KeyString.size() >= 11 && KeyString.substr(0, 11) == "LoD_DeadFor" ) {
                                 string ID = KeyString.substr(12);
                                 uint32_t PlayerID = UTIL_ToUInt32(ID);
                                 string time = string( Value.rbegin( ), Value.rend( ) );
@@ -853,7 +858,7 @@ bool CStatsDOTA :: ProcessAction( CIncomingAction *Action )
                                 if(Player) {
                                         CONSOLE_Print("[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] Player ["+Player->GetName( )+"] is dead for the next ["+time+"] seconds.");
                                 }
-			   }
+			                     }
                            else if(KeyString.size() >= 7 && KeyString.substr(0, 7) == "LoD_INV" ) {
                                 string ID = KeyString.substr(8);
                                 uint32_t PlayerID = UTIL_ToUInt32(ID);
@@ -1221,23 +1226,24 @@ void CStatsDOTA :: Save( COHBot *GHost, COHBotDB *DB, uint32_t GameID )
             }
         }
 
-	string data = "";
+	      string data = "";
 
         for( unsigned int i = 0; i < 12; ++i )
         {
             if( m_Players[i] )
             {
                 if(m_Players[i]->GetItem( 0 ) != "" || m_Players[i]->GetItem( 1 ) != "" || m_Players[i]->GetItem( 2 ) != "" || m_Players[i]->GetItem( 3 ) != "" || m_Players[i]->GetItem( 4 ) != "" || m_Players[i]->GetItem( 5 ) != "")
-			data += "( " + UTIL_ToString( m_Game->m_OHBot->m_BotID ) + ", " + UTIL_ToString( GameID ) + ", " + UTIL_ToString( m_Players[i]->GetColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetKills( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetDeaths( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepDenies( ) ) + ", " + UTIL_ToString( m_Players[i]->GetAssists( ) ) + ", " + UTIL_ToString( m_Players[i]->GetGold( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetNeutralKills( ) ) + ", '" + m_Players[i]->GetItem( 0 ) + "', '" + m_Players[i]->GetItem( 1 ) + "', '" + m_Players[i]->GetItem( 2 ) + "', '" + m_Players[i]->GetItem( 3 ) + "', '" + m_Players[i]->GetItem( 4 ) + "', '" + m_Players[i]->GetItem( 5 ) + "', '" + m_Players[i]->GetSpell( 0 ) + "', '" + m_Players[i]->GetSpell( 1 ) + "', '" + m_Players[i]->GetSpell( 2 ) + "', '" + m_Players[i]->GetSpell( 3 ) + "', '" + m_Players[i]->GetSpell( 4 ) + "', '" + m_Players[i]->GetSpell( 5 ) + "', '" + m_Players[i]->GetHero( ) + "', " + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCourierKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetLevel( ) ) + " )";
+		               data += "( " + UTIL_ToString( m_Game->m_OHBot->m_BotID ) + ", " + UTIL_ToString( GameID ) + ", " + UTIL_ToString( m_Players[i]->GetColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetKills( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetDeaths( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepDenies( ) ) + ", " + UTIL_ToString( m_Players[i]->GetAssists( ) ) + ", " + UTIL_ToString( m_Players[i]->GetGold( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetNeutralKills( ) ) + ", '" + m_Players[i]->GetItem( 0 ) + "', '" + m_Players[i]->GetItem( 1 ) + "', '" + m_Players[i]->GetItem( 2 ) + "', '" + m_Players[i]->GetItem( 3 ) + "', '" + m_Players[i]->GetItem( 4 ) + "', '" + m_Players[i]->GetItem( 5 ) + "', '" + m_Players[i]->GetSpell( 0 ) + "', '" + m_Players[i]->GetSpell( 1 ) + "', '" + m_Players[i]->GetSpell( 2 ) + "', '" + m_Players[i]->GetSpell( 3 ) + "', '" + m_Players[i]->GetSpell( 4 ) + "', '" + m_Players[i]->GetSpell( 5 ) + "', '" + m_Players[i]->GetHero( ) + "', " + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCourierKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetLevel( ) ) + " )";
                 else
-			data += "( " + UTIL_ToString( m_Game->m_OHBot->m_BotID ) + ", " + UTIL_ToString( GameID ) + ", " + UTIL_ToString( m_Players[i]->GetColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetKills( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetDeaths( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepDenies( ) ) + ", " + UTIL_ToString( m_Players[i]->GetAssists( ) ) + ", " + UTIL_ToString( m_Players[i]->GetGold( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetNeutralKills( ) ) + ", '" + m_BufferedItemOne[i] + "', '" +  m_BufferedItemTwo[i] + "', '" + m_BufferedItemThree[i] + "', '" + m_BufferedItemFour[i] + "', '" + m_BufferedItemFive[i] + "', '" + m_BufferedItemSix[i] + "', '" + m_Players[i]->GetSpell( 0 ) + "', '" + m_Players[i]->GetSpell( 1 ) + "', '" + m_Players[i]->GetSpell( 2 ) + "', '" + m_Players[i]->GetSpell( 3 ) + "', '" + m_Players[i]->GetSpell( 4 ) + "', '" + m_Players[i]->GetSpell( 5 ) + "', '" + m_Players[i]->GetHero( ) + "', " + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCourierKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetLevel( ) ) + " )";
-		if(i!=11)
-			data += ", ";
+			             data += "( " + UTIL_ToString( m_Game->m_OHBot->m_BotID ) + ", " + UTIL_ToString( GameID ) + ", " + UTIL_ToString( m_Players[i]->GetColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetKills( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetDeaths( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCreepDenies( ) ) + ", " + UTIL_ToString( m_Players[i]->GetAssists( ) ) + ", " + UTIL_ToString( m_Players[i]->GetGold( ) ) + ", " + UTIL_ToString(  m_Players[i]->GetNeutralKills( ) ) + ", '" + m_BufferedItemOne[i] + "', '" +  m_BufferedItemTwo[i] + "', '" + m_BufferedItemThree[i] + "', '" + m_BufferedItemFour[i] + "', '" + m_BufferedItemFive[i] + "', '" + m_BufferedItemSix[i] + "', '" + m_Players[i]->GetSpell( 0 ) + "', '" + m_Players[i]->GetSpell( 1 ) + "', '" + m_Players[i]->GetSpell( 2 ) + "', '" + m_Players[i]->GetSpell( 3 ) + "', '" + m_Players[i]->GetSpell( 4 ) + "', '" + m_Players[i]->GetSpell( 5 ) + "', '" + m_Players[i]->GetHero( ) + "', " + UTIL_ToString( m_Players[i]->GetNewColour( ) ) + ", " + UTIL_ToString( m_Players[i]->GetTowerKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetRaxKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetCourierKills( ) ) + ", " + UTIL_ToString( m_Players[i]->GetLevel( ) ) + " )";
+
+            		if(i!=11)
+            			data += ", ";
                 ++Players;
             }
         }
 
-	GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, data ) );
+	      GHost->m_Callables.push_back( DB->ThreadedDotAPlayerAdd( GameID, data ) );
 
         if( DB->Commit( ) )
             DEBUG_Print( "[STATS"+TypePrefix+": " + m_Game->GetGameName( ) + "] saving " + UTIL_ToString( Players ) + " players" );
