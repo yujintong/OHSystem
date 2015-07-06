@@ -296,6 +296,7 @@ public:
     bool m_SendAutoStartInfo;
     bool m_FountainFarmBan;
     uint32_t m_GarenaPort;
+    bool m_RejectingGameCheats;
 
     COHBot( CConfig *CFG );
     ~COHBot( );

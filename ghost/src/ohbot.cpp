@@ -1538,6 +1538,7 @@ void COHBot :: SetConfigs( CConfig *CFG )
     m_SendAutoStartInfo = CFG->GetInt("oh_sendautostartalert", 0) == 0 ? false : true;
     m_FountainFarmBan = CFG->GetInt("oh_fountainfarmban", 0) == 0 ? false : true;
     m_GarenaPort = CFG->GetInt("garena_broadcastport", 1338);
+    m_RejectingGameCheats = CFG->GetInt("ohs_rejectgamecheats" 1) == 0 ? false : true;
  
     LoadDatas();
     LoadRules();
