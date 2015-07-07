@@ -3844,9 +3844,8 @@ void CBaseGame :: EventPlayerChatToHost( CGamePlayer *player, CIncomingChatPlaye
                 fteam = m_Slots[SID].GetTeam();
                 unsigned char sid = GetSIDFromPID( chatPlayer->GetFromPID() );
 
-
-		if( (m_GameLoaded || m_GameLoading) && (msg == "-wtf" || msg == "-test") && m_GHost->m_RejectingGameCheats) {
-			CONSOLE_Print("[GAME: " + m_GameName + "] (" + MinString + ":" + SecString + ") Rejecting cheat from ["+chatPlayer->GetName()+"] with message ["+msg"]");
+		if( (m_GameLoaded || m_GameLoading) && (msg == "-wtf" || msg == "-test") && m_OHBot->m_RejectingGameCheats) {
+			CONSOLE_Print("[GAME: " + m_GameName + "] (" + MinString + ":" + SecString + ") Rejecting cheat from ["+player->GetName()+"] with message ["+msg+"]");
 			return;
 		}
 
