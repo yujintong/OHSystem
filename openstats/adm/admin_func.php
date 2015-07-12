@@ -27,7 +27,7 @@ function UpdateCommentsByPostIds($PostIDS = '') {
   
 }
 
-function readLine($file, $line_num, $delimiter="\n") 
+function OS_ReadLine($file, $line_num, $delimiter="\n") 
 { 
     $i = 1; 
     $fp = fopen( $file, 'r' ); 

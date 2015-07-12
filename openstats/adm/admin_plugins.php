@@ -48,9 +48,9 @@ if ($handle = opendir($plugins_dir)) {
 	  
 	  if ( file_exists($plugins_dir.$PluginFile) ) {
 	  	  
-	  $PluginName   = trim(str_replace("//Plugin:", "", readLine($plugins_dir.$PluginFile, 2)));
-	  $PluginAuthor = trim(str_replace("//Author:", "", readLine($plugins_dir.$PluginFile, 3)));
-	  $PluginDesc   = trim(str_replace("//", "", readLine($plugins_dir.$PluginFile, 4)));
+	  $PluginName   = trim(str_replace("//Plugin:", "", OS_ReadLine($plugins_dir.$PluginFile, 2)));
+	  $PluginAuthor = trim(str_replace("//Author:", "", OS_ReadLine($plugins_dir.$PluginFile, 3)));
+	  $PluginDesc   = trim(str_replace("//", "", OS_ReadLine($plugins_dir.$PluginFile, 4)));
 	  
 	  if ( !empty($PluginName) AND !empty( $PluginAuthor ) ) {
 	  include($plugins_dir.$PluginFile);
