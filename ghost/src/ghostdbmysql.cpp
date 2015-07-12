@@ -1059,6 +1059,46 @@ string MySQLStatsSystem( void *conn, string *error, uint32_t botid, string user,
 
         return "failed";
     }
+    else if(type=="gamelist") {
+        string Query = "SELECT gamename,players,total FROM oh_gamelist WHERE lobby = 1 AND gamename LIKE '%"+EscUser+"%'";
+
+        if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
+            *error = mysql_error( (MYSQL *)conn );
+        else
+        {
+            MYSQL_RES *Result = mysql_store_result( (MYSQL *)conn );
+            string response;
+            int num = 0;
+            int totg = 0;
+            int totp = 0;
+            if( Result )
+            {
+                vector<string> Row = MySQLFetchRow( Result );
+
+                while( !Row.empty( ) )
+                {
+                    if(Row[0] != "") {
+                        response += Row[0] + " (" + Row[1] + "/" + Row[2] + "), ";
+                        num++;
+                    }
+
+                    Row = MySQLFetchRow( Result );
+                }
+
+                mysql_free_result( Result );
+            }
+            else
+                *error = mysql_error( (MYSQL *)conn );
+
+            if(num == 0) {
+                response = "No games available";
+            } else {
+                response = response.substr(0, response.length() - 2);
+            }
+
+            return "Current Games: "+response;
+        }
+    }
 
     return "error";
 }

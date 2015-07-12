@@ -338,7 +338,21 @@ bool CBNET :: Update( void *fd, void *send_fd )
                     QueueChatCommand( Result, i->first, !i->first.empty( ) );
                 else
                     QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
-            }
+            } else if(i->second->GetType() == "gamelist") {
+		if( Result != "failed") {
+		    string msg = Result;
+		    do {
+			if(msg.length() > 200) {
+				QueueChatCommand( msg.substr(0, 200), i->first, !i->first.empty( ) );
+				msg = msg.substr(200);
+			} else {
+				QueueChatCommand( msg, i->first, !i->first.empty( ) );
+				msg = "";
+			}
+		    } while(msg.length() != 0);
+		} else
+                    QueueChatCommand( m_OHBot->m_Language->WrongContactBotOwner( ), i->first, !i->first.empty( ) );
+	    }
 
             m_OHBot->m_DB->RecoverCallable( i->second );
             delete i->second;
@@ -2808,12 +2822,12 @@ void CBNET :: BotCommand(string Message, string User, bool Whisper, bool ForceRo
         //
         // !GAMES
         //
-/*
+
         if( Command == "games" || Command == "g" )
         {
-            m_PairedGameUpdates.push_back( PairedGameUpdate( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedGameUpdate("", Payload, "", "", 0, "", 0, 0, 0, false ) ) );
+            m_PairedSSs.push_back( PairedSS( Whisper ? User : string( ), m_OHBot->m_DB->ThreadedStatsSystem( Payload, "", 0, "gamelist" ) ) );
         }
-*/
+
         //
         // !CHECKBAN
         //
