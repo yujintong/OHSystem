@@ -175,7 +175,6 @@ private:
 public:
     typedef map<string, uint16_t> calls;
     static calls outstandingCalls;
-private:
     static calls initMap() {
 	calls ini = {};
 	return ini;
