@@ -3,6 +3,7 @@
 https://github.com/gamershost/OpenStats-5.0
 
 Join our discussion forum and request ideas, features:
+
 https://gamers.host/forums/forum/63-openstats-50/
 
 ----
