@@ -1,5 +1,9 @@
-![Logo](http://ohconnect.info/themes/global/img/ohs_logo.png)
-
+----
+##OpenStats 5.0 is in development
+https://github.com/gamershost/OpenStats-5.0
+Join our discussion forum and request ideas, features:
+https://gamers.host/forums/forum/63-openstats-50/
+----
 #OpenHosting
 
 OpenHosting is a major modification of the official GHost++ source.
