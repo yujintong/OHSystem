@@ -1589,7 +1589,7 @@ uint32_t MySQLpenp( void *conn, string *error, uint32_t botid, string name, stri
 
     else if( type == "add" )
     {
-        string AddQuery = "INSERT INTO `oh_game_offenses` ( player_name, reason, offence_time, pp, admin ) VALUES ( '" + EscName + "', '" + EscReason + "', CURRENT_TIMESTAMP(), '" + UTIL_ToString( amount ) + "', '" + EscAdmin + "' ); ";
+        string AddQuery = "INSERT INTO `oh_game_offenses` ( player_name, reason, offence_time, pp, 'admin' ) VALUES ( '" + EscName + "', '" + EscReason + "', CURRENT_TIMESTAMP(), '" + UTIL_ToString( amount ) + "', '" + EscAdmin + "' ); ";
         //string StatsQ = "UPDATE `oh_stats` SET `penalty`='penalty+1' WHERE `player_lower` = '" + EscName + "';";
         //if( mysql_real_query( (MYSQL *)conn, StatsQ.c_str( ), StatsQ.size( ) ) != 0 )
         //    *error = mysql_error( (MYSQL *)conn );
@@ -1659,9 +1659,9 @@ CDBBan *MySQLBanCheck( void *conn, string *error, uint32_t botid, string server,
     string Query;
 
     if( ip.empty( ) )
-        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, 'admin', reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
     else
-        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' OR ip='" + EscIP + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, 'admin', reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE name='" + EscUser + "' OR ip='" + EscIP + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
@@ -1843,13 +1843,13 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
         string OffenseQuery = "";
         if( bantime == 0 )
         {
-            Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part, date, gamename, admin, reason, country ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', '" + EscCountry + "' )";
-            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "' );";
+            Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part, date, gamename, 'admin'', reason, country ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', '" + EscCountry + "' )";
+            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, 'admin' ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "' );";
         }
         else
         {
-            Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part,date, gamename, admin, reason, expiredate, country ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), '" + EscCountry + "' );";
-            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin, offence_expire ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + ") );";
+            Query = "INSERT INTO oh_bans ( botid, server, name, ip, ip_part,date, gamename, 'admin', reason, expiredate, country ) VALUES ( " + UTIL_ToString( botid ) + ", '" + EscServer + "', '" + EscUser + "', '" + EscIP + "', '" + x[0] + "." + x[1] + "', CURRENT_TIMESTAMP( ), '" + EscGameName + "', '" + EscAdmin + "', '" + EscReason + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), '" + EscCountry + "' );";
+            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, 'admin', offence_expire ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + ") );";
         }
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
@@ -1872,12 +1872,12 @@ uint32_t MySQLBanAdd( void *conn, string *error, uint32_t botid, string server, 
         if( bantime == 0 )
         {
             Query = "UPDATE oh_bans SET expiredate = '0000-00-00 00:00:00', reason = '"+EscReason+"' WHERE name = '"+EscUser+"';";
-            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "' );";
+            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, 'admin' ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "' );";
         }
         else
         {
             Query = "UPDATE oh_bans SET expiredate = FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + "), reason = '" + EscReason + "' WHERE name = '"+EscUser+"';";
-            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, admin, offence_expire ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + ") );";
+            OffenseQuery = "INSERT INTO oh_game_offenses ( player_name, reason, offence_time, pp, 'admin', offence_expire ) VALUES ( '" + EscUser + "', '" + EscReason + "', CURRENT_TIMESTAMP( ), 1, '" + EscAdmin + "', FROM_UNIXTIME( UNIX_TIMESTAMP( ) + " + UTIL_ToString(bantime) + ") );";
         }
 
         if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
@@ -2020,9 +2020,9 @@ vector<CDBBan *> MySQLBanList( void *conn, string *error, uint32_t botid, string
     vector<CDBBan *> BanList;
     string Query = "";
     if( EscServer == "Garena")
-        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' OR server='WC3Connect' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, 'admin', reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' OR server='WC3Connect' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
     else
-        Query = "SELECT id, name, ip, DATE(date), gamename, admin, reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
+        Query = "SELECT id, name, ip, DATE(date), gamename, 'admin', reason, DATE(expiredate), TIMESTAMPDIFF(WEEK, NOW( ), expiredate) AS MONTH, TIMESTAMPDIFF(DAY, NOW( ), expiredate)-TIMESTAMPDIFF(WEEK, NOW( ), expiredate)*7 AS DAY, TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate)-TIMESTAMPDIFF(DAY, NOW( ),  expiredate)*24 AS HOUR, TIMESTAMPDIFF(MINUTE, NOW( ), expiredate)-TIMESTAMPDIFF(HOUR ,NOW( ) ,expiredate) *60 AS MINUTE FROM oh_bans WHERE server='" + EscServer + "' AND expiredate = '' OR expiredate='0000-00-00 00:00:00' OR expiredate>CURRENT_TIMESTAMP()";
 
     if( mysql_real_query( (MYSQL *)conn, Query.c_str( ), Query.size( ) ) != 0 )
         *error = mysql_error( (MYSQL *)conn );
