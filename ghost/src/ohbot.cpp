@@ -1388,9 +1388,14 @@ void COHBot :: SetConfigs( CConfig *CFG )
 {
     // this doesn't set EVERY config value since that would potentially require reconfiguring the battle.net connections
     // it just set the easily reloadable values
+
     m_LanCFGPath = UTIL_AddPathSeperator( CFG->GetString( "languages_path", "languages/" ) );
+    m_BaseFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_basefilespath", string( ) ) );
+    m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
+
     delete m_Language;
-    m_Language = new CLanguage( CFG->GetString( "bot_language", "en.cfg" )+m_LanguageFile );
+    //m_Language = new CLanguage( CFG->GetString( "bot_language", "en.cfg" )+m_LanguageFile );
+    m_Language = new CLanguage(m_LanCFGPath + CFG->GetString("bot_language", "en.cfg"));
     m_Warcraft3Path = UTIL_AddPathSeperator( CFG->GetString( "bot_war3path", "C:\\Program Files\\Warcraft III\\" ) );
     m_BindAddress = CFG->GetString( "bot_bindaddress", string( ) );
     m_ReconnectWaitTime = CFG->GetInt( "bot_reconnectwaittime", 3 );
@@ -1439,15 +1444,16 @@ void COHBot :: SetConfigs( CConfig *CFG )
     m_SyncLimit = CFG->GetInt( "bot_synclimit", 50 );
     m_VoteKickAllowed = CFG->GetInt( "bot_votekickallowed", 1 ) == 0 ? false : true;
     m_VoteKickPercentage = CFG->GetInt( "bot_votekickpercentage", 100 );
+
     if( m_VoteKickPercentage > 100 )
     {
         m_VoteKickPercentage = 100;
         CONSOLE_Print( "[GHOST] warning - bot_votekickpercentage is greater than 100, using 100 instead" );
     }
 
-    m_MOTDFile = CFG->GetString( "bot_motdfile", "motd.txt" );
-    m_GameLoadedFile = CFG->GetString( "bot_gameloadedfile", "gameloaded.txt" );
-    m_GameOverFile = CFG->GetString( "bot_gameoverfile", "gameover.txt" );
+    m_MOTDFile = m_BaseFilesPath + CFG->GetString( "bot_motdfile", "motd.txt" );
+    m_GameLoadedFile = m_BaseFilesPath + CFG->GetString( "bot_gameloadedfile", "gameloaded.txt" );
+    m_GameOverFile = m_BaseFilesPath + CFG->GetString( "bot_gameoverfile", "gameover.txt" );
     m_LocalAdminMessages = CFG->GetInt( "bot_localadminmessages", 1 ) == 0 ? false : true;
     m_TCPNoDelay = CFG->GetInt( "tcp_nodelay", 0 ) == 0 ? false : true;
     m_MatchMakingMethod = CFG->GetInt( "bot_matchmakingmethod", 1 );
@@ -1520,7 +1526,6 @@ void COHBot :: SetConfigs( CConfig *CFG )
     m_APMAllowedMinimum = CFG->GetInt("oh_apmallowedminimum", 20);
     m_APMMaxAfkWarnings = CFG->GetInt("oh_apmmaxafkwarnings", 5);
     m_Website = CFG->GetString("oh_general_domain", "http://ohsystem.net/" );
-    m_SharedFilesPath = UTIL_AddPathSeperator( CFG->GetString( "bot_sharedfilespath", string( ) ) );
     m_BroadCastPort = CFG->GetInt("oh_broadcastport", 6112 );
     m_SpoofPattern = CFG->GetString("oh_spoofpattern", string());
     m_DelayGameLoaded = CFG->GetInt("oh_delaygameloaded", 300);
@@ -1530,9 +1535,11 @@ void COHBot :: SetConfigs( CConfig *CFG )
     m_GlobalMySQLPath = UTIL_AddPathSeperator( CFG->GetString( "oh_globalmysqlpath", "../" ) );
     m_PVPGNMode = CFG->GetInt("oh_pvpgn_mode", 0) == 0 ? false : true;
     m_AutoRehostTime = CFG->GetInt("oh_auto_rehost_time", 0);
+
     if(m_AutoRehostTime<10 && m_AutoRehostTime!=0) { 
-	m_AutoRehostTime=10; 
+        m_AutoRehostTime=10; 
     }
+
     m_DenyLimit = CFG->GetInt("oh_cc_deny_limit", 2);
     m_SwapLimit = CFG->GetInt("oh_cc_swap_limit", 2);
     m_SendAutoStartInfo = CFG->GetInt("oh_sendautostartalert", 0) == 0 ? false : true;
@@ -1790,7 +1797,7 @@ void COHBot :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
     }
 
     boost::thread(&CBaseGame::loop, m_CurrentGame);
-    CONSOLE_Print("[GHOST] Created a new Game Thread.");
+    CONSOLE_Print("[GameThread] Created a new Game Thread.");
 }
 
 bool COHBot :: FlameCheck( string message )
@@ -1863,14 +1870,16 @@ void COHBot :: LoadRules( )
     m_Rules.clear();
     if (myfile.is_open())
     {
+        CONSOLE_Print("[GHOST] loading file [" + File + "]");
         while ( getline (myfile,line) )
         {
             m_Rules.push_back( line );
         }
+        CONSOLE_Print("[GHOST] loaded file [" + File + "]");
         myfile.close();
     }
     else
-        CONSOLE_Print( "Unable to open rules.txt" );
+        CONSOLE_Print( "[GHOST] warning - unable to open file [" + File + "]");
 }
 
 uint32_t COHBot :: GetNewHostCounter( )
@@ -1893,6 +1902,7 @@ void COHBot :: LoadRanks( )
     m_Ranks.clear();
     if( !in.fail( ) )
     {
+        CONSOLE_Print("[GHOST] loading file [" + File + "]");
         uint32_t Count = 0;
         string Line;
         while( !in.eof( ) && Count < 11 )
@@ -1901,25 +1911,27 @@ void COHBot :: LoadRanks( )
             if( Line.empty( ) )
             {
                 if( !in.eof( ) )
-                    m_Ranks.push_back("Missing Rank on: "+UTIL_ToString(Count));
+                    m_Ranks.push_back("Missing Rank on: " + UTIL_ToString(Count));
             }
             else
                 m_Ranks.push_back(Line);
             ++Count;
         }
+        CONSOLE_Print("[GHOST] loaded file [" + File + "]");
         in.close( );
     }
     else
     {
-        CONSOLE_Print("[GHOST] warning - unable to read file [ranks.txt]");
+        CONSOLE_Print("[GHOST] warning - unable to read file [" + File + "]");
         m_RanksLoaded = false;
     }
 
     if(m_Ranks.size() < 10 && m_RanksLoaded) {
         CONSOLE_Print("[CONFIG] warning - ranks.txt doesn't contain enough levelnames. You require at least 11 rank names (Level 0 - Level 10, with 0).");
         m_RanksLoaded = false;
-    } else if(m_RanksLoaded) {
-	CONSOLE_Print("[GHOST] loading file [ranks.txt]");
+    }
+    else if(m_RanksLoaded) {
+        CONSOLE_Print("[GHOST] loaded file [" + File + "]");
     }
 }
 
@@ -1931,17 +1943,18 @@ void COHBot :: LoadInsult()
     m_Insults.clear();
     if( !in.fail( ) )
     {
+        CONSOLE_Print("[GHOST] loading file [" + File + "]");
         string Line;
         while( !in.eof( )  )
         {
             getline( in, Line );
             m_Insults.push_back(Line);
         }
-	CONSOLE_Print("[GHOST] loading file [insult.txt]");
+        CONSOLE_Print("[GHOST] loaded file [" + File + "]");
         in.close( );
     }
     else
-        CONSOLE_Print("[GHOST] warning - unable to read file [insult.txt].");
+        CONSOLE_Print("[GHOST] warning - unable to read file [" + File + "].");
 }
 
 string COHBot :: GetTimeFunction( uint32_t type )

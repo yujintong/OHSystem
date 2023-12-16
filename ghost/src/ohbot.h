@@ -268,6 +268,7 @@ public:
     string m_Website;
     uint32_t m_DisconnectAutoBanTime;
     string m_SharedFilesPath;
+    string m_BaseFilesPath;
     vector<cachedPlayer> m_PlayerCache;
     uint32_t m_BroadCastPort;
     string m_LanCFGPath;
