@@ -677,6 +677,13 @@ COHBot :: COHBot( CConfig *CFG )
     m_AutoHostMap = new CMap( *m_Map );
     m_SaveGame = new CSaveGame( );
 
+    // create the listening socket for broadcasters;
+
+    int Port = CFG->GetInt( "bot_broadcasters_port", 6969 );
+    m_GameBroadcastersListener = new CTCPServer( );
+    m_GameBroadcastersListener->Listen( string( ), Port );
+    CONSOLE_Print( "[GHOST] Listening for game broadcasters on port [" + UTIL_ToString( Port ) + "]" );
+
     if( m_BNETs.empty( ) )
     {
         CONSOLE_Print( "[GHOST] warning - no battle.net connections found and no admin game created" );
@@ -737,33 +744,33 @@ bool COHBot :: Update( long usecBlock )
         return true;
     }
 
-	boost::mutex::scoped_lock gamesLock( m_GamesMutex );
-	
-	// get rid of any deleted games
-	for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); )
-	{
-		if( (*i)->readyDelete( ) )
-		{
-			delete *i;
-			m_Games.erase( i );
-		} else {
-			++i;
-		}
-	}
+    boost::mutex::scoped_lock gamesLock( m_GamesMutex );
 
-	if( m_CurrentGame && m_CurrentGame->readyDelete( ) )
-	{
-	        for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
-        	{
-            		(*i)->QueueGameUncreate( );
-            		(*i)->QueueEnterChat( );
-        	}
+    // get rid of any deleted games
+    for( vector<CBaseGame *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); )
+    {
+        if( (*i)->readyDelete( ) )
+        {
+            delete *i;
+            m_Games.erase( i );
+        } else {
+            ++i;
+        }
+    }
 
-		delete m_CurrentGame;
-		m_CurrentGame = NULL;
-	}
-	
-	gamesLock.unlock( );
+    if( m_CurrentGame && m_CurrentGame->readyDelete( ) )
+    {
+            for( vector<CBNET *> :: iterator i = m_BNETs.begin( ); i != m_BNETs.end( ); ++i )
+            {
+                    (*i)->QueueGameUncreate( );
+                    (*i)->QueueEnterChat( );
+            }
+
+        delete m_CurrentGame;
+        m_CurrentGame = NULL;
+    }
+
+    gamesLock.unlock( );
 
 
     // try to exit nicely if requested to do so
@@ -888,6 +895,20 @@ bool COHBot :: Update( long usecBlock )
         ++NumFDs;
     }
 
+    // 6. the Game Broadcasters
+    for (vector<CTCPSocket * >::iterator i = m_GameBroadcasters.begin(); i != m_GameBroadcasters.end(); ++i)
+    {
+        if ( (*i)->GetConnected( ) && !(*i)->HasError( ) )
+        {
+            (*i)->SetFD( &fd, &send_fd, &nfds );
+            ++NumFDs;
+        }
+    }
+
+    // 7. the listener for game broadcasters
+    m_GameBroadcastersListener->SetFD( &fd, &send_fd, &nfds );
+    ++NumFDs;
+
     // before we call select we need to determine how long to block for
     // previously we just blocked for a maximum of the passed usecBlock microseconds
     // however, in an effort to make game updates happen closer to the desired latency setting we now use a dynamic block interval
@@ -981,21 +1002,21 @@ bool COHBot :: Update( long usecBlock )
                     {
                         if( Bytes[1] == CGPSProtocol :: GPS_RECONNECT && Length == 13 )
                         {
-				GProxyReconnector *Reconnector = new GProxyReconnector;
-				Reconnector->PID = Bytes[4];
-				Reconnector->ReconnectKey = UTIL_ByteArrayToUInt32( Bytes, false, 5 );
-				Reconnector->LastPacket = UTIL_ByteArrayToUInt32( Bytes, false, 9 );
-				Reconnector->PostedTime = GetTicks( );
-				Reconnector->socket = (*i);
-							
-				// update the receive buffer
-				*RecvBuffer = RecvBuffer->substr( Length );
-				i = m_ReconnectSockets.erase( i );
-				// post in the reconnects buffer and wait to see if a game thread will pick it up
-				boost::mutex::scoped_lock lock( m_ReconnectMutex );
-				m_PendingReconnects.push_back( Reconnector );
-				lock.unlock();
-				continue;
+                            GProxyReconnector *Reconnector = new GProxyReconnector;
+                            Reconnector->PID = Bytes[4];
+                            Reconnector->ReconnectKey = UTIL_ByteArrayToUInt32( Bytes, false, 5 );
+                            Reconnector->LastPacket = UTIL_ByteArrayToUInt32( Bytes, false, 9 );
+                            Reconnector->PostedTime = GetTicks( );
+                            Reconnector->socket = (*i);
+                                        
+                            // update the receive buffer
+                            *RecvBuffer = RecvBuffer->substr( Length );
+                            i = m_ReconnectSockets.erase( i );
+                            // post in the reconnects buffer and wait to see if a game thread will pick it up
+                            boost::mutex::scoped_lock lock( m_ReconnectMutex );
+                            m_PendingReconnects.push_back( Reconnector );
+                            lock.unlock();
+                            continue;
                         }
                         else
                         {
@@ -1125,6 +1146,31 @@ bool COHBot :: Update( long usecBlock )
         m_LastAutoHostTime = GetTime( );
     }
 
+    CTCPSocket *NewSocket = m_GameBroadcastersListener->Accept(&fd);
+    if ( NewSocket )
+    {
+        m_GameBroadcasters.push_back( NewSocket );
+        CONSOLE_Print("[GHOST] Game Broadcaster [" + NewSocket->GetIPString( ) +"] connected" );
+        //BYTEARRAY info;
+        //UTIL_AppendByteArray( info, m_AdminGamePort,false );
+        //UTIL_AppendByteArray( info, m_HostPort, false );
+        //NewSocket->PutBytes( info );
+    }
+
+    for(vector<CTCPSocket * >::iterator i = m_GameBroadcasters.begin( ); i!= m_GameBroadcasters.end( ); )
+    {
+        if ( (*i)->HasError( ) || !(*i)->GetConnected( ) )
+        {
+            CONSOLE_Print("[GHOST] Game Broadcaster [" + (*i)->GetIPString( ) +"] disconnected");
+            delete *i;
+            i = m_GameBroadcasters.erase( i );
+            continue;
+        }
+        //(*i)->DoRecv( &fd );
+        (*i)->DoSend( &send_fd );
+        i++;
+    }
+
     // refresh flamelist all 60 minutes
     if( m_FlameCheck && !m_CallableFlameList && ( GetTime( ) - m_LastFlameListUpdate >= 1200 || m_LastFlameListUpdate==0 ) )
     {
@@ -1243,11 +1289,11 @@ bool COHBot :: Update( long usecBlock )
     {
         vector<string> commands = m_CallableCommandList->GetResult( );
 
-	string command;
+    string command;
 
         for( vector<string> :: iterator i = commands.begin( ); i != commands.end( ); ++i )
         {
-		HandleRCONCommand(*i);
+            HandleRCONCommand(*i);
         }
 
         m_DB->RecoverCallable( m_CallableCommandList );
@@ -1308,12 +1354,12 @@ void COHBot :: EventBNETLoggedIn( CBNET *bnet )
 
 void COHBot :: EventBNETGameRefreshed( CBNET *bnet )
 {
-	boost::mutex::scoped_lock lock( m_GamesMutex );
+    boost::mutex::scoped_lock lock( m_GamesMutex );
 
- 	if( m_CurrentGame )
- 		m_CurrentGame->EventGameRefreshed( bnet->GetServer( ));
+    if( m_CurrentGame )
+        m_CurrentGame->EventGameRefreshed( bnet->GetServer( ));
 
-	lock.unlock( );
+    lock.unlock( );
 }
 
 void COHBot :: EventBNETGameRefreshFailed( CBNET *bnet )
@@ -1330,7 +1376,10 @@ void COHBot :: EventBNETGameRefreshFailed( CBNET *bnet )
                 (*i)->QueueChatCommand( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ), m_CurrentGame->GetCreatorName( ), true );
         }
 
-        m_CurrentGame->SendAllChat( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
+        //m_CurrentGame->SendAllChat( m_Language->UnableToCreateGameTryAnotherName( bnet->GetServer( ), m_CurrentGame->GetGameName( ) ) );
+        boost::mutex::scoped_lock sayLock(m_CurrentGame->m_SayGamesMutex);
+        m_CurrentGame->m_DoSayGames.push_back(m_Language->UnableToCreateGameTryAnotherName(bnet->GetServer(), m_CurrentGame->GetGameName()));
+        sayLock.unlock();
 
         // we take the easy route and simply close the lobby if a refresh fails
         // it's possible at least one refresh succeeded and therefore the game is still joinable on at least one battle.net (plus on the local network) but we don't keep track of that
@@ -1738,6 +1787,7 @@ void COHBot :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
     lock.unlock( );
 
     CONSOLE_Print( "[GHOST] creating game [" + gameName + "]" );
+
     if( m_HostCounter == 0 )
         m_HostCounter = GetNewHostCounter( );
 
@@ -1805,6 +1855,7 @@ void COHBot :: CreateGame( CMap *map, unsigned char gameState, bool saveGame, st
             (*i)->HoldClan( m_CurrentGame );
     }
 
+    // start the game thread
     boost::thread(&CBaseGame::loop, m_CurrentGame);
     CONSOLE_Print("[GameThread] Created a new Game Thread.");
 }
@@ -1935,11 +1986,13 @@ void COHBot :: LoadRanks( )
         m_RanksLoaded = false;
     }
 
-    if(m_Ranks.size() < 10 && m_RanksLoaded) {
+    if(m_Ranks.size() < 10 && m_RanksLoaded)
+    {
         CONSOLE_Print("[CONFIG] warning - ranks.txt doesn't contain enough levelnames. You require at least 11 rank names (Level 0 - Level 10, with 0).");
         m_RanksLoaded = false;
     }
-    else if(m_RanksLoaded) {
+    else if(m_RanksLoaded)
+    {
         CONSOLE_Print("[GHOST] loaded file [" + File + "]");
     }
 }

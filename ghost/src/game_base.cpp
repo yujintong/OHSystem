@@ -950,17 +950,36 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
 
                 uint32_t MapGameType = MAPGAMETYPE_SAVEDGAME;
                 BYTEARRAY MapWidth;
-                MapWidth.push_back( 0 );
-                MapWidth.push_back( 0 );
                 BYTEARRAY MapHeight;
-                MapHeight.push_back( 0 );
-                MapHeight.push_back( 0 );
+
+                if ( m_OHBot->m_Reconnect )
+                {
+                    MapWidth.push_back( 192 );
+                    MapWidth.push_back( 7 );
+
+                    MapHeight.push_back( 192 );
+                    MapHeight.push_back( 7 );
+                }
+                else
+                {
+                    MapWidth.push_back( 0 );
+                    MapWidth.push_back( 0 );
+
+                    MapHeight.push_back( 0 );
+                    MapHeight.push_back( 0 );
+                }
 
                 BYTEARRAY data = m_Protocol->SEND_W3GS_GAMEINFO( m_OHBot->m_TFT, m_OHBot->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), MapWidth, MapHeight, m_GameName, m_OHBot->m_BotManagerName, GetTime( ) - GetCreationTime( ), "Save\\Multiplayer\\" + m_SaveGame->GetFileNameNoPath( ), m_SaveGame->GetMagicNumber( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey );
 
                 m_OHBot->m_UDPSocket->Broadcast( m_OHBot->m_BroadCastPort, data );
                 m_OHBot->m_UDPSocket->Broadcast( 1337, data );
                 m_OHBot->m_GarenaSocket->Broadcast( m_OHBot->m_GarenaPort, data );
+
+                // GameBroadcaster
+                for(vector<CTCPSocket * >::iterator i = m_OHBot->m_GameBroadcasters.begin( ); i!= m_OHBot->m_GameBroadcasters.end( ); i++ )
+                {
+                    (*i)->PutBytes( data );
+                }
             }
             else
             {
@@ -968,13 +987,34 @@ bool CBaseGame :: Update( void *fd, void *send_fd )
                 // note: we do not use m_Map->GetMapGameType because none of the filters are set when broadcasting to LAN (also as you might expect)
 
                 uint32_t MapGameType = MAPGAMETYPE_UNKNOWN0;
+                BYTEARRAY MapWidth;
+                BYTEARRAY MapHeight;
+
+                if ( m_OHBot->m_Reconnect )
+                {
+                    MapWidth.push_back( 192 );
+                    MapWidth.push_back( 7 );
+
+                    MapHeight.push_back( 192 );
+                    MapHeight.push_back( 7 );
+                }
+                else
+                {
+                    MapWidth = m_Map->GetMapWidth( );
+                    MapHeight = m_Map->GetMapHeight( );
+                }
 
                 BYTEARRAY data = m_Protocol->SEND_W3GS_GAMEINFO( m_OHBot->m_TFT, m_OHBot->m_LANWar3Version, UTIL_CreateByteArray( MapGameType, false ), m_Map->GetMapGameFlags( ), m_Map->GetMapWidth( ), m_Map->GetMapHeight( ), m_GameName, m_OHBot->m_BotManagerName, GetTime( ) - GetCreationTime( ), m_Map->GetMapPath( ), m_Map->GetMapCRC( ), slotstotal, slotsopen, m_HostPort, FixedHostCounter, m_EntryKey );
 
                 m_OHBot->m_UDPSocket->Broadcast( m_OHBot->m_BroadCastPort, data );
                 m_OHBot->m_UDPSocket->Broadcast( 1337, data );
                 m_OHBot->m_GarenaSocket->Broadcast( m_OHBot->m_GarenaPort, data );
-              }
+
+                for(vector<CTCPSocket * >::iterator i = m_OHBot->m_GameBroadcasters.begin( ); i!= m_OHBot->m_GameBroadcasters.end( ); i++ )
+                {
+                    (*i)->PutBytes( data );
+                }
+            }
         }
 
         m_LastPingTime = GetTime( );

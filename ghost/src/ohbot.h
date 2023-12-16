@@ -298,6 +298,8 @@ public:
     bool m_FountainFarmBan;
     uint32_t m_GarenaPort;
     bool m_RejectingGameCheats;
+    CTCPServer *m_GameBroadcastersListener; // listening socket for game broadcasters
+    vector<CTCPSocket *> m_GameBroadcasters;// vector of sockets that broadcast the games
 
     COHBot( CConfig *CFG );
     ~COHBot( );
