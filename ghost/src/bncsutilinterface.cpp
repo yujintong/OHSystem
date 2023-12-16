@@ -56,7 +56,7 @@ bool CBNCSUtilInterface :: HELP_SID_AUTH_CHECK( bool TFT, string war3Path, strin
 
     string FileWar3EXE = war3Path + "War3.exe";
     if( !UTIL_FileExists( FileWar3EXE ) )
-        FileWar3EXE = war3Path + "War3.exe";
+        FileWar3EXE = war3Path + "war3.exe";
 
     string FileStormDLL = war3Path + "Storm.dll";
     if( !UTIL_FileExists( FileStormDLL ) )
@@ -64,7 +64,7 @@ bool CBNCSUtilInterface :: HELP_SID_AUTH_CHECK( bool TFT, string war3Path, strin
 
     string FileGameDLL = war3Path + "Game.dll";
     if( !UTIL_FileExists( FileGameDLL ) )
-        FileGameDLL = war3Path + "storm.dll";
+        FileGameDLL = war3Path + "game.dll";
 
     bool ExistsWar3EXE = UTIL_FileExists( FileWar3EXE );
     bool ExistsStormDLL = UTIL_FileExists( FileStormDLL );
