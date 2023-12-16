@@ -1561,6 +1561,15 @@ void COHBot :: ExtractScripts( )
     string PatchMPQFileName = m_Warcraft3Path + "War3Patch.mpq";
     HANDLE PatchMPQ;
 
+    if( !UTIL_FileExists( PatchMPQFileName ) )
+        PatchMPQFileName = m_Warcraft3Path + "war3patch.mpq";
+
+    if( !UTIL_FileExists( PatchMPQFileName ) )
+        PatchMPQFileName = m_Warcraft3Path + "War3x.mpq";
+
+    if( !UTIL_FileExists( PatchMPQFileName ) )
+        PatchMPQFileName = m_Warcraft3Path + "war3x.mpq";
+
     if( SFileOpenArchive( PatchMPQFileName.c_str( ), 0, MPQ_OPEN_FORCE_MPQ_V1, &PatchMPQ ) )
     {
         CONSOLE_Print( "[GHOST] loading MPQ file [" + PatchMPQFileName + "]" );
