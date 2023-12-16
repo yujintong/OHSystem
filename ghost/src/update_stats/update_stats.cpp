@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 	if (!(Connection = mysql_init(NULL)))
 	{
 		CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-		return 1;
+		return 0;
 	}
 
 	my_bool Reconnect = true;
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 	if (!(mysql_real_connect(Connection, Server.c_str(), User.c_str(), Password.c_str(), Database.c_str(), Port, NULL, 0)))
 	{
 		CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-		return 1;
+		return 0;
 	}
 
 	CONSOLE_Print("[STATS] database server connected");
@@ -265,7 +265,7 @@ int main(int argc, char **argv)
 	if (mysql_real_query(Connection, QBegin.c_str(), QBegin.size()) != 0)
 	{
 		CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-		return 1;
+		return 0;
 	}
 
 	CONSOLE_Print("[STATS] beginning get game types/aliases");
@@ -280,7 +280,7 @@ int main(int argc, char **argv)
 	if (mysql_real_query(Connection, QSelectAlias.c_str(), QSelectAlias.size()) != 0)
 	{
 		CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-		return 1;
+		return 0;
 	}
 	else
 	{
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
 		else
 		{
 			CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-			return 1;
+			return 0;
 		}
 	}
 	CONSOLE_Print("[STATS] found [" + UTIL_ToString(GameAliases.size()) + "] game types/aliases");
@@ -323,7 +323,7 @@ int main(int argc, char **argv)
 		if (mysql_real_query(Connection, QSelectUnscored.c_str(), QSelectUnscored.size()) != 0)
 		{
 			CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-			return 1;
+			return 0;
 		}
 		else
 		{
@@ -341,7 +341,7 @@ int main(int argc, char **argv)
 			else
 			{
 				CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-				return 1;
+				return 0;
 			}
 		}
 
@@ -369,7 +369,7 @@ int main(int argc, char **argv)
 			if (mysql_real_query(Connection, QSelectTGameTimes.c_str(), QSelectTGameTimes.size()) != 0)
 			{
 				CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-				return 1;
+				return 0;
 			}
 			else
 			{
@@ -380,7 +380,7 @@ int main(int argc, char **argv)
 					if (Row.size() > 1)
 					{
 						CONSOLE_Print("[STATS] There are multiple data records in the database [" + Row[0] + "]");
-						return 1;
+						return 0;
 					}
 					else if (Row.size() == 1)
 					{
@@ -400,7 +400,7 @@ int main(int argc, char **argv)
 				else
 				{
 					CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-					return 1;
+					return 0;
 				}
 			}
 
@@ -414,7 +414,7 @@ int main(int argc, char **argv)
 			if (mysql_real_query(Connection, QSelectPlayers.c_str(), QSelectPlayers.size()) != 0)
 			{
 				CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-				return 1;
+				return 0;
 			}
 			else
 			{
@@ -561,7 +561,7 @@ int main(int argc, char **argv)
 						if (mysql_real_query(Connection, PlayerStatus.c_str(), PlayerStatus.size()) != 0)
 						{
 							CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-							return 1;
+							return 0;
 						}
 						else
 						{
@@ -598,7 +598,7 @@ int main(int argc, char **argv)
 						if (mysql_real_query(Connection, QExistStatus.c_str(), QExistStatus.size()) != 0)
 						{
 							CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-							return 1;
+							return 0;
 						}
 						else
 						{
@@ -979,7 +979,7 @@ int main(int argc, char **argv)
 								if (mysql_real_query(Connection, QIPArea.c_str(), QIPArea.size()) != 0)
 								{
 									CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-									return 1;
+									return 0;
 								}
 								else
 								{
@@ -1007,7 +1007,7 @@ int main(int argc, char **argv)
 									if (mysql_real_query(Connection, QUpdateScore.c_str(), QUpdateScore.size()) != 0)
 									{
 										CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-										return 1;
+										return 0;
 									}
 								}
 								else
@@ -1022,7 +1022,7 @@ int main(int argc, char **argv)
 									if (mysql_real_query(Connection, QInsertScore.c_str(), QInsertScore.size()) != 0)
 									{
 										CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-										return 1;
+										return 0;
 									}
 								}
 							}
@@ -1033,7 +1033,7 @@ int main(int argc, char **argv)
 				else
 				{
 					CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-					return 1;
+					return 0;
 				}
 			}
 			CONSOLE_Print("[STATS] Update Game [" + UTIL_ToString(GameID) + "] data");
@@ -1043,7 +1043,7 @@ int main(int argc, char **argv)
 			if (mysql_real_query(Connection, QInsertScored1.c_str(), QInsertScored1.size()) != 0)
 			{
 			CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-			return 1;
+			return 0;
 			}
 			
 		}
@@ -1056,7 +1056,7 @@ int main(int argc, char **argv)
 	if (mysql_real_query(Connection, QCommit.c_str(), QCommit.size()) != 0)
 	{
 		CONSOLE_Print("[MYSQL] ERROR: " + string(mysql_error(Connection)));
-		return 1;
+		return 0;
 	}
 
 	CONSOLE_Print("[STATS] done");
