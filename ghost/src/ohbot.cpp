@@ -253,7 +253,7 @@ int main( int argc, char **argv )
     CONSOLE_Print("**       PLEASE DO NOT REMOVE ANY COPYRIGHT NOTICE TO RESPECT THE PROJECT            **");
     CONSOLE_Print("**       ----------------------------------------------------------------            **");
     CONSOLE_Print("**        For any questions and required support use our git repository              **");
-    CONSOLE_Print("**                    https://github.com/OHSystem/OHSystem                           **");
+    CONSOLE_Print("**                   https://github.com/yujintong/OHSystem                           **");
     CONSOLE_Print("***************************************************************************************");
     CONSOLE_Print("");
     CONSOLE_Print("***************************************************************************************");

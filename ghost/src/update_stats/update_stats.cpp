@@ -221,7 +221,12 @@ int main(int argc, char **argv)
 		}
 	}
 
-	CONSOLE_Print("[STATS] starting up");
+    CONSOLE_Print("");
+    CONSOLE_Print("***************************************************************************************");
+    CONSOLE_Print("**                             INITIALIZE STATS MODULE                               **");
+    CONSOLE_Print("***************************************************************************************");
+    CONSOLE_Print("");
+    CONSOLE_Print("[STATS] starting up");
 
 	if (!gLogFile.empty())
 	{
@@ -308,7 +313,7 @@ int main(int argc, char **argv)
 		uint32_t Alias_ID = GameAliases.front();
 		GameAliases.pop();
 
-		CONSOLE_Print("[STATS] ************************************************************");
+		CONSOLE_Print("[STATS] ***************************************************************************************");
 		CONSOLE_Print("[STATS] Start processing all game data under game types/aliases [" + UTIL_ToString(Alias_ID) + "]");
 
 		CONSOLE_Print("[STATS] getting unscored games");
@@ -968,11 +973,11 @@ int main(int argc, char **argv)
 
 							for (int i = 0; i < num_players; i++)
 							{
-								//CONSOLE_Print("[STATS] player [" + ps_names[i] + "] score " + " -> " + Int32_ToString(pn_score[i]));
+								CONSOLE_Print("[STATS] player [" + ps_names[i] + "] score " + " -> " + Int32_ToString(pn_score[i]));
 
 								//查询IP地址所属国家
 								string c_code, c_country;
-								string QIPArea = "SELECT code, country FROM  oh_geoip WHERE INET_ATON('" + ps_ip[i] + "') BETWEEN ip_start_int AND ip_end_int;";
+								string QIPArea = "SELECT code, country FROM oh_geoip WHERE INET_ATON('" + ps_ip[i] + "') BETWEEN ip_start_int AND ip_end_int;";
 
 								//CONSOLE_Print("[SQL] [" + QIPArea + "]");
 
@@ -1047,7 +1052,7 @@ int main(int argc, char **argv)
 			}
 			
 		}
-		CONSOLE_Print("[STATS] ************************************************************");
+		CONSOLE_Print("[STATS] ***************************************************************************************");
 	}
 	CONSOLE_Print("[STATS] committing transaction");
 
