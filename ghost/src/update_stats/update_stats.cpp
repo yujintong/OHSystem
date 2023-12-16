@@ -1060,6 +1060,6 @@ int main(int argc, char **argv)
 	}
 
 	CONSOLE_Print("[STATS] done");
-	CONSOLE_Print("");
+	//CONSOLE_Print("");
 	return 1;
 }
