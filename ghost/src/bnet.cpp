@@ -3305,7 +3305,7 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
             uint32_t MapGameType = map->GetMapGameType( );
             MapGameType |= MAPGAMETYPE_UNKNOWN0;
             //Apply overwrite if not equal to 0
-            MapGameType = ( m_OHBot->m_MapGameType == 0 ) ? MapGameType : m_OHBot->m_MapGameType;
+            MapGameType = ( m_OHBot->m_MapGameType == 0 ) ? m_OHBot->m_MapGameType : MapGameType;
 
             if( state == GAME_PRIVATE )
                 MapGameType |= MAPGAMETYPE_PRIVATEGAME;
@@ -3365,7 +3365,7 @@ void CBNET :: QueueGameRefresh( unsigned char state, string gameName, string hos
             if( RandomNumber == 21 )
                 MapGameType = 4294901779;
 
-	    //CONSOLE_Print("[INFO] Using now MapGameType: "+UTIL_ToString(MapGameType));
+            CONSOLE_Print("[INFO] Using now MapGameType: "+UTIL_ToString(MapGameType));
 
             if( m_OHBot->m_Reconnect )
                 m_OutPackets.push( m_Protocol->SEND_SID_STARTADVEX3( state, UTIL_CreateByteArray( MapGameType, false ), map->GetMapGameFlags( ), MapWidth, MapHeight, gameName, hostName, upTime, map->GetMapPath( ), map->GetMapCRC( ), map->GetMapSHA1( ), FixedHostCounter ) );
