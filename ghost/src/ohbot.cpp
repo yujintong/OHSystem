@@ -83,6 +83,7 @@ uint32_t gLogMethod;
 ofstream *gLog = NULL;
 COHBot *gGHost = NULL;
 CConfig CFG;
+boost::mutex PrintMutex;
 
 uint32_t GetTime( )
 {
@@ -179,6 +180,8 @@ CConfig GetCFG( )
 void CONSOLE_Print( string message )
 {
 
+    boost::mutex::scoped_lock printLock(PrintMutex); 
+
     cout << message << endl;
 
     // logging
@@ -217,6 +220,9 @@ void CONSOLE_Print( string message )
             }
         }
     }
+
+    printLock.unlock();
+
 }
 
 
@@ -690,6 +696,48 @@ COHBot :: COHBot( CConfig *CFG )
     }
 
     CONSOLE_Print( "[GHOST] GHost++ Version " + m_Version + " (with MySQL support)" );
+
+    // initialize the input thread
+    inputThread = new boost::thread(&COHBot::inputLoop, this);
+}
+
+void COHBot::inputLoop()
+{
+    string path = "fifo_in";
+
+    std::ifstream fifo;
+    fifo.open(path.c_str(), ifstream::in);
+
+    if (!fifo.is_open()){
+        cout << "[GHOST] Unable to open fifo: " << path << endl;
+        return;
+    }
+
+    string line;
+    bool done = false;
+
+    while (!done){
+        while (getline(fifo, line)){
+            boost::mutex::scoped_lock lock(m_InputMutex);
+            m_InputMessage = line;
+            lock.unlock();
+
+            // temporary fix: sometimes the above fails and will cause
+            //  a continuous infinite loop
+            // to prevent this, we sleep for a few milliseconds
+            MILLISLEEP(100);
+        }
+
+        MILLISLEEP(100);
+
+        if (fifo.eof()){
+            fifo.clear();
+        }
+        else{
+            done = true;
+            cout << "[GHOST] Fifo closed." << endl;
+        }
+    }
 }
 
 COHBot :: ~COHBot( )
@@ -896,18 +944,18 @@ bool COHBot :: Update( long usecBlock )
     }
 
     // 6. the Game Broadcasters
-    for (vector<CTCPSocket * >::iterator i = m_GameBroadcasters.begin(); i != m_GameBroadcasters.end(); ++i)
+    for (vector<CTCPSocket * >::iterator i = m_GameBroadcasters.begin(); i != m_GameBroadcasters.end(); i++)
     {
         if ( (*i)->GetConnected( ) && !(*i)->HasError( ) )
         {
             (*i)->SetFD( &fd, &send_fd, &nfds );
-            ++NumFDs;
+            NumFDs++;
         }
     }
 
     // 7. the listener for game broadcasters
     m_GameBroadcastersListener->SetFD( &fd, &send_fd, &nfds );
-    ++NumFDs;
+    NumFDs++;
 
     // before we call select we need to determine how long to block for
     // previously we just blocked for a maximum of the passed usecBlock microseconds

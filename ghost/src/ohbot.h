@@ -294,6 +294,9 @@ public:
     uint32_t m_SwapLimit;
     vector<GProxyReconnector *> m_PendingReconnects;
     boost::mutex m_ReconnectMutex;
+    boost::thread *inputThread;
+    boost::mutex m_InputMutex;
+    string m_InputMessage;
     bool m_SendAutoStartInfo;
     bool m_FountainFarmBan;
     uint32_t m_GarenaPort;
@@ -324,6 +327,7 @@ public:
 
     // other functions
 
+    void inputLoop(); 
     void ReloadConfigs( );
     void SetConfigs( CConfig *CFG );
     void ExtractScripts( );
