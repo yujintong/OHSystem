@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 	gLogFile = CFG.GetString("bot_log", "stats.log");
 	gLogMethod = CFG.GetInt("bot_logmethod", 1);
 
-	//ÈÕÖ¾ÎÄ¼şĞÅÏ¢
+	//æ—¥å¿—æ–‡ä»¶ä¿¡æ¯
 	if (!gLogFile.empty())
 	{
 		if (gLogMethod == 1)
@@ -275,11 +275,11 @@ int main(int argc, char **argv)
 
 	CONSOLE_Print("[STATS] beginning get game types/aliases");
 
-	//²éÑ¯ÓÎÏ·ÀàĞÍ (dota, lod)
+	//æŸ¥è¯¢æ¸¸æˆç±»å‹ (dota, lod)
 	queue<uint32_t> GameAliases;
 	string QSelectAlias = "SELECT alias_id FROM oh_aliases ORDER BY alias_id;";
 
-	//Êä³ö²éÑ¯Óï¾ä
+	//è¾“å‡ºæŸ¥è¯¢è¯­å¥
 	//CONSOLE_Print("[SQL] [" + QSelectAlias + "]");
 
 	if (mysql_real_query(Connection, QSelectAlias.c_str(), QSelectAlias.size()) != 0)
@@ -318,11 +318,11 @@ int main(int argc, char **argv)
 
 		CONSOLE_Print("[STATS] getting unscored games");
 
-		//²éÑ¯Î´´¦Àí»ı·ÖµÄÓÎÏ·
+		//æŸ¥è¯¢æœªå¤„ç†ç§¯åˆ†çš„æ¸¸æˆ
 		queue<uint32_t> UnscoredGames;
 		string QSelectUnscored = "SELECT id FROM oh_games WHERE alias_id = " + UTIL_ToString(Alias_ID) + " AND stats = 0 ORDER BY id;";
 
-		//Êä³ö²éÑ¯Óï¾ä
+		//è¾“å‡ºæŸ¥è¯¢è¯­å¥
 		//CONSOLE_Print("[SQL] [" + QSelectUnscored + "]");
 
 		if (mysql_real_query(Connection, QSelectUnscored.c_str(), QSelectUnscored.size()) != 0)
@@ -352,7 +352,7 @@ int main(int argc, char **argv)
 
 		CONSOLE_Print("[STATS] found [" + UTIL_ToString(UnscoredGames.size()) + "] unscored games");
 
-		//´¦ÀíÓÎÏ·ÏÂµÄÓÃ»§Êı¾İ
+		//å¤„ç†æ¸¸æˆä¸‹çš„ç”¨æˆ·æ•°æ®
 
 		while (!UnscoredGames.empty())
 		{
@@ -362,7 +362,7 @@ int main(int argc, char **argv)
 			CONSOLE_Print("[STATS] gameid [" + UTIL_ToString(GameID) + "] found");
 			CONSOLE_Print("[STATS] Processing Games data for [" + UTIL_ToString(GameID) + "] ");
 
-			//²éÑ¯ÓÎÏ·Ê±¼ä
+			//æŸ¥è¯¢æ¸¸æˆæ—¶é—´
 			CONSOLE_Print("[STATS] Query game building time");
 
 			queue<uint32_t> TGameTimes;
@@ -389,7 +389,7 @@ int main(int argc, char **argv)
 					}
 					else if (Row.size() == 1)
 					{
-						//·Ö½âÊ±¼ä
+						//åˆ†è§£æ—¶é—´
 						CONSOLE_Print("[STATS] Decomposing game building time");
 						sscanf(Row[0].c_str(), "%d-%d-%d %d:%d:%d", &t_year, &t_month, &t_day, &t_hour, &t_minute, &t_second);
 						//CONSOLE_Print("[STATS] game building time [" + Row[0] + "]");
@@ -409,11 +409,11 @@ int main(int argc, char **argv)
 				}
 			}
 
-			//²éÑ¯ÓÎÏ·ÏÂËùÓĞÍæ¼ÒĞÅÏ¢
+			//æŸ¥è¯¢æ¸¸æˆä¸‹æ‰€æœ‰ç©å®¶ä¿¡æ¯
 			//string QSelectPlayers = "SELECT s.id, gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, s.streak, s.maxstreak, s.losingstreak, s.maxlosingstreak, s.alias_id AS s_alias_id, s.`month` AS s_month, s.`year` AS s_year, gp.player_id, g.alias_id AS g_alias_id, g.datetime FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_stats as s ON gp.name = s.player_lower AND s.year = " + UTIL_ToString(t_year) + " AND s.`month` = " + UTIL_ToString(t_month) + " LEFT JOIN oh_dotagames as dg ON dg.gameid = gp.gameid WHERE gp.gameid = " + UTIL_ToString(GameID) + " AND g.alias_id = " + UTIL_ToString(Alias_ID);
 			string QSelectPlayers = "SELECT gp.name, dp.kills, dp.deaths, dp.assists, dp.creepkills, dp.creepdenies, dp.neutralkills, dp.towerkills, dp.raxkills, gp.spoofedrealm,gp.reserved, gp.left, gp.ip, g.duration, dg.winner, dp.newcolour, gp.team, gp.player_id, g.alias_id, g.datetime FROM oh_gameplayers as gp LEFT JOIN oh_dotaplayers as dp ON gp.gameid=dp.gameid AND gp.colour=dp.newcolour LEFT JOIN oh_games as g on g.id=gp.gameid LEFT JOIN oh_dotagames as dg ON dg.gameid = gp.gameid WHERE gp.gameid = " + UTIL_ToString(GameID) + " AND g.alias_id = " + UTIL_ToString(Alias_ID) + ";";
 
-			//Êä³öÓï¾ä
+			//è¾“å‡ºè¯­å¥
 			//CONSOLE_Print("[SQL] [" + QSelectPlayers + "]");
 
 			if (mysql_real_query(Connection, QSelectPlayers.c_str(), QSelectPlayers.size()) != 0)
@@ -430,48 +430,48 @@ int main(int argc, char **argv)
 					//CONSOLE_Print("[STATS] ScoreWin [" + UTIL_ToString(ScoreWin) + "] found");
 					//CONSOLE_Print("[STATS] ScoreLosse [" + UTIL_ToString(ScoreLosse) + "] found");
 
-					bool ignore = false;			//ÊÇ·ñºöÂÔ
-					uint32_t pn_id[11];				//Íæ¼ÒID
-					uint32_t pn_pid[11];			//ÓÃ»§ÔÚoh_stats_players±íÖĞµÄID
-					uint32_t pn_alias_id[11];		//ÓÎÏ·Àà±ğµÄID
-					string   ps_names[30];			//Íæ¼ÒÃû³Æ
-					string   ps_lnames[30];			//Íæ¼ÒÃû×Ö
-					string   ps_last_seen[50];		//×îºó²é¿´Ê±¼ä
-					string   ps_country_code[4];	//¹ú¼Ò´úÂë
-					string   ps_country[40];		//¹ú¼Ò
-					uint32_t pn_month[2];			//ÔÂ
-					uint32_t pn_year[4];			//Äê
-					uint32_t pn_userlevel[2];		//ÓÃ»§ÔÚoh_users±íÖĞµÄµÈ¼¶£¬ºÍoh_usersÖĞµÄuser_levelÒ»Ñù
+					bool ignore = false;			//æ˜¯å¦å¿½ç•¥
+					uint32_t pn_id[11];				//ç©å®¶ID
+					uint32_t pn_pid[11];			//ç”¨æˆ·åœ¨oh_stats_playersè¡¨ä¸­çš„ID
+					uint32_t pn_alias_id[11];		//æ¸¸æˆç±»åˆ«çš„ID
+					string   ps_names[30];			//ç©å®¶åç§°
+					string   ps_lnames[30];			//ç©å®¶åå­—
+					string   ps_last_seen[50];		//æœ€åæŸ¥çœ‹æ—¶é—´
+					string   ps_country_code[4];	//å›½å®¶ä»£ç 
+					string   ps_country[40];		//å›½å®¶
+					uint32_t pn_month[2];			//æœˆ
+					uint32_t pn_year[4];			//å¹´
+					uint32_t pn_userlevel[2];		//ç”¨æˆ·åœ¨oh_usersè¡¨ä¸­çš„ç­‰çº§ï¼Œå’Œoh_usersä¸­çš„user_levelä¸€æ ·
 					//uint32_t pn_fgproxy[1];			//
-					int32_t  pn_score[11];			//»ı·Ö
-					uint32_t pn_games[11];			//ÓÎÏ·¾ÖÊı
-					uint32_t pn_wins[11];			//Ê¤Àû´ÎÊı
-					uint32_t pn_losses[11];			//Ê§°Ü´ÎÊı
+					int32_t  pn_score[11];			//ç§¯åˆ†
+					uint32_t pn_games[11];			//æ¸¸æˆå±€æ•°
+					uint32_t pn_wins[11];			//èƒœåˆ©æ¬¡æ•°
+					uint32_t pn_losses[11];			//å¤±è´¥æ¬¡æ•°
 					int32_t  pn_draw[11];			//
-					uint32_t pn_kills[11];			//É±ÈË´ÎÊı
-					uint32_t pn_deaths[11];			//ËÀÍö´ÎÊı
-					uint32_t pn_assists[11];		//Öú¹¥´ÎÊı
-					uint32_t pn_creeps[11];			//²¹±ø´ÎÊı
-					uint32_t pn_denies[11];			//·´²¹±ø´ÎÊı
-					uint32_t pn_neutrals[11];		//Ò°¹Ö´ÎÊı
-					uint32_t pn_towers[11];			//ÍÆËş´ÎÊı
-					uint32_t pn_rax[11];			//±øÓª
-					uint32_t pn_banned[1];			//ÊÇ·ñ±»·âºÅ
-					string   ps_realm[100];			//Íæ¼ÒËùÔÚµÄ·şÎñÆ÷
+					uint32_t pn_kills[11];			//æ€äººæ¬¡æ•°
+					uint32_t pn_deaths[11];			//æ­»äº¡æ¬¡æ•°
+					uint32_t pn_assists[11];		//åŠ©æ”»æ¬¡æ•°
+					uint32_t pn_creeps[11];			//è¡¥å…µæ¬¡æ•°
+					uint32_t pn_denies[11];			//åè¡¥å…µæ¬¡æ•°
+					uint32_t pn_neutrals[11];		//é‡æ€ªæ¬¡æ•°
+					uint32_t pn_towers[11];			//æ¨å¡”æ¬¡æ•°
+					uint32_t pn_rax[11];			//å…µè¥
+					uint32_t pn_banned[1];			//æ˜¯å¦è¢«å°å·
+					string   ps_realm[100];			//ç©å®¶æ‰€åœ¨çš„æœåŠ¡å™¨
 					uint32_t pn_reserved[11];		//
-					uint32_t pn_leaver[11];			//µôÏß»òÕßÔçÍË
-					string   ps_ip[16];				//IPµØÖ·
-					uint32_t pn_streak[11];			//Ê¤Àû´ÎÊı
-					uint32_t pn_maxstreak[11];		//×î´óÊ¤Àû
-					uint32_t pn_losingstreak[11];	//Ê§°Ü
-					uint32_t pn_maxlosingstreak[11];//×î´óÊ§°Ü
-					uint32_t pn_zerodeaths[11];		//ÁãËÀÍö´ÎÊı
+					uint32_t pn_leaver[11];			//æ‰çº¿æˆ–è€…æ—©é€€
+					string   ps_ip[16];				//IPåœ°å€
+					uint32_t pn_streak[11];			//èƒœåˆ©æ¬¡æ•°
+					uint32_t pn_maxstreak[11];		//æœ€å¤§èƒœåˆ©
+					uint32_t pn_losingstreak[11];	//å¤±è´¥
+					uint32_t pn_maxlosingstreak[11];//æœ€å¤§å¤±è´¥
+					uint32_t pn_zerodeaths[11];		//é›¶æ­»äº¡æ¬¡æ•°
 					//uint32_t pn_points[11];			//
 					//uint32_t pn_points_bet[11];		//
 					//uint32_t pn_hide[1];			//
 					//uint32_t pn_updated[1];			//
 
-					bool exists[10];      //Íæ¼ÒÊÇ·ñ´æÔÚ
+					bool exists[10];      //ç©å®¶æ˜¯å¦å­˜åœ¨
 					int num_players = 0;
 					//int player_teams[10];
 					int num_teams = 2;
@@ -498,31 +498,31 @@ int main(int argc, char **argv)
 							break;
 						}
 
-						string   tmp_name = Row[0];					//Ãû×Ö
-						uint32_t tmp_kills = UTIL_ToUInt32(Row[1]);	//ÈËÍ·
-						uint32_t tmp_deaths = UTIL_ToUInt32(Row[2]);	//ËÀÍö
-						uint32_t tmp_assists = UTIL_ToUInt32(Row[3]);	//Öú¹¥
-						uint32_t tmp_creepkills = UTIL_ToUInt32(Row[4]);	//²¹±ø
-						uint32_t tmp_creepdenies = UTIL_ToUInt32(Row[5]);	//·´²¹
-						uint32_t tmp_neutralkills = UTIL_ToUInt32(Row[6]);	//Ò°¹Ö
-						uint32_t tmp_towerkills = UTIL_ToUInt32(Row[7]);	//ÍÆËş
-						uint32_t tmp_raxkills = UTIL_ToUInt32(Row[8]);	//±øÓª
-						string   tmp_realm = Row[9];					//·şÎñÆ÷
-						uint32_t tmp_reserved = UTIL_ToUInt32(Row[10]);	//±£Áô
-						uint32_t tmp_left = UTIL_ToUInt32(Row[11]);	//Ê±³¤
-						string   tmp_ip = Row[12];					//IPµØÖ·
-						uint32_t tmp_duration = UTIL_ToUInt32(Row[13]);	//ÓÎÏ·Ê±³¤
-						uint32_t tmp_Winner = UTIL_ToUInt32(Row[14]);	//Ê¤Àû±êÊ¶
-						uint32_t tmp_newcolour = UTIL_ToUInt32(Row[15]);	//ÑÕÉ«
-						uint32_t tmp_team = UTIL_ToUInt32(Row[16]);	//¾üÍÅ
-						uint32_t tmp_player_id = UTIL_ToUInt32(Row[17]);	//Íæ¼ÒID
-						uint32_t tmp_alias_id = UTIL_ToUInt32(Row[18]);	//ÓÎÏ·Àà±ğID
-						string   tmp_datetime = Row[19];					//ÓÎÏ·¿ªÊ¼Ê±¼ä
+						string   tmp_name = Row[0];					//åå­—
+						uint32_t tmp_kills = UTIL_ToUInt32(Row[1]);	//äººå¤´
+						uint32_t tmp_deaths = UTIL_ToUInt32(Row[2]);	//æ­»äº¡
+						uint32_t tmp_assists = UTIL_ToUInt32(Row[3]);	//åŠ©æ”»
+						uint32_t tmp_creepkills = UTIL_ToUInt32(Row[4]);	//è¡¥å…µ
+						uint32_t tmp_creepdenies = UTIL_ToUInt32(Row[5]);	//åè¡¥
+						uint32_t tmp_neutralkills = UTIL_ToUInt32(Row[6]);	//é‡æ€ª
+						uint32_t tmp_towerkills = UTIL_ToUInt32(Row[7]);	//æ¨å¡”
+						uint32_t tmp_raxkills = UTIL_ToUInt32(Row[8]);	//å…µè¥
+						string   tmp_realm = Row[9];					//æœåŠ¡å™¨
+						uint32_t tmp_reserved = UTIL_ToUInt32(Row[10]);	//ä¿ç•™
+						uint32_t tmp_left = UTIL_ToUInt32(Row[11]);	//æ—¶é•¿
+						string   tmp_ip = Row[12];					//IPåœ°å€
+						uint32_t tmp_duration = UTIL_ToUInt32(Row[13]);	//æ¸¸æˆæ—¶é•¿
+						uint32_t tmp_Winner = UTIL_ToUInt32(Row[14]);	//èƒœåˆ©æ ‡è¯†
+						uint32_t tmp_newcolour = UTIL_ToUInt32(Row[15]);	//é¢œè‰²
+						uint32_t tmp_team = UTIL_ToUInt32(Row[16]);	//å†›å›¢
+						uint32_t tmp_player_id = UTIL_ToUInt32(Row[17]);	//ç©å®¶ID
+						uint32_t tmp_alias_id = UTIL_ToUInt32(Row[18]);	//æ¸¸æˆç±»åˆ«ID
+						string   tmp_datetime = Row[19];					//æ¸¸æˆå¼€å§‹æ—¶é—´
 
-						//CONSOLE_Print("[STATS] tmp_raxkills£º " + UTIL_ToString(tmp_raxkills));
+						//CONSOLE_Print("[STATS] tmp_raxkillsï¼š " + UTIL_ToString(tmp_raxkills));
 						
-						//Êä³öWinnerĞÅÏ¢
-						//CONSOLE_Print("[STATS] Output Winner message£º " + UTIL_ToString(tmp_Winner));
+						//è¾“å‡ºWinnerä¿¡æ¯
+						//CONSOLE_Print("[STATS] Output Winner messageï¼š " + UTIL_ToString(tmp_Winner));
 
 						if (tmp_Winner != 1 && tmp_Winner != 2 && tmp_Winner != 0)
 						{
@@ -530,12 +530,12 @@ int main(int argc, char **argv)
 							ignore = true;
 							break;
 						}
-						else if (tmp_Winner == 1)	//½üÎÀÊ¤Àû
+						else if (tmp_Winner == 1)	//è¿‘å«èƒœåˆ©
 						{
 							team_winners[0] = 1.0;
 							team_winners[1] = 0.0;
 						}
-						else						//ÌìÔÖÊ¤Àû
+						else						//å¤©ç¾èƒœåˆ©
 						{
 							team_winners[0] = 0.0;
 							team_winners[1] = 1.0;
@@ -543,24 +543,24 @@ int main(int argc, char **argv)
 
 						//CONSOLE_Print("[STATS] team_winners[0]=" + UTIL_ToString(team_winners[0]) + " ,team_winners[1]=" + UTIL_ToString(team_winners[1]));
 
-						//»ñÈ¡Íæ¼ÒÃû³Æ
+						//è·å–ç©å®¶åç§°
 						ps_names[num_players] = tmp_name;
 
-						//Êä³öÍæ¼ÒÃû³Æ
+						//è¾“å‡ºç©å®¶åç§°
 						//CONSOLE_Print("[STATS] The Player Name:[" + ps_names[num_players] + "]");
 
 						std::transform(tmp_name.begin(), tmp_name.end(), tmp_name.begin(), ::tolower);
 
 						ps_lnames[num_players] = tmp_name;
 
-						//»ñÈ¡Íæ¼ÒËùÔÚµÄ·şÎñÆ÷
+						//è·å–ç©å®¶æ‰€åœ¨çš„æœåŠ¡å™¨
 						ps_realm[num_players] = tmp_realm;
 						pn_banned[num_players] = 0;
 						
-						//²éÑ¯Íæ¼ÒÊÇ·ñ±»·âºÅ
+						//æŸ¥è¯¢ç©å®¶æ˜¯å¦è¢«å°å·
 						string PlayerStatus = "SELECT name FROM oh_bans WHERE name = '" + ps_names[num_players] + "';";
 
-						//Êä³ö²éÑ¯Óï¾ä
+						//è¾“å‡ºæŸ¥è¯¢è¯­å¥
 						//CONSOLE_Print("[SQL] [" + PlayerStatus + "]");
 
 						if (mysql_real_query(Connection, PlayerStatus.c_str(), PlayerStatus.size()) != 0)
@@ -588,16 +588,16 @@ int main(int argc, char **argv)
 							}
 						}
 
-						//Êä³öÍæ¼ÒËùÔÚµÄ·şÎñÆ÷
+						//è¾“å‡ºç©å®¶æ‰€åœ¨çš„æœåŠ¡å™¨
 						//CONSOLE_Print("[STATS] Player Realm:[" + tmp_realm + "]");
 
-						//Êä³öÍæ¼ÒµÄÑÕÉ«
+						//è¾“å‡ºç©å®¶çš„é¢œè‰²
 						//CONSOLE_Print("[STATS] The Colour of the player " + ps_names[num_players] + " is [" + UTIL_ToString(tmp_newcolour) + "]");
 
-						//²éÑ¯ÓÃ»§ÊÇ·ñ´æÔÚ
+						//æŸ¥è¯¢ç”¨æˆ·æ˜¯å¦å­˜åœ¨
 						string QExistStatus = "SELECT * FROM oh_stats WHERE player = '" + ps_names[num_players] + "' order by id desc limit 1;";
 
-						//Êä³ö²éÑ¯Óï¾ä
+						//è¾“å‡ºæŸ¥è¯¢è¯­å¥
 						//CONSOLE_Print("[SQL] [" + QExistStatus + "]");
 
 						if (mysql_real_query(Connection, QExistStatus.c_str(), QExistStatus.size()) != 0)
@@ -614,7 +614,7 @@ int main(int argc, char **argv)
 
 								//CONSOLE_Print("[STATS] Player oh_stats data Len [" + UTIL_ToString(Row.size()) + "]");
 
-								//ÅĞ¶ÏÊÇ·ñĞÂÓÃ»§£¬¼´ÓÃ»§ÊÇ·ñÔÚoh_stats±íÖĞ´æÔÚ,²¢»ñÈ¡ÒÑ´æÔÚÓÃ»§µÄĞÅÏ¢
+								//åˆ¤æ–­æ˜¯å¦æ–°ç”¨æˆ·ï¼Œå³ç”¨æˆ·æ˜¯å¦åœ¨oh_statsè¡¨ä¸­å­˜åœ¨,å¹¶è·å–å·²å­˜åœ¨ç”¨æˆ·çš„ä¿¡æ¯
 								if (!Row.empty())
 								{
 									exists[num_players] = true;
@@ -659,7 +659,7 @@ int main(int argc, char **argv)
 									//pn_updated[num_players] = UTIL_ToUInt32(Row[38]);
 									CONSOLE_Print("[STATS] Exist Player Found, ID [" + UTIL_ToString(pn_id[num_players]) + "]");
 								}
-								//ÓÃ»§²»´æÔÚ£¬³õÊ¼»¯ÓÃ»§Ïà¹ØÊı¾İ±äÁ¿
+								//ç”¨æˆ·ä¸å­˜åœ¨ï¼Œåˆå§‹åŒ–ç”¨æˆ·ç›¸å…³æ•°æ®å˜é‡
 								else
 								{
 									CONSOLE_Print("[STATS] New Player Found");
@@ -705,10 +705,10 @@ int main(int argc, char **argv)
 									//pn_updated[num_players] = 0;
 								}
 
-								//ÔÚoh_stats±íÖĞ²éµ½ÓÃ»§
+								//åœ¨oh_statsè¡¨ä¸­æŸ¥åˆ°ç”¨æˆ·
 								if (exists[num_players])
 								{
-									//½üÎÀ¾üÍÅ Êı¾İ´¦Àí
+									//è¿‘å«å†›å›¢ æ•°æ®å¤„ç†
 									if (tmp_newcolour >= 1 && tmp_newcolour <= 5)
 									{
 										team_numplayers[0]++;
@@ -760,7 +760,7 @@ int main(int argc, char **argv)
 										}
 									}
 
-									//ÌìÔÖ¾üÍÅ Êı¾İ´¦Àí
+									//å¤©ç¾å†›å›¢ æ•°æ®å¤„ç†
 									else if (tmp_newcolour >= 7 && tmp_newcolour <= 11)
 									{
 										team_numplayers[1]++;
@@ -819,10 +819,10 @@ int main(int argc, char **argv)
 									}
 								}
 
-								//ĞÂÓÃ»§
+								//æ–°ç”¨æˆ·
 								else
 								{
-									//½üÎÀ¾üÍÅ Êı¾İ´¦Àí
+									//è¿‘å«å†›å›¢ æ•°æ®å¤„ç†
 									if (tmp_newcolour >= 1 && tmp_newcolour <= 5)
 									{
 										team_numplayers[0]++;
@@ -859,7 +859,7 @@ int main(int argc, char **argv)
 										}
 									}
 
-									//ÌìÔÖ¾üÍÅ Êı¾İ´¦Àí
+									//å¤©ç¾å†›å›¢ æ•°æ®å¤„ç†
 									else if (tmp_newcolour >= 7 && tmp_newcolour <= 11)
 									{
 										//CONSOLE_Print("[STATS] tmp_winner:" + UTIL_ToString(tmp_Winner));
@@ -910,7 +910,7 @@ int main(int argc, char **argv)
 							}
 						}
 
-						//IPµØÖ·
+						//IPåœ°å€
 						ps_ip[num_players] = tmp_ip;
 
 						//
@@ -932,9 +932,9 @@ int main(int argc, char **argv)
 						pn_towers[num_players] = pn_towers[num_players] + tmp_towerkills;
 						pn_rax[num_players] = pn_rax[num_players] + tmp_raxkills;
 
-						//CONSOLE_Print("[STATS] pn_rax£º " + UTIL_ToString(pn_rax[num_players]));
+						//CONSOLE_Print("[STATS] pn_raxï¼š " + UTIL_ToString(pn_rax[num_players]));
 
-						//CONSOLE_Print("[STATS] tmp_raxkills£º " + UTIL_ToString(tmp_raxkills));
+						//CONSOLE_Print("[STATS] tmp_raxkillsï¼š " + UTIL_ToString(tmp_raxkills));
 
 						// Leaver detect
 						if (tmp_left < tmp_duration - 500)
@@ -975,7 +975,7 @@ int main(int argc, char **argv)
 							{
 								CONSOLE_Print("[STATS] player [" + ps_names[i] + "] score " + " -> " + Int32_ToString(pn_score[i]));
 
-								//²éÑ¯IPµØÖ·ËùÊô¹ú¼Ò
+								//æŸ¥è¯¢IPåœ°å€æ‰€å±å›½å®¶
 								string c_code, c_country;
 								string QIPArea = "SELECT code, country FROM oh_geoip WHERE INET_ATON('" + ps_ip[i] + "') BETWEEN ip_start_int AND ip_end_int;";
 
@@ -1002,7 +1002,7 @@ int main(int argc, char **argv)
 									}
 								}
 
-								//¸üĞÂÓÃ»§Êı¾İ
+								//æ›´æ–°ç”¨æˆ·æ•°æ®
 								if (exists[i])
 								{
 									string QUpdateScore = "UPDATE `oh_stats` SET score = " + Int32_ToString(pn_score[i]) + ", games = " + UTIL_ToString(pn_games[i]) + ", wins = " + UTIL_ToString(pn_wins[i]) + ", losses = " + UTIL_ToString(pn_losses[i]) + ", draw = " + UTIL_ToString(pn_draw[i]) + ", kills = " + UTIL_ToString(pn_kills[i]) + ", deaths = " + UTIL_ToString(pn_deaths[i]) + ", assists = " + UTIL_ToString(pn_assists[i]) + ", creeps = " + UTIL_ToString(pn_creeps[i]) + ", denies = " + UTIL_ToString(pn_denies[i]) + ", neutrals = " + UTIL_ToString(pn_neutrals[i]) + ", towers = " + UTIL_ToString(pn_towers[i]) + ", rax = " + UTIL_ToString(pn_rax[i]) + ", banned = " + UTIL_ToString(pn_banned[i]) + ", leaver = " + UTIL_ToString(pn_leaver[i]) + ",  ip= '" + ps_ip[i] + "', streak = " + UTIL_ToString(pn_streak[i]) + ", maxstreak = " + UTIL_ToString(pn_maxstreak[i]) + ", losingstreak = " + UTIL_ToString(pn_losingstreak[i]) + ", maxlosingstreak = " + UTIL_ToString(pn_maxlosingstreak[i]) + ", zerodeaths = " + UTIL_ToString(pn_zerodeaths[i]) + " WHERE id = " + UTIL_ToString(pn_id[i]) + ";";
