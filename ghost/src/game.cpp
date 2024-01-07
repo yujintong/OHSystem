@@ -180,12 +180,39 @@ CGame :: ~CGame( )
             CONSOLE_Print( "[GAME: " + m_GameName + "] saving player/stats data to database" );
 
             // store the CDBGamePlayers in the database
+            uint32_t max_leave_time = 0;//记录玩家最晚退出游戏的时间
+            uint32_t winner = 0;
+            bool is_save = true;
 
             for( vector<CDBGamePlayer *> :: iterator i = m_DBGamePlayers.begin( ); i != m_DBGamePlayers.end( ); ++i )
+            {
                 m_OHBot->m_Callables.push_back( m_OHBot->m_DB->ThreadedGamePlayerAdd( m_CallableGameAdd->GetResult( ), (*i)->GetName( ), (*i)->GetIP( ), (*i)->GetSpoofed( ), (*i)->GetSpoofedRealm( ), (*i)->GetReserved( ), (*i)->GetLoadingTime( ), (*i)->GetLeft( ), (*i)->GetLeftReason( ), (*i)->GetTeam( ), (*i)->GetColour( ), (*i)->GetID() ) );
 
-            if( m_Stats )
+                if( (*i)->GetLeft() > max_leave_time )
+                {
+                    max_leave_time = (*i)->GetLeft();
+                    winner = (*i)->GetTeam() + 1;//最后退出游戏的一方为胜方，1 近卫 2 天灾
+                }
+            }
+
+            if( max_leave_time < 300 )//游戏小于5分钟不记录战绩
             {
+                is_save = false;
+                CONSOLE_Print( "[GAME: " + m_GameName + "] game end in 5 min,Don't store the stats" );
+            }
+
+            // store the stats in the database
+
+            if(is_save && m_Stats )
+            {
+                if( m_Stats->GetWinner() <= 0 )//ok
+                {
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] using winner by judeg last leave" );
+                    m_Stats->SetWinner(winner);
+                }else//表示推倒了生命之树或冰封王座，因此不修改
+                {
+                    CONSOLE_Print( "[GAME: " + m_GameName + "] using winner by ghost" );
+                }
                 m_Stats->Save( m_OHBot, m_OHBot->m_DB, m_CallableGameAdd->GetResult( ) );
             }
         }
